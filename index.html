@@ -27,7 +27,10 @@
         radial-gradient(ellipse at 50% 100%, #1c1612 0%, #12100e 70%);
     }
     button, body { -webkit-user-select: none; user-select: none; }
+    .battle-screen { height: 100%; display: flex; }
     .game {
+      flex: 1 1 75%;
+      min-width: 0;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -36,19 +39,27 @@
     }
     .hud-top {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      gap: 4px 14px;
-      color: var(--muted);
-      font-size: 13px;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .hud-top h1 {
-      font-size: 13px;
-      font-weight: 700;
+    .dungeon { display: flex; align-items: baseline; gap: 16px; }
+    .dungeon-name {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: var(--cream);
+    }
+    .dungeon-progress {
+      color: var(--gold);
+      font-size: 22px;
+      font-weight: 800;
       letter-spacing: 0.08em;
-      color: var(--muted);
     }
-    .hud-top .logline { flex-basis: 100%; min-height: 0; }
+    .hud-actions { display: flex; gap: 8px; }
     h1 {
       margin: 0;
       font-size: 18px;
@@ -187,7 +198,23 @@
     }
     .pip.on { background: #f2c14e; border-color: #ffe7a3; }
     .handbar { flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 0; }
+    .pile { width: 72px; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: 0.08em; }
+    .pile-count { display: block; font-size: 28px; font-weight: 800; color: var(--cream); line-height: 1; }
     .hand { display: flex; justify-content: center; gap: 14px; align-items: center; }
+    .battle-log {
+      flex: 0 0 25%;
+      height: 100%;
+      overflow: auto;
+      border-left: 1px solid rgba(228, 177, 90, 0.35);
+      padding: 16px 14px;
+    }
+    .battle-log h2 {
+      margin: 0 0 12px;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+    }
+    .battle-log p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; color: var(--cream); }
     .card {
       width: 176px;
       height: min(280px, 42vh);
@@ -421,9 +448,11 @@
     let showLog = true;
     let cleared = false;
     let saveNote = "";
+    let returnScreen = "title";
     const SAVE_KEY = "card-battle-save-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const BATTLE_TOTAL = 3;
+    const DUNGEON_NAME = "仮の三連戦";
 
     function shuffle(list) {
       const a = list.slice();
@@ -445,7 +474,7 @@
 
     function log(msg) {
       logLines.unshift(msg);
-      if (logLines.length > 8) logLines.pop();
+      if (logLines.length > 16) logLines.pop();
     }
 
     function clearTimer() {
@@ -582,7 +611,6 @@
       player.energy = player.maxEnergy;
       draw(3);
       phase = "player";
-      log(`ターン${turn}。エネルギー${player.energy}。敵の次は${intentText(intentAt(0))}。`);
       render();
     }
 
@@ -591,7 +619,7 @@
       outcome = kind;
       phase = "end";
       banner = "";
-      log(kind === "win" ? "番兵を倒した。" : "倒された。");
+      log(kind === "win" ? `${enemy.name}を倒した。` : "倒された。");
       if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) {
         cleared = true;
         screen = "clear";
@@ -682,9 +710,7 @@
       logLines = [];
       saveNote = "";
       buildDeck();
-      log("戦闘開始。");
       startPlayerTurn();
-      persistSave(true);
     }
 
     function beginRun() {
@@ -704,7 +730,6 @@
 
     function goTitle() {
       clearTimer();
-      if (screen === "battle" && player && outcome !== "lose") persistSave(true);
       screen = "title";
       saveNote = "";
       render();
@@ -747,7 +772,7 @@
         <div class="menu">
           <h1>せってい</h1>
           ${menuButton(showLog ? "経過の表示：オン" : "経過の表示：オフ", "toggle-log", true)}
-          ${menuButton("もどる", "title")}
+          ${menuButton("もどる", "back")}
         </div>`;
     }
 
@@ -792,7 +817,7 @@
       const overlay = outcome === "win"
         ? `<div class="overlay"><div class="panel">
             <h2>勝った</h2>
-            <p>次の戦いへ進める。体力はそのまま。</p>
+            <p>続きを保存した。体力はそのまま。</p>
             <button type="button" data-action="next">つぎの戦い</button>
           </div></div>`
         : outcome === "lose"
@@ -803,16 +828,19 @@
           </div></div>`
         : "";
 
+      const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
       root.innerHTML = `
+        <div class="battle-screen">
         <div class="game">
           <header class="hud-top">
-            <h1>戦い ${battleIndex + 1}/${BATTLE_TOTAL}</h1>
-            <div>ターン ${turn}</div>
-            <div>山札 ${deck.length}</div>
-            <div>捨て札 ${discard.length}</div>
-            <button type="button" class="small-btn" data-action="save" ${phase === "player" ? "" : "disabled"}>セーブ</button>
-            <button type="button" class="small-btn" data-action="title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
-            <div class="logline">${showLog ? logLines.slice(0, 1).map((line) => esc(line)).join("") : ""}</div>
+            <div class="dungeon">
+              <h1 class="dungeon-name">${esc(DUNGEON_NAME)}</h1>
+              <div class="dungeon-progress">${battleIndex + 1}/${BATTLE_TOTAL}</div>
+            </div>
+            <div class="hud-actions">
+              <button type="button" class="small-btn" data-action="settings">せってい</button>
+              <button type="button" class="small-btn" data-action="title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
+            </div>
           </header>
           <div class="stage">
             <div class="intent ${intent.type}">
@@ -829,7 +857,7 @@
               <div class="hp-line">体力 ${enemy.hp} / ${enemy.maxHp}</div>
             </section>
             <div class="banner">${esc(banner)}</div>
-            <div class="note">${esc(note)}${saveNote ? " " + esc(saveNote) : ""}</div>
+            <div class="note">${esc(note)}</div>
           </div>
           <section class="party">
             <div class="party-stats">
@@ -840,10 +868,14 @@
               <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
             </div>
             <div class="handbar">
+              <div class="pile"><span class="pile-count">${deck.length}</span>山札</div>
               <div class="hand">${cards}</div>
+              <div class="pile"><span class="pile-count">${discard.length}</span>捨て札</div>
               <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
             </div>
           </section>
+        </div>
+        ${showLog ? `<aside class="battle-log"><h2>経過</h2>${logHtml}</aside>` : ""}
         </div>
         ${overlay}`;
       player.hit = false;
@@ -857,7 +889,8 @@
       if (action) {
         const name = action.dataset.action;
         if (name === "title") goTitle();
-        if (name === "settings") { screen = "settings"; render(); }
+        if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
+        if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
@@ -865,7 +898,6 @@
         }
         if (name === "new-force") { localStorage.removeItem(SAVE_KEY); beginRun(); }
         if (name === "continue") continueGame();
-        if (name === "save" && phase === "player") persistSave(false);
         if (name === "next" && outcome === "win") {
           battleIndex += 1;
           startBattle(player.hp);
