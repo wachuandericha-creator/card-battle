@@ -130,7 +130,7 @@
     .act.attack { color: var(--attack); }
     .act.block { color: var(--block); }
     .act.skill { color: var(--gold); }
-    .skill-note {
+    .skill-note, .trait-note {
       flex: 0 0 25%;
       box-sizing: border-box;
       display: flex;
@@ -146,9 +146,30 @@
       font-weight: 800;
       line-height: 1.45;
     }
-    .skill-note .star { color: var(--gold); font-size: 28px; line-height: 1; }
-    .skill-note .trait-label { margin-top: 8px; color: var(--gold); font-size: 13px; letter-spacing: 0.14em; }
-    .skill-note .trait { font-size: 16px; font-weight: 700; }
+    .trait-note .trait-label { color: var(--gold); font-size: 13px; letter-spacing: 0.14em; }
+    .foe-next {
+      flex: 0 0 25%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card.preview {
+      flex: none;
+      width: min(100%, 168px);
+      height: min(220px, 34vh);
+      margin: 0;
+      transform: none;
+      cursor: default;
+    }
+    .card.preview:hover { transform: none; }
+    .card.preview .cost { width: 28px; height: 28px; font-size: 16px; border-width: 2px; }
+    .card.preview .name { min-height: 32px; padding: 6px 6px 2px 38px; font-size: 15px; }
+    .card.preview .fx b { font-size: 22px; }
+    .card.preview .fx .ico { width: 22px; height: 22px; }
+    .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+    .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .reward-pick .card.preview { width: 132px; height: 184px; }
     .sprite {
       flex: none;
       width: 210px;
@@ -555,6 +576,7 @@
     .overlay {
       position: fixed;
       inset: 0;
+      z-index: 30;
       background: rgba(10, 8, 7, 0.72);
       display: grid;
       place-items: center;
@@ -704,33 +726,30 @@
         name: "仮の相手",
         rank: "雑魚",
         hp: 22,
-        skill: "13ダメージ",
         pattern: [
-          { type: "attack", value: 8 },
-          { type: "block", value: 10 },
-          { type: "skill", damage: 13 },
+          { name: "斬り", cost: 1, text: "8ダメージ", damage: 8 },
+          { name: "備え", cost: 2, text: "ブロック10", block: 10 },
+          { name: "強打", cost: 2, text: "13ダメージ", damage: 13 },
         ],
       },
       {
         name: "荒くれ",
         rank: "普通",
         hp: 24,
-        skill: "8ダメージ",
         pattern: [
-          { type: "attack", value: 4 },
-          { type: "attack", value: 4 },
-          { type: "skill", damage: 8 },
+          { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
+          { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
+          { name: "叩き", cost: 1, text: "8ダメージ", damage: 8 },
         ],
       },
       {
         name: "重騎士",
         rank: "強敵",
         hp: 30,
-        skill: "このターンは動かない",
         pattern: [
-          { type: "skill" },
-          { type: "attack", value: 12 },
-          { type: "block", value: 8 },
+          { name: "静止", cost: 1, text: "このターンは動かない" },
+          { name: "重撃", cost: 2, text: "12ダメージ", damage: 12 },
+          { name: "堅守", cost: 2, text: "ブロック8", block: 8 },
         ],
       },
     ];
@@ -760,6 +779,7 @@
     let askLeave = false;
     let gear = emptyGear();
     let gearOpen = null;
+    let stolen = [];
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
@@ -919,10 +939,10 @@
       return `${label}の${base}ダメージ。攻撃で${bonus}加算し、${base + bonus}。`;
     }
 
-    function takeEnemyHit(raw) {
+    function takeEnemyHit(raw, label) {
       const cut = mitigate(raw, player.def);
       const result = applyDamage(player, cut.dealt);
-      log(hurtSentence(enemy.name, raw, cut.reduced, result));
+      log(hurtSentence(label || enemy.name, raw, cut.reduced, result));
     }
 
     function buildDeck() {
@@ -932,6 +952,7 @@
           specs.push({ uid: uid++, name, ...CARDS[name] });
         }
       }
+      for (const extra of stolen) specs.push({ uid: uid++, ...extra });
       deck = shuffle(specs);
       hand = [];
       discard = [];
@@ -959,6 +980,7 @@
         player.block += card.block;
         log(`${card.name}でブロック${card.block}。いま${player.block}。`);
       }
+      if (!card.damage && !card.block) log(`${card.name}。${card.text}`);
     }
 
     function playCard(index) {
@@ -988,17 +1010,15 @@
 
     function resolveEnemyTurn() {
       timer = null;
-      const intent = intentAt(0);
+      const card = intentAt(0);
       enemy.block = 0;
-      if (intent.type === "attack") {
-        takeEnemyHit(intent.value);
-      } else if (intent.type === "block") {
-        enemy.block += intent.value;
-        log(`${enemy.name}はブロックを${intent.value}得た。`);
-      } else if (intent.damage) {
-        takeEnemyHit(intent.damage);
+      if (card.damage) {
+        takeEnemyHit(card.damage, card.name);
+      } else if (card.block) {
+        enemy.block += card.block;
+        log(`${enemy.name}の${card.name}。ブロック${card.block}。`);
       } else {
-        log(`${enemy.name}のスキル。${enemyNow().skill}`);
+        log(`${enemy.name}の${card.name}。${card.text}`);
       }
       if (player.hp <= 0) {
         finish("lose");
@@ -1038,11 +1058,7 @@
       phase = "end";
       banner = "";
       log(kind === "win" ? `${enemy.name}を倒した。` : "倒された。");
-      if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) {
-        cleared = true;
-        screen = "clear";
-        clearLive();
-      }
+      if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) cleared = true;
       if (kind === "win") persistSave(true);
       render();
     }
@@ -1088,6 +1104,7 @@
         player,
         enemy,
         gear,
+        stolen,
       };
     }
 
@@ -1141,6 +1158,7 @@
       if (enemy) enemy.hit = false;
       gear = normalizeGear(data.gear);
       gearOpen = null;
+      stolen = Array.isArray(data.stolen) ? data.stolen : [];
       saveNote = "";
     }
 
@@ -1170,6 +1188,7 @@
       cleared = false;
       gear = emptyGear();
       gearOpen = null;
+      stolen = [];
       startBattle(30);
     }
 
@@ -1178,7 +1197,7 @@
       if (!data) return;
       clearTimer();
       applySave(data);
-      screen = data.cleared ? "clear" : "battle";
+      screen = data.outcome === "win" ? "battle" : data.cleared ? "clear" : "battle";
       render();
     }
 
@@ -1197,7 +1216,7 @@
       clearTimer();
       applySave(data);
       askLeave = false;
-      screen = data.cleared ? "clear" : "battle";
+      screen = data.outcome === "win" ? "battle" : data.cleared ? "clear" : "battle";
       if (screen === "battle" && phase === "enemy" && !outcome) {
         render();
         timer = setTimeout(resolveEnemyTurn, 650);
@@ -1285,42 +1304,72 @@
       return `<div class="pile" aria-label="${label} ${count}"><div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></div>`;
     }
 
-    function enemyNote() {
-      const foe = enemyNow();
-      const skill = foe.skill ? `<span class="star">★</span><span>${esc(foe.skill)}</span>` : "";
-      const trait = foe.trait ? `<span class="trait-label">特性</span><span class="trait">${esc(foe.trait)}</span>` : "";
-      if (!skill && !trait) return "";
-      return `<aside class="skill-note">${skill}${trait}</aside>`;
+    function cardKind(card) {
+      if (card.damage && !card.block) return "attack";
+      if (card.block && !card.damage) return "block";
+      return "skill";
+    }
+
+    function cardFace(card) {
+      const effects = [
+        card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
+        card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
+      ].join("") || `<span class="fx">${esc(card.text)}</span>`;
+      return `<div class="face"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div><div class="art" aria-hidden="true"></div></div><div class="text">${effects}</div>`;
+    }
+
+    function foeNext() {
+      const card = intentAt(0);
+      return `<div class="foe-next"><div class="card preview ${cardKind(card)}" aria-label="次のカード ${card.cost} ${esc(card.name)}">${cardFace(card)}</div></div>`;
+    }
+
+    function traitNote() {
+      const trait = enemyNow().trait;
+      if (!trait) return "";
+      return `<aside class="trait-note"><span class="trait-label">特性</span><span>${esc(trait)}</span></aside>`;
+    }
+
+    function rewardCards() {
+      const seen = new Set();
+      const list = [];
+      for (const card of enemyNow().pattern) {
+        if (seen.has(card.name)) continue;
+        seen.add(card.name);
+        list.push(card);
+      }
+      return list;
+    }
+
+    function finishReward(name) {
+      if (name) {
+        const card = enemyNow().pattern.find((item) => item.name === name);
+        if (card) stolen.push({ name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block });
+      }
+      outcome = null;
+      if (battleIndex >= BATTLE_TOTAL - 1) {
+        cleared = true;
+        screen = "clear";
+        clearLive();
+        persistSave(true);
+        render();
+        return;
+      }
+      battleIndex += 1;
+      startBattle(player.hp);
     }
 
     function renderBattle() {
-      const intent = intentAt(0);
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
         const mid = (hand.length - 1) / 2;
         const fan = (i - mid) * 8;
         const drop = Math.abs(i - mid) * 12;
-        const kind = card.damage && !card.block ? "attack" : card.block && !card.damage ? "block" : "skill";
-        const effects = [
-          card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
-          card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
-        ].join("") || `<span class="fx">${esc(card.text)}</span>`;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${kind}${poor ? " unaffordable" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>
-          <div class="face">
-            <span class="cost">${card.cost}</span>
-            <div class="name">${esc(card.name)}</div>
-            <div class="art" aria-hidden="true"></div>
-          </div>
-          <div class="text">${effects}</div>
-        </button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card)}</button>`;
       }).join("");
+      const picks = rewardCards().map((card) => `<div class="reward-pick"><div class="card preview ${cardKind(card)}">${cardFace(card)}</div><button type="button" data-action="loot" data-loot="${esc(card.name)}">奪う</button></div>`).join("");
       const overlay = outcome === "win"
-        ? `<div class="overlay"><div class="panel">
-            <h2>勝った</h2>
-            <p>続きを保存した。体力はそのまま。</p>
-            <button type="button" data-action="next">つぎの戦い</button>
-          </div></div>`
+        ? `<div class="overlay"><div class="panel"><h2>勝った</h2><p>カードを1枚奪える。</p><div class="reward-row">${picks}</div><button type="button" class="ghost" data-action="skip-loot">スキップ</button></div></div>`
         : outcome === "lose"
         ? `<div class="overlay"><div class="panel">
             <h2>倒された</h2>
@@ -1354,10 +1403,8 @@
           </header>
           <div class="stage">
             <div class="enemy-field">
+            ${traitNote()}
             <div class="enemy-main">
-            <div class="intent ${intent.type}">
-              <div class="now">${actionMark(intent, true)}</div>
-            </div>
             <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
               <i class="eye l"></i><i class="eye r"></i>
             </div>
@@ -1369,7 +1416,7 @@
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
             </div>
-            ${enemyNote()}
+            ${foeNext()}
             </div>
           </div>
           <section class="party">
@@ -1424,10 +1471,8 @@
         }
         if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); beginRun(); }
         if (name === "continue") continueGame();
-        if (name === "next" && outcome === "win") {
-          battleIndex += 1;
-          startBattle(player.hp);
-        }
+        if (name === "loot") finishReward(action.dataset.loot || "");
+        if (name === "skip-loot") finishReward("");
         return;
       }
       if (screen !== "battle") return;
