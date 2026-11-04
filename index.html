@@ -82,14 +82,14 @@
     .rules { margin: 0; }
     .note { min-height: 1.1em; color: #f0c7a2; font-size: 13px; }
     .stage {
-      flex: 1;
-      min-height: 0;
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
+      justify-content: flex-start;
+      gap: 8px;
     }
+    .intent { flex: none; }
     .intent {
       min-width: 280px;
       text-align: center;
@@ -108,8 +108,9 @@
     .intent.wait .now { color: var(--gold); }
     .later { color: var(--muted); font-size: 14px; }
     .sprite {
-      width: 240px;
-      height: 180px;
+      flex: none;
+      width: 210px;
+      height: 156px;
       border-radius: 46% 46% 40% 40%;
       background:
         radial-gradient(circle at 30% 30%, #8d847c, transparent 40%),
@@ -119,7 +120,7 @@
     }
     .sprite .eye {
       position: absolute;
-      top: 68px;
+      top: 58px;
       width: 26px;
       height: 26px;
       background: #f4ead7;
@@ -135,8 +136,8 @@
       top: 8px;
       left: 8px;
     }
-    .sprite .eye.l { left: 64px; }
-    .sprite .eye.r { right: 64px; }
+    .sprite .eye.l { left: 54px; }
+    .sprite .eye.r { right: 54px; }
     .sprite.hit { animation: shake 0.35s linear; }
     .enemy { text-align: center; }
     .enemy h2 {
@@ -150,20 +151,46 @@
     .bar.wide { width: 180px; height: 10px; }
     .banner { min-height: 0; text-align: center; color: var(--gold); font-size: 18px; }
     .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
-    .party { display: flex; flex-direction: column; gap: 10px; }
+    .party {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 12px;
+    }
     .party-stats {
       display: flex;
       justify-content: center;
-      align-items: baseline;
+      align-items: center;
       gap: 28px;
-      font-size: 15px;
     }
-    .party-stats b { font-size: 32px; font-weight: 800; }
-    .handbar { display: flex; align-items: flex-end; justify-content: center; gap: 12px; }
-    .hand { display: flex; justify-content: center; gap: 12px; align-items: flex-end; min-height: 168px; }
+    .vitals { text-align: center; }
+    .vitals .hp-line { margin-top: 4px; font-size: 15px; }
+    .meters { width: 240px; margin: 0 auto; }
+    .meter {
+      height: 14px;
+      border-radius: 99px;
+      overflow: hidden;
+      background: var(--hp-bg);
+    }
+    .meter > span { display: block; height: 100%; }
+    .meter.hp > span { background: var(--hp); }
+    .meter.shield { background: #1d3348; margin-bottom: 4px; }
+    .meter.shield > span { background: var(--block); }
+    .pip {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #4a4034;
+      background: #241e18;
+    }
+    .pip.on { background: #f2c14e; border-color: #ffe7a3; }
+    .handbar { flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 0; }
+    .hand { display: flex; justify-content: center; gap: 14px; align-items: center; }
     .card {
-      width: 132px;
-      height: 168px;
+      width: 176px;
+      height: min(280px, 42vh);
       border: 0;
       border-radius: 16px;
       background: var(--cream);
@@ -195,8 +222,8 @@
     .card .name { font-size: 18px; font-weight: 800; margin: 16px 0 6px; }
     .card .text { white-space: pre-line; font-size: 14px; line-height: 1.4; }
     .end {
-      width: 116px;
-      height: 116px;
+      width: 148px;
+      height: 148px;
       flex: none;
       border-radius: 18px;
       border: 2px solid var(--gold);
@@ -315,13 +342,14 @@
       75% { transform: translateX(-3px); }
     }
     @media (max-width: 720px) {
-      .card { width: 104px; height: 140px; }
+      .card { width: 112px; height: 150px; }
       .sprite { width: 180px; height: 136px; }
       .sprite .eye { top: 50px; width: 20px; height: 20px; }
       .sprite .eye.l { left: 46px; }
       .sprite .eye.r { right: 46px; }
-      .party-stats b { font-size: 24px; }
-      .end { width: 88px; height: 88px; font-size: 14px; }
+      .end { width: 96px; height: 96px; font-size: 14px; }
+      .pip { width: 18px; height: 18px; }
+      .meters { width: 180px; }
       .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
       .title-art { max-height: 28vh; }
     }
@@ -550,7 +578,7 @@
       }
       turn += 1;
       player.block = 0;
-      player.maxEnergy += 1;
+      player.maxEnergy = Math.min(10, player.maxEnergy + 1);
       player.energy = player.maxEnergy;
       draw(3);
       phase = "player";
@@ -682,9 +710,11 @@
       render();
     }
 
-    function bar(hp, max, wide) {
-      const pct = Math.max(0, Math.min(100, (hp / max) * 100));
-      return `<div class="bar${wide ? " wide" : ""}"><span style="width:${pct}%"></span></div>`;
+    function meters(hp, maxHp, block) {
+      const hpPct = Math.max(0, Math.min(100, (hp / maxHp) * 100));
+      const blockPct = Math.max(0, Math.min(100, (block / maxHp) * 100));
+      const shield = block > 0 ? `<div class="meter shield"><span style="width:${blockPct}%"></span></div>` : "";
+      return `<div class="meters">${shield}<div class="meter hp"><span style="width:${hpPct}%"></span></div></div>`;
     }
 
     function pips() {
@@ -795,17 +825,19 @@
             </div>
             <section class="enemy">
               <h2>${esc(enemy.name)}</h2>
-              <div class="hp-line">体力 ${enemy.hp} / ${enemy.maxHp} ${bar(enemy.hp, enemy.maxHp, true)}</div>
-              <div>ブロック <b class="block-num">${enemy.block}</b></div>
+              ${meters(enemy.hp, enemy.maxHp, enemy.block)}
+              <div class="hp-line">体力 ${enemy.hp} / ${enemy.maxHp}</div>
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}${saveNote ? " " + esc(saveNote) : ""}</div>
           </div>
           <section class="party">
             <div class="party-stats">
-              <div>体力 <b>${player.hp}</b>/${player.maxHp} ${bar(player.hp, player.maxHp, true)}</div>
-              <div>ブロック <b class="block-num">${player.block}</b></div>
-              <div>エネルギー <b>${player.energy}</b><span class="energy-pips">${pips()}</span></div>
+              <div class="vitals">
+                ${meters(player.hp, player.maxHp, player.block)}
+                <div class="hp-line">体力 <b>${player.hp}</b>/${player.maxHp}</div>
+              </div>
+              <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
             </div>
             <div class="handbar">
               <div class="hand">${cards}</div>
