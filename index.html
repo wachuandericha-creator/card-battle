@@ -697,6 +697,7 @@
     let returnScreen = "title";
     let askLeave = false;
     const SAVE_KEY = "card-battle-save-v1";
+    const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const BATTLE_TOTAL = 3;
     const DUNGEON_NAME = "仮の三連戦";
@@ -871,33 +872,36 @@
       render();
     }
 
+    function resolveEnemyTurn() {
+      timer = null;
+      const intent = intentAt(0);
+      enemy.block = 0;
+      if (intent.type === "attack") {
+        takeEnemyHit(intent.value);
+      } else if (intent.type === "block") {
+        enemy.block += intent.value;
+        log(`${enemy.name}はブロックを${intent.value}得た。`);
+      } else if (intent.damage) {
+        takeEnemyHit(intent.damage);
+      } else {
+        log(`${enemy.name}のスキル。${enemyNow().skill}`);
+      }
+      if (player.hp <= 0) {
+        finish("lose");
+        return;
+      }
+      intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
+      banner = "";
+      startPlayerTurn();
+    }
+
     function endTurn() {
       if (phase !== "player" || outcome) return;
       phase = "enemy";
       while (hand.length) discard.push(hand.pop());
       note = "";
-      const intent = intentAt(0);
       render();
-      timer = setTimeout(() => {
-        enemy.block = 0;
-        if (intent.type === "attack") {
-          takeEnemyHit(intent.value);
-        } else if (intent.type === "block") {
-          enemy.block += intent.value;
-          log(`${enemy.name}はブロックを${intent.value}得た。`);
-        } else if (intent.damage) {
-          takeEnemyHit(intent.damage);
-        } else {
-          log(`${enemy.name}のスキル。${enemyNow().skill}`);
-        }
-        if (player.hp <= 0) {
-          finish("lose");
-          return;
-        }
-        intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
-        banner = "";
-        startPlayerTurn();
-      }, 650);
+      timer = setTimeout(resolveEnemyTurn, 650);
     }
 
     function startPlayerTurn() {
@@ -923,6 +927,7 @@
       if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) {
         cleared = true;
         screen = "clear";
+        clearLive();
       }
       if (kind === "win") persistSave(true);
       render();
@@ -951,8 +956,8 @@
       }
     }
 
-    function persistSave(silent) {
-      localStorage.setItem(SAVE_KEY, JSON.stringify({
+    function battleSnapshot() {
+      return {
         v: 1,
         cleared,
         battleIndex,
@@ -968,11 +973,32 @@
         discard,
         player,
         enemy,
-      }));
+      };
+    }
+
+    function persistSave(silent) {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(battleSnapshot()));
       if (!silent) {
         saveNote = "セーブした";
         render();
       }
+    }
+
+    function readLive() {
+      try {
+        return JSON.parse(localStorage.getItem(LIVE_KEY) || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function persistLive() {
+      if (!player || !enemy) return;
+      localStorage.setItem(LIVE_KEY, JSON.stringify(battleSnapshot()));
+    }
+
+    function clearLive() {
+      localStorage.removeItem(LIVE_KEY);
     }
 
     function applySave(data) {
@@ -1038,9 +1064,26 @@
     function goTitle() {
       clearTimer();
       askLeave = false;
+      clearLive();
       screen = "title";
       saveNote = "";
       render();
+    }
+
+    function resumeLive() {
+      const data = readLive();
+      if (!data || !data.player || !data.enemy) return false;
+      clearTimer();
+      applySave(data);
+      askLeave = false;
+      screen = data.cleared ? "clear" : "battle";
+      if (screen === "battle" && phase === "enemy" && !outcome) {
+        render();
+        timer = setTimeout(resolveEnemyTurn, 650);
+      } else {
+        render();
+      }
+      return true;
     }
 
     function meters(hp, maxHp, block) {
@@ -1236,6 +1279,7 @@
         ${leaveOverlay}`;
       player.hit = false;
       enemy.hit = false;
+      persistLive();
     }
 
     root.addEventListener("click", (event) => {
@@ -1255,7 +1299,7 @@
           if (readSave()) { screen = "confirm"; render(); }
           else beginRun();
         }
-        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); beginRun(); }
+        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); beginRun(); }
         if (name === "continue") continueGame();
         if (name === "next" && outcome === "win") {
           battleIndex += 1;
@@ -1278,7 +1322,7 @@
     });
 
     loadSettings();
-    render();
+    if (!resumeLive()) render();
   </script>
 </body>
 </html>
