@@ -323,6 +323,25 @@
     .bar.wide { width: 180px; height: 10px; }
     .banner { min-height: 0; text-align: center; color: var(--gold); font-size: 18px; }
     .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .play-row {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 28px;
+      padding: 8px 8px 0;
+    }
+    .play-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+    .play-side.mine { align-items: flex-start; }
+    .play-label {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+    }
+    .play-cards { display: flex; align-items: flex-end; gap: 8px; min-height: 136px; }
+    .play-row .card.preview { width: 92px; height: 136px; pointer-events: none; }
+    .play-card.on .card.preview { transform: translateY(-12px); box-shadow: 0 0 0 2px var(--gold), 0 12px 20px rgba(0, 0, 0, 0.35); }
     .party {
       flex: 1 1 62%;
       min-height: 0;
@@ -922,6 +941,8 @@
     let deck = [];
     let hand = [];
     let discard = [];
+    let inPlay = [];
+    let resolveAt = 0;
     let player = null;
     let enemy = null;
     let turn = 0;
@@ -1204,6 +1225,8 @@
       deck = shuffle(specs);
       hand = [];
       discard = [];
+      inPlay = [];
+      resolveAt = 0;
     }
 
     function draw(n) {
@@ -1247,13 +1270,8 @@
       }
       player.energy -= card.cost;
       hand.splice(index, 1);
-      discard.push(card);
+      inPlay.push(card);
       note = "";
-      resolveCard(card);
-      if (enemy.hp <= 0) {
-        scheduleFinish("win");
-        return;
-      }
       if (autoEndTurn && player.energy <= 0 && !hand.some((card) => card.cost === 0)) {
         endTurn();
         return;
@@ -1261,41 +1279,65 @@
       render();
     }
 
-    function resolveEnemyTurn() {
+    function scrapPlay() {
+      while (inPlay.length) discard.push(inPlay.shift());
+      resolveAt = 0;
+    }
+
+    function finishResolve() {
       timer = null;
-      const card = intentAt(0);
-      enemy.block = 0;
-      if (card.damage) {
-        takeEnemyHit(card.damage, card.name);
-      } else if (card.block) {
-        enemy.block += card.block;
-        log(`${enemy.name}の${card.name}。ブロック${card.block}。`);
-      } else {
-        log(`${enemy.name}の${card.name}。${card.text}`);
-      }
-      if (player.hp <= 0) {
-        scheduleFinish("lose");
-        return;
-      }
-      intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
+      scrapPlay();
       banner = "";
-      if (fxHurt) {
-        phase = "recoil";
-        const wait = Math.max(900, drainMs());
-        render();
-        timer = setTimeout(startPlayerTurn, wait);
+      startPlayerTurn();
+    }
+
+    function stepResolve() {
+      timer = null;
+      const enemyIndex = inPlay.length;
+      if (phase !== "resolve" || resolveAt > enemyIndex) {
+        finishResolve();
         return;
       }
-      startPlayerTurn();
+      const index = resolveAt;
+      resolveAt += 1;
+      if (index < enemyIndex) {
+        resolveCard(inPlay[index]);
+        if (enemy.hp <= 0) {
+          scrapPlay();
+          scheduleFinish("win");
+          return;
+        }
+      } else {
+        const card = intentAt(0);
+        enemy.block = 0;
+        if (card.damage) {
+          takeEnemyHit(card.damage, card.name);
+        } else if (card.block) {
+          enemy.block += card.block;
+          log(`${enemy.name}の${card.name}。ブロック${card.block}。`);
+        } else {
+          log(`${enemy.name}の${card.name}。${card.text}`);
+        }
+        intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
+        if (player.hp <= 0) {
+          scrapPlay();
+          scheduleFinish("lose");
+          return;
+        }
+      }
+      render();
+      const wait = Math.max(720, drainMs());
+      timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
     function endTurn() {
       if (phase !== "player" || outcome) return;
-      phase = "enemy";
+      phase = "resolve";
+      resolveAt = 0;
       while (hand.length) discard.push(hand.pop());
       note = "";
       render();
-      timer = setTimeout(resolveEnemyTurn, 650);
+      timer = setTimeout(stepResolve, 480);
     }
 
     function startPlayerTurn() {
@@ -1370,6 +1412,8 @@
         deck,
         hand,
         discard,
+        inPlay,
+        resolveAt,
         player,
         enemy,
         gear,
@@ -1415,6 +1459,8 @@
       deck = data.deck || [];
       hand = data.hand || [];
       discard = data.discard || [];
+      inPlay = Array.isArray(data.inPlay) ? data.inPlay : [];
+      resolveAt = data.resolveAt || 0;
       player = data.player;
       enemy = data.enemy;
       if (player) {
@@ -1498,9 +1544,14 @@
         finish("lose");
         return true;
       }
-      if (screen === "battle" && phase === "enemy" && !outcome) {
+      if (screen === "battle" && phase === "resolve" && !outcome) {
         render();
-        timer = setTimeout(resolveEnemyTurn, 650);
+        timer = setTimeout(stepResolve, 480);
+      } else if (screen === "battle" && phase === "enemy" && !outcome) {
+        phase = "resolve";
+        resolveAt = inPlay.length;
+        render();
+        timer = setTimeout(stepResolve, 480);
       } else if (screen === "battle" && phase === "recoil" && !outcome) {
         render();
         timer = setTimeout(startPlayerTurn, 650);
@@ -1602,6 +1653,17 @@
       return `<div class="face"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div><div class="art" aria-hidden="true"></div></div><div class="text">${effects}</div>`;
     }
 
+    function playFace(card, on) {
+      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div></div>`;
+    }
+
+    function playRow() {
+      const foe = intentAt(0);
+      const hot = phase === "resolve" ? resolveAt - 1 : -1;
+      const mine = inPlay.map((card, i) => playFace(card, hot === i)).join("");
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side foe"><span class="play-label">敵</span>${playFace(foe, hot === inPlay.length)}</div><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div></div>`;
+    }
+
     function foeNext() {
       const card = intentAt(0);
       return `<div class="foe-next"><div class="card preview ${cardKind(card)}" aria-label="次のカード ${card.cost} ${esc(card.name)}">${cardFace(card)}</div></div>`;
@@ -1626,7 +1688,7 @@
 
     function deckOverlay() {
       if (!showDeck || outcome || askLeave) return "";
-      return `<div class="overlay deck-view"><div class="panel"><h2>デッキ</h2>${deckGroup("山札", deck)}${deckGroup("手札", hand)}${deckGroup("捨て札", discard)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
+      return `<div class="overlay deck-view"><div class="panel"><h2>デッキ</h2>${deckGroup("山札", deck)}${deckGroup("手札", hand)}${deckGroup("プレイ", inPlay)}${deckGroup("捨て札", discard)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
     function rewardCards() {
@@ -1711,7 +1773,7 @@
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
               <button type="button" class="small-btn" data-action="settings">せってい</button>
-              <button type="button" class="small-btn" data-action="ask-title" ${phase === "enemy" || phase === "recoil" ? "disabled" : ""}>タイトル</button>
+              <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>
             </div>
           </header>
           <div class="stage">
@@ -1734,6 +1796,7 @@
             ${foeNext()}
             </div>
           </div>
+          ${playRow()}
           <section class="party">
             <div class="party-band">
             <div class="party-stats">
