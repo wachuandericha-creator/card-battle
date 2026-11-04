@@ -752,10 +752,8 @@
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
     .card .face {
-      flex: 1 1 50%;
+      flex: 1 1 68%;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
       position: relative;
     }
     .card .cost {
@@ -772,28 +770,38 @@
       display: grid;
       place-items: center;
       border: 3px solid #1a120e;
-      z-index: 2;
+      z-index: 3;
     }
     .card .name {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 2;
       margin: 0;
-      min-height: calc(42px * var(--hand-scale));
-      padding: calc(9px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(4px * var(--hand-scale)) calc(46px * var(--hand-scale));
+      padding: calc(12px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(50px * var(--hand-scale));
       font-size: calc(18px * var(--hand-scale));
       font-weight: 800;
       letter-spacing: 0.04em;
       line-height: 1.2;
       white-space: nowrap;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
     }
     .card .art {
-      flex: 1 1 auto;
-      min-height: 28px;
-      margin: 0 8px 8px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.2);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), transparent 32%),
+        rgba(0, 0, 0, 0.16);
+    }
+    .card .art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .card .text {
-      flex: 1 1 50%;
+      flex: 0 0 32%;
       min-height: 0;
       background: #fff;
       color: #241910;
