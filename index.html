@@ -1061,7 +1061,7 @@
     };
     const ENEMIES = [
       {
-        name: "仮の相手",
+        name: "スライム",
         tier: 1,
         rank: "雑魚",
         hp: 22,
@@ -1096,10 +1096,10 @@
     ];
     const DUNGEON = {
       road: [1, 2],
-      pools: { 1: ["仮の相手"], 2: ["荒くれ"] },
+      pools: { 1: ["スライム"], 2: ["荒くれ"] },
       boss: "重騎士",
     };
-    const CLASSIC_ROUTE = ["仮の相手", "荒くれ", "重騎士"];
+    const CLASSIC_ROUTE = ["スライム", "荒くれ", "重騎士"];
 
     const root = document.getElementById("game");
     let uid = 1;
@@ -1188,7 +1188,8 @@
     }
 
     function enemyByName(name) {
-      return ENEMIES.find((item) => item.name === name) || ENEMIES[0];
+      const key = name === "仮の相手" ? "スライム" : name;
+      return ENEMIES.find((item) => item.name === key) || ENEMIES[0];
     }
 
     function rollRank(tier) {
@@ -1844,13 +1845,16 @@
         player.focus = player.focus || 0;
         player.parry = !!player.parry;
       }
-      if (enemy) enemy.hit = false;
+      if (enemy) {
+        enemy.hit = false;
+        if (enemy.name === "仮の相手") enemy.name = "スライム";
+      }
       gear = normalizeGear(data.gear);
       syncGearStats();
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
       if (Array.isArray(data.route) && data.route.length) {
-        route = data.route.slice();
+        route = data.route.map((name) => (name === "仮の相手" ? "スライム" : name));
       } else {
         route = CLASSIC_ROUTE.slice();
         const total = data.battleTotal || route.length;
