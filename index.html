@@ -96,8 +96,17 @@
       flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       justify-content: flex-start;
+      gap: 8px;
+    }
+    .enemy-field { display: flex; align-items: stretch; gap: 12px; width: 100%; }
+    .enemy-main {
+      flex: 1 1 75%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 8px;
     }
     .intent { flex: none; }
@@ -127,10 +136,23 @@
     .act.attack { color: var(--attack); }
     .act.block { color: var(--block); }
     .act.skill { color: var(--gold); }
-    .foe-row { display: flex; align-items: center; justify-content: center; gap: 18px; }
-    .skill-pad, .skill-note { width: 148px; }
-    .skill-note { color: var(--cream); font-size: 14px; line-height: 1.4; text-align: left; }
-    .skill-note .star { display: block; color: var(--gold); font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .skill-note {
+      flex: 0 0 25%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      border: 2px solid rgba(228, 177, 90, 0.92);
+      border-radius: 12px;
+      background: rgba(20, 14, 12, 0.72);
+      padding: 16px 14px;
+      color: var(--cream);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .skill-note .star { color: var(--gold); font-size: 28px; line-height: 1; }
     .sprite {
       flex: none;
       width: 210px;
@@ -944,15 +966,13 @@
             </div>
           </header>
           <div class="stage">
+            <div class="enemy-field">
+            <div class="enemy-main">
             <div class="intent ${intent.type}">
               <div class="now">${actionMark(intent, true)}</div>
             </div>
-            <div class="foe-row">
-              <div class="skill-pad" aria-hidden="true"></div>
-              <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
-                <i class="eye l"></i><i class="eye r"></i>
-              </div>
-              <div class="skill-note"><span class="star">★</span>${esc(enemyNow().skill)}</div>
+            <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
+              <i class="eye l"></i><i class="eye r"></i>
             </div>
             <section class="enemy">
               <h2>${esc(enemy.name)}</h2>
@@ -961,6 +981,9 @@
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
+            </div>
+            <aside class="skill-note"><span class="star">★</span><span>${esc(enemyNow().skill)}</span></aside>
+            </div>
           </div>
           <section class="party">
             <div class="party-stats">
