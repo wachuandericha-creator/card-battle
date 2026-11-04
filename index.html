@@ -180,6 +180,7 @@
     .sprite .eye.r { right: 54px; }
     .sprite.hit { animation: shake 0.35s linear; }
     .enemy { text-align: center; }
+    .enemy.vitals { align-self: stretch; width: 100%; padding: 0 8px; }
     .enemy h2 {
       margin: 0 0 4px;
       font-size: 22px;
@@ -187,7 +188,6 @@
       color: var(--cream);
       font-weight: 800;
     }
-    .enemy .hp-line { font-size: 16px; }
     .bar.wide { width: 180px; height: 10px; }
     .banner { min-height: 0; text-align: center; color: var(--gold); font-size: 18px; }
     .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
@@ -1095,10 +1095,10 @@
             <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
               <i class="eye l"></i><i class="eye r"></i>
             </div>
-            <section class="enemy">
+            <section class="enemy vitals">
               <h2>${esc(enemy.name)}</h2>
               ${meters(enemy.hp, enemy.maxHp, enemy.block)}
-              <div class="hp-line">体力 ${enemy.hp} / ${enemy.maxHp}</div>
+              <div class="hp-line">体力 <b>${enemy.hp}</b> / ${enemy.maxHp}</div>
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
