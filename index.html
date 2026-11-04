@@ -250,7 +250,7 @@
       font-weight: 600;
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; gap: 10px; align-items: center; }
+    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 6px; padding: 16px 8px 4px; }
     .battle-log {
       flex: 0 0 16.666%;
       height: 100%;
@@ -280,9 +280,14 @@
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
       position: relative;
+      transform: translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
+      transform-origin: center bottom;
       transition: transform 0.15s ease;
     }
-    .card:hover:not(:disabled) { transform: translateY(-14px); }
+    .card:hover:not(:disabled) {
+      transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
+      z-index: 8;
+    }
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
     .card .cost {
@@ -869,7 +874,10 @@
       const later = [1, 2].map((i) => intentText(intentAt(i))).join(" → ");
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
-        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" ${phase !== "player" ? "disabled" : ""}>
+        const mid = (hand.length - 1) / 2;
+        const fan = (i - mid) * 8;
+        const drop = Math.abs(i - mid) * 12;
+        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${10 - Math.round(Math.abs(i - mid))}" ${phase !== "player" ? "disabled" : ""}>
           <span class="cost">${card.cost}</span>
           <div class="name">${esc(card.name)}</div>
           <div class="text">${esc(card.text)}</div>
