@@ -182,7 +182,10 @@
     .sprite .eye.r { right: 54px; }
     .sprite.hit { animation: shake 0.35s linear; }
     .enemy { text-align: center; }
-    .enemy.vitals { align-self: stretch; width: 100%; padding: 0 8px; }
+    .enemy.vitals { align-self: center; width: clamp(300px, 66%, 420px); padding: 0; }
+    .enemy.vitals[data-rank="雑魚"] { width: clamp(200px, 46%, 280px); }
+    .enemy.vitals[data-rank="普通"] { width: clamp(300px, 66%, 420px); }
+    .enemy.vitals[data-rank="強敵"] { width: clamp(400px, 86%, 560px); }
     .enemy h2 {
       margin: 0 0 4px;
       font-size: 22px;
@@ -637,6 +640,7 @@
     const ENEMIES = [
       {
         name: "仮の相手",
+        rank: "雑魚",
         hp: 22,
         skill: "13ダメージ",
         pattern: [
@@ -647,6 +651,7 @@
       },
       {
         name: "荒くれ",
+        rank: "普通",
         hp: 24,
         skill: "8ダメージ",
         pattern: [
@@ -657,6 +662,7 @@
       },
       {
         name: "重騎士",
+        rank: "強敵",
         hp: 30,
         skill: "このターンは動かない",
         pattern: [
@@ -1190,7 +1196,7 @@
             <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
               <i class="eye l"></i><i class="eye r"></i>
             </div>
-            <section class="enemy vitals">
+            <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}</h2>
               ${meters(enemy.hp, enemy.maxHp, enemy.block)}
               <div class="hp-line">体力 <b>${enemy.hp}</b> / ${enemy.maxHp}</div>
