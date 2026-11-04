@@ -594,6 +594,14 @@
       background: rgba(20, 14, 12, 0.5);
     }
     .gear-slot.open .gear-frame { border-color: var(--gold); }
+    .gear-slot.medal { grid-column: 1 / -1; }
+    .gear-slot.medal .gear-frame { width: 100%; gap: 12px; }
+    .medal-count {
+      color: var(--gold);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
     .gear-mark .ico { width: 26px; height: 26px; }
@@ -1080,14 +1088,20 @@
     }
 
     function emptyGear() {
-      return { sword: null, shield: null, braceletR: null, braceletL: null };
+      return { sword: null, shield: null, braceletR: null, braceletL: null, medals: 0 };
     }
 
     function normalizeGear(data) {
       const next = emptyGear();
       if (!data) return next;
-      for (const key of Object.keys(next)) next[key] = data[key] || null;
+      for (const key of ["sword", "shield", "braceletR", "braceletL"]) next[key] = data[key] || null;
+      const medals = Math.floor(Number(data.medals) || 0);
+      next.medals = medals > 0 ? medals : 0;
       return next;
+    }
+
+    function medalIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="6.4" fill="none" stroke="currentColor" stroke-width="2.2"/><path fill="currentColor" d="M12 8.6 13.05 11.2h2.75l-2.22 1.62.85 2.62L12 13.82 9.57 15.44l.85-2.62-2.22-1.62h2.75z"/></svg>`;
     }
 
     function braceletIcon() {
@@ -1108,11 +1122,16 @@
           : `<span class="gear-mark">${slot.icon}</span>`;
         return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.label)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item && item.name ? item.name : slot.label)}</span></button>`;
       }).join("");
-      return `<div class="gear-board">${buttons}</div>`;
+      const count = gear.medals || 0;
+      const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><span class="gear-mark">${medalIcon()}</span><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
+      return `<div class="gear-board">${buttons}${medal}</div>`;
     }
 
     function gearEffectText() {
       if (!gearOpen) return "";
+      if (gearOpen === "medal") {
+        return `<p class="gear-effect">メダル ${gear.medals || 0}枚。上限はない。多いほど有利。何が増えるかは、これから。</p>`;
+      }
       const item = gear[gearOpen];
       const text = item && item.effect ? item.effect : "なにも入っていない";
       return `<p class="gear-effect">${esc(text)}</p>`;
