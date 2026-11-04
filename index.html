@@ -124,6 +124,7 @@
     .act.small { gap: 4px; }
     .act.small .ico { width: 18px; height: 18px; }
     .act.small b, .act.small.skill { font-size: 16px; }
+    .ico.sword { transform: rotate(28deg); transform-origin: 50% 50%; }
     .act.attack { color: var(--attack); }
     .act.block { color: var(--block); }
     .act.skill { color: var(--gold); }
@@ -333,12 +334,15 @@
       min-width: 0;
       margin-inline: -22px;
       height: min(280px, 42vh);
-      border: 0;
       border-radius: 16px;
-      background: var(--cream);
-      color: var(--ink);
-      padding: 12px;
-      text-align: left;
+      border: 3px solid transparent;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
+      font-family: inherit;
+      text-align: center;
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
       position: relative;
@@ -346,28 +350,71 @@
       transform-origin: center bottom;
       transition: transform 0.15s ease;
     }
+    .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
+    .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
+    .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
     }
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
+    .card .face {
+      flex: 1 1 50%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
     .card .cost {
       position: absolute;
-      top: -8px;
-      left: -8px;
-      width: 32px;
-      height: 32px;
+      top: 6px;
+      left: 6px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: var(--gold);
+      background: #fffdf8;
       color: #2a2118;
+      font-size: 16px;
       font-weight: 800;
       display: grid;
       place-items: center;
-      border: 3px solid #fff8ee;
+      border: 2px solid rgba(42, 33, 24, 0.35);
     }
-    .card .name { font-size: 18px; font-weight: 800; margin: 16px 0 6px; }
-    .card .text { white-space: pre-line; font-size: 14px; line-height: 1.4; }
+    .card .name {
+      margin: 0;
+      min-height: 38px;
+      padding: 7px 36px 4px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+    }
+    .card .art {
+      flex: 1 1 auto;
+      min-height: 28px;
+      margin: 0 8px 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+    .card .text {
+      flex: 1 1 50%;
+      min-height: 0;
+      background: #fff;
+      color: #241910;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px;
+    }
+    .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; }
+    .card .fx b { font-size: 30px; color: #241910; }
+    .card .fx .ico { width: 32px; height: 32px; }
+    .card .fx.attack { color: #c44536; }
+    .card .fx.block { color: #3a74b8; }
     .end {
       width: 124px;
       height: 124px;
@@ -613,7 +660,7 @@
     }
 
     function swordIcon() {
-      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 5.2L13.2 13H18v2.4h-4.8V22h-2.4v-6.6H6V13h4.8L9.6 5.2z"/></svg>`;
+      return `<svg class="ico sword" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .4 14.6 5.4 14.1 12.2H18.2v2.4h-4.9V22.5h-2.6v-7.9H5.8v-2.4h4.1L9.4 5.4z"/></svg>`;
     }
 
     function shieldIcon() {
@@ -976,10 +1023,19 @@
         const mid = (hand.length - 1) / 2;
         const fan = (i - mid) * 8;
         const drop = Math.abs(i - mid) * 12;
-        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>
-          <span class="cost">${card.cost}</span>
-          <div class="name">${esc(card.name)}</div>
-          <div class="text">${esc(card.text)}</div>
+        const kind = card.damage && !card.block ? "attack" : card.block && !card.damage ? "block" : "skill";
+        const effects = [
+          card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
+          card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
+        ].join("") || `<span class="fx">${esc(card.text)}</span>`;
+        const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
+        return `<button type="button" class="card ${kind}${poor ? " unaffordable" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>
+          <div class="face">
+            <span class="cost">${card.cost}</span>
+            <div class="name">${esc(card.name)}</div>
+            <div class="art" aria-hidden="true"></div>
+          </div>
+          <div class="text">${effects}</div>
         </button>`;
       }).join("");
       const overlay = outcome === "win"
