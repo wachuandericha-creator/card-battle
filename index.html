@@ -502,12 +502,13 @@
       padding: 12px 32px;
       border-right: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .gear-rail .party-attrs { margin-top: auto; }
+    .gear-rail h2 {
       margin: 0 0 4px;
       font-size: 13px;
       letter-spacing: 0.08em;
       color: var(--gold);
     }
+    .gear-rail .party-attrs { margin-top: auto; align-self: stretch; width: auto; }
     .gear-board {
       display: grid;
       grid-template-columns: repeat(2, 208px);
@@ -1641,7 +1642,7 @@
         <div class="battle-screen${hurtNow ? " hurt" : ""}">
         ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
         ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>NRG</span><b>${player.energy}</b></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-attrs" aria-label="ステータス"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>NRG</span><b>${player.energy}</b></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -1676,10 +1677,6 @@
           <section class="party">
             <div class="party-band">
             <div class="party-stats">
-              <div class="vitals">
-                ${meters("player", shownPlayer(), player.maxHp, player.block)}
-                <div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div>
-              </div>
               <div class="energy-pips" aria-label="NRG ${player.energy}">${pips()}</div>
             </div>
             </div>
