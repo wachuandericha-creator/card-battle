@@ -80,7 +80,7 @@
     }
     .bar > span { display: block; height: 100%; background: var(--hp); }
     .block-num { color: var(--block); }
-    .energy-pips { display: inline-flex; gap: 5px; margin-left: 6px; vertical-align: middle; }
+    .energy-pips { display: flex; gap: 5px; justify-content: center; }
     .pip {
       width: 14px;
       height: 14px;
@@ -175,9 +175,9 @@
     }
     .party-stats {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      gap: 28px;
+      gap: 8px;
     }
     .vitals { text-align: center; }
     .vitals .hp-line { margin-top: 4px; font-size: 15px; }
@@ -190,8 +190,8 @@
     }
     .meter > span { display: block; height: 100%; }
     .meter.hp > span { background: var(--hp); }
-    .meter.shield { background: #1d3348; margin-bottom: 4px; }
-    .meter.shield > span { background: var(--block); }
+    .meter.shield { background: transparent; margin-bottom: 4px; }
+    .meter.shield > span { width: 100%; background: var(--block); }
     .pip {
       width: 26px;
       height: 26px;
@@ -797,7 +797,7 @@
     function meters(hp, maxHp, block) {
       const hpPct = Math.max(0, Math.min(100, (hp / maxHp) * 100));
       const blockPct = Math.max(0, Math.min(100, (block / maxHp) * 100));
-      const shield = block > 0 ? `<div class="meter shield"><span style="width:${blockPct}%"></span></div>` : "";
+      const shield = block > 0 ? `<div class="meter shield" style="width:${blockPct}%"><span></span></div>` : "";
       return `<div class="meters">${shield}<div class="meter hp"><span style="width:${hpPct}%"></span></div></div>`;
     }
 
