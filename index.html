@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>試しの戦闘</title>
+  <style>
+    :root {
+      --bg: #12100e;
+      --ink: #2a2118;
+      --cream: #f4ead7;
+      --gold: #e4b15a;
+      --hp: #d85a4a;
+      --hp-bg: #3a2422;
+      --block: #7eb0e6;
+      --attack: #e07a55;
+      --guard: #6f9ed4;
+      --muted: #b7a898;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Yu Gothic UI", "Meiryo", "Segoe UI", sans-serif;
+      color: var(--cream);
+      background:
+        radial-gradient(ellipse at 50% 18%, #3a2c24 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 100%, #1c1612 0%, #12100e 70%);
+    }
+    button, body { -webkit-user-select: none; user-select: none; }
+    .game {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px 12px;
+      gap: 8px;
+    }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 18px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .turn { color: var(--gold); font-weight: 700; }
+    .chip b { font-size: 20px; }
+    .bar {
+      height: 8px;
+      width: 88px;
+      border-radius: 99px;
+      background: var(--hp-bg);
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+    .bar > span { display: block; height: 100%; background: var(--hp); }
+    .block-num { color: var(--block); }
+    .energy-pips { display: inline-flex; gap: 5px; margin-left: 6px; vertical-align: middle; }
+    .pip {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      background: transparent;
+    }
+    .pip.on { background: var(--gold); }
+    .next-energy, .rules, .logline { color: var(--muted); font-size: 13px; }
+    .rules { margin: 0; }
+    .note { min-height: 1.1em; color: #f0c7a2; font-size: 13px; }
+    .enemy-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .intent {
+      min-width: 260px;
+      text-align: center;
+      background: rgba(20, 14, 12, 0.72);
+      border: 1px solid rgba(224, 122, 85, 0.45);
+      border-radius: 14px;
+      padding: 8px 14px;
+    }
+    .intent .label { font-size: 12px; letter-spacing: 0.14em; color: var(--muted); }
+    .intent .now { font-size: 26px; font-weight: 700; }
+    .intent.attack { border-color: rgba(224, 122, 85, 0.7); }
+    .intent.attack .now { color: var(--attack); }
+    .intent.block { border-color: rgba(126, 176, 230, 0.7); }
+    .intent.block .now { color: var(--block); }
+    .intent.wait { border-color: rgba(228, 177, 90, 0.7); }
+    .intent.wait .now { color: var(--gold); }
+    .later { color: var(--muted); font-size: 13px; }
+    .sprite {
+      width: 128px;
+      height: 100px;
+      border-radius: 46% 46% 40% 40%;
+      background:
+        radial-gradient(circle at 30% 30%, #8d847c, transparent 40%),
+        linear-gradient(160deg, #6e675f, #3c3834 60%, #2a2724);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 -10px 16px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+    .sprite .eye {
+      position: absolute;
+      top: 38px;
+      width: 18px;
+      height: 18px;
+      background: #f4ead7;
+      border-radius: 50%;
+    }
+    .sprite .eye::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: #1a120e;
+      border-radius: 50%;
+      top: 5px;
+      left: 5px;
+    }
+    .sprite .eye.l { left: 32px; }
+    .sprite .eye.r { right: 32px; }
+    .sprite.hit { animation: shake 0.35s linear; }
+    .enemy { text-align: center; }
+    .enemy h2 {
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .banner { min-height: 22px; text-align: center; color: var(--gold); font-size: 18px; }
+    .logline { min-height: 2.6em; line-height: 1.35; }
+    .handbar { display: flex; align-items: flex-end; gap: 10px; margin-top: auto; }
+    .piles { color: var(--muted); font-size: 13px; line-height: 1.6; width: 72px; flex: none; }
+    .hand { flex: 1; display: flex; justify-content: center; gap: 12px; align-items: flex-end; min-height: 200px; }
+    .card {
+      width: 148px;
+      height: 196px;
+      border: 0;
+      border-radius: 16px;
+      background: var(--cream);
+      color: var(--ink);
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+    .card:hover:not(:disabled) { transform: translateY(-14px); }
+    .card:disabled { cursor: default; }
+    .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
+    .card .cost {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #2a2118;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      border: 3px solid #fff8ee;
+    }
+    .card .name { font-size: 18px; font-weight: 800; margin: 16px 0 6px; }
+    .card .text { white-space: pre-line; font-size: 14px; line-height: 1.4; }
+    .end {
+      width: 116px;
+      height: 116px;
+      flex: none;
+      border-radius: 18px;
+      border: 2px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .end:disabled { opacity: 0.4; cursor: default; }
+    .end:not(:disabled):hover { background: rgba(228, 177, 90, 0.12); }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 8, 7, 0.72);
+      display: grid;
+      place-items: center;
+    }
+    .overlay .panel {
+      background: #2a221c;
+      border: 1px solid rgba(244, 234, 215, 0.2);
+      border-radius: 18px;
+      padding: 28px 32px;
+      text-align: center;
+      min-width: 280px;
+    }
+    .overlay h2 { margin: 0 0 8px; font-size: 28px; color: var(--cream); letter-spacing: 0.06em; }
+    .overlay p { margin: 0 0 16px; color: var(--muted); }
+    .overlay button {
+      border: 0;
+      background: var(--gold);
+      color: #2a2118;
+      font-weight: 800;
+      font-size: 16px;
+      border-radius: 999px;
+      padding: 10px 22px;
+      cursor: pointer;
+    }
+    .menu {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 24px;
+    }
+    .menu h1 { font-size: 32px; letter-spacing: 0.14em; }
+    .menu p { margin: 0; color: var(--muted); }
+    .menu button, .small-btn {
+      min-width: 220px;
+      border-radius: 14px;
+      border: 1px solid rgba(228, 177, 90, 0.8);
+      background: transparent;
+      color: var(--cream);
+      font-size: 18px;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+    .menu button.primary, .small-btn.primary {
+      background: var(--gold);
+      color: #2a2118;
+      font-weight: 800;
+    }
+    .menu button:disabled { opacity: 0.35; cursor: default; }
+    .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
+    @keyframes shake {
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+    }
+    @media (max-width: 720px) {
+      .card { width: 112px; height: 168px; }
+      .end { width: 88px; height: 88px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <script>
+    // 試し用カード。名前・コスト・効果を差し替えると中身が変わる。
+    const CARD_POOL = [
+      ["斬撃", 3],
+      ["防御", 3],
+      ["強撃", 2],
+      ["踏み込み", 2],
+    ];
+    const CARDS = {
+      斬撃: { cost: 1, text: "6ダメージ", damage: 6 },
+      防御: { cost: 1, text: "ブロック5", block: 5 },
+      強撃: { cost: 2, text: "12ダメージ", damage: 12 },
+      踏み込み: { cost: 1, text: "4ダメージ\nブロック3", damage: 4, block: 3 },
+    };
+    const ENEMIES = [
+      {
+        name: "仮の相手",
+        hp: 22,
+        pattern: [
+          { type: "attack", name: "攻撃", value: 8 },
+          { type: "block", name: "守り", value: 10 },
+          { type: "attack", name: "強打", value: 13 },
+        ],
+      },
+      {
+        name: "荒くれ",
+        hp: 24,
+        pattern: [
+          { type: "attack", name: "攻撃", value: 4 },
+          { type: "attack", name: "攻撃", value: 4 },
+          { type: "attack", name: "強打", value: 8 },
+        ],
+      },
+      {
+        name: "重騎士",
+        hp: 30,
+        pattern: [
+          { type: "wait", name: "構え", value: 0 },
+          { type: "attack", name: "強打", value: 12 },
+          { type: "block", name: "守り", value: 8 },
+        ],
+      },
+    ];
+
+    const root = document.getElementById("game");
+    let uid = 1;
+    let deck = [];
+    let hand = [];
+    let discard = [];
+    let player = null;
+    let enemy = null;
+    let turn = 0;
+    let intentIndex = 0;
+    let phase = "player";
+    let note = "";
+    let banner = "";
+    let outcome = null;
+    let logLines = [];
+    let timer = null;
+    let screen = "title";
+    let battleIndex = 0;
+    let showLog = true;
+    let cleared = false;
+    let saveNote = "";
+    const SAVE_KEY = "card-battle-save-v1";
+    const SETTINGS_KEY = "card-battle-settings-v1";
+    const BATTLE_TOTAL = 3;
+
+    function shuffle(list) {
+      const a = list.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"]/g, (c) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+      }[c]));
+    }
+
+    function log(msg) {
+      logLines.unshift(msg);
+      if (logLines.length > 8) logLines.pop();
+    }
+
+    function clearTimer() {
+      if (timer) clearTimeout(timer);
+      timer = null;
+    }
+
+    function enemyNow() {
+      return ENEMIES[battleIndex];
+    }
+
+    function intentAt(offset) {
+      const pattern = enemyNow().pattern;
+      return pattern[(intentIndex + offset) % pattern.length];
+    }
+
+    function intentText(intent) {
+      if (intent.type === "wait") return intent.name;
+      return `${intent.name} ${intent.value}`;
+    }
+
+    function applyDamage(target, amount) {
+      const blocked = Math.min(target.block, amount);
+      target.block -= blocked;
+      const hpLoss = amount - blocked;
+      target.hp = Math.max(0, target.hp - hpLoss);
+      target.hit = true;
+      return { blocked, hpLoss };
+    }
+
+    function damageSentence(label, raw, result) {
+      if (result.blocked && result.hpLoss) {
+        return `${label}の${raw}ダメージ。ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+      }
+      if (result.blocked) {
+        return `${label}の${raw}ダメージをブロックで防いだ。`;
+      }
+      return `${label}の${raw}ダメージ。`;
+    }
+
+    function buildDeck() {
+      const specs = [];
+      for (const [name, count] of CARD_POOL) {
+        for (let i = 0; i < count; i++) {
+          specs.push({ uid: uid++, name, ...CARDS[name] });
+        }
+      }
+      deck = shuffle(specs);
+      hand = [];
+      discard = [];
+    }
+
+    function draw(n) {
+      for (let i = 0; i < n; i++) {
+        if (!deck.length) {
+          if (!discard.length) break;
+          deck = shuffle(discard);
+          discard = [];
+          log("捨て札を山札に戻した。");
+        }
+        hand.push(deck.pop());
+      }
+    }
+
+    function resolveCard(card) {
+      if (card.damage) {
+        const result = applyDamage(enemy, card.damage);
+        log(damageSentence(card.name, card.damage, result));
+      }
+      if (card.block) {
+        player.block += card.block;
+        log(`${card.name}でブロック${card.block}。いま${player.block}。`);
+      }
+    }
+
+    function playCard(index) {
+      if (phase !== "player" || outcome) return;
+      const card = hand[index];
+      if (!card) return;
+      if (player.energy < card.cost) {
+        note = "エネルギーが足りない";
+        render();
+        return;
+      }
+      player.energy -= card.cost;
+      hand.splice(index, 1);
+      discard.push(card);
+      note = "";
+      resolveCard(card);
+      if (enemy.hp <= 0) {
+        finish("win");
+        return;
+      }
+      render();
+    }
+
+    function endTurn() {
+      if (phase !== "player" || outcome) return;
+      phase = "enemy";
+      while (hand.length) discard.push(hand.pop());
+      note = "";
+      const intent = intentAt(0);
+      banner = `${enemy.name}の${intent.name}`;
+      render();
+      timer = setTimeout(() => {
+        enemy.block = 0;
+        if (intent.type === "attack") {
+          const result = applyDamage(player, intent.value);
+          log(damageSentence(enemy.name, intent.value, result));
+        } else if (intent.type === "block") {
+          enemy.block += intent.value;
+          log(`${enemy.name}はブロックを${intent.value}得た。`);
+        } else {
+          log(`${enemy.name}は構えた。次の攻撃に備える。`);
+        }
+        if (player.hp <= 0) {
+          finish("lose");
+          return;
+        }
+        intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
+        banner = "";
+        startPlayerTurn();
+      }, 650);
+    }
+
+    function startPlayerTurn() {
+      if (player.hp <= 0) {
+        finish("lose");
+        return;
+      }
+      turn += 1;
+      player.block = 0;
+      player.maxEnergy += 1;
+      player.energy = player.maxEnergy;
+      draw(3);
+      phase = "player";
+      log(`ターン${turn}。エネルギー${player.energy}。敵の次は${intentText(intentAt(0))}。`);
+      render();
+    }
+
+    function finish(kind) {
+      clearTimer();
+      outcome = kind;
+      phase = "end";
+      banner = "";
+      log(kind === "win" ? "番兵を倒した。" : "倒された。");
+      if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) {
+        cleared = true;
+        screen = "clear";
+      }
+      if (kind === "win") persistSave(true);
+      render();
+    }
+
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        if (typeof saved.showLog === "boolean") showLog = saved.showLog;
+      } catch (error) {
+        showLog = true;
+      }
+    }
+
+    function persistSettings() {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog }));
+    }
+
+    function readSave() {
+      try {
+        return JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function persistSave(silent) {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        v: 1,
+        cleared,
+        battleIndex,
+        turn,
+        intentIndex,
+        phase,
+        note,
+        banner,
+        outcome,
+        logLines,
+        deck,
+        hand,
+        discard,
+        player,
+        enemy,
+      }));
+      if (!silent) {
+        saveNote = "セーブした";
+        render();
+      }
+    }
+
+    function applySave(data) {
+      cleared = !!data.cleared;
+      battleIndex = data.battleIndex || 0;
+      turn = data.turn || 0;
+      intentIndex = data.intentIndex || 0;
+      phase = data.phase || "player";
+      note = data.note || "";
+      banner = data.banner || "";
+      outcome = data.outcome || null;
+      logLines = data.logLines || [];
+      deck = data.deck || [];
+      hand = data.hand || [];
+      discard = data.discard || [];
+      player = data.player;
+      enemy = data.enemy;
+      if (player) player.hit = false;
+      if (enemy) enemy.hit = false;
+      saveNote = "";
+    }
+
+    function saveSummary() {
+      const data = readSave();
+      if (!data) return "";
+      if (data.cleared) return "クリア済み";
+      return `戦い ${(data.battleIndex || 0) + 1}/${BATTLE_TOTAL}`;
+    }
+
+    function startBattle(keepHp) {
+      clearTimer();
+      screen = "battle";
+      cleared = false;
+      const hp = keepHp == null ? 40 : keepHp;
+      player = { hp, maxHp: 40, block: 0, energy: 0, maxEnergy: 0, hit: false };
+      const foe = enemyNow();
+      enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
+      turn = 0;
+      intentIndex = 0;
+      phase = "player";
+      note = "";
+      banner = "";
+      outcome = null;
+      logLines = [];
+      saveNote = "";
+      buildDeck();
+      log("戦闘開始。");
+      startPlayerTurn();
+      persistSave(true);
+    }
+
+    function beginRun() {
+      battleIndex = 0;
+      cleared = false;
+      startBattle(40);
+    }
+
+    function continueGame() {
+      const data = readSave();
+      if (!data) return;
+      clearTimer();
+      applySave(data);
+      screen = data.cleared ? "clear" : "battle";
+      render();
+    }
+
+    function goTitle() {
+      clearTimer();
+      if (screen === "battle" && player && outcome !== "lose") persistSave(true);
+      screen = "title";
+      saveNote = "";
+      render();
+    }
+
+    function bar(hp, max) {
+      const pct = Math.max(0, Math.min(100, (hp / max) * 100));
+      return `<div class="bar"><span style="width:${pct}%"></span></div>`;
+    }
+
+    function pips() {
+      return Array.from({ length: player.maxEnergy }, (_, i) =>
+        `<i class="pip${i < player.energy ? " on" : ""}"></i>`
+      ).join("");
+    }
+
+    function menuButton(label, action, primary, disabled) {
+      return `<button type="button" class="${primary ? "primary" : ""}" data-action="${action}" ${disabled ? "disabled" : ""}>${esc(label)}</button>`;
+    }
+
+    function renderTitle() {
+      const summary = saveSummary();
+      root.innerHTML = `
+        <div class="menu">
+          <h1>仮のゲーム</h1>
+          <p>カードはあとから入る。いまは形だけ。</p>
+          ${menuButton("はじめから", "new", true)}
+          ${menuButton(summary ? `つづきから（${summary}）` : "つづきから", "continue", false, !readSave())}
+          ${menuButton("せってい", "settings")}
+        </div>`;
+    }
+
+    function renderSettings() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>せってい</h1>
+          ${menuButton(showLog ? "経過の表示：オン" : "経過の表示：オフ", "toggle-log", true)}
+          ${menuButton("もどる", "title")}
+        </div>`;
+    }
+
+    function renderConfirm() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>はじめから</h1>
+          <p>今のセーブは消える。</p>
+          ${menuButton("消してはじめる", "new-force", true)}
+          ${menuButton("もどる", "title")}
+        </div>`;
+    }
+
+    function renderClear() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>クリア</h1>
+          <p>3つの戦いに勝った。</p>
+          ${menuButton("タイトルへ", "title", true)}
+        </div>`;
+    }
+
+    function render() {
+      if (screen === "title") return renderTitle();
+      if (screen === "settings") return renderSettings();
+      if (screen === "confirm") return renderConfirm();
+      if (screen === "clear") return renderClear();
+      renderBattle();
+    }
+
+    function renderBattle() {
+      const intent = intentAt(0);
+      const later = [1, 2].map((i) => intentText(intentAt(i))).join(" → ");
+      const cards = hand.map((card, i) => {
+        const poor = player.energy < card.cost;
+        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" ${phase !== "player" ? "disabled" : ""}>
+          <span class="cost">${card.cost}</span>
+          <div class="name">${esc(card.name)}</div>
+          <div class="text">${esc(card.text)}</div>
+        </button>`;
+      }).join("");
+      const overlay = outcome === "win"
+        ? `<div class="overlay"><div class="panel">
+            <h2>勝った</h2>
+            <p>次の戦いへ進める。体力はそのまま。</p>
+            <button type="button" data-action="next">つぎの戦い</button>
+          </div></div>`
+        : outcome === "lose"
+        ? `<div class="overlay"><div class="panel">
+            <h2>倒された</h2>
+            <p>つづきからは、最後のセーブに戻る。</p>
+            <button type="button" data-action="title">タイトルへ</button>
+          </div></div>`
+        : "";
+
+      root.innerHTML = `
+        <div class="game">
+          <header class="topbar">
+            <h1>戦い ${battleIndex + 1}/${BATTLE_TOTAL}</h1>
+            <div class="turn">ターン ${turn}</div>
+            <div class="chip">体力 <b>${player.hp}</b>/${player.maxHp} ${bar(player.hp, player.maxHp)}</div>
+            <div class="chip">ブロック <b class="block-num">${player.block}</b></div>
+            <div class="chip">エネルギー <b>${player.energy}</b><span class="energy-pips">${pips()}</span></div>
+            <button type="button" class="small-btn" data-action="save" ${phase === "player" ? "" : "disabled"}>セーブ</button>
+            <button type="button" class="small-btn" data-action="title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
+          </header>
+          <p class="rules">カードは仮。体力は次の戦いへ持ち越す。${esc(saveNote)}</p>
+          <div class="note">${esc(note)}</div>
+          <div class="enemy-wrap">
+            <div class="intent ${intent.type}">
+              <div class="label">次の行動</div>
+              <div class="now">${esc(intentText(intent))}</div>
+              <div class="later">その後 ${esc(later)}</div>
+            </div>
+            <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
+              <i class="eye l"></i><i class="eye r"></i>
+            </div>
+            <section class="enemy">
+              <h2>${esc(enemy.name)}</h2>
+              <div>体力 ${enemy.hp} / ${enemy.maxHp} ${bar(enemy.hp, enemy.maxHp)}</div>
+              <div>ブロック <b class="block-num">${enemy.block}</b></div>
+            </section>
+          </div>
+          <div class="banner">${esc(banner)}</div>
+          <div class="logline">${showLog ? logLines.slice(0, 2).map((line) => esc(line)).join("<br>") : ""}</div>
+          <div class="handbar">
+            <div class="piles">山札 ${deck.length}<br>捨て札 ${discard.length}<br>手札 ${hand.length}</div>
+            <div class="hand">${cards}</div>
+            <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
+          </div>
+        </div>
+        ${overlay}`;
+      player.hit = false;
+      enemy.hit = false;
+    }
+
+    root.addEventListener("click", (event) => {
+      const el = event.target instanceof Element ? event.target : event.target.parentElement;
+      if (!el) return;
+      const action = el.closest("[data-action]");
+      if (action) {
+        const name = action.dataset.action;
+        if (name === "title") goTitle();
+        if (name === "settings") { screen = "settings"; render(); }
+        if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
+        if (name === "new") {
+          if (readSave()) { screen = "confirm"; render(); }
+          else beginRun();
+        }
+        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); beginRun(); }
+        if (name === "continue") continueGame();
+        if (name === "save" && phase === "player") persistSave(false);
+        if (name === "next" && outcome === "win") {
+          battleIndex += 1;
+          startBattle(player.hp);
+        }
+        return;
+      }
+      if (screen !== "battle") return;
+      const card = el.closest("[data-card]");
+      if (card) playCard(Number(card.dataset.card));
+      if (el.closest("[data-end]")) endTurn();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (screen !== "battle") return;
+      if (event.key === "Enter") endTurn();
+      if (event.key === "1" || event.key === "2" || event.key === "3") {
+        playCard(Number(event.key) - 1);
+      }
+    });
+
+    loadSettings();
+    render();
+  </script>
+</body>
+</html>
