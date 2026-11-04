@@ -443,6 +443,9 @@
       padding: 28px 32px;
       text-align: center;
       min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .overlay h2 { margin: 0 0 8px; font-size: 28px; color: var(--cream); letter-spacing: 0.06em; }
     .overlay p { margin: 0 0 16px; color: var(--muted); }
@@ -455,6 +458,12 @@
       border-radius: 999px;
       padding: 10px 22px;
       cursor: pointer;
+    }
+    .overlay button + button { margin-top: 10px; }
+    .overlay button.ghost {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(228, 177, 90, 0.8);
     }
     #game { height: 100%; }
     .menu {
@@ -622,6 +631,7 @@
     let cleared = false;
     let saveNote = "";
     let returnScreen = "title";
+    let askLeave = false;
     const SAVE_KEY = "card-battle-save-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const BATTLE_TOTAL = 3;
@@ -902,6 +912,7 @@
       note = "";
       banner = "";
       outcome = null;
+      askLeave = false;
       logLines = [];
       saveNote = "";
       buildDeck();
@@ -925,6 +936,7 @@
 
     function goTitle() {
       clearTimer();
+      askLeave = false;
       screen = "title";
       saveNote = "";
       render();
@@ -1051,6 +1063,14 @@
             <button type="button" data-action="title">タイトルへ</button>
           </div></div>`
         : "";
+      const leaveOverlay = askLeave
+        ? `<div class="overlay"><div class="panel">
+            <h2>タイトルに戻る？</h2>
+            <p>終わっていない戦いは残らない。</p>
+            <button type="button" data-action="title">タイトルへ戻る</button>
+            <button type="button" class="ghost" data-action="stay">戦いを続ける</button>
+          </div></div>`
+        : "";
 
       const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
       root.innerHTML = `
@@ -1063,7 +1083,7 @@
             </div>
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="settings">せってい</button>
-              <button type="button" class="small-btn" data-action="title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
+              <button type="button" class="small-btn" data-action="ask-title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
             </div>
           </header>
           <div class="stage">
@@ -1104,7 +1124,8 @@
         </div>
         ${showLog ? `<aside class="battle-log"><h2>経過</h2>${logHtml}</aside>` : ""}
         </div>
-        ${overlay}`;
+        ${overlay}
+        ${leaveOverlay}`;
       player.hit = false;
       enemy.hit = false;
     }
@@ -1116,6 +1137,8 @@
       if (action) {
         const name = action.dataset.action;
         if (name === "title") goTitle();
+        if (name === "ask-title") { askLeave = true; render(); }
+        if (name === "stay") { askLeave = false; render(); }
         if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
@@ -1139,7 +1162,7 @@
     });
 
     document.addEventListener("keydown", (event) => {
-      if (screen !== "battle") return;
+      if (screen !== "battle" || askLeave) return;
       if (event.key === "Enter") endTurn();
       if (event.key === "1" || event.key === "2" || event.key === "3") {
         playCard(Number(event.key) - 1);
