@@ -420,31 +420,42 @@
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
     .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
-    .gear-rail, .battle-log {
+    .battle-log {
       flex: 0 0 16.666%;
       height: 100%;
       overflow: auto;
       padding: 14px 10px;
+      border-left: 1px solid rgba(228, 177, 90, 0.35);
     }
     .gear-rail {
+      flex: 0 0 auto;
+      width: max-content;
+      height: 100%;
+      overflow: auto;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      padding: 12px 8px;
       border-right: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .battle-log { border-left: 1px solid rgba(228, 177, 90, 0.35); }
     .gear-rail h2, .battle-log h2 {
       margin: 0 0 4px;
       font-size: 13px;
       letter-spacing: 0.08em;
       color: var(--gold);
     }
+    .gear-board {
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      gap: 8px 10px;
+      justify-content: center;
+    }
     .gear-slot {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      gap: 8px;
-      width: 100%;
+      gap: 4px;
+      width: auto;
       margin: 0;
       padding: 0;
       border: 0;
@@ -452,38 +463,31 @@
       color: inherit;
       font-family: inherit;
       cursor: pointer;
-      text-align: left;
+      text-align: center;
     }
-    .gear-slot.sword { flex-direction: column; align-items: stretch; gap: 4px; }
     .gear-frame {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       flex: none;
       overflow: hidden;
       border: 1px solid rgba(228, 177, 90, 0.55);
       border-radius: 10px;
       background: rgba(20, 14, 12, 0.5);
     }
-    .gear-slot.sword .gear-frame {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1;
-    }
     .gear-slot.open .gear-frame { border-color: var(--gold); }
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
-    .gear-slot.sword .gear-mark .ico { width: 48px; height: 48px; }
-    .gear-slot:not(.sword) .gear-mark .ico { width: 22px; height: 22px; }
+    .gear-mark .ico { width: 26px; height: 26px; }
     .gear-label {
       color: var(--gold);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.04em;
+      text-align: center;
     }
-    .gear-slot.sword .gear-label { text-align: center; }
     .gear-effect {
       margin: 4px 0 0;
       padding: 8px;
@@ -884,25 +888,25 @@
       return next;
     }
 
-    function braceletIcon(flip) {
-      const turn = flip ? ` style="transform:scaleX(-1)"` : "";
-      return `<svg class="ico"${turn} viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" d="M8 7.2c1.2-2 2.6-3 4-3s2.8 1 4 3c1.6 2.6 1.6 7 0 9.6-1.2 2-2.6 3-4 3s-2.8-1-4-3"/></svg>`;
+    function braceletIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.6"/></svg>`;
     }
 
     function gearMarkup() {
       const slots = [
-        { id: "sword", label: "剣", icon: swordIcon(), big: true },
         { id: "shield", label: "盾", icon: shieldIcon() },
-        { id: "braceletR", label: "腕輪右", icon: braceletIcon(false) },
-        { id: "braceletL", label: "腕輪左", icon: braceletIcon(true) },
+        { id: "sword", label: "剣", icon: swordIcon() },
+        { id: "braceletL", label: "腕輪左", icon: braceletIcon() },
+        { id: "braceletR", label: "腕輪右", icon: braceletIcon() },
       ];
-      return slots.map((slot) => {
+      const buttons = slots.map((slot) => {
         const item = gear[slot.id];
         const picture = item && item.image
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
-        return `<button type="button" class="gear-slot${slot.big ? " sword" : ""}${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.label)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item && item.name ? item.name : slot.label)}</span></button>`;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.label)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item && item.name ? item.name : slot.label)}</span></button>`;
       }).join("");
+      return `<div class="gear-board">${buttons}</div>`;
     }
 
     function gearEffectText() {
