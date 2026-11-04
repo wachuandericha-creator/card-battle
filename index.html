@@ -250,7 +250,7 @@
       font-weight: 600;
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 6px; padding: 16px 8px 4px; }
+    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 16px 8px 4px; }
     .battle-log {
       flex: 0 0 16.666%;
       height: 100%;
@@ -270,6 +270,7 @@
       flex: 1 1 0;
       max-width: 176px;
       min-width: 0;
+      margin-inline: -22px;
       height: min(280px, 42vh);
       border: 0;
       border-radius: 16px;
@@ -877,7 +878,7 @@
         const mid = (hand.length - 1) / 2;
         const fan = (i - mid) * 8;
         const drop = Math.abs(i - mid) * 12;
-        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${10 - Math.round(Math.abs(i - mid))}" ${phase !== "player" ? "disabled" : ""}>
+        return `<button type="button" class="card${poor ? " unaffordable" : ""}" data-card="${i}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>
           <span class="cost">${card.cost}</span>
           <div class="name">${esc(card.name)}</div>
           <div class="text">${esc(card.text)}</div>
