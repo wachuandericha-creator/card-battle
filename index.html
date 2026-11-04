@@ -116,9 +116,7 @@
     .intent.block { border-color: rgba(126, 176, 230, 0.7); }
     .intent.block .now { color: var(--block); }
     .intent.skill { border-color: rgba(228, 177, 90, 0.7); }
-    .intent .now, .intent .later { display: flex; align-items: center; justify-content: center; }
-    .intent .now { gap: 8px; min-height: 48px; }
-    .intent .later { gap: 16px; margin-top: 6px; }
+    .intent .now { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; }
     .act { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; line-height: 1; }
     .act .ico { display: block; }
     .act.big .ico { width: 36px; height: 36px; }
@@ -133,7 +131,6 @@
     .skill-pad, .skill-note { width: 148px; }
     .skill-note { color: var(--cream); font-size: 14px; line-height: 1.4; text-align: left; }
     .skill-note .star { display: block; color: var(--gold); font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-    .later { color: var(--muted); font-size: 14px; }
     .sprite {
       flex: none;
       width: 210px;
@@ -907,7 +904,6 @@
 
     function renderBattle() {
       const intent = intentAt(0);
-      const later = [1, 2].map((i) => actionMark(intentAt(i), false)).join("");
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
         const mid = (hand.length - 1) / 2;
@@ -950,7 +946,6 @@
           <div class="stage">
             <div class="intent ${intent.type}">
               <div class="now">${actionMark(intent, true)}</div>
-              <div class="later">${later}</div>
             </div>
             <div class="foe-row">
               <div class="skill-pad" aria-hidden="true"></div>
