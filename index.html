@@ -571,6 +571,7 @@
     let screen = "title";
     let battleIndex = 0;
     let showLog = true;
+    let autoEndTurn = true;
     let cleared = false;
     let saveNote = "";
     let returnScreen = "title";
@@ -707,6 +708,10 @@
         finish("win");
         return;
       }
+      if (autoEndTurn && player.energy <= 0 && !hand.some((card) => card.cost === 0)) {
+        endTurn();
+        return;
+      }
       render();
     }
 
@@ -773,13 +778,15 @@
       try {
         const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
         if (typeof saved.showLog === "boolean") showLog = saved.showLog;
+        if (typeof saved.autoEndTurn === "boolean") autoEndTurn = saved.autoEndTurn;
       } catch (error) {
         showLog = true;
+        autoEndTurn = true;
       }
     }
 
     function persistSettings() {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog, autoEndTurn }));
     }
 
     function readSave() {
@@ -913,6 +920,8 @@
         <div class="menu">
           <h1>せってい</h1>
           ${menuButton(showLog ? "経過の表示：オン" : "経過の表示：オフ", "toggle-log", true)}
+          ${menuButton(autoEndTurn ? "使い切ったらターン終了：オン" : "使い切ったらターン終了：オフ", "toggle-auto-end", true)}
+          <p>エネルギーが0になったら、ターンを終える。手札にコスト0があるときは終わらない。</p>
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -1054,6 +1063,7 @@
         if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
+        if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
           else beginRun();
