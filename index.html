@@ -2187,7 +2187,19 @@
       return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p><p>${bonus}装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
 
+    function sortHand() {
+      const rank = (card) => {
+        const kind = cardKind(card);
+        if (kind === "attack") return 0;
+        if (kind === "block") return 1;
+        if (kind === "skill") return 2;
+        return 3;
+      };
+      hand.sort((a, b) => rank(a) - rank(b) || a.cost - b.cost || String(a.name).localeCompare(b.name, "ja"));
+    }
+
     function renderBattle() {
+      sortHand();
       const dealNow = fxDeal;
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
