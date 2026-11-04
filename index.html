@@ -1263,9 +1263,9 @@
     function drainMs() {
       const enemyGap = enemy ? Math.abs(enemy.hp - shownEnemy()) : 0;
       const playerGap = player ? Math.abs(player.hp - shownPlayer()) : 0;
-      const gap = Math.max(enemyGap, playerGap);
-      if (gap < 0.2) return 0;
-      return Math.min(2400, Math.max(900, (gap / 4) * 1000));
+      const enemyWait = enemyGap < 0.2 ? 0 : Math.min(1700, Math.max(620, (enemyGap / 6.5) * 1000));
+      const playerWait = playerGap < 0.2 ? 0 : Math.min(2400, Math.max(900, (playerGap / 4) * 1000));
+      return Math.max(enemyWait, playerWait);
     }
 
     function paintShown() {
@@ -1283,19 +1283,19 @@
     function pumpHp(stamp) {
       const dt = hpStamp ? Math.min(0.05, (stamp - hpStamp) / 1000) : 0.016;
       hpStamp = stamp;
-      const ease = (current, target) => {
+      const ease = (current, target, quick) => {
         const diff = target - current;
         if (Math.abs(diff) < 0.04) return target;
-        const speed = Math.max(4, Math.abs(diff) / 2.4);
+        const speed = quick ? Math.max(6.5, Math.abs(diff) / 1.5) : Math.max(4, Math.abs(diff) / 2.4);
         return current + Math.sign(diff) * Math.min(Math.abs(diff), speed * dt);
       };
       let moving = false;
       if (enemy && shown.enemy != null && Math.abs(shown.enemy - enemy.hp) >= 0.04) {
-        shown.enemy = ease(shown.enemy, enemy.hp);
+        shown.enemy = ease(shown.enemy, enemy.hp, true);
         moving = true;
       } else if (enemy) shown.enemy = enemy.hp;
       if (player && shown.player != null && Math.abs(shown.player - player.hp) >= 0.04) {
-        shown.player = ease(shown.player, player.hp);
+        shown.player = ease(shown.player, player.hp, false);
         moving = true;
       } else if (player) shown.player = player.hp;
       paintShown();
