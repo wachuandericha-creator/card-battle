@@ -115,8 +115,24 @@
     .intent.attack .now { color: var(--attack); }
     .intent.block { border-color: rgba(126, 176, 230, 0.7); }
     .intent.block .now { color: var(--block); }
-    .intent.wait { border-color: rgba(228, 177, 90, 0.7); }
-    .intent.wait .now { color: var(--gold); }
+    .intent.skill { border-color: rgba(228, 177, 90, 0.7); }
+    .intent .now, .intent .later { display: flex; align-items: center; justify-content: center; }
+    .intent .now { gap: 8px; min-height: 48px; }
+    .intent .later { gap: 16px; margin-top: 6px; }
+    .act { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; line-height: 1; }
+    .act .ico { display: block; }
+    .act.big .ico { width: 36px; height: 36px; }
+    .act.big b, .act.big.skill { font-size: 36px; }
+    .act.small { gap: 4px; }
+    .act.small .ico { width: 18px; height: 18px; }
+    .act.small b, .act.small.skill { font-size: 16px; }
+    .act.attack { color: var(--attack); }
+    .act.block { color: var(--block); }
+    .act.skill { color: var(--gold); }
+    .foe-row { display: flex; align-items: center; justify-content: center; gap: 18px; }
+    .skill-pad, .skill-note { width: 148px; }
+    .skill-note { color: var(--cream); font-size: 14px; line-height: 1.4; text-align: left; }
+    .skill-note .star { display: block; color: var(--gold); font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
     .later { color: var(--muted); font-size: 14px; }
     .sprite {
       flex: none;
@@ -461,28 +477,31 @@
       {
         name: "仮の相手",
         hp: 22,
+        skill: "13ダメージ",
         pattern: [
-          { type: "attack", name: "攻撃", value: 8 },
-          { type: "block", name: "守り", value: 10 },
-          { type: "attack", name: "強打", value: 13 },
+          { type: "attack", value: 8 },
+          { type: "block", value: 10 },
+          { type: "skill", damage: 13 },
         ],
       },
       {
         name: "荒くれ",
         hp: 24,
+        skill: "8ダメージ",
         pattern: [
-          { type: "attack", name: "攻撃", value: 4 },
-          { type: "attack", name: "攻撃", value: 4 },
-          { type: "attack", name: "強打", value: 8 },
+          { type: "attack", value: 4 },
+          { type: "attack", value: 4 },
+          { type: "skill", damage: 8 },
         ],
       },
       {
         name: "重騎士",
         hp: 30,
+        skill: "このターンは動かない",
         pattern: [
-          { type: "wait", name: "構え", value: 0 },
-          { type: "attack", name: "強打", value: 12 },
-          { type: "block", name: "守り", value: 8 },
+          { type: "skill" },
+          { type: "attack", value: 12 },
+          { type: "block", value: 8 },
         ],
       },
     ];
@@ -545,14 +564,28 @@
       return ENEMIES[battleIndex];
     }
 
+    function swordIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0l2.4 5.2L13.2 13H18v2.4h-4.8V22h-2.4v-6.6H6V13h4.8L9.6 5.2z"/></svg>`;
+    }
+
+    function shieldIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
+    }
+
+    function actionMark(intent, big) {
+      const size = big ? "big" : "small";
+      if (intent.type === "attack") {
+        return `<span class="act attack ${size}" aria-label="攻撃 ${intent.value}">${swordIcon()}<b>${intent.value}</b></span>`;
+      }
+      if (intent.type === "block") {
+        return `<span class="act block ${size}" aria-label="シールド ${intent.value}">${shieldIcon()}<b>${intent.value}</b></span>`;
+      }
+      return `<span class="act skill ${size}" aria-label="スキル">★</span>`;
+    }
+
     function intentAt(offset) {
       const pattern = enemyNow().pattern;
       return pattern[(intentIndex + offset) % pattern.length];
-    }
-
-    function intentText(intent) {
-      if (intent.type === "wait") return intent.name;
-      return `${intent.name} ${intent.value}`;
     }
 
     function applyDamage(target, amount) {
@@ -636,7 +669,6 @@
       while (hand.length) discard.push(hand.pop());
       note = "";
       const intent = intentAt(0);
-      banner = `${enemy.name}の${intent.name}`;
       render();
       timer = setTimeout(() => {
         enemy.block = 0;
@@ -646,8 +678,11 @@
         } else if (intent.type === "block") {
           enemy.block += intent.value;
           log(`${enemy.name}はブロックを${intent.value}得た。`);
+        } else if (intent.damage) {
+          const result = applyDamage(player, intent.damage);
+          log(damageSentence(enemy.name, intent.damage, result));
         } else {
-          log(`${enemy.name}は構えた。次の攻撃に備える。`);
+          log(`${enemy.name}のスキル。${enemyNow().skill}`);
         }
         if (player.hp <= 0) {
           finish("lose");
@@ -872,7 +907,7 @@
 
     function renderBattle() {
       const intent = intentAt(0);
-      const later = [1, 2].map((i) => intentText(intentAt(i))).join(" → ");
+      const later = [1, 2].map((i) => actionMark(intentAt(i), false)).join("");
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
         const mid = (hand.length - 1) / 2;
@@ -914,12 +949,15 @@
           </header>
           <div class="stage">
             <div class="intent ${intent.type}">
-              <div class="label">次の行動</div>
-              <div class="now">${esc(intentText(intent))}</div>
-              <div class="later">その後 ${esc(later)}</div>
+              <div class="now">${actionMark(intent, true)}</div>
+              <div class="later">${later}</div>
             </div>
-            <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
-              <i class="eye l"></i><i class="eye r"></i>
+            <div class="foe-row">
+              <div class="skill-pad" aria-hidden="true"></div>
+              <div class="sprite${enemy.hit ? " hit" : ""}" aria-hidden="true">
+                <i class="eye l"></i><i class="eye r"></i>
+              </div>
+              <div class="skill-note"><span class="star">★</span>${esc(enemyNow().skill)}</div>
             </div>
             <section class="enemy">
               <h2>${esc(enemy.name)}</h2>
