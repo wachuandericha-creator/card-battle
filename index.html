@@ -49,14 +49,14 @@
     .dungeon { display: flex; align-items: baseline; gap: 16px; }
     .dungeon-name {
       margin: 0;
-      font-size: 20px;
+      font-size: 40px;
       font-weight: 800;
       letter-spacing: 0.16em;
       color: var(--cream);
     }
     .dungeon-progress {
       color: var(--gold);
-      font-size: 22px;
+      font-size: 44px;
       font-weight: 800;
       letter-spacing: 0.08em;
     }
@@ -211,6 +211,26 @@
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
     .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .reward-pick .card.preview { width: 132px; height: 184px; }
+    .deck-view .panel {
+      width: min(1080px, calc(100vw - 48px));
+      max-height: calc(100vh - 56px);
+      overflow: auto;
+      align-items: stretch;
+      text-align: left;
+    }
+    .deck-view .panel h2 { text-align: center; }
+    .deck-group { width: 100%; margin: 0 0 18px; }
+    .deck-group h3 {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-size: 16px;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+    .deck-cards { display: flex; flex-wrap: wrap; gap: 10px; }
+    .deck-view .card.preview { width: 132px; height: 184px; }
+    .deck-empty { margin: 0; color: var(--muted); }
+    .deck-view .panel > button { align-self: center; }
     .sprite {
       flex: none;
       width: 210px;
@@ -902,6 +922,7 @@
     let saveNote = "";
     let returnScreen = "title";
     let askLeave = false;
+    let showDeck = false;
     let gear = emptyGear();
     let gearOpen = null;
     let stolen = [];
@@ -1572,6 +1593,22 @@
       return `<aside class="trait-note"><span class="trait-label">特性</span><span>${esc(trait)}</span></aside>`;
     }
 
+    function sortedCards(cards) {
+      return cards.slice().sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name, "ja"));
+    }
+
+    function deckGroup(label, cards) {
+      const faces = sortedCards(cards).map((card) =>
+        `<div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`
+      ).join("");
+      return `<section class="deck-group"><h3>${label} ${cards.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
+    }
+
+    function deckOverlay() {
+      if (!showDeck || outcome || askLeave) return "";
+      return `<div class="overlay deck-view"><div class="panel"><h2>デッキ</h2>${deckGroup("山札", deck)}${deckGroup("手札", hand)}${deckGroup("捨て札", discard)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
+    }
+
     function rewardCards() {
       const seen = new Set();
       const list = [];
@@ -1650,6 +1687,7 @@
               <div class="dungeon-progress">${battleIndex + 1}/${BATTLE_TOTAL}</div>
             </div>
             <div class="hud-actions">
+              <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
               <button type="button" class="small-btn" data-action="settings">せってい</button>
               <button type="button" class="small-btn" data-action="ask-title" ${phase === "enemy" || phase === "recoil" ? "disabled" : ""}>タイトル</button>
             </div>
@@ -1690,6 +1728,7 @@
         </div>
         ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
         </div>
+        ${deckOverlay()}
         ${overlay}
         ${leaveOverlay}`;
       player.hit = false;
@@ -1705,7 +1744,9 @@
       if (action) {
         const name = action.dataset.action;
         if (name === "title") goTitle();
-        if (name === "ask-title") { askLeave = true; render(); }
+        if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
+        if (name === "deck") { showDeck = true; render(); }
+        if (name === "close-deck") { showDeck = false; render(); }
         if (name === "stay") { askLeave = false; render(); }
         if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
         if (name === "back") { screen = returnScreen; render(); }
@@ -1736,6 +1777,10 @@
 
     document.addEventListener("keydown", (event) => {
       if (screen !== "battle" || askLeave) return;
+      if (showDeck) {
+        if (event.key === "Escape") { showDeck = false; render(); }
+        return;
+      }
       if (event.key === "Enter") endTurn();
       if (event.key === "1" || event.key === "2" || event.key === "3") {
         playCard(Number(event.key) - 1);
