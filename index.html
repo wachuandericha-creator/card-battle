@@ -6,7 +6,7 @@
   <title>わちゅえりカードゲーム</title>
   <style>
     :root {
-      --hand-scale: 1.5;
+      --hand-scale: 1.25;
       --bg: #12100e;
       --ink: #2a2118;
       --cream: #f4ead7;
@@ -367,7 +367,7 @@
       padding: 8px 8px 0;
     }
     .play-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
-    .play-side.mine { align-items: flex-start; }
+    .play-side.mine { align-items: flex-end; }
     .play-label {
       color: var(--gold);
       font-size: 12px;
@@ -2011,7 +2011,7 @@
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side foe"><span class="play-label">敵</span>${playFace(foe, hot === inPlay.length)}</div><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div></div>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span>${playFace(foe, hot === inPlay.length)}</div></div>`;
     }
 
     function foeNext() {
