@@ -80,7 +80,7 @@
     }
     .bar > span { display: block; height: 100%; background: var(--hp); }
     .block-num { color: var(--block); }
-    .energy-pips { display: flex; gap: 5px; justify-content: center; }
+    .energy-pips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
     .pip {
       width: 14px;
       height: 14px;
@@ -211,13 +211,18 @@
       border-top: 2px solid rgba(228, 177, 90, 0.92);
     }
     .party-stats {
+      align-self: center;
+      width: min(460px, 86%);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 8px;
+      align-items: stretch;
+      gap: 10px;
+      padding: 12px 18px 14px;
+      border: 2px solid rgba(228, 177, 90, 0.75);
+      border-radius: 14px;
+      background: rgba(20, 14, 12, 0.72);
     }
     .vitals { text-align: center; }
-    .vitals .hp-line { margin-top: 4px; font-size: 15px; }
     .meters { width: 240px; margin: 0 auto; }
     .meter {
       height: 14px;
@@ -229,12 +234,16 @@
     .meter.hp > span { background: var(--hp); }
     .meter.shield { background: transparent; margin-bottom: 4px; }
     .meter.shield > span { width: 100%; background: var(--block); }
+    .vitals .meters { width: 100%; }
+    .vitals .meter { height: 22px; }
+    .vitals .hp-line, .energy-line { margin-top: 6px; font-size: 20px; font-weight: 800; letter-spacing: 0.04em; text-align: center; }
+    .energy-pips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
     .pip {
-      width: 26px;
-      height: 26px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      border: 2px solid #4a4034;
-      background: #241e18;
+      border: 3px solid #8a7352;
+      background: #3a3128;
     }
     .pip.on { background: #f2c14e; border-color: #ffe7a3; }
     .handbar { flex: 1; width: 100%; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 0; }
@@ -1002,6 +1011,7 @@
                 <div class="hp-line">体力 <b>${player.hp}</b>/${player.maxHp}</div>
               </div>
               <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
+              <div class="energy-line">エネルギー <b>${player.energy}</b></div>
             </div>
             <div class="handbar">
               ${pileMarkup("deck", deck.length)}
