@@ -745,6 +745,7 @@
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
     .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
+    .card.parry { background: #7d8b9a; border-color: #4d5b6a; color: #f7f4ee; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
@@ -996,14 +997,22 @@
 <body>
   <div id="game"></div>
   <script>
-    // 試し用カード。名前・コスト・効果を差し替えると中身が変わる。
+    // 戦士の初期デッキ。共通の抽選は COMMON。
     const CARD_POOL = [
-      ["斬撃", 3],
-      ["防御", 3],
-      ["強撃", 2],
-      ["踏み込み", 2],
+      ["アタック", 2],
+      ["チャージアタック", 1],
+      ["ブロック", 2],
+      ["集中", 1],
+      ["パリィ", 1],
     ];
     const CARDS = {
+      アタック: { cost: 1, text: "3ダメージ", damage: 3 },
+      チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
+      ブロック: { cost: 1, text: "ブロック3", block: 3 },
+      集中: { cost: 0, text: "次の攻撃・防御+2", focus: 2 },
+      パリィ: { cost: 3, text: "次のダメージを無効", parry: true },
+    };
+    const COMMON = {
       斬撃: { cost: 1, text: "6ダメージ", damage: 6 },
       防御: { cost: 1, text: "ブロック5", block: 5 },
       強撃: { cost: 2, text: "12ダメージ", damage: 12 },
@@ -1380,6 +1389,12 @@
     }
 
     function takeEnemyHit(raw, label) {
+      if (player.parry) {
+        player.parry = false;
+        noteHit("player", 0, raw);
+        log(`${label || enemy.name}の${raw}ダメージ。パリィで無効。`);
+        return;
+      }
       const cut = mitigate(raw, player.def);
       const result = applyDamage(player, cut.dealt);
       if (result.hpLoss > 0) {
@@ -1431,8 +1446,23 @@
     }
 
     function resolveCard(card) {
+      if (card.focus) {
+        player.focus = (player.focus || 0) + card.focus;
+        log(`${card.name}。次の攻撃・防御が+${player.focus}。`);
+        return;
+      }
+      if (card.parry) {
+        if (player.parry) log(`${card.name}。パリィは重複しない。`);
+        else {
+          player.parry = true;
+          log(`${card.name}。次のダメージを無効。ターンが終わると消える。`);
+        }
+        return;
+      }
+      const focus = (card.damage || card.block) && player.focus ? player.focus : 0;
+      if (focus) player.focus = 0;
       if (card.damage) {
-        const bonus = player.atk || 0;
+        const bonus = (player.atk || 0) + focus;
         const amount = card.damage + bonus;
         const result = applyDamage(enemy, amount);
         if (amount > 0 && (result.hpLoss || result.blocked)) {
@@ -1442,8 +1472,9 @@
         log(strikeSentence(card.name, card.damage, bonus, result));
       }
       if (card.block) {
-        player.block += card.block;
-        log(`${card.name}でブロック${card.block}。いま${player.block}。`);
+        const gain = card.block + (card.damage ? 0 : focus);
+        player.block += gain;
+        log(`${card.name}でブロック${gain}。いま${player.block}。`);
       }
       if (!card.damage && !card.block) log(`${card.name}。${card.text}`);
     }
@@ -1536,6 +1567,10 @@
       }
       turn += 1;
       player.block = 0;
+      if (player.parry) {
+        player.parry = false;
+        log("パリィが消えた。");
+      }
       player.maxEnergy = MANA;
       player.energy = MANA;
       draw(3);
@@ -1706,6 +1741,8 @@
         if (player.hp > player.maxHp) player.hp = player.maxHp;
         player.maxEnergy = MANA;
         if (player.energy > MANA) player.energy = MANA;
+        player.focus = player.focus || 0;
+        player.parry = !!player.parry;
       }
       if (enemy) enemy.hit = false;
       gear = normalizeGear(data.gear);
@@ -1742,7 +1779,7 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, hit: false };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, hit: false };
       const foe = enemyNow();
       enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
       bindShown();
@@ -1951,6 +1988,8 @@
     }
 
     function cardKind(card) {
+      if (card.parry) return "parry";
+      if (card.focus) return "skill";
       if (card.damage && !card.block) return "attack";
       if (card.block && !card.damage) return "block";
       return "skill";
@@ -2019,11 +2058,14 @@
     }
 
     function keepCard(card) {
-      return { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
+      const next = { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
+      if (card.focus) next.focus = card.focus;
+      if (card.parry) next.parry = true;
+      return next;
     }
 
     function rewardPool() {
-      const list = Object.keys(CARDS).map((name) => ({ ...keepCard({ name, ...CARDS[name] }), source: "共通" }));
+      const list = Object.keys(COMMON).map((name) => ({ ...keepCard({ name, ...COMMON[name] }), source: "共通" }));
       const seen = new Set();
       for (const card of enemyNow().pattern) {
         if (seen.has(card.name)) continue;
