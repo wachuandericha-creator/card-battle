@@ -611,11 +611,18 @@
       background: rgba(20, 14, 12, 0.5);
     }
     .gear-board {
-      display: grid;
-      grid-template-columns: repeat(2, 208px);
-      gap: 8px 40px;
-      justify-content: center;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 912px;
     }
+    .gear-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .gear-board > .gear-slot,
+    .gear-pair .gear-slot { width: 100%; }
     .gear-slot {
       display: flex;
       flex-direction: column;
@@ -635,7 +642,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 208px;
+      width: 100%;
       height: 52px;
       flex: none;
       overflow: hidden;
@@ -644,8 +651,7 @@
       background: rgba(20, 14, 12, 0.5);
     }
     .gear-slot.open .gear-frame { border-color: var(--gold); }
-    .gear-slot.medal { grid-column: 1 / -1; }
-    .gear-slot.medal .gear-frame { width: 100%; gap: 12px; }
+    .gear-slot.medal .gear-frame { gap: 12px; }
     .medal-count {
       color: var(--gold);
       font-size: 28px;
@@ -1167,22 +1173,19 @@
     }
 
     function gearMarkup() {
-      const slots = [
-        { id: "shield", label: "盾", icon: shieldIcon() },
-        { id: "sword", label: "剣", icon: swordIcon() },
-        { id: "braceletL", label: "腕輪左", icon: braceletIcon() },
-        { id: "braceletR", label: "腕輪右", icon: braceletIcon() },
-      ];
-      const buttons = slots.map((slot) => {
+      const slotButton = (slot) => {
         const item = gear[slot.id];
         const picture = item && item.image
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
         return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.label)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item && item.name ? item.name : slot.label)}</span></button>`;
-      }).join("");
+      };
+      const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
+      const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
+      const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const count = gear.medals || 0;
       const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><span class="gear-mark">${medalIcon()}</span><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
-      return `<div class="gear-board">${buttons}${medal}</div>`;
+      return `<div class="gear-board">${sword}${shield}${bracelets}${medal}</div>`;
     }
 
     function gearEffectText() {
