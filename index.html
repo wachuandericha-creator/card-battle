@@ -975,9 +975,12 @@
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
+    const META_KEY = "card-battle-meta-v1";
     const BATTLE_TOTAL = 3;
     const MANA = 3;
-    const DUNGEON_NAME = "仮の三連戦";
+    const CHARACTER_NAME = "戦士";
+    const DUNGEON_NAME = "はじまりの洞窟";
+    let meta = { uses: 0, clears: 0 };
 
     function shuffle(list) {
       const a = list.slice();
@@ -1361,6 +1364,12 @@
       phase = "end";
       banner = "";
       log(kind === "win" ? `${enemy.name}を倒した。` : "倒された。");
+      if (kind === "lose") {
+        endRun(false);
+        screen = "defeat";
+        render();
+        return;
+      }
       if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) cleared = true;
       if (kind === "win") persistSave(true);
       render();
@@ -1372,6 +1381,29 @@
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
+    }
+
+    function loadMeta() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(META_KEY) || "{}");
+        meta = {
+          uses: Number(saved.uses) || 0,
+          clears: Number(saved.clears) || 0,
+        };
+      } catch (error) {
+        meta = { uses: 0, clears: 0 };
+      }
+    }
+
+    function endRun(clearedRun) {
+      gear = emptyGear();
+      gearOpen = null;
+      stolen = [];
+      localStorage.removeItem(SAVE_KEY);
+      clearLive();
+      meta.uses += 1;
+      if (clearedRun) meta.clears += 1;
+      localStorage.setItem(META_KEY, JSON.stringify(meta));
     }
 
     function loadSettings() {
@@ -1586,8 +1618,9 @@
             <h1>わちゅえりカードゲーム</h1>
           </div>
           <div class="title-actions">
-            ${menuButton("はじめから", "new", true)}
+            ${menuButton("攻略する", "new", true)}
             ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
+            ${menuButton("アルバム", "album")}
             ${menuButton("せってい", "settings")}
           </div>
         </div>`;
@@ -1604,11 +1637,53 @@
         </div>`;
     }
 
+    function renderCharacter() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>キャラクター</h1>
+          <p>はじめのキャラクターは、${CHARACTER_NAME}。</p>
+          ${menuButton(CHARACTER_NAME, "character-next", true)}
+          ${menuButton("もどる", "title")}
+        </div>`;
+    }
+
+    function renderDungeon() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>ダンジョン</h1>
+          <p>${CHARACTER_NAME}で攻略する。</p>
+          ${menuButton(DUNGEON_NAME, "dungeon-start", true)}
+          ${menuButton("もどる", "character")}
+        </div>`;
+    }
+
+    function renderAlbum() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>アルバム</h1>
+          <p>全カードの解放が目標。</p>
+          <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
+          <p>${DUNGEON_NAME}の踏破　${meta.clears}</p>
+          <p>解放は、踏破、使いこみ、カードパック。カードの名前は、初期デッキと一緒に、まだ置いていない。</p>
+          ${menuButton("もどる", "title")}
+        </div>`;
+    }
+
+    function renderDefeat() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>倒された</h1>
+          <p>初期デッキに戻った。装備を失った。</p>
+          <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
+          ${menuButton("キャラクター選択へ", "character", true)}
+        </div>`;
+    }
+
     function renderConfirm() {
       root.innerHTML = `
         <div class="menu">
-          <h1>はじめから</h1>
-          <p>今のセーブは消える。</p>
+          <h1>攻略する</h1>
+          <p>今の攻略は消える。初期デッキから入り直す。</p>
           ${menuButton("消してはじめる", "new-force", true)}
           ${menuButton("もどる", "title")}
         </div>`;
@@ -1617,14 +1692,20 @@
     function renderClear() {
       root.innerHTML = `
         <div class="menu">
-          <h1>クリア</h1>
-          <p>3つの戦いに勝った。</p>
-          ${menuButton("タイトルへ", "title", true)}
+          <h1>踏破</h1>
+          <p>${DUNGEON_NAME}を抜けた。解放が進んだ。</p>
+          <p>次の攻略も、初期デッキから。</p>
+          ${menuButton("アルバム", "album")}
+          ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
     }
 
     function render() {
       if (screen === "title") return renderTitle();
+      if (screen === "character") return renderCharacter();
+      if (screen === "dungeon") return renderDungeon();
+      if (screen === "album") return renderAlbum();
+      if (screen === "defeat") return renderDefeat();
       if (screen === "settings") return renderSettings();
       if (screen === "confirm") return renderConfirm();
       if (screen === "clear") return renderClear();
@@ -1710,9 +1791,8 @@
       outcome = null;
       if (battleIndex >= BATTLE_TOTAL - 1) {
         cleared = true;
+        endRun(true);
         screen = "clear";
-        clearLive();
-        persistSave(true);
         render();
         return;
       }
@@ -1736,8 +1816,8 @@
         : outcome === "lose"
         ? `<div class="overlay"><div class="panel">
             <h2>倒された</h2>
-            <p>つづきからは、最後のセーブに戻る。</p>
-            <button type="button" data-action="title">タイトルへ</button>
+            <p>初期デッキに戻った。装備を失った。</p>
+            <button type="button" data-action="character">キャラクター選択へ</button>
           </div></div>`
         : "";
       const leaveOverlay = askLeave
@@ -1837,11 +1917,15 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
+        if (name === "album") { screen = "album"; render(); }
+        if (name === "character") { screen = "character"; render(); }
+        if (name === "character-next") { screen = "dungeon"; render(); }
+        if (name === "dungeon-start") beginRun();
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
-          else beginRun();
+          else { screen = "character"; render(); }
         }
-        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); beginRun(); }
+        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); screen = "character"; render(); }
         if (name === "continue") continueGame();
         if (name === "loot") finishReward(action.dataset.loot || "");
         if (name === "skip-loot") finishReward("");
@@ -1873,6 +1957,7 @@
     });
 
     loadSettings();
+    loadMeta();
     if (!resumeLive()) render();
   </script>
 </body>
