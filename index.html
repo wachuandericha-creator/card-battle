@@ -303,7 +303,8 @@
       top: 36%;
       z-index: 26;
       font-size: calc(124px + var(--pow, 0.35) * 96px);
-      animation-duration: 1.2s;
+      animation-name: dmg-pop-me;
+      animation-duration: 1.85s;
     }
     .sprite .cut {
       position: absolute;
@@ -987,6 +988,12 @@
       62% { opacity: 1; transform: translate(-50%, -12px) scale(1); }
       100% { opacity: 0; transform: translate(-50%, -28px) scale(1); }
     }
+    @keyframes dmg-pop-me {
+      0% { opacity: 0; transform: translate(-50%, 10px) scale(0.7); }
+      8% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      74% { opacity: 1; transform: translate(-50%, -10px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -28px) scale(1); }
+    }
     @keyframes slash {
       0% { opacity: 0; transform: translate(-78%, -92%) rotate(-64deg) scaleX(0.16); }
       18% { opacity: 1; transform: translate(-50%, -50%) rotate(-36deg) scaleX(1); }
@@ -1635,8 +1642,9 @@
           return;
         }
       }
+      const playerNumber = fxHit && fxHit.side === "player" && fxHit.n > 0;
       render();
-      const wait = Math.max(720, drainMs());
+      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -1691,7 +1699,8 @@
 
     function scheduleFinish(kind) {
       phase = "end";
-      const wait = Math.max(720, drainMs());
+      const playerNumber = fxHit && fxHit.side === "player" && fxHit.n > 0;
+      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
