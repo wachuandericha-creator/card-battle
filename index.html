@@ -204,13 +204,52 @@
       padding-top: 14px;
       border-top: 2px solid rgba(228, 177, 90, 0.92);
     }
+    .party-band {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      width: 100%;
+    }
     .party-stats {
-      align-self: center;
-      width: min(760px, 100%);
+      flex: 1 1 50%;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      justify-content: center;
       gap: 14px;
+      padding: 12px 16px 14px;
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      border-radius: 14px;
+      background: rgba(20, 14, 12, 0.5);
+    }
+    .party-attrs {
+      flex: 1 1 50%;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 8px;
+      padding: 12px 10px;
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      border-radius: 14px;
+      background: rgba(20, 14, 12, 0.5);
+    }
+    .attr { text-align: center; min-width: 64px; }
+    .attr span {
+      display: block;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+    }
+    .attr b {
+      display: block;
+      margin-top: 4px;
+      color: #fff8ee;
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
     }
     .vitals { position: relative; text-align: center; }
     .meters { width: 240px; margin: 0 auto; }
@@ -335,7 +374,7 @@
       max-width: 176px;
       min-width: 0;
       margin-inline: -22px;
-      height: min(280px, 42vh);
+      height: min(260px, 38vh);
       border-radius: 16px;
       border: 3px solid transparent;
       padding: 0;
@@ -558,7 +597,7 @@
       .vitals .hp-line b { font-size: 22px; }
       .meters { width: 180px; }
       .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
-      .title-art { max-height: 28vh; }
+      .party-band { flex-direction: column; }
     }
   </style>
 </head>
@@ -714,6 +753,36 @@
       return `${label}の${raw}ダメージ。`;
     }
 
+    function mitigate(amount, defense) {
+      const reduced = Math.min(Math.max(0, defense || 0), Math.max(0, amount));
+      return { reduced, dealt: amount - reduced };
+    }
+
+    function hurtSentence(label, raw, reduced, result) {
+      if (!reduced) return damageSentence(label, raw, result);
+      if (!result.hpLoss && !result.blocked) return `${label}の${raw}ダメージ。防御で防いだ。`;
+      if (result.blocked && result.hpLoss) {
+        return `${label}の${raw}ダメージ。防御で${reduced}軽減し、ブロックで${result.blocked}防ぎ、体力${result.hpLoss}。`;
+      }
+      if (result.blocked) return `${label}の${raw}ダメージ。防御で${reduced}軽減し、残りはブロックで防いだ。`;
+      return `${label}の${raw}ダメージ。防御で${reduced}軽減し、体力${result.hpLoss}。`;
+    }
+
+    function strikeSentence(label, base, bonus, result) {
+      if (!bonus) return damageSentence(label, base, result);
+      if (result.blocked && result.hpLoss) {
+        return `${label}の${base}ダメージ。攻撃で${bonus}加算し、ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+      }
+      if (result.blocked) return `${label}の${base}ダメージ。攻撃で${bonus}加算し、ブロックで防いだ。`;
+      return `${label}の${base}ダメージ。攻撃で${bonus}加算し、${base + bonus}。`;
+    }
+
+    function takeEnemyHit(raw) {
+      const cut = mitigate(raw, player.def);
+      const result = applyDamage(player, cut.dealt);
+      log(hurtSentence(enemy.name, raw, cut.reduced, result));
+    }
+
     function buildDeck() {
       const specs = [];
       for (const [name, count] of CARD_POOL) {
@@ -740,8 +809,9 @@
 
     function resolveCard(card) {
       if (card.damage) {
-        const result = applyDamage(enemy, card.damage);
-        log(damageSentence(card.name, card.damage, result));
+        const bonus = player.atk || 0;
+        const result = applyDamage(enemy, card.damage + bonus);
+        log(strikeSentence(card.name, card.damage, bonus, result));
       }
       if (card.block) {
         player.block += card.block;
@@ -784,14 +854,12 @@
       timer = setTimeout(() => {
         enemy.block = 0;
         if (intent.type === "attack") {
-          const result = applyDamage(player, intent.value);
-          log(damageSentence(enemy.name, intent.value, result));
+          takeEnemyHit(intent.value);
         } else if (intent.type === "block") {
           enemy.block += intent.value;
           log(`${enemy.name}はブロックを${intent.value}得た。`);
         } else if (intent.damage) {
-          const result = applyDamage(player, intent.damage);
-          log(damageSentence(enemy.name, intent.damage, result));
+          takeEnemyHit(intent.damage);
         } else {
           log(`${enemy.name}のスキル。${enemyNow().skill}`);
         }
@@ -895,7 +963,11 @@
       discard = data.discard || [];
       player = data.player;
       enemy = data.enemy;
-      if (player) player.hit = false;
+      if (player) {
+        player.hit = false;
+        player.atk = player.atk || 0;
+        player.def = player.def || 0;
+      }
       if (enemy) enemy.hit = false;
       saveNote = "";
     }
@@ -905,7 +977,7 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 40 : keepHp;
-      player = { hp, maxHp: 40, block: 0, energy: 0, maxEnergy: 0, hit: false };
+      player = { hp, maxHp: 40, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, hit: false };
       const foe = enemyNow();
       enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
       turn = 0;
@@ -1109,12 +1181,19 @@
             </div>
           </div>
           <section class="party">
+            <div class="party-band">
             <div class="party-stats">
               <div class="vitals">
                 ${meters(player.hp, player.maxHp, player.block)}
                 <div class="hp-line">体力 <b>${player.hp}</b> / ${player.maxHp}</div>
               </div>
               <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
+            </div>
+            <div class="party-attrs" aria-label="ステータス">
+              <div class="attr"><span>ATK</span><b>${player.atk || 0}</b></div>
+              <div class="attr"><span>DEF</span><b>${player.def || 0}</b></div>
+              <div class="attr"><span>SPD</span><b>${hand.length}</b></div>
+            </div>
             </div>
             <div class="handbar">
               ${pileMarkup("deck", deck.length)}
