@@ -60,10 +60,17 @@
       font-weight: 800;
       letter-spacing: 0.08em;
     }
-    .dungeon-stars {
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .status-stars {
       color: var(--gold);
       font-size: 28px;
       font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
     .hud-actions { display: flex; gap: 8px; }
     h1 {
@@ -2379,13 +2386,12 @@
         ${blockNow ? `<div class="screen-block${hurtNow ? " with-hurt" : ""}" aria-hidden="true">${ironShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         ${(hurtNow || blockNow) && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>NRG</span><b>${player.energy}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>NRG</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
               <h1 class="dungeon-name">${esc(DUNGEON_NAME)}</h1>
               <div class="dungeon-progress">${battleIndex + 1}/${battleTotal}</div>
-              <div class="dungeon-stars">★${meta.stars}</div>
             </div>
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
