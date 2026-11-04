@@ -1247,7 +1247,7 @@
     ];
 
     function emptyGear() {
-      return { sword: null, shield: null, braceletR: null, braceletL: null, medals: 0 };
+      return { sword: null, shield: null, braceletR: null, braceletL: null, itemL: null, itemR: null, medals: 0 };
     }
 
     function gearItem(id) {
@@ -1257,7 +1257,12 @@
     function normalizeGear(data) {
       const next = emptyGear();
       if (!data) return next;
-      for (const key of ["sword", "shield", "braceletR", "braceletL"]) {
+      for (const key of ["sword", "shield", "braceletR", "braceletL", "itemL", "itemR"]) {
+        if (key === "itemL" || key === "itemR") {
+          const held = data[key];
+          if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。" };
+          continue;
+        }
         const item = data[key] && gearItem(data[key].id);
         if (item && item.slot === key) next[key] = { ...item };
       }
@@ -1280,6 +1285,10 @@
       return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.6"/></svg>`;
     }
 
+    function itemIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" d="M9.2 3.2h5.6M10.2 3.2v3.6L7 14.2a4.6 4.6 0 0 0 4.2 6.6h1.6A4.6 4.6 0 0 0 17 14.2L13.8 6.8V3.2"/><path fill="currentColor" opacity="0.55" d="M8.4 14.6h7.2l-.8 1.8a3 3 0 0 1-2.8 1.8h-.8a3 3 0 0 1-2.8-1.8z"/></svg>`;
+    }
+
     function gearMarkup() {
       const slotButton = (slot) => {
         const item = gear[slot.id];
@@ -1287,20 +1296,26 @@
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
         const title = item && item.name ? item.name + (item.stars ? " ★" : "") : slot.label;
-        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const count = gear.medals || 0;
       const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><span class="gear-mark">${medalIcon()}</span><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
-      return `<div class="gear-board">${sword}${shield}${bracelets}${medal}</div>`;
+      const items = `<div class="gear-pair">${slotButton({ id: "itemL", label: "アイテム", aria: "使い捨て 左", icon: itemIcon() })}${slotButton({ id: "itemR", label: "アイテム", aria: "使い捨て 右", icon: itemIcon() })}</div>`;
+      return `<div class="gear-board">${sword}${shield}${bracelets}${medal}${items}</div>`;
     }
 
     function gearEffectText() {
       if (!gearOpen) return "";
       if (gearOpen === "medal") {
         return `<p class="gear-effect">メダル ${gear.medals || 0}枚。上限はない。多いほど有利。何が増えるかは、これから。</p>`;
+      }
+      if (gearOpen === "itemL" || gearOpen === "itemR") {
+        const item = gear[gearOpen];
+        const text = item && item.effect ? item.effect : "使い捨て。使ったら消える。中身は、これから。";
+        return `<p class="gear-effect">${esc(text)}</p>`;
       }
       const item = gear[gearOpen];
       const text = item && item.effect ? item.effect : "なにも入っていない";
