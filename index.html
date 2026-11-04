@@ -258,6 +258,72 @@
     .deck-view .card.preview { width: 132px; height: 184px; }
     .deck-empty { margin: 0; color: var(--muted); }
     .deck-view .panel > button { align-self: center; }
+    .album-screen {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .album-screen .panel {
+      width: min(1080px, calc(100vw - 48px));
+      max-height: calc(100vh - 56px);
+      overflow: auto;
+      align-items: stretch;
+      text-align: left;
+      background: #2a221c;
+      border: 1px solid rgba(244, 234, 215, 0.2);
+      border-radius: 18px;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .album-screen h2 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      color: var(--cream);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .album-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+    .album-tabs button {
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      background: transparent;
+      color: var(--cream);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    .album-tabs button.on {
+      background: var(--gold);
+      color: #2a2118;
+      border-color: var(--gold);
+    }
+    .album-meta {
+      margin: 0 0 16px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .album-screen .card.preview { width: 132px; height: 184px; }
+    .album-screen .panel > button[data-action] {
+      align-self: center;
+      margin-top: 8px;
+      border: 0;
+      background: var(--gold);
+      color: #2a2118;
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-weight: 800;
+      cursor: pointer;
+    }
     .sprite {
       flex: none;
       width: 210px;
@@ -1144,6 +1210,7 @@
     let returnScreen = "title";
     let askLeave = false;
     let showDeck = false;
+    let albumTab = "all";
     let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
@@ -2061,17 +2128,27 @@
         </div>`;
     }
 
+    function albumCatalog() {
+      return Object.keys(CARDS).map((name) => ({ name, klass: CHARACTER_NAME, ...CARDS[name] }));
+    }
+
     function renderAlbum() {
+      const catalog = albumCatalog();
+      const classes = [...new Set(catalog.map((card) => card.klass))];
+      const shown = albumTab === "all" ? catalog : catalog.filter((card) => card.klass === albumTab);
+      const label = albumTab === "all" ? "すべて" : albumTab;
+      const tabs = [`<button type="button" class="${albumTab === "all" ? "on" : ""}" data-album="all">すべて</button>`]
+        .concat(classes.map((name) => `<button type="button" class="${albumTab === name ? "on" : ""}" data-album="${esc(name)}">${esc(name)}</button>`))
+        .join("");
       root.innerHTML = `
-        <div class="menu">
-          <h1>アルバム</h1>
-          <p>全カードの解放が目標。</p>
-          <p>★　${meta.stars}</p>
-          <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
-          <p>${DUNGEON_NAME}の踏破　${meta.clears}</p>
-          <p>★は死んでも残る。パックはお店で買う。値段と中身は、これから。</p>
-          <p>カードの名前は、初期デッキと一緒に、まだ置いていない。</p>
-          ${menuButton("もどる", "title")}
+        <div class="album-screen">
+          <div class="panel">
+            <h2>アルバム</h2>
+            <div class="album-tabs" role="tablist">${tabs}</div>
+            <p class="album-meta">使いこみ ${meta.uses}　踏破 ${meta.clears}　★${meta.stars}</p>
+            ${deckGroup(label, shown)}
+            <button type="button" data-action="title">もどる</button>
+          </div>
         </div>`;
     }
 
@@ -2473,6 +2550,12 @@
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
         if (name === "reward-path") takePath(action.dataset.path || "");
         if (name === "reward-go") applyPath("straight");
+        return;
+      }
+      const albumBtn = el.closest("[data-album]");
+      if (albumBtn && screen === "album") {
+        albumTab = albumBtn.dataset.album || "all";
+        render();
         return;
       }
       if (screen !== "battle") return;
