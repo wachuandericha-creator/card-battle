@@ -613,6 +613,24 @@
       height: min(calc(300px * var(--hand-scale)), 100cqh);
       aspect-ratio: 204 / 300;
     }
+    .hand .card.deal {
+      animation: deal-flow 0.7s cubic-bezier(0.16, 0.84, 0.28, 1) backwards;
+      animation-delay: calc(var(--deal, 0) * 0.14s);
+    }
+    @keyframes deal-flow {
+      0% {
+        opacity: 0;
+        transform: translateX(calc(-180px - var(--deal, 0) * 36px)) translateY(calc(var(--drop, 0px) + 16px)) rotate(calc(var(--fan, 0deg) - 7deg));
+      }
+      28% { opacity: 1; }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hand .card.deal { animation: none; }
+    }
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
     .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
@@ -932,6 +950,7 @@
     let fxSlash = false;
     let fxHurt = false;
     let fxHit = null;
+    let fxDeal = false;
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
@@ -1289,6 +1308,7 @@
       player.maxEnergy = MANA;
       player.energy = MANA;
       draw(3);
+      fxDeal = true;
       phase = "player";
       render();
     }
@@ -1639,13 +1659,14 @@
     }
 
     function renderBattle() {
+      const dealNow = fxDeal;
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
         const mid = (hand.length - 1) / 2;
         const fan = (i - mid) * 8;
         const drop = Math.abs(i - mid) * 12;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card)}</button>`;
       }).join("");
       const picks = rewardCards().map((card) => `<div class="reward-pick"><div class="card preview ${cardKind(card)}">${cardFace(card)}</div><button type="button" data-action="loot" data-loot="${esc(card.name)}">奪う</button></div>`).join("");
       const overlay = outcome === "win"
@@ -1672,6 +1693,7 @@
       fxSlash = false;
       fxHurt = false;
       fxHit = null;
+      fxDeal = false;
       const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
