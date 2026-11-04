@@ -1185,17 +1185,39 @@
       return "±0";
     }
 
+    const GEAR_ITEMS = [
+      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, effect: "★　ATK+1" },
+      { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2" },
+      { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1" },
+      { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", effect: "手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。" },
+    ];
+
     function emptyGear() {
       return { sword: null, shield: null, braceletR: null, braceletL: null, medals: 0 };
+    }
+
+    function gearItem(id) {
+      return GEAR_ITEMS.find((item) => item.id === id) || null;
     }
 
     function normalizeGear(data) {
       const next = emptyGear();
       if (!data) return next;
-      for (const key of ["sword", "shield", "braceletR", "braceletL"]) next[key] = data[key] || null;
+      for (const key of ["sword", "shield", "braceletR", "braceletL"]) {
+        const item = data[key] && gearItem(data[key].id);
+        if (item && item.slot === key) next[key] = { ...item };
+      }
       const medals = Math.floor(Number(data.medals) || 0);
       next.medals = medals > 0 ? medals : 0;
       return next;
+    }
+
+    function syncGearStats() {
+      if (!player) return;
+      player.atk = gear.sword && gear.sword.atk ? gear.sword.atk : 0;
+      player.def = gear.shield && gear.shield.def ? gear.shield.def : 0;
     }
 
     function medalIcon() {
@@ -1212,7 +1234,8 @@
         const picture = item && item.image
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
-        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.label)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item && item.name ? item.name : slot.label)}</span></button>`;
+        const title = item && item.name ? item.name + (item.stars ? " ★" : "") : slot.label;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
@@ -1445,6 +1468,38 @@
       }
     }
 
+    function pullKind(kind) {
+      const take = () => {
+        for (let i = deck.length - 1; i >= 0; i--) {
+          if (cardKind(deck[i]) === kind) return deck.splice(i, 1)[0];
+        }
+        return null;
+      };
+      let card = take();
+      if (!card && !deck.length && discard.length) {
+        deck = shuffle(discard);
+        discard = [];
+        log("捨て札を山札に戻した。");
+        card = take();
+      }
+      if (!card) return null;
+      hand.push(card);
+      return card;
+    }
+
+    function pullFromBracelets() {
+      const right = gear.braceletR;
+      const left = gear.braceletL;
+      if (right && right.id === "chain-attack" && !hand.some((card) => cardKind(card) === "attack")) {
+        const card = pullKind("attack");
+        log(card ? `${right.name}で${card.name}を引いた。` : `${right.name}。山札に攻撃カードがない。`);
+      }
+      if (left && left.id === "chain-guard" && !hand.some((card) => cardKind(card) === "block")) {
+        const card = pullKind("block");
+        log(card ? `${left.name}で${card.name}を引いた。` : `${left.name}。山札に防御カードがない。`);
+      }
+    }
+
     function resolveCard(card) {
       if (card.focus) {
         player.focus = (player.focus || 0) + card.focus;
@@ -1492,6 +1547,7 @@
       hand.splice(index, 1);
       inPlay.push(card);
       note = "";
+      pullFromBracelets();
       if (autoEndTurn && player.energy <= 0 && !hand.some((card) => card.cost === 0)) {
         endTurn();
         return;
@@ -1574,6 +1630,7 @@
       player.maxEnergy = MANA;
       player.energy = MANA;
       draw(3);
+      pullFromBracelets();
       fxDeal = true;
       phase = "player";
       render();
@@ -1746,6 +1803,7 @@
       }
       if (enemy) enemy.hit = false;
       gear = normalizeGear(data.gear);
+      syncGearStats();
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
       if (Array.isArray(data.route) && data.route.length) {
@@ -1780,6 +1838,7 @@
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
       player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, hit: false };
+      syncGearStats();
       const foe = enemyNow();
       enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
       bindShown();
