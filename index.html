@@ -60,6 +60,11 @@
       font-weight: 800;
       letter-spacing: 0.08em;
     }
+    .dungeon-stars {
+      color: var(--gold);
+      font-size: 28px;
+      font-weight: 800;
+    }
     .hud-actions { display: flex; gap: 8px; }
     h1 {
       margin: 0;
@@ -211,6 +216,11 @@
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
     .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .reward-pick .card.preview { width: 132px; height: 184px; }
+    .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
+    .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
+    .path-list { display: flex; flex-direction: column; gap: 10px; width: min(440px, 100%); }
+    .path-list button { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .path-list button span { font-weight: 650; font-size: 13px; }
     .deck-view .panel {
       width: min(1080px, calc(100vw - 48px));
       max-height: calc(100vh - 56px);
@@ -977,10 +987,18 @@
     const SETTINGS_KEY = "card-battle-settings-v1";
     const META_KEY = "card-battle-meta-v1";
     const BATTLE_TOTAL = 3;
+    let battleTotal = BATTLE_TOTAL;
+    let retreatUsed = false;
+    let rewardReady = false;
+    let rewardStars = 0;
+    let rewardPicks = [];
+    let rewardPaths = [];
+    let rewardStep = "cards";
+    let bonusCard = null;
     const MANA = 3;
     const CHARACTER_NAME = "戦士";
     const DUNGEON_NAME = "はじまりの洞窟";
-    let meta = { uses: 0, clears: 0 };
+    let meta = { uses: 0, clears: 0, stars: 0 };
 
     function shuffle(list) {
       const a = list.slice();
@@ -1011,7 +1029,7 @@
     }
 
     function enemyNow() {
-      return ENEMIES[battleIndex];
+      return ENEMIES[battleIndex % ENEMIES.length];
     }
 
     function signed(n) {
@@ -1370,8 +1388,10 @@
         render();
         return;
       }
-      if (kind === "win" && battleIndex >= BATTLE_TOTAL - 1) cleared = true;
-      if (kind === "win") persistSave(true);
+      if (kind === "win") {
+        prepareReward();
+        persistSave(true);
+      }
       render();
     }
 
@@ -1389,9 +1409,10 @@
         meta = {
           uses: Number(saved.uses) || 0,
           clears: Number(saved.clears) || 0,
+          stars: Number(saved.stars) || 0,
         };
       } catch (error) {
-        meta = { uses: 0, clears: 0 };
+        meta = { uses: 0, clears: 0, stars: 0 };
       }
     }
 
@@ -1450,6 +1471,14 @@
         enemy,
         gear,
         stolen,
+        battleTotal,
+        retreatUsed,
+        rewardReady,
+        rewardStars,
+        rewardPicks,
+        rewardPaths,
+        rewardStep,
+        bonusCard,
       };
     }
 
@@ -1508,12 +1537,22 @@
       gear = normalizeGear(data.gear);
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
+      battleTotal = data.battleTotal || BATTLE_TOTAL;
+      retreatUsed = !!data.retreatUsed;
+      rewardReady = !!data.rewardReady;
+      rewardStars = data.rewardStars || 0;
+      rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
+      rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
+      rewardStep = data.rewardStep || "cards";
+      bonusCard = data.bonusCard || null;
+      if (outcome === "win" && !rewardReady) prepareReward();
       saveNote = "";
       bindShown();
     }
 
     function startBattle(keepHp) {
       clearTimer();
+      clearReward();
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
@@ -1536,6 +1575,8 @@
 
     function beginRun() {
       battleIndex = 0;
+      battleTotal = BATTLE_TOTAL;
+      retreatUsed = false;
       cleared = false;
       gear = emptyGear();
       gearOpen = null;
@@ -1662,9 +1703,11 @@
         <div class="menu">
           <h1>アルバム</h1>
           <p>全カードの解放が目標。</p>
+          <p>★　${meta.stars}</p>
           <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
           <p>${DUNGEON_NAME}の踏破　${meta.clears}</p>
-          <p>解放は、踏破、使いこみ、カードパック。カードの名前は、初期デッキと一緒に、まだ置いていない。</p>
+          <p>★は死んでも残る。パックはお店で買う。値段と中身は、これから。</p>
+          <p>カードの名前は、初期デッキと一緒に、まだ置いていない。</p>
           ${menuButton("もどる", "title")}
         </div>`;
     }
@@ -1673,7 +1716,7 @@
       root.innerHTML = `
         <div class="menu">
           <h1>倒された</h1>
-          <p>初期デッキに戻った。装備を失った。</p>
+          <p>初期デッキに戻った。装備を失った。★${meta.stars}は残っている。</p>
           <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
           ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
@@ -1693,7 +1736,7 @@
       root.innerHTML = `
         <div class="menu">
           <h1>踏破</h1>
-          <p>${DUNGEON_NAME}を抜けた。解放が進んだ。</p>
+          <p>${DUNGEON_NAME}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
           <p>次の攻略も、初期デッキから。</p>
           ${menuButton("アルバム", "album")}
           ${menuButton("キャラクター選択へ", "character", true)}
@@ -1772,32 +1815,146 @@
       return `<div class="overlay deck-view"><div class="panel"><h2>デッキ</h2>${deckGroup("山札", deck)}${deckGroup("手札", hand)}${deckGroup("プレイ", inPlay)}${deckGroup("捨て札", discard)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
-    function rewardCards() {
+    const PATHS = {
+      straight: { name: "まっすぐ進む", text: "予定通り。効果なし。" },
+      skip: { name: "抜け道", text: "次の戦闘をスキップ。" },
+      detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
+      shop: { name: "お店", text: "★で買い物。品ぞろえはこれから。" },
+      retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。" },
+      camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
+    };
+
+    function starsForRank(rank) {
+      if (rank === "強敵") return 3;
+      if (rank === "普通") return 2;
+      return 1;
+    }
+
+    function keepCard(card) {
+      return { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
+    }
+
+    function rewardPool() {
+      const list = Object.keys(CARDS).map((name) => ({ ...keepCard({ name, ...CARDS[name] }), source: "共通" }));
       const seen = new Set();
-      const list = [];
       for (const card of enemyNow().pattern) {
         if (seen.has(card.name)) continue;
         seen.add(card.name);
-        list.push(card);
+        list.push({ ...keepCard(card), source: "敵" });
       }
       return list;
     }
 
-    function finishReward(name) {
-      if (name) {
-        const card = enemyNow().pattern.find((item) => item.name === name);
-        if (card) stolen.push({ name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block });
-      }
+    function drawDistinct(n) {
+      return shuffle(rewardPool()).slice(0, n);
+    }
+
+    function clearReward() {
+      rewardReady = false;
+      rewardStars = 0;
+      rewardPicks = [];
+      rewardPaths = [];
+      rewardStep = "cards";
+      bonusCard = null;
+    }
+
+    function rollPaths() {
+      const ids = ["skip", "detour", "shop", "camp"];
+      if (!retreatUsed) ids.push("retreat");
+      return ["straight"].concat(shuffle(ids).slice(0, 2));
+    }
+
+    function prepareReward() {
+      if (rewardReady) return;
+      rewardReady = true;
+      rewardStars = starsForRank(enemyNow().rank);
+      meta.stars = (Number(meta.stars) || 0) + rewardStars;
+      localStorage.setItem(META_KEY, JSON.stringify(meta));
+      rewardPicks = drawDistinct(3);
+      rewardPaths = [];
+      rewardStep = "cards";
+      bonusCard = null;
+    }
+
+    function takeReward(index) {
+      if (rewardStep !== "cards") return;
+      const card = rewardPicks[index];
+      if (!card) return;
+      stolen.push(keepCard(card));
+      rewardPaths = rollPaths();
+      rewardStep = "paths";
+      persistSave(true);
+      render();
+    }
+
+    function advance(step) {
+      const hp = player.hp;
+      const next = battleIndex + step;
       outcome = null;
-      if (battleIndex >= BATTLE_TOTAL - 1) {
+      if (next >= battleTotal) {
+        clearReward();
         cleared = true;
         endRun(true);
         screen = "clear";
         render();
         return;
       }
-      battleIndex += 1;
-      startBattle(player.hp);
+      battleIndex = next;
+      startBattle(hp);
+    }
+
+    function applyPath(id) {
+      if (rewardStep === "done" || rewardStep === "cards") return;
+      const from = rewardStep;
+      rewardStep = "done";
+      if (id === "camp") player.hp = player.maxHp;
+      if (id === "retreat") {
+        if (from !== "paths") return;
+        retreatUsed = true;
+        const hp = player.hp;
+        outcome = null;
+        startBattle(hp);
+        return;
+      }
+      advance(id === "skip" ? 2 : 1);
+    }
+
+    function takePath(id) {
+      if (rewardStep !== "paths" || !PATHS[id]) return;
+      if (id === "shop") {
+        rewardStep = "shop";
+        persistSave(true);
+        render();
+        return;
+      }
+      if (id === "detour") {
+        battleTotal += 1;
+        const extra = drawDistinct(1)[0] || null;
+        bonusCard = extra;
+        if (extra) stolen.push(keepCard(extra));
+        rewardStep = "detour";
+        persistSave(true);
+        render();
+        return;
+      }
+      applyPath(id);
+    }
+
+    function rewardOverlay() {
+      if (outcome !== "win") return "";
+      if (rewardStep === "cards") {
+        const picks = rewardPicks.map((card, i) => `<div class="reward-pick"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${cardKind(card)}">${cardFace(card)}</div><button type="button" data-action="reward-card" data-reward="${i}">選ぶ</button></div>`).join("");
+        return `<div class="overlay"><div class="panel wide"><h2>勝った</h2><p>★${rewardStars}もらった。所持 ★${meta.stars}</p><p>3枚から1枚選ぶ。</p><div class="reward-row">${picks}</div></div></div>`;
+      }
+      if (rewardStep === "paths") {
+        const buttons = rewardPaths.map((id) => `<button type="button" data-action="reward-path" data-path="${id}"><b>${esc(PATHS[id].name)}</b><span>${esc(PATHS[id].text)}</span></button>`).join("");
+        return `<div class="overlay"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
+      }
+      if (rewardStep === "shop") {
+        return `<div class="overlay"><div class="panel"><h2>お店</h2><p>所持 ★${meta.stars}</p><p>品ぞろえは、これから決める。</p><button type="button" data-action="reward-go">出ていく</button></div></div>`;
+      }
+      const bonus = bonusCard ? `${esc(bonusCard.name)}をもらった。` : "";
+      return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p><p>${bonus}装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
 
     function renderBattle() {
@@ -1810,16 +1967,14 @@
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card)}</button>`;
       }).join("");
-      const picks = rewardCards().map((card) => `<div class="reward-pick"><div class="card preview ${cardKind(card)}">${cardFace(card)}</div><button type="button" data-action="loot" data-loot="${esc(card.name)}">奪う</button></div>`).join("");
-      const overlay = outcome === "win"
-        ? `<div class="overlay"><div class="panel"><h2>勝った</h2><p>カードを1枚奪える。</p><div class="reward-row">${picks}</div><button type="button" class="ghost" data-action="skip-loot">スキップ</button></div></div>`
-        : outcome === "lose"
+      const overlay = rewardOverlay()
+        || (outcome === "lose"
         ? `<div class="overlay"><div class="panel">
             <h2>倒された</h2>
-            <p>初期デッキに戻った。装備を失った。</p>
+            <p>初期デッキに戻った。装備を失った。★${meta.stars}は残っている。</p>
             <button type="button" data-action="character">キャラクター選択へ</button>
           </div></div>`
-        : "";
+        : "");
       const leaveOverlay = askLeave
         ? `<div class="overlay"><div class="panel">
             <h2>タイトルに戻る？</h2>
@@ -1848,7 +2003,8 @@
           <header class="hud-top">
             <div class="dungeon">
               <h1 class="dungeon-name">${esc(DUNGEON_NAME)}</h1>
-              <div class="dungeon-progress">${battleIndex + 1}/${BATTLE_TOTAL}</div>
+              <div class="dungeon-progress">${battleIndex + 1}/${battleTotal}</div>
+              <div class="dungeon-stars">★${meta.stars}</div>
             </div>
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
@@ -1927,8 +2083,9 @@
         }
         if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); screen = "character"; render(); }
         if (name === "continue") continueGame();
-        if (name === "loot") finishReward(action.dataset.loot || "");
-        if (name === "skip-loot") finishReward("");
+        if (name === "reward-card") takeReward(Number(action.dataset.reward));
+        if (name === "reward-path") takePath(action.dataset.path || "");
+        if (name === "reward-go") applyPath("straight");
         return;
       }
       if (screen !== "battle") return;
