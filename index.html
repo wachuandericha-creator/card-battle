@@ -28,18 +28,27 @@
     }
     button, body { -webkit-user-select: none; user-select: none; }
     .game {
-      min-height: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      padding: 14px 18px 12px;
+      padding: 10px 18px 14px;
       gap: 8px;
     }
-    .topbar {
+    .hud-top {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px 18px;
+      gap: 4px 14px;
+      color: var(--muted);
+      font-size: 13px;
     }
+    .hud-top h1 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .hud-top .logline { flex-basis: 100%; min-height: 0; }
     h1 {
       margin: 0;
       font-size: 18px;
@@ -72,27 +81,35 @@
     .next-energy, .rules, .logline { color: var(--muted); font-size: 13px; }
     .rules { margin: 0; }
     .note { min-height: 1.1em; color: #f0c7a2; font-size: 13px; }
-    .enemy-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
     .intent {
-      min-width: 260px;
+      min-width: 280px;
       text-align: center;
       background: rgba(20, 14, 12, 0.72);
       border: 1px solid rgba(224, 122, 85, 0.45);
       border-radius: 14px;
-      padding: 8px 14px;
+      padding: 8px 18px 10px;
     }
     .intent .label { font-size: 12px; letter-spacing: 0.14em; color: var(--muted); }
-    .intent .now { font-size: 26px; font-weight: 700; }
+    .intent .now { font-size: 32px; font-weight: 800; line-height: 1.2; }
     .intent.attack { border-color: rgba(224, 122, 85, 0.7); }
     .intent.attack .now { color: var(--attack); }
     .intent.block { border-color: rgba(126, 176, 230, 0.7); }
     .intent.block .now { color: var(--block); }
     .intent.wait { border-color: rgba(228, 177, 90, 0.7); }
     .intent.wait .now { color: var(--gold); }
-    .later { color: var(--muted); font-size: 13px; }
+    .later { color: var(--muted); font-size: 14px; }
     .sprite {
-      width: 128px;
-      height: 100px;
+      width: 240px;
+      height: 180px;
       border-radius: 46% 46% 40% 40%;
       background:
         radial-gradient(circle at 30% 30%, #8d847c, transparent 40%),
@@ -102,41 +119,51 @@
     }
     .sprite .eye {
       position: absolute;
-      top: 38px;
-      width: 18px;
-      height: 18px;
+      top: 68px;
+      width: 26px;
+      height: 26px;
       background: #f4ead7;
       border-radius: 50%;
     }
     .sprite .eye::after {
       content: "";
       position: absolute;
-      width: 7px;
-      height: 7px;
+      width: 10px;
+      height: 10px;
       background: #1a120e;
       border-radius: 50%;
-      top: 5px;
-      left: 5px;
+      top: 8px;
+      left: 8px;
     }
-    .sprite .eye.l { left: 32px; }
-    .sprite .eye.r { right: 32px; }
+    .sprite .eye.l { left: 64px; }
+    .sprite .eye.r { right: 64px; }
     .sprite.hit { animation: shake 0.35s linear; }
     .enemy { text-align: center; }
     .enemy h2 {
-      margin: 0;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      font-weight: 700;
+      margin: 0 0 4px;
+      font-size: 22px;
+      letter-spacing: 0.14em;
+      color: var(--cream);
+      font-weight: 800;
     }
-    .banner { min-height: 22px; text-align: center; color: var(--gold); font-size: 18px; }
-    .logline { min-height: 2.6em; line-height: 1.35; }
-    .handbar { display: flex; align-items: flex-end; gap: 10px; margin-top: auto; }
-    .piles { color: var(--muted); font-size: 13px; line-height: 1.6; width: 72px; flex: none; }
-    .hand { flex: 1; display: flex; justify-content: center; gap: 12px; align-items: flex-end; min-height: 200px; }
+    .enemy .hp-line { font-size: 16px; }
+    .bar.wide { width: 180px; height: 10px; }
+    .banner { min-height: 0; text-align: center; color: var(--gold); font-size: 18px; }
+    .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .party { display: flex; flex-direction: column; gap: 10px; }
+    .party-stats {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 28px;
+      font-size: 15px;
+    }
+    .party-stats b { font-size: 32px; font-weight: 800; }
+    .handbar { display: flex; align-items: flex-end; justify-content: center; gap: 12px; }
+    .hand { display: flex; justify-content: center; gap: 12px; align-items: flex-end; min-height: 168px; }
     .card {
-      width: 148px;
-      height: 196px;
+      width: 132px;
+      height: 168px;
       border: 0;
       border-radius: 16px;
       background: var(--cream);
@@ -288,7 +315,12 @@
       75% { transform: translateX(-3px); }
     }
     @media (max-width: 720px) {
-      .card { width: 112px; height: 168px; }
+      .card { width: 104px; height: 140px; }
+      .sprite { width: 180px; height: 136px; }
+      .sprite .eye { top: 50px; width: 20px; height: 20px; }
+      .sprite .eye.l { left: 46px; }
+      .sprite .eye.r { right: 46px; }
+      .party-stats b { font-size: 24px; }
       .end { width: 88px; height: 88px; font-size: 14px; }
       .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
       .title-art { max-height: 28vh; }
@@ -650,9 +682,9 @@
       render();
     }
 
-    function bar(hp, max) {
+    function bar(hp, max, wide) {
       const pct = Math.max(0, Math.min(100, (hp / max) * 100));
-      return `<div class="bar"><span style="width:${pct}%"></span></div>`;
+      return `<div class="bar${wide ? " wide" : ""}"><span style="width:${pct}%"></span></div>`;
     }
 
     function pips() {
@@ -743,18 +775,16 @@
 
       root.innerHTML = `
         <div class="game">
-          <header class="topbar">
+          <header class="hud-top">
             <h1>戦い ${battleIndex + 1}/${BATTLE_TOTAL}</h1>
-            <div class="turn">ターン ${turn}</div>
-            <div class="chip">体力 <b>${player.hp}</b>/${player.maxHp} ${bar(player.hp, player.maxHp)}</div>
-            <div class="chip">ブロック <b class="block-num">${player.block}</b></div>
-            <div class="chip">エネルギー <b>${player.energy}</b><span class="energy-pips">${pips()}</span></div>
+            <div>ターン ${turn}</div>
+            <div>山札 ${deck.length}</div>
+            <div>捨て札 ${discard.length}</div>
             <button type="button" class="small-btn" data-action="save" ${phase === "player" ? "" : "disabled"}>セーブ</button>
             <button type="button" class="small-btn" data-action="title" ${phase === "enemy" ? "disabled" : ""}>タイトル</button>
+            <div class="logline">${showLog ? logLines.slice(0, 1).map((line) => esc(line)).join("") : ""}</div>
           </header>
-          <p class="rules">カードは仮。体力は次の戦いへ持ち越す。${esc(saveNote)}</p>
-          <div class="note">${esc(note)}</div>
-          <div class="enemy-wrap">
+          <div class="stage">
             <div class="intent ${intent.type}">
               <div class="label">次の行動</div>
               <div class="now">${esc(intentText(intent))}</div>
@@ -765,17 +795,23 @@
             </div>
             <section class="enemy">
               <h2>${esc(enemy.name)}</h2>
-              <div>体力 ${enemy.hp} / ${enemy.maxHp} ${bar(enemy.hp, enemy.maxHp)}</div>
+              <div class="hp-line">体力 ${enemy.hp} / ${enemy.maxHp} ${bar(enemy.hp, enemy.maxHp, true)}</div>
               <div>ブロック <b class="block-num">${enemy.block}</b></div>
             </section>
+            <div class="banner">${esc(banner)}</div>
+            <div class="note">${esc(note)}${saveNote ? " " + esc(saveNote) : ""}</div>
           </div>
-          <div class="banner">${esc(banner)}</div>
-          <div class="logline">${showLog ? logLines.slice(0, 2).map((line) => esc(line)).join("<br>") : ""}</div>
-          <div class="handbar">
-            <div class="piles">山札 ${deck.length}<br>捨て札 ${discard.length}<br>手札 ${hand.length}</div>
-            <div class="hand">${cards}</div>
-            <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
-          </div>
+          <section class="party">
+            <div class="party-stats">
+              <div>体力 <b>${player.hp}</b>/${player.maxHp} ${bar(player.hp, player.maxHp, true)}</div>
+              <div>ブロック <b class="block-num">${player.block}</b></div>
+              <div>エネルギー <b>${player.energy}</b><span class="energy-pips">${pips()}</span></div>
+            </div>
+            <div class="handbar">
+              <div class="hand">${cards}</div>
+              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
+            </div>
+          </section>
         </div>
         ${overlay}`;
       player.hit = false;
