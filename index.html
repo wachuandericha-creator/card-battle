@@ -186,8 +186,10 @@
       cursor: default;
     }
     .card.preview:hover { transform: none; }
-    .card.preview .cost { width: 28px; height: 28px; font-size: 16px; border-width: 2px; }
-    .card.preview .name { min-height: 32px; padding: 6px 6px 2px 38px; font-size: 15px; }
+    .card.preview .nameplate { min-height: 28px; margin: 4px 4px 0; padding: 3px 4px 3px 32px; border-radius: 6px; }
+    .card.preview .cost { width: 22px; height: 22px; font-size: 13px; border-width: 2px; left: 3px; }
+    .card.preview .name { font-size: 13px; }
+    .card.preview .art { margin: 3px 4px 0; }
     .card.preview .fx b { font-size: 22px; }
     .card.preview .fx .ico { width: 22px; height: 22px; }
     .foe-next .card.preview {
@@ -198,19 +200,27 @@
       aspect-ratio: 204 / 300;
       container-type: size;
     }
+    .foe-next .card.preview .nameplate {
+      min-height: 0;
+      margin: 2cqh 2cqh 0;
+      padding: 1cqh 1.5cqh 1cqh 15cqh;
+      border-radius: 1.4cqh;
+    }
     .foe-next .card.preview .cost {
-      width: 14cqh;
-      height: 14cqh;
-      font-size: 8cqh;
-      border-width: 0.5cqh;
-      top: 2cqh;
-      left: 2cqh;
+      width: 12cqh;
+      height: 12cqh;
+      font-size: 7cqh;
+      border-width: 0.4cqh;
+      top: 50%;
+      left: 1.2cqh;
+      transform: translateY(-50%);
     }
     .foe-next .card.preview .name {
-      min-height: 14cqh;
-      padding: 3cqh 2cqh 1cqh 18cqh;
-      font-size: 7cqh;
+      min-height: 0;
+      padding: 0;
+      font-size: 6.4cqh;
     }
+    .foe-next .card.preview .art { margin: 1.4cqh 2cqh 0; border-radius: 1.2cqh; }
     .foe-next .card.preview .fx b { font-size: 12cqh; }
     .foe-next .card.preview .fx .ico { width: 10cqh; height: 10cqh; }
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
@@ -376,6 +386,10 @@
     }
     .play-cards { display: flex; align-items: flex-end; gap: 8px; min-height: 136px; }
     .play-row .card.preview { width: 92px; height: 136px; pointer-events: none; }
+    .play-row .card.preview .nameplate { min-height: 22px; margin: 3px 3px 0; padding: 2px 3px 2px 24px; }
+    .play-row .card.preview .cost { width: 18px; height: 18px; font-size: 11px; left: 2px; }
+    .play-row .card.preview .name { font-size: 11px; letter-spacing: 0; }
+    .play-row .card.preview .art { margin: 2px 3px 0; }
     .play-card.on .card.preview { transform: translateY(-12px); box-shadow: 0 0 0 2px var(--gold), 0 12px 20px rgba(0, 0, 0, 0.35); }
     .party {
       flex: 1 1 62%;
@@ -753,15 +767,29 @@
     }
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
-    .card .face {
-      flex: 1 1 68%;
-      min-height: 0;
+    .card .nameplate {
       position: relative;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      min-height: calc(34px * var(--hand-scale));
+      margin: calc(5px * var(--hand-scale)) calc(5px * var(--hand-scale)) 0;
+      padding: calc(4px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(4px * var(--hand-scale)) calc(46px * var(--hand-scale));
+      border-radius: 8px;
+      border: 1px solid rgba(24, 14, 8, 0.62);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 248, 230, 0.62),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.28);
     }
+    .card.attack .nameplate { background: linear-gradient(180deg, #f0c2b8 0%, #b55246 54%, #7a2e26 100%); color: #fff8f4; }
+    .card.block .nameplate { background: linear-gradient(180deg, #e4f0fb 0%, #5b90c6 56%, #2a5584 100%); color: #f7fbff; }
+    .card.skill .nameplate { background: linear-gradient(180deg, #fff6d8 0%, #f0c56a 56%, #c9963c 100%); color: #2a2118; }
+    .card.parry .nameplate { background: linear-gradient(180deg, #f7f4ef 0%, #c5ced6 54%, #7e8b98 100%); color: #1c1814; }
     .card .cost {
       position: absolute;
-      top: 6px;
-      left: 6px;
+      top: 50%;
+      left: calc(4px * var(--hand-scale));
+      transform: translateY(-50%);
       width: calc(36px * var(--hand-scale));
       height: calc(36px * var(--hand-scale));
       border-radius: 50%;
@@ -775,26 +803,29 @@
       z-index: 3;
     }
     .card .name {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 2;
+      position: static;
+      flex: 1 1 auto;
+      min-width: 0;
       margin: 0;
-      padding: calc(12px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(50px * var(--hand-scale));
+      padding: 0;
       font-size: calc(18px * var(--hand-scale));
       font-weight: 800;
       letter-spacing: 0.04em;
       line-height: 1.2;
+      text-align: left;
       white-space: nowrap;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .card .art {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.28), transparent 32%),
-        rgba(0, 0, 0, 0.16);
+      position: relative;
+      flex: 0 0 50%;
+      min-height: 0;
+      margin: calc(4px * var(--hand-scale)) calc(5px * var(--hand-scale)) 0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: rgba(12, 8, 6, 0.55);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
     }
     .card .art img {
       width: 100%;
@@ -803,8 +834,10 @@
       display: block;
     }
     .card .text {
-      flex: 0 0 32%;
+      flex: 1 1 auto;
       min-height: 0;
+      margin: calc(4px * var(--hand-scale));
+      border-radius: 6px;
       background: #fff;
       color: #241910;
       display: flex;
@@ -2060,7 +2093,7 @@
         card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
       ].join("") || `<span class="fx">${esc(card.text)}</span>`;
-      return `<div class="face"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div><div class="art" aria-hidden="true"></div></div><div class="text">${effects}</div>`;
+      return `<div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div>`;
     }
 
     function playFace(card, on) {
