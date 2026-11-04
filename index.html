@@ -1053,6 +1053,7 @@
     let returnScreen = "title";
     let askLeave = false;
     let showDeck = false;
+    let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
     let stolen = [];
@@ -1386,6 +1387,7 @@
       }
       for (const extra of stolen) specs.push({ uid: uid++, ...extra });
       deck = shuffle(specs);
+      openingDeck = deck.map((card) => ({ ...card }));
       hand = [];
       discard = [];
       inPlay = [];
@@ -1608,6 +1610,7 @@
         hand,
         discard,
         inPlay,
+        openingDeck,
         resolveAt,
         player,
         enemy,
@@ -1664,6 +1667,10 @@
       hand = data.hand || [];
       discard = data.discard || [];
       inPlay = Array.isArray(data.inPlay) ? data.inPlay : [];
+      openingDeck = (Array.isArray(data.openingDeck) && data.openingDeck.length
+        ? data.openingDeck
+        : deck.concat(hand, inPlay, discard)
+      ).map((card) => ({ ...card }));
       resolveAt = data.resolveAt || 0;
       player = data.player;
       enemy = data.enemy;
@@ -1968,7 +1975,8 @@
 
     function deckOverlay() {
       if (!showDeck || outcome || askLeave) return "";
-      return `<div class="overlay deck-view"><div class="panel"><h2>デッキ</h2>${deckGroup("山札", deck)}${deckGroup("手札", hand)}${deckGroup("プレイ", inPlay)}${deckGroup("捨て札", discard)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
+      const cards = openingDeck.length ? openingDeck : deck.concat(hand, inPlay, discard);
+      return `<div class="overlay deck-view"><div class="panel"><h2>戦闘開始前のデッキ</h2>${deckGroup("開始前", cards)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
     const PATHS = {
