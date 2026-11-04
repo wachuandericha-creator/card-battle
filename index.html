@@ -197,10 +197,80 @@
       background: #241e18;
     }
     .pip.on { background: #f2c14e; border-color: #ffe7a3; }
-    .handbar { flex: 1; display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 0; }
-    .pile { width: 72px; text-align: center; color: var(--muted); font-size: 13px; letter-spacing: 0.08em; }
-    .pile-count { display: block; font-size: 28px; font-weight: 800; color: var(--cream); line-height: 1; }
-    .hand { display: flex; justify-content: center; gap: 14px; align-items: center; }
+    .handbar { flex: 1; width: 100%; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 0; }
+    .pile { width: 96px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .pile-card {
+      position: relative;
+      width: 96px;
+      height: 136px;
+      border-radius: 12px;
+    }
+    .pile-card.back {
+      background:
+        radial-gradient(circle at 50% 46%, rgba(228, 177, 90, 0.2), transparent 42%),
+        repeating-linear-gradient(135deg, rgba(228, 177, 90, 0.18) 0 1px, transparent 1px 12px),
+        #2a2118;
+      border: 2px solid #c8963e;
+      box-shadow: inset 0 0 0 6px rgba(18, 14, 10, 0.55), inset 0 0 0 7px rgba(228, 177, 90, 0.4);
+    }
+    .pile-card.face {
+      background: var(--cream);
+      color: var(--ink);
+      border: 2px solid #efe2cc;
+      overflow: hidden;
+    }
+    .pile-card.face::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(18, 14, 10, 0.78) 0 34px, rgba(18, 14, 10, 0.42) 62px);
+    }
+    .pile-card.stack { box-shadow: 5px 5px 0 #16120f, 6px 6px 0 rgba(200, 150, 62, 0.7); }
+    .pile-card.face.stack { box-shadow: 5px 5px 0 #16120f, 6px 6px 0 rgba(200, 150, 62, 0.55); }
+    .pile-face {
+      height: 100%;
+      padding: 10px 8px;
+      filter: brightness(0.42) saturate(0.5);
+    }
+    .pile-face .cost {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #2a2118;
+      font-weight: 800;
+      font-size: 12px;
+      display: grid;
+      place-items: center;
+    }
+    .pile-face .name { font-size: 14px; font-weight: 800; margin: 8px 0 4px; }
+    .pile-face .text { font-size: 11px; line-height: 1.35; white-space: pre-line; }
+    .pile-count {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1;
+      color: #fff8ee;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .pile-card.empty {
+      background: transparent;
+      border: 1px solid rgba(244, 234, 215, 0.28);
+      box-shadow: none;
+    }
+    .pile-card.empty .pile-count {
+      color: rgba(244, 234, 215, 0.32);
+      text-shadow: none;
+      font-weight: 600;
+    }
+    .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
+    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; gap: 10px; align-items: center; }
     .battle-log {
       flex: 0 0 16.666%;
       height: 100%;
@@ -216,7 +286,10 @@
     }
     .battle-log p { margin: 0 0 10px; font-size: 13px; line-height: 1.45; color: var(--cream); }
     .card {
-      width: 176px;
+      width: auto;
+      flex: 1 1 0;
+      max-width: 176px;
+      min-width: 0;
       height: min(280px, 42vh);
       border: 0;
       border-radius: 16px;
@@ -249,8 +322,8 @@
     .card .name { font-size: 18px; font-weight: 800; margin: 16px 0 6px; }
     .card .text { white-space: pre-line; font-size: 14px; line-height: 1.4; }
     .end {
-      width: 148px;
-      height: 148px;
+      width: 124px;
+      height: 124px;
       flex: none;
       border-radius: 18px;
       border: 2px solid var(--gold);
@@ -803,6 +876,17 @@
       renderBattle();
     }
 
+    function pileMarkup(kind, count, card) {
+      const label = kind === "deck" ? "山札" : "捨て札";
+      const empty = count === 0;
+      const stack = count > 1 ? " stack" : "";
+      const face = !empty && kind === "discard" && card
+        ? `<div class="pile-face"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div><div class="text">${esc(card.text)}</div></div>`
+        : "";
+      const look = empty ? "empty" : kind === "deck" ? "back" : "face";
+      return `<div class="pile" aria-label="${label} ${count}"><div class="pile-card ${look}${stack}">${face}<span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></div>`;
+    }
+
     function renderBattle() {
       const intent = intentAt(0);
       const later = [1, 2].map((i) => intentText(intentAt(i))).join(" → ");
@@ -868,9 +952,9 @@
               <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
             </div>
             <div class="handbar">
-              <div class="pile"><span class="pile-count">${deck.length}</span>山札</div>
+              ${pileMarkup("deck", deck.length)}
               <div class="hand">${cards}</div>
-              <div class="pile"><span class="pile-count">${discard.length}</span>捨て札</div>
+              ${pileMarkup("discard", discard.length, discard[discard.length - 1])}
               <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
             </div>
           </section>
