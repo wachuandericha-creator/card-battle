@@ -916,6 +916,7 @@
     const ENEMIES = [
       {
         name: "仮の相手",
+        tier: 1,
         rank: "雑魚",
         hp: 22,
         pattern: [
@@ -926,6 +927,7 @@
       },
       {
         name: "荒くれ",
+        tier: 2,
         rank: "普通",
         hp: 24,
         pattern: [
@@ -936,6 +938,7 @@
       },
       {
         name: "重騎士",
+        tier: 3,
         rank: "強敵",
         hp: 30,
         pattern: [
@@ -945,6 +948,12 @@
         ],
       },
     ];
+    const DUNGEON = {
+      road: [1, 2],
+      pools: { 1: ["仮の相手"], 2: ["荒くれ"] },
+      boss: "重騎士",
+    };
+    const CLASSIC_ROUTE = ["仮の相手", "荒くれ", "重騎士"];
 
     const root = document.getElementById("game");
     let uid = 1;
@@ -988,6 +997,7 @@
     const META_KEY = "card-battle-meta-v1";
     const BATTLE_TOTAL = 3;
     let battleTotal = BATTLE_TOTAL;
+    let route = CLASSIC_ROUTE.slice();
     let retreatUsed = false;
     let rewardReady = false;
     let rewardStars = 0;
@@ -1028,8 +1038,36 @@
       timer = null;
     }
 
+    function enemyByName(name) {
+      return ENEMIES.find((item) => item.name === name) || ENEMIES[0];
+    }
+
+    function rollRank(tier) {
+      const names = DUNGEON.pools[tier] || [];
+      if (!names.length) return DUNGEON.boss;
+      return names[Math.floor(Math.random() * names.length)];
+    }
+
+    function freshRoute() {
+      const list = DUNGEON.road.map((tier) => rollRank(tier));
+      list.push(DUNGEON.boss);
+      return list;
+    }
+
     function enemyNow() {
-      return ENEMIES[battleIndex % ENEMIES.length];
+      return enemyByName(route[battleIndex] || DUNGEON.boss);
+    }
+
+    function bossNow() {
+      return battleIndex === route.indexOf(DUNGEON.boss);
+    }
+
+    function addDetourFight() {
+      const current = enemyNow();
+      const tier = current.name === DUNGEON.boss ? DUNGEON.road[DUNGEON.road.length - 1] : (current.tier || 1);
+      const extra = rollRank(tier);
+      route.splice(battleIndex + 1, 0, extra);
+      battleTotal = route.length;
     }
 
     function signed(n) {
@@ -1472,6 +1510,7 @@
         gear,
         stolen,
         battleTotal,
+        route,
         retreatUsed,
         rewardReady,
         rewardStars,
@@ -1537,7 +1576,19 @@
       gear = normalizeGear(data.gear);
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
-      battleTotal = data.battleTotal || BATTLE_TOTAL;
+      if (Array.isArray(data.route) && data.route.length) {
+        route = data.route.slice();
+      } else {
+        route = CLASSIC_ROUTE.slice();
+        const total = data.battleTotal || route.length;
+        while (route.length < total) {
+          const bossAt = route.indexOf(DUNGEON.boss);
+          const tier = DUNGEON.road[DUNGEON.road.length - 1];
+          if (bossAt >= 0) route.splice(bossAt, 0, rollRank(tier));
+          else route.push(rollRank(tier));
+        }
+      }
+      battleTotal = route.length;
       retreatUsed = !!data.retreatUsed;
       rewardReady = !!data.rewardReady;
       rewardStars = data.rewardStars || 0;
@@ -1575,7 +1626,8 @@
 
     function beginRun() {
       battleIndex = 0;
-      battleTotal = BATTLE_TOTAL;
+      route = freshRoute();
+      battleTotal = route.length;
       retreatUsed = false;
       cleared = false;
       gear = emptyGear();
@@ -1867,7 +1919,7 @@
     function prepareReward() {
       if (rewardReady) return;
       rewardReady = true;
-      rewardStars = starsForRank(enemyNow().rank);
+      rewardStars = enemyNow().tier || starsForRank(enemyNow().rank);
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       localStorage.setItem(META_KEY, JSON.stringify(meta));
       rewardPicks = drawDistinct(3);
@@ -1928,7 +1980,7 @@
         return;
       }
       if (id === "detour") {
-        battleTotal += 1;
+        addDetourFight();
         const extra = drawDistinct(1)[0] || null;
         bonusCard = extra;
         if (extra) stolen.push(keepCard(extra));
@@ -2022,7 +2074,7 @@
               ${slashNow && hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop">${hitNow.n}</b>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
-              <h2>${esc(enemy.name)}</h2>
+              <h2>${esc(enemy.name)}${bossNow() ? "　ボス" : ""}</h2>
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
               <div class="hp-line">体力 <b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
             </section>
