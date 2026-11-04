@@ -6,7 +6,7 @@
   <title>わちゅえりカードゲーム</title>
   <style>
     :root {
-      --hand-scale: 1.25;
+      --hand-scale: 0.74;
       --bg: #12100e;
       --ink: #2a2118;
       --cream: #f4ead7;
@@ -99,7 +99,7 @@
     .rules { margin: 0; }
     .note { min-height: 1.1em; color: #f0c7a2; font-size: 13px; }
     .stage {
-      flex: 1 1 38%;
+      flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -374,10 +374,10 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 28px;
+      gap: 36px;
       padding: 8px 8px 0;
     }
-    .play-side { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+    .play-side { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
     .play-side.mine { align-items: flex-end; }
     .play-label {
       color: var(--gold);
@@ -385,15 +385,23 @@
       font-weight: 800;
       letter-spacing: 0.16em;
     }
-    .play-cards { display: flex; align-items: flex-end; gap: 8px; min-height: 136px; }
-    .play-row .card.preview { width: 92px; height: 136px; pointer-events: none; }
-    .play-row .card.preview .nameplate { min-height: 22px; margin: 3px 3px 0; padding: 2px 3px 2px 24px; }
-    .play-row .card.preview .cost { width: 18px; height: 18px; font-size: 11px; left: 2px; }
-    .play-row .card.preview .name { font-size: 11px; letter-spacing: 0; }
-    .play-row .card.preview .art { margin: 2px 3px 0; }
+    .play-cards { display: flex; align-items: flex-end; gap: 10px; min-height: 0; }
+    .play-row .card.preview {
+      width: auto;
+      height: min(270px, 36vh);
+      aspect-ratio: 204 / 300;
+      pointer-events: none;
+      container-type: size;
+    }
+    .play-row .card.preview .nameplate { min-height: 16cqh; margin: 2cqh 2cqh 0; padding: 1cqh 1.5cqh 1cqh 18cqh; border-radius: 1.6cqh; }
+    .play-row .card.preview .cost { width: 14cqh; height: 14cqh; font-size: 8cqh; border-width: 0.5cqh; left: 1.4cqh; }
+    .play-row .card.preview .name { font-size: 7.2cqh; letter-spacing: 0; }
+    .play-row .card.preview .art { margin: 1.6cqh 2cqh 0; border-radius: 1.4cqh; }
+    .play-row .card.preview .fx b { font-size: 14cqh; }
+    .play-row .card.preview .fx .ico { width: 12cqh; height: 12cqh; }
     .play-card.on .card.preview { transform: translateY(-12px); box-shadow: 0 0 0 2px var(--gold), 0 12px 20px rgba(0, 0, 0, 0.35); }
     .party {
-      flex: 1 1 62%;
+      flex: 0 0 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -535,12 +543,12 @@
       border-color: #ffe7a3;
       box-shadow: 0 0 16px rgba(242, 193, 78, 0.55);
     }
-    .handbar { flex: 1; width: 100%; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; overflow-x: auto; container-type: size; }
-    .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+    .handbar { flex: 0 0 auto; width: 100%; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; overflow-x: auto; }
+    .pile { width: auto; height: auto; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
       width: auto;
-      height: min(calc(168px * var(--hand-scale)), calc(100cqh * 168 / 300));
+      height: calc(168px * var(--hand-scale));
       aspect-ratio: 118 / 168;
       border-radius: 14px;
     }
@@ -586,7 +594,7 @@
       font-weight: 600;
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
+    .hand { flex: 1 1 auto; height: auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
     .battle-log {
       flex: 0 0 8.333%;
       height: 100%;
@@ -737,7 +745,7 @@
       flex: 0 0 auto;
       width: auto;
       max-width: none;
-      height: min(calc(300px * var(--hand-scale)), 100cqh);
+      height: calc(300px * var(--hand-scale));
       aspect-ratio: 204 / 300;
     }
     .hand .card.deal {
