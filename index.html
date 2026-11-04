@@ -6,6 +6,7 @@
   <title>わちゅえりカードゲーム</title>
   <style>
     :root {
+      --hand-scale: 1.5;
       --bg: #12100e;
       --ink: #2a2118;
       --cream: #f4ead7;
@@ -107,15 +108,22 @@
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
         url("dungeon-bg.jpg") center 38% / cover no-repeat;
     }
-    .enemy-field { display: flex; align-items: stretch; gap: 12px; width: 100%; flex: 1 1 auto; min-height: 0; }
+    .enemy-field { position: relative; display: flex; align-items: stretch; gap: 12px; width: 100%; flex: 1 1 auto; min-height: 0; }
     .enemy-main {
-      flex: 1 1 75%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      width: max-content;
+      max-width: 70%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
+      pointer-events: none;
     }
     .intent { flex: none; text-align: center; background: transparent; border: 0; padding: 0; }
     .intent .now { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 32px; font-weight: 800; line-height: 1.2; }
@@ -131,6 +139,8 @@
     .act.block { color: var(--block); }
     .act.skill { color: var(--gold); }
     .skill-note, .trait-note {
+      position: relative;
+      z-index: 2;
       flex: 0 0 25%;
       box-sizing: border-box;
       display: flex;
@@ -148,11 +158,19 @@
     }
     .trait-note .trait-label { color: var(--gold); font-size: 13px; letter-spacing: 0.14em; }
     .foe-next {
+      position: relative;
+      z-index: 2;
       flex: 0 0 25%;
+      margin-left: auto;
       min-width: 0;
+      min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
+      padding: 6px;
+      container-type: size;
+      overflow: hidden;
     }
     .card.preview {
       flex: none;
@@ -167,6 +185,29 @@
     .card.preview .name { min-height: 32px; padding: 6px 6px 2px 38px; font-size: 15px; }
     .card.preview .fx b { font-size: 22px; }
     .card.preview .fx .ico { width: 22px; height: 22px; }
+    .foe-next .card.preview {
+      width: min(100cqw, calc(100cqh * 204 / 300));
+      height: auto;
+      max-width: none;
+      max-height: none;
+      aspect-ratio: 204 / 300;
+      container-type: size;
+    }
+    .foe-next .card.preview .cost {
+      width: 14cqh;
+      height: 14cqh;
+      font-size: 8cqh;
+      border-width: 0.5cqh;
+      top: 2cqh;
+      left: 2cqh;
+    }
+    .foe-next .card.preview .name {
+      min-height: 14cqh;
+      padding: 3cqh 2cqh 1cqh 18cqh;
+      font-size: 7cqh;
+    }
+    .foe-next .card.preview .fx b { font-size: 12cqh; }
+    .foe-next .card.preview .fx .ico { width: 10cqh; height: 10cqh; }
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
     .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .reward-pick .card.preview { width: 132px; height: 184px; }
@@ -202,7 +243,28 @@
     .sprite .eye.l { left: 54px; }
     .sprite .eye.r { right: 54px; }
     .sprite { overflow: hidden; }
-    .sprite.slash { animation: shake 0.45s linear; }
+    .sprite.slash { animation: shake 0.45s linear; overflow: visible; }
+    .dmg-pop {
+      position: absolute;
+      left: 50%;
+      top: 22%;
+      z-index: 5;
+      margin: 0;
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1;
+      color: #fff8ee;
+      text-shadow: 0 3px 0 #6e1610, 0 0 12px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+      animation: dmg-pop 1.05s ease-out forwards;
+    }
+    .dmg-pop.me {
+      position: fixed;
+      top: 42%;
+      z-index: 26;
+      font-size: 72px;
+      animation-duration: 1.15s;
+    }
     .sprite .cut {
       position: absolute;
       left: -46%;
@@ -303,6 +365,7 @@
     .attr.atk .mark { color: var(--attack); }
     .attr.def .mark { color: var(--block); }
     .attr.spd .mark { color: var(--gold); }
+    .attr.nrg .mark { color: var(--gold); }
     .attr span {
       color: var(--gold);
       font-size: 15px;
@@ -369,12 +432,13 @@
       border-color: #ffe7a3;
       box-shadow: 0 0 12px rgba(242, 193, 78, 0.55);
     }
-    .handbar { flex: 1; width: 100%; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 0; }
-    .pile { width: 118px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .handbar { flex: 1; width: 100%; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; overflow-x: auto; container-type: size; }
+    .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
-      width: 118px;
-      height: 168px;
+      width: auto;
+      height: min(calc(168px * var(--hand-scale)), calc(100cqh * 168 / 300));
+      aspect-ratio: 118 / 168;
       border-radius: 14px;
     }
     .pile-card.back {
@@ -400,7 +464,7 @@
       inset: 0;
       display: grid;
       place-items: center;
-      font-size: 68px;
+      font-size: calc(68px * var(--hand-scale));
       font-weight: 800;
       line-height: 1;
       color: #fff8ee;
@@ -419,9 +483,9 @@
       font-weight: 600;
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hand { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
+    .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
     .battle-log {
-      flex: 0 0 16.666%;
+      flex: 0 0 8.333%;
       height: 100%;
       overflow: auto;
       padding: 14px 10px;
@@ -435,10 +499,10 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      padding: 12px 8px;
+      padding: 12px 32px;
       border-right: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .gear-rail h2, .battle-log h2 {
+    .gear-rail .party-attrs { margin-top: auto; }
       margin: 0 0 4px;
       font-size: 13px;
       letter-spacing: 0.08em;
@@ -446,8 +510,8 @@
     }
     .gear-board {
       display: grid;
-      grid-template-columns: repeat(2, max-content);
-      gap: 8px 10px;
+      grid-template-columns: repeat(2, 208px);
+      gap: 8px 40px;
       justify-content: center;
     }
     .gear-slot {
@@ -469,7 +533,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 52px;
+      width: 208px;
       height: 52px;
       flex: none;
       overflow: hidden;
@@ -501,10 +565,10 @@
     .card {
       width: auto;
       flex: 1 1 0;
-      max-width: 204px;
+      max-width: calc(204px * var(--hand-scale));
       min-width: 0;
-      margin-inline: -22px;
-      height: min(300px, 44vh);
+      margin-inline: calc(-22px * var(--hand-scale));
+      height: min(calc(300px * var(--hand-scale)), calc(44vh * var(--hand-scale)));
       border-radius: 16px;
       border: 3px solid transparent;
       padding: 0;
@@ -520,6 +584,13 @@
       transform: translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
       transform-origin: center bottom;
       transition: transform 0.15s ease;
+    }
+    .hand .card {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+      height: min(calc(300px * var(--hand-scale)), 100cqh);
+      aspect-ratio: 204 / 300;
     }
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
@@ -541,12 +612,12 @@
       position: absolute;
       top: 6px;
       left: 6px;
-      width: 36px;
-      height: 36px;
+      width: calc(36px * var(--hand-scale));
+      height: calc(36px * var(--hand-scale));
       border-radius: 50%;
       background: #fff;
       color: #1a120e;
-      font-size: 22px;
+      font-size: calc(22px * var(--hand-scale));
       font-weight: 800;
       display: grid;
       place-items: center;
@@ -555,9 +626,9 @@
     }
     .card .name {
       margin: 0;
-      min-height: 42px;
-      padding: 9px 8px 4px 46px;
-      font-size: 18px;
+      min-height: calc(42px * var(--hand-scale));
+      padding: calc(9px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(4px * var(--hand-scale)) calc(46px * var(--hand-scale));
+      font-size: calc(18px * var(--hand-scale));
       font-weight: 800;
       letter-spacing: 0.04em;
       line-height: 1.2;
@@ -584,8 +655,8 @@
       padding: 8px;
     }
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
-    .card .fx b { font-size: 30px; color: #1a120e; }
-    .card .fx .ico { width: 32px; height: 32px; color: #1a120e; }
+    .card .fx b { font-size: calc(30px * var(--hand-scale)); color: #1a120e; }
+    .card .fx .ico { width: calc(32px * var(--hand-scale)); height: calc(32px * var(--hand-scale)); color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
     .end {
       width: 124px;
@@ -717,6 +788,12 @@
       50% { transform: translateX(5px); }
       75% { transform: translateX(-3px); }
     }
+    @keyframes dmg-pop {
+      0% { opacity: 0; transform: translate(-50%, 10px) scale(0.7); }
+      12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      62% { opacity: 1; transform: translate(-50%, -12px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -28px) scale(1); }
+    }
     @keyframes slash {
       0% { opacity: 0; transform: rotate(-48deg) translateX(-22%) scaleX(0.25); }
       16% { opacity: 1; transform: rotate(-34deg) translateX(0) scaleX(1); }
@@ -737,7 +814,7 @@
       100% { opacity: 0; }
     }
     @media (max-width: 720px) {
-      .card { width: 128px; height: 176px; }
+      .hand .card { height: min(calc(176px * var(--hand-scale)), 100cqh); }
       .sprite { width: 180px; height: 136px; }
       .sprite .eye { top: 50px; width: 20px; height: 20px; }
       .sprite .eye.l { left: 46px; }
@@ -832,10 +909,12 @@
     let hpStamp = 0;
     let fxSlash = false;
     let fxHurt = false;
+    let fxHit = null;
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const BATTLE_TOTAL = 3;
+    const MANA = 3;
     const DUNGEON_NAME = "仮の三連戦";
 
     function shuffle(list) {
@@ -926,6 +1005,10 @@
 
     function heartIcon() {
       return `<svg class="ico heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 20.4 10.7 19.2C5.5 14.6 2.2 11.6 2.2 8 2.2 5 4.6 2.6 7.6 2.6c1.7 0 3.4.8 4.4 2.1 1-1.3 2.7-2.1 4.4-2.1 3 0 5.4 2.4 5.4 5.4 0 3.6-3.3 6.6-8.5 11.2L12 20.4z"/></svg>`;
+    }
+
+    function manaIcon() {
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>`;
     }
 
     function bootIcon() {
@@ -1054,10 +1137,18 @@
       return `${label}の${base}ダメージ。攻撃で${bonus}加算し、${base + bonus}。`;
     }
 
+    function noteHit(side, landed, swung) {
+      const n = landed > 0 ? landed : swung;
+      if (n > 0) fxHit = { side, n };
+    }
+
     function takeEnemyHit(raw, label) {
       const cut = mitigate(raw, player.def);
       const result = applyDamage(player, cut.dealt);
-      if (result.hpLoss > 0) fxHurt = true;
+      if (result.hpLoss > 0) {
+        fxHurt = true;
+        noteHit("player", result.hpLoss, cut.dealt);
+      }
       log(hurtSentence(label || enemy.name, raw, cut.reduced, result));
     }
 
@@ -1091,7 +1182,10 @@
         const bonus = player.atk || 0;
         const amount = card.damage + bonus;
         const result = applyDamage(enemy, amount);
-        if (amount > 0 && (result.hpLoss || result.blocked)) fxSlash = true;
+        if (amount > 0 && (result.hpLoss || result.blocked)) {
+          fxSlash = true;
+          noteHit("enemy", result.hpLoss, amount);
+        }
         log(strikeSentence(card.name, card.damage, bonus, result));
       }
       if (card.block) {
@@ -1106,7 +1200,7 @@
       const card = hand[index];
       if (!card) return;
       if (player.energy < card.cost) {
-        note = "エネルギーが足りない";
+        note = "マナが足りない";
         render();
         return;
       }
@@ -1170,8 +1264,8 @@
       }
       turn += 1;
       player.block = 0;
-      player.maxEnergy = Math.min(10, player.maxEnergy + 1);
-      player.energy = player.maxEnergy;
+      player.maxEnergy = MANA;
+      player.energy = MANA;
       draw(3);
       phase = "player";
       render();
@@ -1287,6 +1381,8 @@
         player.def = player.def || 0;
         player.maxHp = 30;
         if (player.hp > player.maxHp) player.hp = player.maxHp;
+        player.maxEnergy = MANA;
+        if (player.energy > MANA) player.energy = MANA;
       }
       if (enemy) enemy.hit = false;
       gear = normalizeGear(data.gear);
@@ -1408,9 +1504,9 @@
       root.innerHTML = `
         <div class="menu">
           <h1>せってい</h1>
-          ${menuButton(showLog ? "経過の表示：オン" : "経過の表示：オフ", "toggle-log", true)}
+          ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "使い切ったらターン終了：オン" : "使い切ったらターン終了：オフ", "toggle-auto-end", true)}
-          <p>エネルギーが0になったら、ターンを終える。手札にコスト0があるときは終わらない。</p>
+          <p>マナが0になったら、ターンを終える。手札にコスト0があるときは終わらない。</p>
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -1534,15 +1630,18 @@
 
       const slashNow = fxSlash;
       const hurtNow = fxHurt;
+      const hitNow = fxHit;
       fxSlash = false;
       fxHurt = false;
+      fxHit = null;
       const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
         <div class="battle-screen${hurtNow ? " hurt" : ""}">
         ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}</aside>
+        ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me">${hitNow.n}</b>` : ""}
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>NRG</span><b>${player.energy}</b></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -1561,6 +1660,7 @@
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
               <i class="eye l"></i><i class="eye r"></i>
               ${slashNow ? `<span class="cut a"></span><span class="cut b"></span><span class="cut c"></span>` : ""}
+              ${slashNow && hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop">${hitNow.n}</b>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}</h2>
@@ -1580,13 +1680,7 @@
                 ${meters("player", shownPlayer(), player.maxHp, player.block)}
                 <div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div>
               </div>
-              <div class="energy-pips" aria-label="エネルギー ${player.energy}">${pips()}</div>
-            </div>
-            <div class="party-attrs" aria-label="ステータス">
-              <div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div>
-              <div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div>
-              <div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>
-              <div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div>
+              <div class="energy-pips" aria-label="NRG ${player.energy}">${pips()}</div>
             </div>
             </div>
             <div class="handbar">
@@ -1597,7 +1691,7 @@
             </div>
           </section>
         </div>
-        ${showLog ? `<aside class="battle-log"><h2>経過</h2>${logHtml}</aside>` : ""}
+        ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
         </div>
         ${overlay}
         ${leaveOverlay}`;
