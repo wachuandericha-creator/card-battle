@@ -2025,7 +2025,7 @@
             ${menuButton("攻略する", "new", true)}
             ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
             ${menuButton("アルバム", "album")}
-            ${menuButton("せってい", "settings")}
+            ${menuButton("オプション", "settings")}
           </div>
         </div>`;
     }
@@ -2033,7 +2033,7 @@
     function renderSettings() {
       root.innerHTML = `
         <div class="menu">
-          <h1>せってい</h1>
+          <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "使い切ったらターン終了：オン" : "使い切ったらターン終了：オフ", "toggle-auto-end", true)}
           <p>マナが0になったら、ターンを終える。手札にコスト0があるときは終わらない。</p>
@@ -2395,7 +2395,7 @@
             </div>
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
-              <button type="button" class="small-btn" data-action="settings">せってい</button>
+              <button type="button" class="small-btn" data-action="settings">オプション</button>
               <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>
             </div>
           </header>
