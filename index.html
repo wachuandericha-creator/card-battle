@@ -147,10 +147,10 @@
     .hero-shoulder {
       position: absolute;
       left: 0;
-      bottom: -10%;
+      bottom: 0;
       z-index: 3;
-      width: min(54%, 420px);
-      height: 132%;
+      width: min(52%, 420px);
+      height: 100%;
       pointer-events: none;
       display: flex;
       align-items: flex-end;
@@ -349,8 +349,6 @@
       height: 16px;
       background: #f4ead7;
       border-radius: 50%;
-      transform-origin: center;
-      animation: foe-blink 5.4s ease-in-out infinite;
     }
     .sprite .eye::after {
       content: "";
@@ -361,10 +359,9 @@
       border-radius: 50%;
       top: 5px;
       left: 5px;
-      animation: foe-look 7.2s ease-in-out infinite;
     }
     .sprite .eye.l { left: 34px; }
-    .sprite .eye.r { right: 34px; animation-delay: 0.12s; }
+    .sprite .eye.r { right: 34px; }
     .sprite { overflow: hidden; }
     .sprite.slash { animation: shake 0.45s linear; overflow: visible; }
     .dmg-pop {
@@ -1196,15 +1193,6 @@
       25% { transform: translateX(-6px); }
       50% { transform: translateX(5px); }
       75% { transform: translateX(-3px); }
-    }
-    @keyframes foe-blink {
-      0%, 40%, 50%, 100% { transform: scaleY(1); }
-      45% { transform: scaleY(0.14); }
-    }
-    @keyframes foe-look {
-      0%, 100% { transform: translate(0, 0); }
-      38% { transform: translate(1px, 0); }
-      72% { transform: translate(-1px, 1px); }
     }
     @keyframes dmg-pop {
       0% { opacity: 0; transform: translate(-50%, 10px) scale(0.7); }
@@ -2687,7 +2675,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><canvas class="hero-fig hero-live" aria-label="戦士"></canvas></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=4" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
@@ -3144,7 +3132,6 @@
       enemy.hit = false;
       persistLive();
       kickHp();
-      startHeroIdle();
     }
 
     root.addEventListener("click", (event) => {
