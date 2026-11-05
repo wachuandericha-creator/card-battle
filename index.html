@@ -487,10 +487,17 @@
       min-height: 0;
       height: 100%;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: stretch;
       gap: 12px;
       padding: 0 8px;
+    }
+    .play-dock {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 100%;
+      min-width: 0;
     }
     .play-side {
       display: grid;
@@ -510,6 +517,9 @@
       box-shadow: inset 0 0 0 2px rgba(228, 177, 90, 0.88);
     }
     .play-side.foe {
+      flex: none;
+      width: auto;
+      height: 100%;
       background: rgba(176, 42, 32, 0.2);
       box-shadow: inset 0 0 0 2px rgba(255, 92, 74, 0.9);
     }
@@ -951,7 +961,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal { animation: none; }
+      .hand .card.deal, .fly-card { animation: none; transition: none; }
       .pip.on, .pip.on::before, .pip.on::after { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
     }
@@ -1052,6 +1062,8 @@
       width: 124px;
       height: 124px;
       flex: none;
+      align-self: flex-end;
+      margin-bottom: 8px;
       border-radius: 18px;
       border: 2px solid var(--gold);
       background: transparent;
@@ -1059,6 +1071,13 @@
       font-size: 16px;
       font-weight: 800;
       cursor: pointer;
+    }
+    .fly-card {
+      position: fixed;
+      margin: 0;
+      z-index: 24;
+      pointer-events: none;
+      transform-origin: center center;
     }
     .end:disabled { opacity: 0.4; cursor: default; }
     .end:not(:disabled):hover { background: rgba(228, 177, 90, 0.12); }
@@ -1997,28 +2016,81 @@
     }
 
     function playCard(index) {
-      if (phase !== "player" || outcome) return;
+      if (phase !== "player" || outcome) return false;
       const card = hand[index];
-      if (!card) return;
+      if (!card) return false;
       if (player.energy < card.cost) {
         note = "マナが足りない";
         render();
-        return;
+        return false;
       }
       player.energy -= card.cost;
       hand.splice(index, 1);
       inPlay.push(card);
       note = "";
       pullFromBracelets();
-      if (!hand.length) {
+      if (!hand.length || (autoEndTurn && player.energy <= 0 && !hand.some((item) => item.cost === 0))) {
         endTurn();
-        return;
-      }
-      if (autoEndTurn && player.energy <= 0 && !hand.some((card) => card.cost === 0)) {
-        endTurn();
-        return;
+        return true;
       }
       render();
+      return true;
+    }
+
+    function handCardBox(index) {
+      const cardEl = document.querySelector(`.hand [data-card="${index}"]`);
+      if (!cardEl) return null;
+      const rect = cardEl.getBoundingClientRect();
+      return {
+        cx: rect.left + rect.width / 2,
+        cy: rect.top + rect.height / 2,
+        w: cardEl.offsetWidth,
+        h: cardEl.offsetHeight,
+        fan: parseFloat(cardEl.style.getPropertyValue("--fan")) || 0,
+      };
+    }
+
+    function flyCardToPlay(from) {
+      if (!from || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const target = document.querySelector(".play-side.mine .play-card:last-child .card");
+      if (!target) return;
+      const to = target.getBoundingClientRect();
+      if (!to.width || !to.height || !from.w || !from.h) return;
+      const ghost = target.cloneNode(true);
+      const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : "skill";
+      ghost.className = `card fly-card ${kind}`;
+      ghost.style.left = `${from.cx - from.w / 2}px`;
+      ghost.style.top = `${from.cy - from.h / 2}px`;
+      ghost.style.width = `${from.w}px`;
+      ghost.style.height = `${from.h}px`;
+      ghost.style.transition = "none";
+      ghost.style.transform = `rotate(${from.fan}deg)`;
+      document.body.appendChild(ghost);
+      target.style.visibility = "hidden";
+      const dx = to.left + to.width / 2 - from.cx;
+      const dy = to.top + to.height / 2 - from.cy;
+      const scale = to.height / from.h;
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        ghost.remove();
+        if (target.isConnected) target.style.visibility = "";
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.45s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transform = `translate(${dx}px, ${dy}px) rotate(0deg) scale(${scale})`;
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 560);
+    }
+
+    function playFromHand(index) {
+      const from = handCardBox(index);
+      if (!playCard(index)) return;
+      flyCardToPlay(from);
     }
 
     function scrapPlay() {
@@ -2580,7 +2652,8 @@
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length)}</div></div></div>`;
+      const end = `<button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-dock"><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length)}</div></div>${end}</div></div>`;
     }
 
     let heroImage = null;
@@ -3059,7 +3132,6 @@
               ${pileMarkup("deck", deck.length)}
               <div class="hand">${cards}</div>
               ${pileMarkup("discard", discard.length)}
-              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
             </div>
           </div>
         </div>
@@ -3120,7 +3192,7 @@
         return;
       }
       const card = el.closest("[data-card]");
-      if (card) playCard(Number(card.dataset.card));
+      if (card) playFromHand(Number(card.dataset.card));
       if (el.closest("[data-end]")) endTurn();
     });
 
@@ -3132,7 +3204,7 @@
       }
       if (event.key === "Enter") endTurn();
       if (event.key === "1" || event.key === "2" || event.key === "3") {
-        playCard(Number(event.key) - 1);
+        playFromHand(Number(event.key) - 1);
       }
     });
 
