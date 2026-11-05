@@ -629,6 +629,7 @@
       pointer-events: none;
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
+    .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
     .energy-pips { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     .pip {
       width: 56px;
@@ -985,6 +986,7 @@
       padding: 3cqw;
     }
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
+    .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; }
     .card .fx b { font-size: 14cqw; color: #1a120e; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
@@ -1262,9 +1264,10 @@
         rank: "雑魚",
         hp: 22,
         pattern: [
-          { name: "斬り", cost: 1, text: "8ダメージ", damage: 8 },
-          { name: "備え", cost: 2, text: "ブロック10", block: 10 },
-          { name: "強打", cost: 2, text: "13ダメージ", damage: 13 },
+          { name: "アタック+", cost: 1, text: "9ダメージ", damage: 9 },
+          { name: "ブロック+", cost: 1, text: "ブロック7", block: 7 },
+          { name: "スライム粘液", cost: 1, text: "相手を毒状態にする\n毎ターン毒だけダメージ", poison: true },
+          { name: "ボディプレス", cost: 2, text: "ブロックの数だけダメージ\nブロックがなければ0", press: true },
         ],
       },
       {
@@ -1308,6 +1311,8 @@
     let enemy = null;
     let turn = 0;
     let intentIndex = 0;
+    let enemyLoop = [];
+    const POISON_DAMAGE = 0;
     let phase = "player";
     let note = "";
     let banner = "";
@@ -1580,9 +1585,40 @@
       return `<span class="act skill ${size}" aria-label="スキル">★</span>`;
     }
 
+    function sourcePattern() {
+      return (enemyNow().pattern || []).map((card) => ({ ...card }));
+    }
+
+    function deckKey(cards) {
+      return (cards || []).map((card) => card.name).sort().join("|");
+    }
+
+    function startEnemyLoop(first) {
+      enemyLoop = shuffle(sourcePattern());
+      intentIndex = first && enemyLoop.length ? Math.floor(Math.random() * enemyLoop.length) : 0;
+    }
+
+    function advanceEnemyLoop() {
+      intentIndex += 1;
+      if (enemyLoop.length && intentIndex >= enemyLoop.length) startEnemyLoop(false);
+    }
+
+    function restoreEnemyLoop(data) {
+      const saved = Array.isArray(data.enemyLoop) ? data.enemyLoop : [];
+      if (saved.length && deckKey(saved) === deckKey(sourcePattern())) {
+        enemyLoop = saved.map((card) => ({ ...card }));
+        intentIndex = Number.isInteger(data.intentIndex) ? data.intentIndex : 0;
+        if (intentIndex < 0 || intentIndex >= enemyLoop.length) startEnemyLoop(false);
+        return;
+      }
+      startEnemyLoop(true);
+    }
+
     function intentAt(offset) {
-      const pattern = enemyNow().pattern;
-      return pattern[(intentIndex + offset) % pattern.length];
+      if (!enemyLoop.length) startEnemyLoop(false);
+      const at = intentIndex + (offset || 0);
+      if (at >= 0 && at < enemyLoop.length) return enemyLoop[at];
+      return enemyLoop[Math.min(intentIndex, enemyLoop.length - 1)];
     }
 
     function applyDamage(target, amount) {
@@ -1709,6 +1745,41 @@
       if (n > 0) fxHit = { side, n };
     }
 
+    function poisonSentence(name, raw, reduced, result) {
+      let line = `${name}は毒で${raw}ダメージ。`;
+      if (reduced) line += `防御で${reduced}軽減し、`;
+      if (!result.hpLoss && !result.blocked) return `${line}防いだ。`;
+      if (result.blocked && result.hpLoss) return `${line}ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+      if (result.blocked) return `${line}残りはブロックで防いだ。`;
+      return reduced ? `${line}体力${result.hpLoss}。` : line;
+    }
+
+    function tickPoison(who) {
+      const target = who === "player" ? player : enemy;
+      if (!target || !target.poison || POISON_DAMAGE <= 0) return false;
+      const name = who === "player" ? CHARACTER_NAME : enemy.name;
+      if (who === "player" && player.parry) {
+        player.parry = false;
+        log(`${name}は毒で${POISON_DAMAGE}ダメージ。パリィで無効。`);
+        return false;
+      }
+      const defense = who === "player" ? player.def : 0;
+      const cut = mitigate(POISON_DAMAGE, defense);
+      const result = applyDamage(target, cut.dealt);
+      if (who === "player") {
+        if (result.hpLoss > 0) {
+          fxHurt = true;
+          noteHit("player", result.hpLoss, cut.dealt);
+        }
+        if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
+      } else if (result.hpLoss || result.blocked) {
+        fxSlash = true;
+        noteHit("enemy", result.hpLoss, POISON_DAMAGE);
+      }
+      log(poisonSentence(name, POISON_DAMAGE, cut.reduced, result));
+      return target.hp <= 0;
+    }
+
     function takeEnemyHit(raw, label) {
       if (player.parry) {
         player.parry = false;
@@ -1809,6 +1880,25 @@
         }
         return;
       }
+      if (card.press) {
+        const amount = player.block || 0;
+        if (!amount) {
+          log(`${CHARACTER_NAME}は${card.name}。ブロックが無く、0ダメージ。`);
+          return;
+        }
+        const result = applyDamage(enemy, amount);
+        if (result.hpLoss || result.blocked) {
+          fxSlash = true;
+          noteHit("enemy", result.hpLoss, amount);
+        }
+        log(damageSentence(CHARACTER_NAME, card.name, amount, result));
+        return;
+      }
+      if (card.poison) {
+        enemy.poison = true;
+        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒状態。`);
+        return;
+      }
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
       if (added) player.focus = 0;
       if (card.damage) {
@@ -1886,16 +1976,28 @@
       } else {
         logTurn("enemy");
         const card = intentAt(0);
-        enemy.block = 0;
-        if (card.damage) {
+        if (tickPoison("enemy")) {
+          scrapPlay();
+          scheduleFinish("win");
+          return;
+        }
+        if (!card.press) enemy.block = 0;
+        if (card.press) {
+          const amount = enemy.block || 0;
+          if (amount > 0) takeEnemyHit(amount, card.name);
+          else log(`${enemy.name}は${card.name}。ブロックが無く、0ダメージ。`);
+        } else if (card.damage) {
           takeEnemyHit(card.damage, card.name);
         } else if (card.block) {
           enemy.block += card.block;
           log(`${enemy.name}は${card.name}でブロック${card.block}。`);
+        } else if (card.poison) {
+          player.poison = true;
+          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`);
         } else {
           log(`${enemy.name}は${card.name}。${card.text}`);
         }
-        intentIndex = (intentIndex + 1) % enemyNow().pattern.length;
+        advanceEnemyLoop();
         if (player.hp <= 0) {
           scrapPlay();
           scheduleFinish("lose");
@@ -1931,6 +2033,10 @@
       if (player.parry) {
         player.parry = false;
         log(`${CHARACTER_NAME}のパリィが消えた。`);
+      }
+      if (tickPoison("player")) {
+        finish("lose");
+        return;
       }
       player.maxEnergy = MANA;
       player.energy = MANA;
@@ -2025,6 +2131,7 @@
         battleIndex,
         turn,
         intentIndex,
+        enemyLoop,
         phase,
         note,
         banner,
@@ -2108,9 +2215,11 @@
         if (player.energy > MANA) player.energy = MANA;
         player.focus = player.focus || 0;
         player.parry = !!player.parry;
+        player.poison = !!player.poison;
       }
       if (enemy) {
         enemy.hit = false;
+        enemy.poison = !!enemy.poison;
         if (enemy.name === "仮の相手") enemy.name = "スライム";
       }
       gear = normalizeGear(data.gear);
@@ -2131,6 +2240,7 @@
         }
       }
       battleTotal = route.length;
+      restoreEnemyLoop(data);
       retreatUsed = !!data.retreatUsed;
       rewardReady = !!data.rewardReady;
       rewardStars = data.rewardStars || 0;
@@ -2149,13 +2259,13 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, hit: false };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, poison: false, hit: false };
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
+      enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, poison: false, hit: false };
       bindShown();
       turn = 0;
-      intentIndex = 0;
+      startEnemyLoop(true);
       phase = "player";
       note = "";
       banner = "";
@@ -2371,6 +2481,8 @@
     function cardKind(card) {
       if (card.parry) return "block";
       if (card.focus) return "skill";
+      if (card.press) return "attack";
+      if (card.poison) return "skill";
       if (card.damage && !card.block) return "attack";
       if (card.block && !card.damage) return "block";
       return "skill";
@@ -2380,7 +2492,7 @@
       const effects = [
         card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
-      ].join("") || `<span class="fx">${esc(card.text)}</span>`;
+      ].join("") || `<span class="fx note">${esc(card.text).replaceAll("\n", "<br>")}</span>`;
       return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div></div>`;
     }
 
@@ -2440,6 +2552,8 @@
       const next = { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
       if (card.focus) next.focus = card.focus;
       if (card.parry) next.parry = true;
+      if (card.poison) next.poison = true;
+      if (card.press) next.press = true;
       return next;
     }
 
@@ -2635,7 +2749,7 @@
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
         ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 ${player.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -2661,7 +2775,7 @@
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}${bossNow() ? "　ボス" : ""}</h2>
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
-              <div class="hp-line">体力 <b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
+              <div class="hp-line">体力 ${enemy.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
