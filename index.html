@@ -176,8 +176,8 @@
       top: 7%;
       left: auto;
       z-index: 1;
-      width: 34%;
-      max-width: 34%;
+      width: 46%;
+      max-width: 520px;
       min-width: 0;
       display: flex;
       flex-direction: column;
@@ -383,14 +383,20 @@
     .cast-blank { min-height: 1.4em; color: var(--muted); }
     .sprite {
       flex: none;
-      width: 132px;
-      height: 98px;
-      border-radius: 46% 46% 40% 40%;
-      background:
-        radial-gradient(circle at 30% 30%, #8d847c, transparent 40%),
-        linear-gradient(160deg, #6e675f, #3c3834 60%, #2a2724);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 -10px 16px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      height: min(38vh, 340px);
+      background: none;
+      box-shadow: none;
       position: relative;
+    }
+    .sprite img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 14px 12px rgba(0, 0, 0, 0.55));
+      -webkit-mask-image: radial-gradient(ellipse at 50% 46%, #000 62%, transparent 80%);
+      mask-image: radial-gradient(ellipse at 50% 46%, #000 62%, transparent 80%);
     }
     .sprite .eye {
       position: absolute;
@@ -1386,7 +1392,7 @@
     }
     @media (max-width: 720px) {
       .hand .card { height: calc(100% - 8px); }
-      .sprite { width: 108px; height: 80px; }
+      .sprite { width: 100%; height: min(28vh, 200px); }
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
@@ -1427,6 +1433,7 @@
     const ENEMIES = [
       {
         name: "スライム",
+        image: "enemy-slime.jpg",
         tier: 1,
         rank: "雑魚",
         hp: 22,
@@ -1439,6 +1446,7 @@
       },
       {
         name: "荒くれ",
+        image: "enemy-goblin.jpg",
         tier: 2,
         rank: "普通",
         hp: 24,
@@ -1450,6 +1458,7 @@
       },
       {
         name: "重騎士",
+        image: "enemy-minotaur.jpg",
         tier: 3,
         rank: "強敵",
         hp: 30,
@@ -3388,7 +3397,7 @@
             ${traitNote()}
             <div class="enemy-main">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
-              <i class="eye l"></i><i class="eye r"></i>
+              <img src="${esc(enemy.image || "enemy-slime.jpg")}" alt="">
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
