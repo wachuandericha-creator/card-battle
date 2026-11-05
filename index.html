@@ -32,7 +32,7 @@
     .battle-screen {
       height: 100%;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) minmax(0, 8.333%);
+      grid-template-columns: auto minmax(0, 1fr) minmax(0, 12.5%);
       grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr);
       grid-template-areas:
         "gear hud log"
@@ -242,8 +242,9 @@
     .reward-pick .card.preview { width: 132px; height: auto; }
     .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
-    .path-list { display: flex; flex-direction: column; gap: 10px; width: min(440px, 100%); }
-    .path-list button { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 14px; width: min(920px, 100%); }
+    .path-list button { display: flex; flex-direction: column; gap: 6px; width: min(240px, 28vw); padding: 8px; }
+    .path-list button img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
     .path-list button span { font-weight: 650; font-size: 13px; }
     .deck-view .panel {
       width: min(1080px, calc(100vw - 48px));
@@ -354,6 +355,32 @@
       min-width: 4.2em;
       color: var(--gold);
     }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 0 0 18px;
+    }
+    .ref-grid figure { margin: 0; }
+    .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
+    .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
+    .cast-screen { min-height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 24px; }
+    .cast-row { display: flex; gap: 8px; }
+    .cast-mini { width: 72px; height: 84px; padding: 0; overflow: hidden; border: 2px solid var(--gold); background: #1a1614; }
+    .cast-mini .cast-front { width: 72px; height: 84px; }
+    .cast-body { flex: 1; display: grid; grid-template-columns: auto minmax(180px, 34vw) minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+    .cast-arrow { width: 64px; height: 64px; border-radius: 50%; font-size: 28px; }
+    .cast-front { overflow: hidden; background: #120e0c; }
+    .cast-front.big { height: min(72vh, 640px); }
+    .cast-front img { width: 500%; height: 100%; max-width: none; object-fit: cover; object-position: left center; }
+    .cast-mini .cast-front { height: 64px; }
+    .cast-info h1 { margin: 0 0 8px; color: var(--gold); }
+    .cast-info h2 { margin: 14px 0 6px; font-size: 16px; }
+    .cast-gear { display: flex; gap: 12px; }
+    .cast-gear figure { margin: 0; width: 96px; }
+    .cast-gear img { width: 96px; height: 96px; object-fit: cover; display: block; }
+    .cast-gear figcaption, .cast-deck { font-size: 14px; }
+    .cast-blank { min-height: 1.4em; color: var(--muted); }
     .sprite {
       flex: none;
       width: 132px;
@@ -403,8 +430,10 @@
     }
     .dmg-pop.me {
       position: fixed;
-      top: 36%;
+      left: 46%;
+      top: 42%;
       z-index: 26;
+      transform: translate(-50%, -50%);
       font-size: calc(124px + var(--pow, 0.35) * 96px);
       animation-name: dmg-pop-me;
       animation-duration: 1.85s;
@@ -482,7 +511,13 @@
       transform: translateX(-50%) rotate(7deg);
       animation: crack-flash 1.25s ease-out forwards;
     }
-    .dmg-pop.me { z-index: 27; }
+    .dmg-pop.foe-hit {
+      position: fixed;
+      left: 46%;
+      top: 42%;
+      z-index: 26;
+      transform: translate(-50%, -50%);
+    }
     .screen-heal {
       background:
         radial-gradient(circle at 50% 42%, rgba(214, 255, 226, 0.38), transparent 46%),
@@ -507,7 +542,7 @@
       min-height: 0;
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: stretch;
       gap: 12px;
       padding: 0 8px;
@@ -537,7 +572,6 @@
       box-shadow: inset 0 0 0 2px rgba(228, 177, 90, 0.88);
     }
     .play-side.foe {
-      flex: none;
       width: auto;
       height: 100%;
       background: rgba(176, 42, 32, 0.2);
@@ -696,7 +730,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    .energy-pips { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .energy-pips { display: flex; gap: 16px; justify-content: flex-start; flex-wrap: wrap; }
     .pip {
       position: relative;
       width: 56px;
@@ -706,12 +740,9 @@
       background: #241c16;
     }
     .pip.on {
-      background:
-        radial-gradient(circle at var(--hot-x) var(--hot-y), #fff 0 6px, rgba(255, 228, 150, 0.95) 10px, transparent 20px),
-        radial-gradient(circle at 50% 70%, #ffd56a 0%, #ff7a18 40%, #d42808 74%, #5a1206 100%);
-      border-color: #ffb06a;
-      box-shadow: 0 0 16px rgba(255, 80, 16, 0.8);
-      animation: mana-roil 0.38s linear infinite;
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
     }
     .pip.on .mana-fire {
       position: absolute;
@@ -722,13 +753,16 @@
       transform: translateX(-50%);
       pointer-events: none;
     }
-    .energy-band { display: flex; align-items: center; justify-content: center; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding-top: 8px; }
+    .energy-band { display: flex; align-items: flex-end; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 0 56px; gap: 128px; }
+    .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; }
+    .ailment-slot { display: flex; align-items: center; gap: 10px; min-height: 36px; color: var(--cream); font-weight: 800; }
+    .ailment-slot span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
       width: auto;
-      height: calc(100% - 28px);
+      height: 72%;
       aspect-ratio: var(--card-ratio);
       border-radius: 14px;
     }
@@ -773,7 +807,7 @@
       text-shadow: none;
       font-weight: 600;
     }
-    .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
+    .pile-label { font-size: 20px; letter-spacing: 0.12em; color: var(--cream); font-weight: 800; }
     .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
     .battle-log {
       min-width: 0;
@@ -972,9 +1006,16 @@
       .pip.on { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
     }
-    .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
-    .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
-    .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
+    .card.attack, .card.block, .card.skill {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255, 248, 230, 0.7), transparent 28%),
+        linear-gradient(180deg, #f7ead0 0%, #e7d3ae 100%);
+      color: #1a120e;
+      clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
+    }
+    .card.attack { border-color: #9d3a32; }
+    .card.block { border-color: #3a6ea6; }
+    .card.skill { border-color: #c9963c; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
@@ -995,9 +1036,10 @@
         inset 0 1px 0 rgba(255, 248, 230, 0.62),
         inset 0 -2px 0 rgba(0, 0, 0, 0.28);
     }
-    .card.attack .nameplate { background: linear-gradient(180deg, #f0c2b8 0%, #b55246 54%, #7a2e26 100%); color: #fff8f4; }
-    .card.block .nameplate { background: linear-gradient(180deg, #e4f0fb 0%, #5b90c6 56%, #2a5584 100%); color: #f7fbff; }
-    .card.skill .nameplate { background: linear-gradient(180deg, #fff6d8 0%, #f0c56a 56%, #c9963c 100%); color: #2a2118; }
+    .card.attack .nameplate, .card.block .nameplate, .card.skill .nameplate {
+      background: rgba(255, 248, 230, 0.55);
+      color: #1a120e;
+    }
     .card .cost {
       position: absolute;
       top: 50%;
@@ -1025,7 +1067,7 @@
       font-weight: 800;
       letter-spacing: 0.04em;
       line-height: 1.2;
-      text-align: left;
+      text-align: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1063,19 +1105,42 @@
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
     .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; }
     .card .fx b { font-size: 14cqw; color: #1a120e; }
+    .fx.attack b.up { color: #2f6fbe; }
+    .fx.attack b.down { color: #c0392b; }
+    .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
+    .hint i {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      z-index: 20;
+      width: max-content;
+      max-width: 240px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #1a120e;
+      color: #f6e2b6;
+      font-style: normal;
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: left;
+      white-space: normal;
+      transform: translateX(-50%);
+    }
+    .card:hover .hint i, .card:focus-within .hint i { display: block; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
     .end {
-      width: 124px;
-      height: 124px;
+      width: 92px;
+      height: 92px;
       flex: none;
       align-self: flex-end;
-      margin-bottom: 8px;
-      border-radius: 18px;
+      margin: 0 8px 8px;
+      border-radius: 50%;
       border: 2px solid var(--gold);
       background: transparent;
       color: var(--gold);
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
     }
@@ -1157,8 +1222,9 @@
     .title-hero h1 {
       margin: 0;
       color: var(--gold);
-      font-size: clamp(26px, 4.4vw, 48px);
-      letter-spacing: 0.22em;
+      font-size: clamp(40px, 6.2vw, 84px);
+      letter-spacing: 0.18em;
+      text-shadow: 0 3px 0 #6a4a16, 0 0 22px rgba(240, 195, 106, 0.55);
       text-align: center;
       line-height: 1.2;
       font-weight: 800;
@@ -1166,10 +1232,11 @@
     .title-hero h1::after {
       content: "";
       display: block;
-      width: 72px;
-      height: 2px;
-      margin: 12px auto 0;
-      background: var(--gold);
+      width: min(280px, 46vw);
+      height: 3px;
+      margin: 14px auto 0;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      box-shadow: 0 0 12px rgba(240, 195, 106, 0.7);
     }
     .title-actions {
       flex: 1 1 50%;
@@ -1239,8 +1306,7 @@
       position: fixed;
       inset: 0;
       z-index: 28;
-      display: grid;
-      place-items: center;
+      display: block;
       pointer-events: none;
       animation: turn-wash 1.15s ease-out forwards;
     }
@@ -1255,6 +1321,10 @@
         rgba(92, 16, 12, 0.42);
     }
     .turn-call b {
+      position: absolute;
+      left: 46%;
+      top: 34%;
+      transform: translate(-50%, -50%);
       margin: 0;
       font-size: min(11vw, 96px);
       font-weight: 800;
@@ -1263,6 +1333,8 @@
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 24px rgba(0, 0, 0, 0.45);
       animation: turn-word 1.15s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
+    .turn-call.player b { color: #f0c36a; }
+    .turn-call.enemy b { color: #e24b3a; }
     @keyframes turn-wash {
       0% { opacity: 0; }
       10% { opacity: 1; }
@@ -1344,7 +1416,7 @@
       チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
       集中: { cost: 0, text: "次の攻撃か防御の数値+2", focus: 2 },
-      パリィ: { cost: 3, text: "次のダメージを無効", parry: true },
+      パリィ: { cost: 3, text: "パリィを得る", parry: true, note: "パリィは次回の攻撃を無効化する。重複なし。攻撃を受けるまで残る。" },
     };
     const COMMON = {
       斬撃: { cost: 1, text: "6ダメージ", damage: 6 },
@@ -1454,6 +1526,7 @@
     let rewardStep = "cards";
     let bonusCard = null;
     const MANA = 3;
+    const HAND_CAP = 10;
     const CHARACTER_NAME = "戦士";
     const DUNGEON_NAME = "はじまりの洞窟";
     let meta = { uses: 0, clears: 0, stars: 0 };
@@ -1544,13 +1617,13 @@
     }
 
     const GEAR_ITEMS = [
-      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2" },
-      { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2" },
-      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2" },
-      { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1" },
-      { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", effect: "手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。" },
+      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-short-sword.jpg" },
+      { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg" },
+      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-buckler.jpg" },
+      { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg" },
+      { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-bracelet.jpg" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", effect: "手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-bracelet.jpg" },
     ];
 
     function emptyGear() {
@@ -1617,7 +1690,7 @@
       const weapons = `<div class="gear-pair">${sword}${shield}</div>`;
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const count = gear.medals || 0;
-      const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><span class="gear-mark">${medalIcon()}</span><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
+      const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><img src="gear-medal.jpg" alt=""><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
       const items = `<div class="gear-pair">${slotButton({ id: "itemL", label: "アイテム", aria: "使い捨て 左", icon: itemIcon() })}${slotButton({ id: "itemR", label: "アイテム", aria: "使い捨て 右", icon: itemIcon() })}</div>`;
       return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
@@ -1993,6 +2066,7 @@
 
     function draw(n) {
       for (let i = 0; i < n; i++) {
+        if (hand.length >= HAND_CAP) break;
         if (!deck.length) {
           if (!discard.length) break;
           deck = shuffle(discard);
@@ -2004,6 +2078,7 @@
     }
 
     function pullKind(kind) {
+      if (hand.length >= HAND_CAP) return null;
       const take = () => {
         for (let i = deck.length - 1; i >= 0; i--) {
           if (cardKind(deck[i]) === kind) return deck.splice(i, 1)[0];
@@ -2026,12 +2101,18 @@
       const right = gear.braceletR;
       const left = gear.braceletL;
       if (right && right.id === "chain-attack" && !hand.some((card) => cardKind(card) === "attack")) {
-        const card = pullKind("attack");
-        log(card ? `${CHARACTER_NAME}は${right.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${right.name}。山札に攻撃カードがない。`);
+        if (hand.length >= HAND_CAP) log(`${CHARACTER_NAME}は${right.name}。手札が10枚なので引かない。`);
+        else {
+          const card = pullKind("attack");
+          log(card ? `${CHARACTER_NAME}は${right.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${right.name}。山札に攻撃カードがない。`);
+        }
       }
       if (left && left.id === "chain-guard" && !hand.some((card) => cardKind(card) === "block")) {
-        const card = pullKind("block");
-        log(card ? `${CHARACTER_NAME}は${left.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${left.name}。山札に防御カードがない。`);
+        if (hand.length >= HAND_CAP) log(`${CHARACTER_NAME}は${left.name}。手札が10枚なので引かない。`);
+        else {
+          const card = pullKind("block");
+          log(card ? `${CHARACTER_NAME}は${left.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${left.name}。山札に防御カードがない。`);
+        }
       }
     }
 
@@ -2045,7 +2126,7 @@
         if (player.parry) log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`);
         else {
           player.parry = true;
-          log(`${CHARACTER_NAME}は${card.name}。次のダメージを無効。ターンが終わると消える。`);
+          log(`${CHARACTER_NAME}は${card.name}。パリィを得た。次の攻撃を無効。攻撃を受けるまで残る。`);
         }
         return;
       }
@@ -2252,17 +2333,13 @@
       logTurn("player");
       turn += 1;
       player.block = 0;
-      if (player.parry) {
-        player.parry = false;
-        log(`${CHARACTER_NAME}のパリィが消えた。`);
-      }
       if (tickPoison("player")) {
         finish("lose");
         return;
       }
       player.maxEnergy = MANA;
       player.energy = MANA;
-      draw(3);
+      draw(5);
       pullFromBracelets();
       fxDeal = true;
       turnCall = "player";
@@ -2596,7 +2673,7 @@
       root.innerHTML = `
         <div class="title-screen">
           <div class="title-hero">
-            <img class="title-art" src="title-art.jpg" alt="">
+            <img class="title-art" src="title-warrior.jpg" alt="女の戦士">
             <h1>わちゅえりカードゲーム</h1>
           </div>
           <div class="title-actions">
@@ -2621,12 +2698,34 @@
     }
 
     function renderCharacter() {
+      const deck = CARD_POOL.map(([name, count]) => `${name}×${count}`).join("、");
       root.innerHTML = `
-        <div class="menu">
-          <h1>キャラクター</h1>
-          <p>はじめのキャラクターは、${CHARACTER_NAME}。</p>
-          ${menuButton(CHARACTER_NAME, "character-next", true)}
-          ${menuButton("もどる", "title")}
+        <div class="cast-screen">
+          <div class="cast-row">
+            <button type="button" class="cast-mini" data-action="cast-stay" aria-label="${CHARACTER_NAME}"><span class="cast-front"><img src="warrior-f-sheet.jpg?v=1" alt=""></span></button>
+          </div>
+          <div class="cast-body">
+            <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="前のキャラ">◀</button>
+            <div class="cast-front big"><img src="warrior-f-sheet.jpg?v=1" alt="戦士の真正面"></div>
+            <div class="cast-info">
+              <h1>${CHARACTER_NAME}</h1>
+              <p>HP 30　ATK+2　DEF+2</p>
+              <h2>初期装備</h2>
+              <div class="cast-gear">
+                <figure><img src="gear-short-sword.jpg" alt=""><figcaption>ショートソード</figcaption></figure>
+                <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
+              </div>
+              <h2>初期デッキ</h2>
+              <p class="cast-deck">${deck}</p>
+              <h2>特長</h2>
+              <p class="cast-blank"></p>
+              <h2>遊び方</h2>
+              <p class="cast-blank"></p>
+              ${menuButton("このキャラではじめる", "character-next", true)}
+              ${menuButton("もどる", "title")}
+            </div>
+            <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="次のキャラ">▶</button>
+          </div>
         </div>`;
     }
 
@@ -2649,17 +2748,52 @@
         <div class="album-screen">
           <div class="panel">
             <h2>設定資料</h2>
-            <p class="album-meta">戦士。向きを変えても、この絵と文章から変えない。</p>
-            <img class="sheet-art" src="warrior-sheet.png?v=1" alt="戦士の設定資料。真正面、右向き、左向き、後ろ。">
-            <p class="sheet-cap">左から、真正面、右向き、左向き、後ろ。</p>
+            <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
+            <h3>戦士・女・赤</h3>
+            <img class="sheet-art" src="warrior-f-sheet.jpg?v=1" alt="女の戦士。真正面、右向き、左向き、斜め後ろ、後ろ。">
+            <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ。</p>
+            <h3>戦士・男・青</h3>
+            <img class="sheet-art" src="warrior-m-sheet.jpg?v=1" alt="男の戦士。真正面、右向き、左向き、斜め後ろ、後ろ。">
+            <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ。</p>
+            <h3>魔法使い・女・白</h3>
+            <img class="sheet-art" src="mage-f-sheet.jpg?v=1" alt="女の魔法使い。真正面、右向き、左向き、斜め後ろ、後ろ。">
+            <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ。</p>
+            <h3>魔法使い・男・黒</h3>
+            <img class="sheet-art" src="mage-m-sheet.jpg?v=1" alt="男の魔法使い。真正面、右向き、左向き、斜め後ろ、後ろ。">
+            <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ。</p>
             <div class="sheet-locks">
-              <p><b>体</b>2頭身の子ども。頭が大きく、手足は短い。大人の顔やひげは出さない。</p>
-              <p><b>髪</b>短い栗色。前髪はおでこにかかる。横も後ろも、この長さと形。</p>
-              <p><b>顔</b>丸い顔。大きな茶色の目。小さい鼻と口。ほっぺは丸い。口は小さく結ぶ。</p>
-              <p><b>服</b>赤い長そでのチュニック。首はクリーム色。胸に斜めの革ベルト。腰も茶色のベルト。茶色のブーツ。</p>
-              <p><b>右手</b>ロングソード。銀の刃、金のつば、茶色の柄。真正面と後ろでは右手。</p>
-              <p><b>左手</b>縦長の木の盾。真鍮のふちと、中心の金具。真正面と後ろでは左手。</p>
-              <p><b>戦闘</b>自分は、この後ろ姿。頭は後ろだけ。ポケモンの戦闘のように、手前の左に立つ。</p>
+              <p><b>体</b>2頭身。四人は別の人物。ジョブチェンジで性別は変えない。</p>
+              <p><b>戦士</b>女は赤、男は青。右手はロングソード。左手は木の盾。背中はリュック。胸の斜めベルトは無い。</p>
+              <p><b>魔法使い</b>女は白、男は黒。大きな帽子と杖。戦士の服、剣、盾、リュックは使わない。</p>
+              <p><b>戦闘</b>自分は、女の戦士の斜め後ろ。背中はリュック。敵はその奥。</p>
+            </div>
+            <h3>タイトル</h3>
+            <img class="sheet-art" src="title-warrior.jpg" alt="タイトルの女の戦士">
+            <h3>装備</h3>
+            <div class="ref-grid">
+              <figure><img src="gear-short-sword.jpg" alt=""><figcaption>ショートソード</figcaption></figure>
+              <figure><img src="gear-long-sword.jpg" alt=""><figcaption>ロングソード</figcaption></figure>
+              <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
+              <figure><img src="gear-leather-shield.jpg" alt=""><figcaption>皮の盾</figcaption></figure>
+              <figure><img src="gear-iron-shield.jpg" alt=""><figcaption>鉄の盾</figcaption></figure>
+              <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連撃の腕輪</figcaption></figure>
+              <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連守の腕輪</figcaption></figure>
+              <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
+            </div>
+            <h3>道</h3>
+            <div class="ref-grid">
+              <figure><img src="path-fight.jpg" alt=""><figcaption>戦闘</figcaption></figure>
+              <figure><img src="path-retreat.jpg" alt=""><figcaption>引き返す</figcaption></figure>
+              <figure><img src="path-shop.jpg" alt=""><figcaption>お店</figcaption></figure>
+              <figure><img src="path-dash.jpg" alt=""><figcaption>走り抜ける</figcaption></figure>
+              <figure><img src="path-search.jpg" alt=""><figcaption>探索</figcaption></figure>
+              <figure><img src="path-unknown.jpg" alt=""><figcaption>未知</figcaption></figure>
+            </div>
+            <h3>敵</h3>
+            <div class="ref-grid">
+              <figure><img src="enemy-slime.jpg" alt=""><figcaption>スライム</figcaption></figure>
+              <figure><img src="enemy-goblin.jpg" alt=""><figcaption>ゴブリン</figcaption></figure>
+              <figure><img src="enemy-minotaur.jpg" alt=""><figcaption>ミノタウロス</figcaption></figure>
             </div>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
@@ -2748,24 +2882,29 @@
       return "skill";
     }
 
-    function cardFace(card) {
+    function cardFace(card, adjusted) {
+      const atk = adjusted && player ? (player.atk || 0) : 0;
+      const shown = card.damage ? (adjusted ? Math.max(0, card.damage + atk) : card.damage) : 0;
+      const tone = card.damage && adjusted && shown > card.damage ? "up" : card.damage && adjusted && shown < card.damage ? "down" : "";
+      const noteText = card.note
+        ? esc(card.text).replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`)
+        : esc(card.text).replaceAll("\n", "<br>");
       const effects = [
-        card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
+        card.damage ? `<span class="fx attack">${swordIcon()}<b class="${tone}">${shown}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
-      ].join("") || `<span class="fx note">${esc(card.text).replaceAll("\n", "<br>")}</span>`;
+      ].join("") || `<span class="fx note">${noteText}</span>`;
       return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div></div>`;
     }
 
-    function playFace(card, on) {
-      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div></div>`;
+    function playFace(card, on, adjusted) {
+      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, adjusted)}</div></div>`;
     }
 
     function playRow() {
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
-      const mine = inPlay.map((card, i) => playFace(card, hot === i)).join("");
-      const end = `<button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>`;
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-dock"><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length)}</div></div>${end}</div></div>`;
+      const mine = inPlay.map((card, i) => playFace(card, hot === i, true)).join("");
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length, false)}</div></div></div>`;
     }
 
     let heroImage = null;
@@ -2780,7 +2919,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=2";
+          img.src = "hero-shoulder.png?v=6";
         });
       }
       return heroImageTask;
@@ -2799,7 +2938,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=5" alt="戦士"></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=6" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
@@ -2988,11 +3127,11 @@
     }
 
     const PATHS = {
-      straight: { name: "まっすぐ進む", text: "予定通り。効果なし。" },
-      skip: { name: "抜け道", text: "次の戦闘をスキップ。" },
+      straight: { name: "戦闘", text: "次の戦いに進む。", image: "path-fight.jpg" },
+      skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
-      shop: { name: "お店", text: "★で買い物。品ぞろえはこれから。" },
-      retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。" },
+      shop: { name: "お店", text: "★で買い物。品ぞろえはこれから。", image: "path-shop.jpg" },
+      retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。", image: "path-retreat.jpg" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
     };
 
@@ -3036,7 +3175,7 @@
     }
 
     function rollPaths() {
-      const ids = ["skip", "detour", "shop", "camp"];
+      const ids = ["skip", "shop"];
       if (!retreatUsed) ids.push("retreat");
       return ["straight"].concat(shuffle(ids).slice(0, 2));
     }
@@ -3053,6 +3192,27 @@
       bonusCard = null;
     }
 
+    function skipReward() {
+      if (rewardStep === "cards") {
+        rewardPaths = rollPaths();
+        rewardStep = "paths";
+        persistSave(true);
+        render();
+        return;
+      }
+      if (rewardStep === "detour") {
+        bonusCard = null;
+        render();
+      }
+    }
+
+    function takeBonus() {
+      if (rewardStep !== "detour" || !bonusCard) return;
+      stolen.push(keepCard(bonusCard));
+      bonusCard = null;
+      persistSave(true);
+      render();
+    }
     function takeReward(index) {
       if (rewardStep !== "cards") return;
       const card = rewardPicks[index];
@@ -3108,7 +3268,6 @@
         addDetourFight();
         const extra = drawDistinct(1)[0] || null;
         bonusCard = extra;
-        if (extra) stolen.push(keepCard(extra));
         rewardStep = "detour";
         persistSave(true);
         render();
@@ -3120,18 +3279,24 @@
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
-        const picks = rewardPicks.map((card, i) => `<div class="reward-pick"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${cardKind(card)}">${cardFace(card)}</div><button type="button" data-action="reward-card" data-reward="${i}">選ぶ</button></div>`).join("");
-        return `<div class="overlay"><div class="panel wide"><h2>勝った</h2><p>★${rewardStars}もらった。所持 ★${meta.stars}</p><p>3枚から1枚選ぶ。</p><div class="reward-row">${picks}</div></div></div>`;
+        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${cardKind(card)}">${cardFace(card)}</div></button>`).join("");
+        return `<div class="overlay"><div class="panel wide"><h2>勝った</h2><p>★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
-        const buttons = rewardPaths.map((id) => `<button type="button" data-action="reward-path" data-path="${id}"><b>${esc(PATHS[id].name)}</b><span>${esc(PATHS[id].text)}</span></button>`).join("");
+        const buttons = rewardPaths.map((id) => {
+          const path = PATHS[id];
+          const picture = path.image ? `<img src="${path.image}" alt="">` : "";
+          return `<button type="button" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
+        }).join("");
         return `<div class="overlay"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         return `<div class="overlay"><div class="panel"><h2>お店</h2><p>所持 ★${meta.stars}</p><p>品ぞろえは、これから決める。</p><button type="button" data-action="reward-go">出ていく</button></div></div>`;
       }
-      const bonus = bonusCard ? `${esc(bonusCard.name)}をもらった。` : "";
-      return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p><p>${bonus}装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+      const bonus = bonusCard
+        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${cardKind(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
+        : "";
+      return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
 
     function sortHand() {
@@ -3154,7 +3319,7 @@
         const fan = (i - mid) * 8;
         const drop = Math.abs(i - mid) * 12;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
       const overlay = rewardOverlay()
         || (outcome === "lose"
@@ -3203,7 +3368,8 @@
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
         ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
+        ${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -3224,26 +3390,26 @@
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
               <i class="eye l"></i><i class="eye r"></i>
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
-              ${slashNow && hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop">${hitNow.n}</b>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}${bossNow() ? "　ボス" : ""}</h2>
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
-              <div class="hp-line">体力 ${enemy.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
+              <div class="hp-line">体力 <b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>${enemy.poison ? `<div class="poison-mark">毒</div>` : ""}
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
             </div>
             ${heroShoulder()}
-            <div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 ${player.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>
+            <div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>
             </div>
           </div>
           ${playRow()}
-          <div class="energy-band" aria-label="マナ ${player.energy}">${pips()}</div>
+          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${player.poison ? "<span>毒</span>" : ""}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${player.parry ? "<span>パリィ</span>" : ""}</div></div>
           <div class="handbar">
               ${pileMarkup("deck", deck.length)}
-              <div class="hand">${cards}</div>
               ${pileMarkup("discard", discard.length)}
+              <div class="hand">${cards}</div>
+              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
             </div>
           </div>
         </div>
@@ -3278,6 +3444,7 @@
         if (name === "sheet") { screen = "sheet"; render(); }
         if (name === "character") { screen = "character"; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
+        if (name === "cast-stay") { screen = "character"; render(); }
         if (name === "dungeon-start") beginRun();
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
@@ -3286,6 +3453,8 @@
         if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); screen = "character"; render(); }
         if (name === "continue") continueGame();
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
+        if (name === "reward-bonus") takeBonus();
+        if (name === "reward-skip") skipReward();
         if (name === "reward-path") takePath(action.dataset.path || "");
         if (name === "reward-go") applyPath("straight");
         return;
@@ -3316,8 +3485,8 @@
         return;
       }
       if (event.key === "Enter") endTurn();
-      if (event.key === "1" || event.key === "2" || event.key === "3") {
-        playFromHand(Number(event.key) - 1);
+      if (/^[1-9]$/.test(event.key) || event.key === "0") {
+        playFromHand(event.key === "0" ? 9 : Number(event.key) - 1);
       }
     });
 
