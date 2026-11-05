@@ -398,6 +398,7 @@
     .battle-screen.block { animation: screen-shake 0.55s linear; }
     .screen-hurt,
     .screen-block,
+    .screen-guard,
     .screen-heal {
       position: fixed;
       inset: 0;
@@ -406,21 +407,51 @@
       animation: hurt-fade 1.15s ease-out forwards;
     }
     .screen-hurt { background: rgba(150, 18, 12, 0.46); }
-    .screen-block {
-      background:
-        radial-gradient(circle at 50% 44%, rgba(214, 230, 248, 0.28), transparent 42%),
-        rgba(28, 78, 148, 0.52);
+    .screen-guard {
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 44%, rgba(186, 220, 255, 0.34), transparent 34%);
     }
-    .screen-block.with-hurt { background: transparent; }
-    .screen-block .iron {
+    .screen-guard .mark {
+      width: min(28vw, 240px);
+      height: auto;
+      filter: drop-shadow(0 16px 18px rgba(12, 36, 72, 0.62));
+      animation: guard-mark 1.15s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
+    .screen-block.break { background: transparent; z-index: 26; }
+    .screen-block.break .half {
       position: absolute;
       left: 50%;
       top: 42%;
       width: min(46vw, 440px);
+    }
+    .screen-block.break .iron {
+      position: static;
+      display: block;
+      width: 100%;
       height: auto;
       filter: drop-shadow(0 18px 22px rgba(8, 16, 32, 0.6));
-      animation: iron-block 1.15s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      animation: none;
     }
+    .screen-block.break .half.left {
+      clip-path: polygon(0 0, 54% 0, 46% 38%, 60% 62%, 40% 100%, 0 100%);
+      animation: shard-left 1.25s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
+    .screen-block.break .half.right {
+      clip-path: polygon(54% 0, 100% 0, 100% 100%, 40% 100%, 60% 62%, 46% 38%);
+      animation: shard-right 1.25s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
+    .screen-block.break .crack {
+      position: absolute;
+      left: 50%;
+      top: 24%;
+      width: 10px;
+      height: 48vh;
+      background: linear-gradient(#fff, #ffd0c8 40%, #d4261a);
+      transform: translateX(-50%) rotate(7deg);
+      animation: crack-flash 1.25s ease-out forwards;
+    }
+    .dmg-pop.me { z-index: 27; }
     .screen-heal {
       background:
         radial-gradient(circle at 50% 42%, rgba(214, 255, 226, 0.38), transparent 46%),
@@ -1136,11 +1167,31 @@
       68% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(1.08); }
     }
-    @keyframes iron-block {
-      0% { opacity: 0; transform: translate(-50%, -42%) scale(1.22); }
-      16% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.04); }
+    @keyframes guard-mark {
+      0% { opacity: 0; transform: scale(0.62); }
+      16% { opacity: 1; transform: scale(1); }
+      70% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.06); }
+    }
+    @keyframes shard-left {
+      0% { opacity: 0; transform: translate(-50%, -42%) scale(1.16); }
+      12% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      24% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      62% { opacity: 1; transform: translate(-82%, -14%) rotate(-16deg) scale(0.96); }
+      100% { opacity: 0; transform: translate(-96%, 0%) rotate(-22deg) scale(0.86); }
+    }
+    @keyframes shard-right {
+      0% { opacity: 0; transform: translate(-50%, -42%) scale(1.16); }
+      12% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      24% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      62% { opacity: 1; transform: translate(-18%, -12%) rotate(16deg) scale(0.96); }
+      100% { opacity: 0; transform: translate(-4%, 2%) rotate(22deg) scale(0.86); }
+    }
+    @keyframes crack-flash {
+      0%, 14% { opacity: 0; }
+      22% { opacity: 1; }
+      58% { opacity: 0.9; }
+      100% { opacity: 0; }
     }
     @media (max-width: 720px) {
       .hand .card { height: calc(100% - 8px); }
@@ -1260,7 +1311,7 @@
     let hpStamp = 0;
     let fxSlash = false;
     let fxHurt = false;
-    let fxBlock = false;
+    let fxGuard = "";
     let fxHeal = false;
     let fxHit = null;
     let fxDeal = false;
@@ -1470,8 +1521,17 @@
       return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
     }
 
-    function ironShield() {
-      return `<svg class="iron" viewBox="0 0 200 230" aria-hidden="true"><defs><linearGradient id="iron-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7fafc"/><stop offset="0.42" stop-color="#c5d0dc"/><stop offset="1" stop-color="#66788c"/></linearGradient><linearGradient id="iron-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7f1fb"/><stop offset="1" stop-color="#243e62"/></linearGradient></defs><path d="M100 14 174 50v66c0 50-32 84-74 100C58 200 26 166 26 116V50Z" fill="url(#iron-steel)" stroke="url(#iron-rim)" stroke-width="10"/><path d="M100 34v166" stroke="#607086" stroke-width="8"/><path d="M52 86h96" stroke="#9aafc2" stroke-width="7"/><circle cx="100" cy="86" r="16" fill="#e7eef5" stroke="#46586c" stroke-width="4"/><circle cx="58" cy="64" r="5" fill="#f4f8fb"/><circle cx="142" cy="64" r="5" fill="#f4f8fb"/><circle cx="58" cy="118" r="5" fill="#f4f8fb"/><circle cx="142" cy="118" r="5" fill="#f4f8fb"/><path d="M46 96 154 58" stroke="#fff" stroke-width="5" opacity="0.55"/></svg>`;
+    function ironShield(suffix) {
+      const id = suffix || "iron";
+      return `<svg class="iron" viewBox="0 0 200 230" aria-hidden="true"><defs><linearGradient id="${id}-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7fafc"/><stop offset="0.42" stop-color="#c5d0dc"/><stop offset="1" stop-color="#66788c"/></linearGradient><linearGradient id="${id}-rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7f1fb"/><stop offset="1" stop-color="#243e62"/></linearGradient></defs><path d="M100 14 174 50v66c0 50-32 84-74 100C58 200 26 166 26 116V50Z" fill="url(#${id}-steel)" stroke="url(#${id}-rim)" stroke-width="10"/><path d="M100 34v166" stroke="#607086" stroke-width="8"/><path d="M52 86h96" stroke="#9aafc2" stroke-width="7"/><circle cx="100" cy="86" r="16" fill="#e7eef5" stroke="#46586c" stroke-width="4"/><circle cx="58" cy="64" r="5" fill="#f4f8fb"/><circle cx="142" cy="64" r="5" fill="#f4f8fb"/><circle cx="58" cy="118" r="5" fill="#f4f8fb"/><circle cx="142" cy="118" r="5" fill="#f4f8fb"/><path d="M46 96 154 58" stroke="#fff" stroke-width="5" opacity="0.55"/></svg>`;
+    }
+
+    function guardMark() {
+      return `<svg class="mark" viewBox="0 0 24 24" aria-hidden="true"><path fill="#d7ecff" stroke="#8ec0ff" stroke-width="1.1" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
+    }
+
+    function brokenShield() {
+      return `<span class="half left">${ironShield("break-l")}</span><span class="half right">${ironShield("break-r")}</span><span class="crack"></span>`;
     }
 
     function heartIcon() {
@@ -1639,10 +1699,7 @@
         fxHurt = true;
         noteHit("player", result.hpLoss, cut.dealt);
       }
-      if (result.blocked > 0) {
-        fxBlock = true;
-        if (result.hpLoss <= 0) noteHit("player", 0, cut.dealt);
-      }
+      if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       log(hurtSentence(enemy.name, label || "攻撃", raw, cut.reduced, result));
     }
 
@@ -1822,9 +1879,10 @@
           return;
         }
       }
-      const playerNumber = fxHit && fxHit.side === "player" && fxHit.n > 0;
+      const guardKind = fxGuard;
+      const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
       render();
-      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0);
+      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -1882,8 +1940,9 @@
 
     function scheduleFinish(kind) {
       phase = "end";
-      const playerNumber = fxHit && fxHit.side === "player" && fxHit.n > 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0);
+      const guardKind = fxGuard;
+      const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
+      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -2525,13 +2584,13 @@
 
       const slashNow = fxSlash;
       const hurtNow = fxHurt;
-      const blockNow = fxBlock;
+      const guardNow = fxGuard;
       const healNow = fxHeal;
       const hitNow = fxHit;
       const hitPow = hitNow ? hitPower(hitNow.n) : "0.35";
       fxSlash = false;
       fxHurt = false;
-      fxBlock = false;
+      fxGuard = "";
       fxHeal = false;
       fxHit = null;
       fxDeal = false;
@@ -2546,12 +2605,13 @@
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
-        <div class="battle-screen${showLog ? "" : " no-log"}${hurtNow ? " hurt" : ""}${blockNow ? " block" : ""}">
+        <div class="battle-screen${showLog ? "" : " no-log"}${hurtNow ? " hurt" : ""}">
         ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
-        ${blockNow ? `<div class="screen-block${hurtNow ? " with-hurt" : ""}" aria-hidden="true">${ironShield()}</div>` : ""}
+        ${guardNow === "hold" ? `<div class="screen-guard" aria-label="ダメージなし">${guardMark()}</div>` : ""}
+        ${guardNow === "break" ? `<div class="screen-block break" aria-hidden="true">${brokenShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
-        ${(hurtNow || blockNow) && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
+        ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
           <header class="hud-top">
