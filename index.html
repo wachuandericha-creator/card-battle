@@ -1094,6 +1094,46 @@
       14% { opacity: 1; }
       100% { opacity: 0; }
     }
+    .turn-call {
+      position: fixed;
+      inset: 0;
+      z-index: 28;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      animation: turn-wash 1.15s ease-out forwards;
+    }
+    .turn-call.player {
+      background:
+        radial-gradient(circle at 50% 46%, rgba(255, 214, 120, 0.5), transparent 42%),
+        rgba(86, 54, 12, 0.38);
+    }
+    .turn-call.enemy {
+      background:
+        radial-gradient(circle at 50% 46%, rgba(255, 96, 72, 0.52), transparent 42%),
+        rgba(92, 16, 12, 0.42);
+    }
+    .turn-call b {
+      margin: 0;
+      font-size: min(11vw, 96px);
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: #fff8ee;
+      text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 24px rgba(0, 0, 0, 0.45);
+      animation: turn-word 1.15s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
+    @keyframes turn-wash {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      68% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes turn-word {
+      0% { opacity: 0; transform: scale(0.64); }
+      16% { opacity: 1; transform: scale(1); }
+      68% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.08); }
+    }
     @keyframes iron-block {
       0% { opacity: 0; transform: translate(-50%, -42%) scale(1.22); }
       16% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -1222,6 +1262,7 @@
     let fxHeal = false;
     let fxHit = null;
     let fxDeal = false;
+    let turnCall = "";
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
@@ -1696,6 +1737,10 @@
       inPlay.push(card);
       note = "";
       pullFromBracelets();
+      if (!hand.length) {
+        endTurn();
+        return;
+      }
       if (autoEndTurn && player.energy <= 0 && !hand.some((card) => card.cost === 0)) {
         endTurn();
         return;
@@ -1761,8 +1806,9 @@
       resolveAt = 0;
       while (hand.length) discard.push(hand.pop());
       note = "";
+      turnCall = "enemy";
       render();
-      timer = setTimeout(stepResolve, 480);
+      timer = setTimeout(stepResolve, 1100);
     }
 
     function startPlayerTurn() {
@@ -1781,6 +1827,7 @@
       draw(3);
       pullFromBracelets();
       fxDeal = true;
+      turnCall = "player";
       phase = "player";
       render();
     }
@@ -2461,6 +2508,8 @@
       fxHeal = false;
       fxHit = null;
       fxDeal = false;
+      const turnNow = turnCall;
+      turnCall = "";
       const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
@@ -2469,6 +2518,7 @@
         ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
         ${blockNow ? `<div class="screen-block${hurtNow ? " with-hurt" : ""}" aria-hidden="true">${ironShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
+        ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
         ${(hurtNow || blockNow) && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
