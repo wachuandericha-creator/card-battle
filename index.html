@@ -2430,7 +2430,13 @@
       if (!data) return;
       clearTimer();
       applySave(data);
-      screen = data.outcome === "win" ? "battle" : data.cleared ? "clear" : "battle";
+      if (data.cleared) {
+        localStorage.removeItem(SAVE_KEY);
+        screen = "title";
+        render();
+        return;
+      }
+      screen = "battle";
       render();
     }
 
@@ -2446,10 +2452,16 @@
     function resumeLive() {
       const data = readLive();
       if (!data || !data.player || !data.enemy) return false;
+      if (data.cleared) {
+        clearLive();
+        screen = "title";
+        render();
+        return true;
+      }
       clearTimer();
       applySave(data);
       askLeave = false;
-      screen = data.outcome === "win" ? "battle" : data.cleared ? "clear" : "battle";
+      screen = "battle";
       if (screen === "battle" && !outcome && enemy && enemy.hp <= 0) {
         finish("win");
         return true;
@@ -2948,7 +2960,7 @@
         clearReward();
         cleared = true;
         endRun(true);
-        screen = "clear";
+        screen = "title";
         render();
         return;
       }
