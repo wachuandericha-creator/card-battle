@@ -844,7 +844,6 @@
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
     .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
-    .card.parry { background: #7d8b9a; border-color: #4d5b6a; color: #f7f4ee; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
@@ -868,7 +867,6 @@
     .card.attack .nameplate { background: linear-gradient(180deg, #f0c2b8 0%, #b55246 54%, #7a2e26 100%); color: #fff8f4; }
     .card.block .nameplate { background: linear-gradient(180deg, #e4f0fb 0%, #5b90c6 56%, #2a5584 100%); color: #f7fbff; }
     .card.skill .nameplate { background: linear-gradient(180deg, #fff6d8 0%, #f0c56a 56%, #c9963c 100%); color: #2a2118; }
-    .card.parry .nameplate { background: linear-gradient(180deg, #f7f4ef 0%, #c5ced6 54%, #7e8b98 100%); color: #1c1814; }
     .card .cost {
       position: absolute;
       top: 50%;
@@ -2204,7 +2202,7 @@
     }
 
     function cardKind(card) {
-      if (card.parry) return "parry";
+      if (card.parry) return "block";
       if (card.focus) return "skill";
       if (card.damage && !card.block) return "attack";
       if (card.block && !card.damage) return "block";
