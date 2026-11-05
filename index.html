@@ -39,7 +39,7 @@
         "gear stage log"
         "gear play log"
         "gear energy log"
-        "gear hand hand";
+        "gear hand log";
       padding: 10px 0 14px;
       row-gap: 16px;
     }
@@ -53,13 +53,13 @@
         "gear hand";
     }
     .game, .battle-bands { display: contents; }
-    .hud-top { grid-area: hud; }
-    .stage { grid-area: stage; }
-    .play-row { grid-area: play; }
-    .energy-band { grid-area: energy; }
-    .handbar { grid-area: hand; }
-    .gear-rail { grid-area: gear; }
-    .battle-log { grid-area: log; }
+    .hud-top { grid-area: hud; min-width: 0; overflow: hidden; }
+    .stage { grid-area: stage; min-width: 0; overflow: hidden; }
+    .play-row { grid-area: play; min-width: 0; overflow: hidden; }
+    .energy-band { grid-area: energy; min-width: 0; overflow: hidden; }
+    .handbar { grid-area: hand; min-width: 0; overflow: hidden; }
+    .gear-rail { grid-area: gear; min-width: 0; overflow: auto; }
+    .battle-log { grid-area: log; min-width: 0; overflow: auto; }
     .hud-top {
       display: flex;
       align-items: center;
@@ -667,8 +667,10 @@
     .battle-log {
       min-width: 0;
       min-height: 0;
+      max-width: 100%;
       height: auto;
       overflow: auto;
+      overflow-wrap: anywhere;
       padding: 14px 10px;
       border-left: 1px solid rgba(228, 177, 90, 0.35);
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
@@ -697,6 +699,7 @@
     .battle-log p.turn-enemy { color: #ff5c4a; }
     .gear-rail {
       width: max-content;
+      max-width: 100%;
       min-height: 0;
       height: auto;
       overflow: auto;
