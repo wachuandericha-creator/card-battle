@@ -328,8 +328,31 @@
       color: #2a2118;
       border-radius: 999px;
       padding: 10px 22px;
+      font-size: 16px;
       font-weight: 800;
       cursor: pointer;
+    }
+    .sheet-art {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 0 8px;
+    }
+    .sheet-cap {
+      margin: 0 0 16px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .sheet-locks {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 16px;
+    }
+    .sheet-locks p { margin: 0; line-height: 1.55; }
+    .sheet-locks b {
+      display: inline-block;
+      min-width: 4.2em;
+      color: var(--gold);
     }
     .sprite {
       flex: none;
@@ -2580,6 +2603,7 @@
             ${menuButton("攻略する", "new", true)}
             ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
             ${menuButton("アルバム", "album")}
+            ${menuButton("設定資料", "sheet")}
             ${menuButton("オプション", "settings")}
           </div>
         </div>`;
@@ -2618,6 +2642,28 @@
 
     function albumCatalog() {
       return Object.keys(CARDS).map((name) => ({ name, klass: CHARACTER_NAME, ...CARDS[name] }));
+    }
+
+    function renderSheet() {
+      root.innerHTML = `
+        <div class="album-screen">
+          <div class="panel">
+            <h2>設定資料</h2>
+            <p class="album-meta">戦士。向きを変えても、この絵と文章から変えない。</p>
+            <img class="sheet-art" src="warrior-sheet.png?v=1" alt="戦士の設定資料。真正面、右向き、左向き、後ろ。">
+            <p class="sheet-cap">左から、真正面、右向き、左向き、後ろ。</p>
+            <div class="sheet-locks">
+              <p><b>体</b>2頭身の子ども。頭が大きく、手足は短い。大人の顔やひげは出さない。</p>
+              <p><b>髪</b>短い栗色。前髪はおでこにかかる。横も後ろも、この長さと形。</p>
+              <p><b>顔</b>丸い顔。大きな茶色の目。小さい鼻と口。ほっぺは丸い。口は小さく結ぶ。</p>
+              <p><b>服</b>赤い長そでのチュニック。首はクリーム色。胸に斜めの革ベルト。腰も茶色のベルト。茶色のブーツ。</p>
+              <p><b>右手</b>ロングソード。銀の刃、金のつば、茶色の柄。真正面と後ろでは右手。</p>
+              <p><b>左手</b>縦長の木の盾。真鍮のふちと、中心の金具。真正面と後ろでは左手。</p>
+              <p><b>戦闘</b>自分は、この後ろ姿。頭は後ろだけ。ポケモンの戦闘のように、手前の左に立つ。</p>
+            </div>
+            <button type="button" data-action="title">タイトルへ</button>
+          </div>
+        </div>`;
     }
 
     function renderAlbum() {
@@ -2676,6 +2722,7 @@
       if (screen === "character") return renderCharacter();
       if (screen === "dungeon") return renderDungeon();
       if (screen === "album") return renderAlbum();
+      if (screen === "sheet") return renderSheet();
       if (screen === "defeat") return renderDefeat();
       if (screen === "settings") return renderSettings();
       if (screen === "confirm") return renderConfirm();
@@ -2752,7 +2799,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=4" alt="戦士"></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=5" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
@@ -3228,6 +3275,7 @@
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
         if (name === "album") { screen = "album"; render(); }
+        if (name === "sheet") { screen = "sheet"; render(); }
         if (name === "character") { screen = "character"; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
         if (name === "dungeon-start") beginRun();
