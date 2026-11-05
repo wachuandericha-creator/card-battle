@@ -162,6 +162,14 @@
       object-position: left bottom;
       filter: drop-shadow(6px 10px 8px rgba(0, 0, 0, 0.5));
     }
+    .hero-vitals {
+      position: absolute;
+      left: 10px;
+      bottom: 8px;
+      z-index: 4;
+      width: min(46%, 320px);
+      pointer-events: none;
+    }
     .enemy-main {
       position: absolute;
       right: 5%;
@@ -812,12 +820,6 @@
       width: 456px;
       max-width: 100%;
       flex: none;
-    }
-    .party-vitals {
-      padding: 10px 14px;
-      border: 1px solid rgba(228, 177, 90, 0.55);
-      border-radius: 14px;
-      background: rgba(20, 14, 12, 0.5);
     }
     .gear-board {
       display: grid;
@@ -3016,7 +3018,7 @@
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
         ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="party-vitals"><div class="vitals">${meters("player", shownPlayer(), player.maxHp, player.block)}<div class="hp-line">体力 ${player.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div><div class="attr nrg"><span class="mark">${manaIcon()}</span><span>マナ</span><b>${player.energy}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -3048,6 +3050,7 @@
             <div class="note">${esc(note)}</div>
             </div>
             ${heroShoulder()}
+            <div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 ${player.poison ? `<span class="poison-mark">毒</span>` : ""}<b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>
             </div>
           </div>
           ${playRow()}
