@@ -687,6 +687,8 @@
       color: #f6e2b6;
       text-shadow: 0 1px 0 rgba(36, 22, 10, 0.85);
     }
+    .battle-log p.turn-player { color: #7eb6ff; }
+    .battle-log p.turn-enemy { color: #ff5c4a; }
     .gear-rail {
       width: max-content;
       min-height: 0;
@@ -1291,9 +1293,26 @@
       }[c]));
     }
 
+    function trimLog() {
+      while (logLines.length > 16) logLines.pop();
+    }
+
+    function logTurn(kind) {
+      const text = kind === "player" ? "-戦士のターン-" : "-敵のターン-";
+      logLines.unshift({ kind, text });
+      trimLog();
+    }
+
     function log(msg) {
-      logLines.unshift(msg);
-      if (logLines.length > 16) logLines.pop();
+      const line = { text: msg };
+      const marker = logLines.findIndex((item) => item && item.kind);
+      if (marker === -1) logLines.unshift(line);
+      else {
+        let at = marker + 1;
+        while (at < logLines.length && !(logLines[at] && logLines[at].kind)) at += 1;
+        logLines.splice(at, 0, line);
+      }
+      trimLog();
     }
 
     function clearTimer() {
@@ -1776,6 +1795,7 @@
           return;
         }
       } else {
+        logTurn("enemy");
         const card = intentAt(0);
         enemy.block = 0;
         if (card.damage) {
@@ -1815,6 +1835,7 @@
         finish("lose");
         return;
       }
+      logTurn("player");
       turn += 1;
       player.block = 0;
       if (player.parry) {
@@ -2536,7 +2557,12 @@
       fxDeal = false;
       const turnNow = turnCall;
       turnCall = "";
-      const logHtml = logLines.map((line) => `<p>${esc(line)}</p>`).join("");
+      const logHtml = logLines.map((line) => {
+        const text = typeof line === "string" ? line : line.text;
+        const kind = line && line.kind;
+        const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
+        return `<p class="${cls}">${esc(text)}</p>`;
+      }).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
