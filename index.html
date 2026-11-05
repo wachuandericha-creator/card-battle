@@ -1171,7 +1171,7 @@
       アタック: { cost: 1, text: "3ダメージ", damage: 3 },
       チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
-      集中: { cost: 0, text: "次の攻撃・防御+2", focus: 2 },
+      集中: { cost: 0, text: "次の攻撃か防御の数値+2", focus: 2 },
       パリィ: { cost: 3, text: "次のダメージを無効", parry: true },
     };
     const COMMON = {
@@ -1580,14 +1580,21 @@
       return `${head}防御で${reduced}軽減し、体力${result.hpLoss}。`;
     }
 
-    function strikeSentence(actor, card, base, bonus, result) {
-      const head = `${actor}は${card}で${base}ダメージ。`;
-      if (!bonus) return damageSentence(actor, card, base, result);
-      if (result.blocked && result.hpLoss) {
-        return `${head}攻撃で${bonus}加算し、ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+    function strikeSentence(actor, card, base, focusAdd, atk, result) {
+      const boosted = base + (focusAdd || 0);
+      const total = boosted + (atk || 0);
+      let head = `${actor}は${card}で${base}ダメージ。`;
+      if (focusAdd) head += `集中で${focusAdd}加算し、${boosted}。`;
+      if (!atk) {
+        if (result.blocked && result.hpLoss) return `${head}ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+        if (result.blocked) return `${head}ブロックで防いだ。`;
+        return focusAdd ? head : damageSentence(actor, card, base, result);
       }
-      if (result.blocked) return `${head}攻撃で${bonus}加算し、ブロックで防いだ。`;
-      return `${head}攻撃で${bonus}加算し、${base + bonus}。`;
+      if (result.blocked && result.hpLoss) {
+        return `${head}攻撃で${atk}加算し、ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
+      }
+      if (result.blocked) return `${head}攻撃で${atk}加算し、ブロックで防いだ。`;
+      return `${head}攻撃で${atk}加算し、${total}。`;
     }
 
     function hitPower(n) {
@@ -1692,7 +1699,7 @@
     function resolveCard(card) {
       if (card.focus) {
         player.focus = (player.focus || 0) + card.focus;
-        log(`${CHARACTER_NAME}は${card.name}。次の攻撃・防御が+${player.focus}。`);
+        log(`${CHARACTER_NAME}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`);
         return;
       }
       if (card.parry) {
@@ -1703,22 +1710,23 @@
         }
         return;
       }
-      const focus = (card.damage || card.block) && player.focus ? player.focus : 0;
-      if (focus) player.focus = 0;
+      const added = player.focus && (card.damage || card.block) ? player.focus : 0;
+      if (added) player.focus = 0;
       if (card.damage) {
-        const bonus = (player.atk || 0) + focus;
-        const amount = card.damage + bonus;
+        const atk = player.atk || 0;
+        const amount = card.damage + added + atk;
         const result = applyDamage(enemy, amount);
         if (amount > 0 && (result.hpLoss || result.blocked)) {
           fxSlash = true;
           noteHit("enemy", result.hpLoss, amount);
         }
-        log(strikeSentence(CHARACTER_NAME, card.name, card.damage, bonus, result));
+        log(strikeSentence(CHARACTER_NAME, card.name, card.damage, added, atk, result));
       }
       if (card.block) {
-        const gain = card.block + (card.damage ? 0 : focus);
+        const gain = card.block + added;
         player.block += gain;
-        log(`${CHARACTER_NAME}は${card.name}でブロック${gain}。いま${player.block}。`);
+        const boost = added ? `集中で${added}加算し、${gain}。` : "";
+        log(`${CHARACTER_NAME}は${card.name}でブロック${card.block}。${boost}いま${player.block}。`);
       }
       if (!card.damage && !card.block) log(`${CHARACTER_NAME}は${card.name}。${card.text}`);
     }
