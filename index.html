@@ -7,6 +7,7 @@
   <style>
     :root {
       --hand-scale: 0.74;
+      --card-ratio: 204 / 300;
       --bg: #12100e;
       --ink: #2a2118;
       --cream: #f4ead7;
@@ -37,6 +38,14 @@
       flex-direction: column;
       padding: 10px 18px 14px;
       gap: 8px;
+    }
+    .battle-bands {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 2fr);
+      gap: 16px;
+      align-items: stretch;
     }
     .hud-top {
       display: flex;
@@ -106,7 +115,7 @@
     .rules { margin: 0; }
     .note { min-height: 1.1em; color: #f0c7a2; font-size: 13px; }
     .stage {
-      flex: 1 1 auto;
+      height: 100%;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -114,7 +123,7 @@
       justify-content: flex-start;
       gap: 8px;
       margin: 0;
-      padding: 12px 10px 6px;
+      padding: 8px 10px;
       border-radius: 12px;
       background:
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
@@ -186,53 +195,32 @@
     }
     .card.preview {
       flex: none;
-      width: min(100%, 168px);
-      height: min(220px, 34vh);
+      width: 132px;
+      height: auto;
+      max-width: 100%;
       margin: 0;
       transform: none;
       cursor: default;
+      aspect-ratio: var(--card-ratio);
     }
     .card.preview:hover { transform: none; }
-    .card.preview .nameplate { min-height: 28px; margin: 4px 4px 0; padding: 3px 4px 3px 32px; border-radius: 6px; }
-    .card.preview .cost { width: 22px; height: 22px; font-size: 13px; border-width: 2px; left: 3px; }
-    .card.preview .name { font-size: 13px; }
-    .card.preview .art { margin: 3px 4px 0; }
-    .card.preview .fx b { font-size: 22px; }
-    .card.preview .fx .ico { width: 22px; height: 22px; }
     .foe-next .card.preview {
       width: min(100cqw, calc(100cqh * 204 / 300));
       height: auto;
       max-width: none;
       max-height: none;
-      aspect-ratio: 204 / 300;
-      container-type: size;
     }
-    .foe-next .card.preview .nameplate {
+    .card-fit {
+      width: 100%;
+      height: 100%;
       min-height: 0;
-      margin: 2cqh 2cqh 0;
-      padding: 1cqh 1.5cqh 1cqh 15cqh;
-      border-radius: 1.4cqh;
+      display: flex;
+      flex-direction: column;
+      container-type: inline-size;
     }
-    .foe-next .card.preview .cost {
-      width: 12cqh;
-      height: 12cqh;
-      font-size: 7cqh;
-      border-width: 0.4cqh;
-      top: 50%;
-      left: 1.2cqh;
-      transform: translateY(-50%);
-    }
-    .foe-next .card.preview .name {
-      min-height: 0;
-      padding: 0;
-      font-size: 6.4cqh;
-    }
-    .foe-next .card.preview .art { margin: 1.4cqh 2cqh 0; border-radius: 1.2cqh; }
-    .foe-next .card.preview .fx b { font-size: 12cqh; }
-    .foe-next .card.preview .fx .ico { width: 10cqh; height: 10cqh; }
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
     .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .reward-pick .card.preview { width: 132px; height: 184px; }
+    .reward-pick .card.preview { width: 132px; height: auto; }
     .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
     .path-list { display: flex; flex-direction: column; gap: 10px; width: min(440px, 100%); }
@@ -255,7 +243,7 @@
       font-weight: 800;
     }
     .deck-cards { display: flex; flex-wrap: wrap; gap: 10px; }
-    .deck-view .card.preview { width: 132px; height: 184px; }
+    .deck-view .card.preview { width: 132px; height: auto; }
     .deck-empty { margin: 0; color: var(--muted); }
     .deck-view .panel > button { align-self: center; }
     .album-screen {
@@ -312,7 +300,7 @@
       text-align: center;
       color: var(--muted);
     }
-    .album-screen .card.preview { width: 132px; height: 184px; }
+    .album-screen .card.preview { width: 132px; height: auto; }
     .album-screen .panel > button[data-action] {
       align-self: center;
       margin-top: 8px;
@@ -443,35 +431,31 @@
     .banner { min-height: 0; text-align: center; color: var(--gold); font-size: 18px; }
     .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
     .play-row {
-      flex: 0 0 auto;
+      min-height: 0;
+      height: 100%;
       display: flex;
-      align-items: flex-end;
+      align-items: stretch;
       justify-content: center;
       gap: 36px;
-      padding: 8px 8px 0;
+      padding: 0 8px;
     }
-    .play-side { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
-    .play-side.mine { align-items: flex-end; }
+    .play-side { display: grid; grid-template-rows: auto minmax(0, 1fr); align-items: end; justify-items: center; gap: 4px; min-width: 0; min-height: 0; height: 100%; }
+    .play-side.mine { justify-items: end; }
     .play-label {
       color: var(--gold);
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.16em;
     }
-    .play-cards { display: flex; align-items: flex-end; gap: 10px; min-height: 0; }
+    .play-cards { display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; height: 100%; }
+    .play-card { height: 100%; display: flex; align-items: flex-end; }
     .play-row .card.preview {
       width: auto;
-      height: min(270px, 36vh);
-      aspect-ratio: 204 / 300;
+      height: 100%;
+      max-width: none;
+      max-height: 100%;
       pointer-events: none;
-      container-type: size;
     }
-    .play-row .card.preview .nameplate { min-height: 16cqh; margin: 2cqh 2cqh 0; padding: 1cqh 1.5cqh 1cqh 18cqh; border-radius: 1.6cqh; }
-    .play-row .card.preview .cost { width: 14cqh; height: 14cqh; font-size: 8cqh; border-width: 0.5cqh; left: 1.4cqh; }
-    .play-row .card.preview .name { font-size: 7.2cqh; letter-spacing: 0; }
-    .play-row .card.preview .art { margin: 1.6cqh 2cqh 0; border-radius: 1.4cqh; }
-    .play-row .card.preview .fx b { font-size: 14cqh; }
-    .play-row .card.preview .fx .ico { width: 12cqh; height: 12cqh; }
     .play-card.on .card.preview { transform: translateY(-12px); box-shadow: 0 0 0 2px var(--gold), 0 12px 20px rgba(0, 0, 0, 0.35); }
     .party {
       flex: 0 0 auto;
@@ -616,13 +600,14 @@
       border-color: #ffe7a3;
       box-shadow: 0 0 16px rgba(242, 193, 78, 0.55);
     }
-    .handbar { flex: 0 0 auto; width: 100%; min-width: 0; display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; overflow-x: auto; }
-    .pile { width: auto; height: auto; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+    .energy-band { display: flex; align-items: center; justify-content: center; min-height: 0; }
+    .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
+    .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
       width: auto;
-      height: calc(168px * var(--hand-scale));
-      aspect-ratio: 118 / 168;
+      height: calc(100% - 28px);
+      aspect-ratio: var(--card-ratio);
       border-radius: 14px;
     }
     .pile-card.back {
@@ -667,7 +652,7 @@
       font-weight: 600;
     }
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
-    .hand { flex: 1 1 auto; height: auto; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
+    .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
     .battle-log {
       flex: 0 0 8.333%;
       height: 100%;
@@ -795,11 +780,10 @@
     }
     .card {
       width: auto;
-      flex: 1 1 0;
-      max-width: calc(204px * var(--hand-scale));
-      min-width: 0;
+      height: auto;
+      flex: 0 0 auto;
+      aspect-ratio: var(--card-ratio);
       margin-inline: calc(-22px * var(--hand-scale));
-      height: min(calc(300px * var(--hand-scale)), calc(44vh * var(--hand-scale)));
       border-radius: 16px;
       border: 3px solid transparent;
       padding: 0;
@@ -817,11 +801,10 @@
       transition: transform 0.15s ease;
     }
     .hand .card {
-      flex: 0 0 auto;
+      height: calc(100% - 8px);
+      max-height: calc(100% - 8px);
       width: auto;
       max-width: none;
-      height: calc(300px * var(--hand-scale));
-      aspect-ratio: 204 / 300;
     }
     .hand .card.deal {
       animation: deal-flow 0.7s cubic-bezier(0.16, 0.84, 0.28, 1) backwards;
@@ -855,9 +838,9 @@
       flex: 0 0 auto;
       display: flex;
       align-items: center;
-      min-height: calc(34px * var(--hand-scale));
-      margin: calc(5px * var(--hand-scale)) calc(5px * var(--hand-scale)) 0;
-      padding: calc(4px * var(--hand-scale)) calc(8px * var(--hand-scale)) calc(4px * var(--hand-scale)) calc(46px * var(--hand-scale));
+      min-height: 16cqw;
+      margin: 2.4cqw 2.4cqw 0;
+      padding: 2cqw 3cqw 2cqw 22cqw;
       border-radius: 8px;
       border: 1px solid rgba(24, 14, 8, 0.62);
       box-shadow:
@@ -870,14 +853,14 @@
     .card .cost {
       position: absolute;
       top: 50%;
-      left: calc(4px * var(--hand-scale));
+      left: 2cqw;
       transform: translateY(-50%);
-      width: calc(36px * var(--hand-scale));
-      height: calc(36px * var(--hand-scale));
+      width: 17cqw;
+      height: 17cqw;
       border-radius: 50%;
       background: #fff;
       color: #1a120e;
-      font-size: calc(22px * var(--hand-scale));
+      font-size: 10cqw;
       font-weight: 800;
       display: grid;
       place-items: center;
@@ -890,7 +873,7 @@
       min-width: 0;
       margin: 0;
       padding: 0;
-      font-size: calc(18px * var(--hand-scale));
+      font-size: 8.6cqw;
       font-weight: 800;
       letter-spacing: 0.04em;
       line-height: 1.2;
@@ -903,7 +886,7 @@
       position: relative;
       flex: 0 0 50%;
       min-height: 0;
-      margin: calc(4px * var(--hand-scale)) calc(5px * var(--hand-scale)) 0;
+      margin: 2cqw 2.4cqw 0;
       border-radius: 6px;
       overflow: hidden;
       background: rgba(12, 8, 6, 0.55);
@@ -918,7 +901,7 @@
     .card .text {
       flex: 1 1 auto;
       min-height: 0;
-      margin: calc(4px * var(--hand-scale));
+      margin: 2cqw;
       border-radius: 6px;
       background: #fff;
       color: #241910;
@@ -926,12 +909,12 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px;
+      gap: 4cqw;
+      padding: 3cqw;
     }
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
-    .card .fx b { font-size: calc(30px * var(--hand-scale)); color: #1a120e; }
-    .card .fx .ico { width: calc(32px * var(--hand-scale)); height: calc(32px * var(--hand-scale)); color: #1a120e; }
+    .card .fx b { font-size: 14cqw; color: #1a120e; }
+    .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
     .end {
       width: 124px;
@@ -1101,7 +1084,7 @@
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.04); }
     }
     @media (max-width: 720px) {
-      .hand .card { height: min(calc(176px * var(--hand-scale)), 100cqh); }
+      .hand .card { height: calc(100% - 8px); }
       .sprite { width: 180px; height: 136px; }
       .sprite .eye { top: 50px; width: 20px; height: 20px; }
       .sprite .eye.l { left: 46px; }
@@ -2214,7 +2197,7 @@
         card.damage ? `<span class="fx attack">${swordIcon()}<b>${card.damage}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
       ].join("") || `<span class="fx">${esc(card.text)}</span>`;
-      return `<div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div>`;
+      return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div></div>`;
     }
 
     function playFace(card, on) {
@@ -2225,7 +2208,7 @@
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span>${playFace(foe, hot === inPlay.length)}</div></div>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length)}</div></div></div>`;
     }
 
     function foeNext() {
@@ -2474,6 +2457,7 @@
               <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>
             </div>
           </header>
+          <div class="battle-bands">
           <div class="stage">
             <div class="enemy-field">
             ${traitNote()}
@@ -2495,19 +2479,14 @@
             </div>
           </div>
           ${playRow()}
-          <section class="party">
-            <div class="party-band">
-            <div class="party-stats">
-              <div class="energy-pips" aria-label="NRG ${player.energy}">${pips()}</div>
-            </div>
-            </div>
-            <div class="handbar">
+          <div class="energy-band" aria-label="NRG ${player.energy}">${pips()}</div>
+          <div class="handbar">
               ${pileMarkup("deck", deck.length)}
               <div class="hand">${cards}</div>
               ${pileMarkup("discard", discard.length)}
               <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
             </div>
-          </section>
+          </div>
         </div>
         ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
         </div>
