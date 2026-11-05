@@ -29,30 +29,44 @@
         radial-gradient(ellipse at 50% 100%, #1c1612 0%, #12100e 70%);
     }
     button, body { -webkit-user-select: none; user-select: none; }
-    .battle-screen { height: 100%; display: flex; }
-    .game {
-      flex: 1 1 auto;
-      min-width: 0;
+    .battle-screen {
       height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding: 10px 18px 14px;
-      gap: 8px;
-    }
-    .battle-bands {
-      flex: 1 1 auto;
-      min-height: 0;
       display: grid;
-      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 2fr);
-      gap: 16px;
-      align-items: stretch;
+      grid-template-columns: auto minmax(0, 1fr) minmax(0, 8.333%);
+      grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 2fr);
+      grid-template-areas:
+        "gear hud log"
+        "gear stage log"
+        "gear play log"
+        "gear energy log"
+        "gear hand hand";
+      padding: 10px 0 14px;
+      row-gap: 16px;
     }
+    .battle-screen.no-log {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-areas:
+        "gear hud"
+        "gear stage"
+        "gear play"
+        "gear energy"
+        "gear hand";
+    }
+    .game, .battle-bands { display: contents; }
+    .hud-top { grid-area: hud; }
+    .stage { grid-area: stage; }
+    .play-row { grid-area: play; }
+    .energy-band { grid-area: energy; }
+    .handbar { grid-area: hand; }
+    .gear-rail { grid-area: gear; }
+    .battle-log { grid-area: log; }
     .hud-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding-bottom: 8px;
+      min-width: 0;
+      padding: 0 18px 8px;
       border-bottom: 1px solid rgba(228, 177, 90, 0.35);
     }
     .dungeon { display: flex; align-items: baseline; gap: 16px; }
@@ -654,8 +668,9 @@
     .pile-label { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); }
     .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
     .battle-log {
-      flex: 0 0 8.333%;
-      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      height: auto;
       overflow: auto;
       padding: 14px 10px;
       border-left: 1px solid rgba(228, 177, 90, 0.35);
@@ -663,6 +678,8 @@
     }
     .battle-log h2 {
       margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(228, 177, 90, 0.85);
       font-size: 26px;
       font-weight: 700;
       letter-spacing: 0.28em;
@@ -680,9 +697,9 @@
       text-shadow: 0 1px 0 rgba(36, 22, 10, 0.85);
     }
     .gear-rail {
-      flex: 0 0 auto;
       width: max-content;
-      height: 100%;
+      min-height: 0;
+      height: auto;
       overflow: auto;
       display: flex;
       flex-direction: column;
@@ -2439,7 +2456,7 @@
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
-        <div class="battle-screen${hurtNow ? " hurt" : ""}${blockNow ? " block" : ""}">
+        <div class="battle-screen${showLog ? "" : " no-log"}${hurtNow ? " hurt" : ""}${blockNow ? " block" : ""}">
         ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
         ${blockNow ? `<div class="screen-block${hurtNow ? " with-hurt" : ""}" aria-hidden="true">${ironShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
