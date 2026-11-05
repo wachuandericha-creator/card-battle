@@ -1310,8 +1310,9 @@
     }
 
     const GEAR_ITEMS = [
-      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, effect: "★　ATK+1" },
+      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2" },
+      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。" },
@@ -1320,6 +1321,13 @@
 
     function emptyGear() {
       return { sword: null, shield: null, braceletR: null, braceletL: null, itemL: null, itemR: null, medals: 0 };
+    }
+
+    function starterGear() {
+      const next = emptyGear();
+      next.sword = { ...gearItem("short-sword") };
+      next.shield = { ...gearItem("buckler") };
+      return next;
     }
 
     function gearItem(id) {
@@ -1345,8 +1353,8 @@
 
     function syncGearStats() {
       if (!player) return;
-      player.atk = 5 + (gear.sword && gear.sword.atk ? gear.sword.atk : 0);
-      player.def = 5 + (gear.shield && gear.shield.def ? gear.shield.def : 0);
+      player.atk = gear.sword && gear.sword.atk ? gear.sword.atk : 0;
+      player.def = gear.shield && gear.shield.def ? gear.shield.def : 0;
     }
 
     function medalIcon() {
@@ -1948,6 +1956,7 @@
         if (enemy.name === "仮の相手") enemy.name = "スライム";
       }
       gear = normalizeGear(data.gear);
+      if (!gear.sword && !gear.shield) gear = starterGear();
       syncGearStats();
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
@@ -1982,7 +1991,7 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 5, def: 5, focus: 0, parry: false, hit: false };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, hit: false };
       syncGearStats();
       const foe = enemyNow();
       enemy = { name: foe.name, hp: foe.hp, maxHp: foe.hp, block: 0, hit: false };
@@ -2006,7 +2015,7 @@
       battleTotal = route.length;
       retreatUsed = false;
       cleared = false;
-      gear = emptyGear();
+      gear = starterGear();
       gearOpen = null;
       stolen = [];
       startBattle(30);
