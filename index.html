@@ -146,16 +146,22 @@
     .enemy-field { position: relative; display: flex; align-items: stretch; gap: 12px; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
     .hero-shoulder {
       position: absolute;
-      left: -2%;
-      bottom: -6%;
+      left: 0;
+      bottom: 0;
       z-index: 2;
-      width: min(46%, 280px);
-      height: 108%;
+      width: min(38%, 230px);
+      height: 100%;
       pointer-events: none;
       display: flex;
       align-items: flex-end;
     }
-    .hero-fig { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(8px 12px 8px rgba(0, 0, 0, 0.45)); }
+    .hero-fig {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: left bottom;
+      filter: drop-shadow(6px 10px 8px rgba(0, 0, 0, 0.5));
+    }
     .enemy-main {
       position: absolute;
       left: 50%;
@@ -2305,36 +2311,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><svg class="hero-fig" viewBox="0 0 240 220" role="img" aria-label="戦士">
-        <ellipse cx="120" cy="208" rx="74" ry="10" fill="rgba(0,0,0,0.4)"/>
-        <path d="M96 132c-8 24-4 52 18 64 20 10 48 6 58-16 6-14 2-34-10-46-18 10-48 8-66-2z" fill="#6e241f"/>
-        <path d="M168 124c16 10 34 8 42 22" stroke="#e7b08f" stroke-width="14" stroke-linecap="round" fill="none"/>
-        <g transform="translate(206,112) rotate(18)">
-          <path d="M-3-62h8l4 62h-16z" fill="#eef3f8"/>
-          <path d="M-2-58h3l2 40h-6z" fill="#ffffff" opacity="0.7"/>
-          <rect x="-12" y="-2" width="26" height="6" rx="2" fill="#e4c27a"/>
-          <rect x="-3" y="4" width="8" height="16" rx="2" fill="#5c3b22"/>
-        </g>
-        <path d="M86 146c6-34 28-48 52-46 22 2 40 18 44 44 4 28-16 52-48 52s-54-20-48-50z" fill="#a33b34"/>
-        <path d="M124 108c10 16 8 34 2 52" stroke="#f6ead6" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <path d="M108 118h28l-6 16h-16z" fill="#f3e2c4"/>
-        <circle cx="128" cy="74" r="54" fill="#f6c7a4"/>
-        <path d="M76 70c4-52 34-74 66-70 30 4 50 30 48 64-6-28-24-40-46-34-8 22-26 32-46 28-14-4-22 2-22 12z" fill="#4a2c1a"/>
-        <path d="M156 22c18 10 30 28 32 48-14-18-32-26-50-18 6-14 12-24 18-30z" fill="#d59a58"/>
-        <path d="M92 46c10-16 28-22 40-16-16 6-28 16-34 28-6-2-8-8-6-12z" fill="#6b3e24"/>
-        <ellipse cx="176" cy="82" rx="9" ry="12" fill="#f0b592"/>
-        <ellipse cx="164" cy="86" rx="18" ry="22" fill="#f6c7a4"/>
-        <path d="M152 78c8-8 20-8 26 0" stroke="#4a2c1a" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <ellipse cx="168" cy="90" rx="5.5" ry="7" fill="#2a2118"/>
-        <ellipse cx="170" cy="88" rx="1.8" ry="2.2" fill="#fff"/>
-        <path d="M160 104c6 6 16 6 22 0" stroke="#d98978" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <ellipse cx="68" cy="168" rx="50" ry="40" fill="#a33b34"/>
-        <ellipse cx="58" cy="160" rx="24" ry="18" fill="#f6c7a4"/>
-        <circle cx="40" cy="176" r="32" fill="#8b5a34" stroke="#f0d398" stroke-width="7"/>
-        <circle cx="40" cy="176" r="16" fill="#a56b3e"/>
-        <circle cx="40" cy="176" r="6" fill="#f0d398"/>
-        <path d="M28 164c6-8 16-10 24-4" stroke="#f8e7c0" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8"/>
-      </svg></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png" alt="戦士"></div>`;
     }
     function traitNote() {
       const trait = enemyNow().trait;
