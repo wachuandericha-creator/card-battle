@@ -657,6 +657,7 @@
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
     .energy-pips { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     .pip {
+      position: relative;
       width: 56px;
       height: 56px;
       border-radius: 50%;
@@ -664,11 +665,36 @@
       background: #241c16;
     }
     .pip.on {
-      background: radial-gradient(circle at 35% 32%, #fff1c2, #f2c14e 46%, #c48a1e);
-      border-color: #ffe7a3;
-      box-shadow: 0 0 16px rgba(242, 193, 78, 0.55);
+      background: radial-gradient(circle at 40% 36%, #fff6c8 0%, #ffb03a 38%, #e45312 74%, #8a280e 100%);
+      border-color: #ffd59a;
+      animation: mana-burn 0.85s ease-in-out infinite;
     }
-    .energy-band { display: flex; align-items: center; justify-content: center; min-height: 0; border-top: 2px solid rgba(228, 177, 90, 0.85); padding-top: 8px; }
+    .pip.on::before,
+    .pip.on::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 62%;
+      width: 22px;
+      height: 30px;
+      border-radius: 50% 50% 45% 45%;
+      background: radial-gradient(circle at 50% 78%, #fff4c2 0%, #ffb03a 36%, rgba(226, 64, 16, 0) 72%);
+      transform: translateX(-50%);
+      animation: mana-flame 0.62s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .pip.on::after {
+      width: 14px;
+      height: 20px;
+      bottom: 78%;
+      animation-duration: 0.48s;
+      animation-delay: -0.22s;
+    }
+    .energy-pips .pip.on:nth-child(2) { animation-delay: -0.28s; }
+    .energy-pips .pip.on:nth-child(2)::before { animation-delay: -0.18s; }
+    .energy-pips .pip.on:nth-child(3) { animation-delay: -0.55s; }
+    .energy-pips .pip.on:nth-child(3)::before { animation-delay: -0.4s; }
+    .energy-band { display: flex; align-items: center; justify-content: center; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding-top: 8px; }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
@@ -921,6 +947,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .hand .card.deal { animation: none; }
+      .pip.on, .pip.on::before, .pip.on::after { animation: none; }
     }
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
@@ -1236,11 +1263,20 @@
       62% { opacity: 1; transform: translate(-18%, -12%) rotate(16deg) scale(0.96); }
       100% { opacity: 0; transform: translate(-4%, 2%) rotate(22deg) scale(0.86); }
     }
-    @keyframes crack-flash {
-      0%, 14% { opacity: 0; }
-      22% { opacity: 1; }
-      58% { opacity: 0.9; }
-      100% { opacity: 0; }
+    @keyframes mana-burn {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 120, 30, 0.45), inset 0 -8px 12px rgba(120, 24, 0, 0.35);
+        filter: brightness(1);
+      }
+      50% {
+        box-shadow: 0 0 22px rgba(255, 70, 16, 0.85), inset 0 -10px 14px rgba(180, 40, 0, 0.5);
+        filter: brightness(1.16);
+      }
+    }
+    @keyframes mana-flame {
+      0%, 100% { transform: translateX(-50%) scale(0.82, 0.9); opacity: 0.72; }
+      40% { transform: translateX(-62%) scale(0.7, 1.18); opacity: 1; }
+      70% { transform: translateX(-38%) scale(1.05, 0.96); opacity: 0.84; }
     }
     @media (max-width: 720px) {
       .hand .card { height: calc(100% - 8px); }
