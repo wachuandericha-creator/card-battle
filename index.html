@@ -871,22 +871,24 @@
       background: rgba(176, 42, 32, 0.2);
       box-shadow: inset 0 0 0 2px rgba(255, 92, 74, 0.9);
     }
-    .play-side.foe .play-cards { grid-column: 1; }
-    .play-side.foe .play-label { grid-column: 2; }
+    .play-side.foe .play-cards { grid-column: 1; grid-row: 1; }
+    .play-side.foe .play-label { grid-column: 2; grid-row: 1; }
     .play-label {
-      writing-mode: vertical-rl;
-      text-orientation: upright;
       align-self: stretch;
-      height: 100%;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .play-label span {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
       font-size: 22px;
       font-weight: 800;
       letter-spacing: 0.35em;
-      padding: 12px 8px;
-      border-radius: 8px;
     }
     .play-side.mine .play-label { color: #2a2118; background: #e4b15a; }
     .play-side.foe .play-label { color: #fff8f4; background: #d24b3c; }
@@ -3789,7 +3791,7 @@
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i, true)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length, false, true)}</div></div></div>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label"><span>自分</span></span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label"><span>敵</span></span><div class="play-cards">${playFace(foe, hot === inPlay.length, false, true)}</div></div></div>`;
     }
 
     let heroImage = null;
