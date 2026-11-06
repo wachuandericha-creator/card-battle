@@ -3034,7 +3034,7 @@
       const deck = CARD_POOL.map(([name, count]) => `${name}×${count}`).join("、");
       const stage = castPicked ? `
           <div class="cast-detail">
-            <img class="cast-stand" src="job-stand.jpg?v=2" alt="戦士の立ち絵">
+            <img class="cast-stand" src="job-stand.jpg?v=3" alt="戦士の立ち絵">
             <div class="cast-plaque">
               <h1>${CHARACTER_NAME}</h1>
               <p class="stats">HP 30　ATK+2　DEF+2</p>
@@ -3050,7 +3050,7 @@
           </div>` : `
           <div class="cast-stage">
             <button type="button" class="cast-pick" data-action="cast-pick" aria-label="${CHARACTER_NAME}">
-              <img src="job-warrior.png?v=5" alt="">
+              <img src="job-warrior.png?v=6" alt="">
               <span>${CHARACTER_NAME}</span>
             </button>
           </div>`;
@@ -3099,7 +3099,7 @@
             <h2>設定資料</h2>
             <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
             <h3>戦士</h3>
-            <img class="sheet-art" src="warrior-f-sheet.jpg?v=6" alt="戦士。真正面、右向き、左向き、斜め後ろ、後ろ、手を腰。">
+            <img class="sheet-art" src="warrior-f-sheet.jpg?v=7" alt="戦士。真正面、右向き、左向き、斜め後ろ、後ろ、手を腰。">
             <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ、決めポーズ。</p>
             <h3>魔法使い・女・白</h3>
             <img class="sheet-art" src="mage-f-sheet.jpg?v=2" alt="女の魔法使い。真正面、右向き、左向き、斜め後ろ、後ろ、決めポーズ。">
@@ -3109,7 +3109,7 @@
             <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ、決めポーズ。</p>
             <div class="sheet-locks">
               <p><b>体</b>戦士は、4頭身くらい。魔法使いは、いまの2頭身のまま。</p>
-              <p><b>戦士</b>赤いマント、白いシャツ、紺の胴着、ベルトは一本、左肩の銀の肩当て。大きな剣は背中、小さな剣は腰。盾とリュックは無い。</p>
+              <p><b>戦士</b>赤いマント、白いシャツ、紺の胴着、ベルトは一本。肩当ては無い。大きな剣は背中、小さな剣は腰。盾とリュックは無い。</p>
               <p><b>魔法使い</b>女は白、男は黒。杖は同じで、先が一つの渦巻き。戦士の服は使わない。</p>
               <p><b>戦闘</b>自分は、この戦士の斜め後ろ。剣を抜いて、きりっとした顔で右を向く。敵はその奥。</p>
             </div>
@@ -3287,7 +3287,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=13";
+          img.src = "hero-shoulder.png?v=14";
         });
       }
       return heroImageTask;
@@ -3306,7 +3306,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=13" alt="戦士"></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=14" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
