@@ -1574,11 +1574,11 @@
     const HAND_CAP = 10;
     const CHARACTER_NAME = "戦士";
     const DUNGEON_LIST = [
-      { name: "20", floors: 20 },
+      { name: "はじまりの洞窟", floors: 20 },
       { name: "50", floors: 50 },
       { name: "100", floors: 100 },
     ];
-    let dungeonName = "20";
+    let dungeonName = "はじまりの洞窟";
     let meta = { uses: 0, clears: 0, stars: 0 };
 
     function shuffle(list) {
@@ -2610,7 +2610,7 @@
       battleTotal = route.length;
       restoreEnemyLoop(data);
       retreatUsed = !!data.retreatUsed;
-      if (data.dungeonName) dungeonName = data.dungeonName;
+      if (data.dungeonName) dungeonName = data.dungeonName === "20" ? "はじまりの洞窟" : data.dungeonName;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
       ultimate = data.ultimate || "";
@@ -2739,7 +2739,7 @@
     }
 
     function beginRun(floors, name) {
-      dungeonName = name || "20";
+      dungeonName = name || "はじまりの洞窟";
       battleIndex = 0;
       route = buildRoute(floors || 20);
       battleTotal = route.length;
@@ -3666,7 +3666,7 @@
         if (name === "character") { screen = "character"; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
         if (name === "cast-stay") { screen = "character"; render(); }
-        if (name === "dungeon-start") beginRun(Number(action.dataset.floors) || 20, action.dataset.dungeon || "20");
+        if (name === "dungeon-start") beginRun(Number(action.dataset.floors) || 20, action.dataset.dungeon || "はじまりの洞窟");
         if (name === "floor-next") advance(1);
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
