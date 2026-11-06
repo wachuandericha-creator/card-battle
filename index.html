@@ -1091,7 +1091,7 @@
     .energy-band { display: flex; align-items: flex-end; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 0 56px; gap: 128px; }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: flex-end; gap: 72px; }
     .ailment-slot { display: flex; align-items: center; gap: 10px; min-height: 36px; color: var(--cream); font-weight: 800; }
-    .ailment-slot span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
+    .ailment-slot > span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
@@ -1451,6 +1451,8 @@
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
+    .hint:hover i, .hint:focus-within i,
+    .card:hover .hint i, .card:focus-within .hint i { display: block; }
     .hint i {
       display: none;
       position: absolute;
@@ -1470,7 +1472,6 @@
       white-space: normal;
       transform: translateX(-50%);
     }
-    .card:hover .hint i, .card:focus-within .hint i { display: block; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
     .end {
@@ -2024,7 +2025,7 @@
         pattern: [
           { name: "アタック+", cost: 1, text: "9ダメージ", damage: 9 },
           { name: "ブロック+", cost: 1, text: "ブロック7", block: 7 },
-          { name: "スライム粘液", cost: 1, text: "相手を毒状態にする\n毎ターン毒だけダメージ", poison: true },
+          { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
           { name: "ボディプレス", cost: 2, text: "ブロックの数だけダメージ\nブロックがなければ0", press: true },
         ],
       },
@@ -2072,7 +2073,7 @@
     let turn = 0;
     let intentIndex = 0;
     let enemyLoop = [];
-    const POISON_DAMAGE = 0;
+    const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     let phase = "player";
     let note = "";
     let banner = "";
@@ -2187,7 +2188,7 @@
         focus: card.focus || 0,
         parry: !!card.parry,
         press: !!card.press,
-        poison: !!card.poison,
+        poison: Number(card.poison) || 0,
         stars: card.stars || 1,
         note: card.note || "",
       };
@@ -2634,29 +2635,36 @@
       return `${name}は毒で${result.hpLoss}ダメージ。`;
     }
 
+    function poisonStacks(target) {
+      return Math.max(0, Number(target && target.poison) || 0);
+    }
+
+    function addPoison(target, amount) {
+      target.poison = poisonStacks(target) + Math.max(1, Number(amount) || 1);
+    }
+
+    function poisonBadge(stacks) {
+      if (!stacks) return "";
+      return `<span class="hint poison-mark">毒+${stacks}<i>${esc(POISON_NOTE)}</i></span>`;
+    }
+
     function tickPoison(who) {
       const target = who === "player" ? player : enemy;
-      if (!target || !target.poison || POISON_DAMAGE <= 0) return false;
+      const stacks = poisonStacks(target);
+      if (!stacks) return false;
       const name = who === "player" ? CHARACTER_NAME : enemy.name;
-      if (who === "player" && player.parry) {
-        player.parry = false;
-        log(`${name}は毒。パリィで無効。`);
-        return false;
-      }
-      const defense = who === "player" ? player.def : 0;
-      const cut = mitigate(POISON_DAMAGE, defense);
-      const result = applyDamage(target, cut.dealt);
+      const result = applyDamage(target, stacks);
       if (who === "player") {
         if (result.hpLoss > 0) {
           fxHurt = true;
-          noteHit("player", result.hpLoss, cut.dealt);
+          noteHit("player", result.hpLoss, stacks);
         }
         if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       } else if (result.hpLoss || result.blocked) {
         fxSlash = true;
-        noteHit("enemy", result.hpLoss, POISON_DAMAGE);
+        noteHit("enemy", result.hpLoss, stacks);
       }
-      log(poisonSentence(name, POISON_DAMAGE, cut.reduced, result));
+      log(poisonSentence(name, stacks, 0, result));
       return target.hp <= 0;
     }
 
@@ -2784,8 +2792,8 @@
         return;
       }
       if (card.poison) {
-        enemy.poison = true;
-        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒状態。`, card);
+        addPoison(enemy, card.poison);
+        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
         return;
       }
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
@@ -2905,6 +2913,10 @@
       timer = null;
       scrapPlay();
       banner = "";
+      if (tickPoison("enemy")) {
+        scheduleFinish("win");
+        return;
+      }
       startPlayerTurn();
     }
 
@@ -2927,11 +2939,6 @@
       } else {
         logTurn("enemy");
         const card = intentAt(0);
-        if (tickPoison("enemy")) {
-          scrapPlay();
-          scheduleFinish("win");
-          return;
-        }
         if (!card.press) enemy.block = 0;
         if (card.press) {
           const amount = enemy.block || 0;
@@ -2943,8 +2950,8 @@
           enemy.block += card.block;
           log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
         } else if (card.poison) {
-          player.poison = true;
-          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`, card, true);
+          addPoison(player, card.poison);
+          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒+${player.poison}。`, card, true);
         } else {
           log(`${enemy.name}は${card.name}。${card.text}`, card, true);
         }
@@ -2968,7 +2975,12 @@
       resolveAt = 0;
       while (hand.length) discard.push(hand.pop());
       note = "";
+      const poisoned = tickPoison("player");
       turnCall = "enemy";
+      if (poisoned) {
+        scheduleFinish("lose");
+        return;
+      }
       render();
       timer = setTimeout(stepResolve, 1100);
     }
@@ -2981,10 +2993,6 @@
       logTurn("player");
       turn += 1;
       player.block = 0;
-      if (tickPoison("player")) {
-        finish("lose");
-        return;
-      }
       player.maxEnergy = MANA;
       player.energy = MANA;
       draw(5);
@@ -3168,11 +3176,11 @@
         if (player.energy > MANA) player.energy = MANA;
         player.focus = player.focus || 0;
         player.parry = !!player.parry;
-        player.poison = !!player.poison;
+        player.poison = poisonStacks(player);
       }
       if (enemy) {
         enemy.hit = false;
-        enemy.poison = !!enemy.poison;
+        enemy.poison = poisonStacks(enemy);
         if (enemy.name === "仮の相手") enemy.name = "スライム";
       }
       gear = normalizeGear(data.gear);
@@ -3217,10 +3225,10 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, poison: false, hit: false };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, poison: 0, hit: false };
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: false, hit: false };
+      enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -3872,9 +3880,9 @@
       const atk = adjusted && player ? (player.atk || 0) : 0;
       const shown = card.damage ? (adjusted ? Math.max(0, card.damage + atk) : card.damage) : 0;
       const tone = card.damage && adjusted && shown > card.damage ? "up" : card.damage && adjusted && shown < card.damage ? "down" : "";
-      const noteText = card.note
-        ? esc(card.text).replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`)
-        : esc(card.text).replaceAll("\n", "<br>");
+      let noteText = esc(card.text).replaceAll("\n", "<br>");
+      if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
+      if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
       const effects = [
         card.damage ? `<span class="fx attack">${swordIcon()}<b class="${tone}">${shown}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
@@ -4143,7 +4151,7 @@
       const next = { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
       if (card.focus) next.focus = card.focus;
       if (card.parry) next.parry = true;
-      if (card.poison) next.poison = true;
+      if (card.poison) next.poison = Number(card.poison) || 1;
       if (card.press) next.press = true;
       return next;
     }
@@ -4434,7 +4442,7 @@
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}${bossNow() ? "　ボス" : ""}</h2>
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
-              <div class="hp-line">体力 <b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>${enemy.poison ? `<div class="poison-mark">毒</div>` : ""}
+              <div class="hp-line">体力 <b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>${poisonStacks(enemy) ? `<div class="poison-mark">${poisonBadge(poisonStacks(enemy))}</div>` : ""}
             </section>
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
@@ -4444,7 +4452,7 @@
             </div>
           </div>
           ${playRow()}
-          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${player.poison ? "<span>毒</span>" : ""}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${player.parry ? "<span>パリィ</span>" : ""}</div></div>
+          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${player.parry ? "<span>パリィ</span>" : ""}</div></div>
           <div class="handbar">
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
