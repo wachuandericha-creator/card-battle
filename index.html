@@ -1822,23 +1822,34 @@
     }
 
     function freshRoute() {
-      return buildRoute(20);
+      return buildRoute(20, "はじまりの洞窟");
     }
 
     function isEventNode(name) {
       return String(name || "").startsWith("出来事:");
     }
 
-    function buildRoute(floors) {
-      const combatCount = Math.floor(floors / 2);
-      const eventCount = floors - combatCount;
-      const body = [];
-      for (let i = 0; i < combatCount - 1; i++) body.push(rollRank(i < (combatCount - 1) / 2 ? 1 : 2));
-      const events = ["出来事:探索", "出来事:未知", "出来事:キャンプ", "出来事:お店", "出来事:ジョブ"];
-      for (let i = 0; i < eventCount; i++) body.push(events[i % events.length]);
-      const mixed = shuffle(body);
-      mixed.push(DUNGEON.boss);
-      return mixed;
+    const JOB_CHANGE_FLOORS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
+
+    function buildRoute(floors, name) {
+      const route = new Array(floors);
+      const jobFloors = !name || name === "はじまりの洞窟"
+        ? []
+        : JOB_CHANGE_FLOORS.filter((floor) => floor >= 1 && floor <= floors);
+      for (const floor of jobFloors) route[floor - 1] = "出来事:ジョブ";
+      if (route[floors - 1] !== "出来事:ジョブ") route[floors - 1] = DUNGEON.boss;
+      const open = [];
+      for (let i = 0; i < floors; i++) if (!route[i]) open.push(i);
+      const combatTarget = Math.floor(floors / 2);
+      const combatsPlaced = route.filter((node) => node && !isEventNode(node)).length;
+      const combatLeft = Math.max(0, combatTarget - combatsPlaced);
+      const eventLeft = open.length - combatLeft;
+      const events = ["出来事:探索", "出来事:未知", "出来事:キャンプ", "出来事:お店"];
+      const filler = [];
+      for (let i = 0; i < combatLeft; i++) filler.push(rollRank(i < combatLeft / 2 ? 1 : 2));
+      for (let i = 0; i < eventLeft; i++) filler.push(events[i % events.length]);
+      shuffle(filler).forEach((node, i) => { route[open[i]] = node; });
+      return route;
     }
 
     function enemyNow() {
@@ -2936,7 +2947,7 @@
     function beginRun(floors, name) {
       dungeonName = name || "はじまりの洞窟";
       battleIndex = 0;
-      route = buildRoute(floors || 20);
+      route = buildRoute(floors || 20, dungeonName);
       battleTotal = route.length;
       retreatUsed = false;
       cleared = false;
@@ -3121,7 +3132,7 @@
       root.innerHTML = `
         <div class="menu">
           <h1>ダンジョン</h1>
-          <p>初期ジョブは${job}。階層の半分が戦闘。最後は強敵。</p>
+          <p>初期ジョブは${job}。階層の半分が戦闘。ジョブチェンジは、はじまりの洞窟のあと。10、20、30、40、50、60、70、80、90、99階。</p>
           ${DUNGEON_LIST.map((item) => `<button type="button" class="primary" data-action="dungeon-start" data-floors="${item.floors}" data-dungeon="${esc(item.name)}">${esc(item.name)}</button>`).join("")}
           ${menuButton("もどる", "character")}
         </div>`;
