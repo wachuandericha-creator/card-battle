@@ -300,10 +300,7 @@
     .reward-pick .card.preview { width: 132px; height: auto; }
     .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
-    .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 14px; width: min(920px, 100%); }
-    .path-list button { display: flex; flex-direction: column; gap: 6px; width: min(240px, 28vw); padding: 8px; }
-    .path-list button img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
-    .path-list button span { font-weight: 650; font-size: 13px; }
+    .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
     .deck-view .panel {
       width: min(1080px, calc(100vw - 48px));
       max-height: calc(100vh - 56px);
@@ -1552,6 +1549,41 @@
       cursor: pointer;
     }
     .overlay button + button { margin-top: 10px; }
+    .overlay.paths .panel.wide {
+      width: min(1360px, calc(100vw - 24px));
+      max-height: calc(100vh - 16px);
+      padding: 22px 24px 20px;
+    }
+    .overlay.paths h2 {
+      margin: 0 0 4px;
+      font-size: 52px;
+      letter-spacing: 0.2em;
+      color: #ffe7a8;
+    }
+    .overlay.paths p { font-size: 22px; margin-bottom: 12px; }
+    .overlay.paths .path-list button {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1 1 280px;
+      width: auto;
+      max-width: 440px;
+      min-height: min(62vh, 560px);
+      padding: 14px 14px 18px;
+      border-radius: 18px;
+      font-size: 20px;
+    }
+    .overlay.paths .path-list button + button { margin-top: 0; }
+    .overlay.paths .path-list button img {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 240px;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+    .overlay.paths .path-list button b { font-size: 34px; letter-spacing: 0.06em; }
+    .overlay.paths .path-list button span { font-weight: 700; font-size: 20px; line-height: 1.45; }
     .overlay button.ghost {
       background: transparent;
       color: var(--cream);
@@ -4168,7 +4200,7 @@
           const picture = path.image ? `<img src="${path.image}" alt="">` : "";
           return `<button type="button" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
         }).join("");
-        return `<div class="overlay"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         return `<div class="overlay"><div class="panel"><h2>お店</h2><p>所持 ★${meta.stars}</p><p>品ぞろえは、これから決める。</p><button type="button" data-action="reward-go">出ていく</button></div></div>`;
