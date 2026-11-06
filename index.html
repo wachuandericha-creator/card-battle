@@ -369,7 +369,7 @@
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
     .ref-grid img.enemy-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
-    .cast-screen { position: relative; height: 100%; min-height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 92px 28px 24px; }
+    .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 28px 16px; overflow: hidden; }
     .cast-back {
       position: absolute;
       top: 16px;
@@ -406,7 +406,7 @@
       margin: 0;
       text-align: center;
       color: #f6d48a;
-      font-size: clamp(26px, 2.6vw, 38px);
+      font-size: clamp(22px, 2.2vw, 32px);
       font-weight: 800;
       letter-spacing: 0.06em;
       text-shadow: 0 3px 0 #6a4a16, 0 0 18px rgba(240, 195, 106, 0.45);
@@ -416,7 +416,7 @@
       display: block;
       width: min(360px, 70%);
       height: 3px;
-      margin: 12px auto 0;
+      margin: 6px auto 0;
       background: linear-gradient(90deg, transparent, #f0c36a, transparent);
       box-shadow: 0 0 12px rgba(240, 195, 106, 0.65);
     }
@@ -513,14 +513,90 @@
       pointer-events: none;
     }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
-    .cast-go {
-      width: 100%;
-      margin-top: 20px;
-      font-size: 22px;
-      padding: 16px 20px;
-      border-radius: 999px;
-      letter-spacing: 0.08em;
+    .cast-roster { display: flex; justify-content: center; min-height: 0; }
+    .cast-token {
+      border: 0;
+      background: transparent;
+      color: #f6d48a;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
+    .cast-token span {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-shadow: 0 2px 0 #6a4a16;
+    }
+    .cast-token.stand img {
+      height: min(26vh, 230px);
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.45));
+    }
+    .cast-token.locked img { filter: drop-shadow(0 0 10px rgba(240, 195, 106, 0.7)) drop-shadow(0 12px 14px rgba(0, 0, 0, 0.45)); }
+    .cast-roster.many { gap: 12px; }
+    .cast-token.mini {
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 4px;
+      background: rgba(18, 14, 12, 0.55);
+    }
+    .cast-token.mini img { width: 72px; height: 84px; object-fit: contain; }
+    .cast-token.mini span { font-size: 14px; letter-spacing: 0.08em; }
+    .cast-token.mini.shown { border-color: #e4b15a; }
+    .cast-hero {
+      height: min(22vh, 200px);
+      width: auto;
+      margin: 0 auto;
+      object-fit: contain;
+    }
+    .cast-main {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(340px, 480px);
+      grid-template-rows: minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+      overflow: hidden;
+    }
+    .cast-action {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 16px;
+      border: 2px solid rgba(228, 177, 90, 0.6);
+      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.35);
+    }
+    .cast-side {
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .cast-side .cast-plaque { max-height: none; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 12px 14px 8px; }
+    .cast-side .cast-plaque h1 { font-size: 32px; margin-bottom: 4px; }
+    .cast-side .cast-plaque h2 { margin: 8px 0 4px; }
+    .cast-side .cast-plaque .stats { font-size: 18px; }
+    .cast-side .cast-gear figure { width: 56px; }
+    .cast-side .cast-gear img { width: 56px; height: 56px; }
+    .cast-side .cast-deck .card.preview { width: 60px; }
+    .cast-start {
+      position: static;
+      align-self: flex-end;
+      width: auto;
+      margin: 8px 0 0 auto;
+      font-size: 22px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      letter-spacing: 0.12em;
+    }
+    .cast-start[hidden] { display: none; }
     .sprite {
       width: 100%;
       height: 100%;
@@ -1610,6 +1686,9 @@
       .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
       .cast-title { font-size: 24px; letter-spacing: 0.06em; }
       .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
+      .cast-main { grid-template-columns: 1fr; overflow: auto; }
+      .cast-action { height: 36vh; }
+      .cast-token.stand img { height: 22vh; }
       .cast-stand { height: 42vh; }
       .cast-plaque h1 { font-size: 36px; }
       .party-band { flex-direction: column; }
@@ -1740,6 +1819,12 @@
     let retreatUsed = false;
     let job = "戦士";
     let castPicked = false;
+    let castHover = "";
+    let castLock = "戦士";
+    let castShown = "";
+    const CAST = [
+      { name: "戦士", stand: "job-front.png?v=1", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=1" },
+    ];
     let jobsHad = ["戦士"];
     let ultimate = "";
     let floorKind = "";
@@ -3079,37 +3164,88 @@
       }).join("");
     }
 
-    function renderCharacter() {
-      const stage = castPicked ? `
-          <div class="cast-detail">
-            <img class="cast-stand" src="job-stand.jpg?v=5" alt="戦士の立ち絵">
-            <div class="cast-plaque">
-              <h1>${CHARACTER_NAME}</h1>
-              <p class="stats">HP 30　ATK+2　DEF+2</p>
-              <h2>初期装備</h2>
-              <div class="cast-gear">
-                <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
-                <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
-              </div>
-              <button type="button" class="primary cast-go" data-action="character-next">このジョブではじめる</button>
+    function castByName(name) {
+      return CAST.find((item) => item.name === name) || CAST[0];
+    }
+
+    function shownCastName() {
+      return castHover || castLock || CAST[0].name;
+    }
+
+    function castMainMarkup(item) {
+      return `
+        <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
+        <div class="cast-side">
+          <div class="cast-plaque">
+            <h1>${esc(item.name)}</h1>
+            <p class="stats">HP 30　ATK+2　DEF+2</p>
+            <h2>初期装備</h2>
+            <div class="cast-gear">
+              <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
+              <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
             </div>
-          </div>
-          <div class="cast-deck-block">
             <h2>初期デッキ</h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
-          </div>` : `
-          <div class="cast-stage">
-            <button type="button" class="cast-pick" data-action="cast-pick" aria-label="${CHARACTER_NAME}">
-              <img src="job-warrior.png?v=8" alt="">
-              <span>${CHARACTER_NAME}</span>
-            </button>
-          </div>`;
+          </div>
+          <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
+        </div>`;
+    }
+
+    function paintCast() {
+      const name = shownCastName();
+      const fixed = Boolean(castLock) && (!castHover || castHover === castLock);
+      if (name !== castShown) {
+        castShown = name;
+        const item = castByName(name);
+        const main = root.querySelector(".cast-main");
+        if (main) main.innerHTML = castMainMarkup(item);
+        const hero = root.querySelector(".cast-hero");
+        if (hero) hero.src = item.stand;
+      }
+      const start = root.querySelector(".cast-start");
+      if (start) start.hidden = !fixed;
+      root.querySelectorAll("[data-cast]").forEach((token) => {
+        token.classList.toggle("locked", token.dataset.cast === castLock);
+        token.classList.toggle("shown", token.dataset.cast === name);
+      });
+    }
+
+    function bindCastHover() {
+      root.querySelectorAll("[data-cast]").forEach((token) => {
+        token.addEventListener("pointerenter", () => {
+          const next = token.dataset.cast || "";
+          if (castHover === next) return;
+          castHover = next;
+          paintCast();
+        });
+        token.addEventListener("pointerleave", () => {
+          if (castHover !== token.dataset.cast) return;
+          castHover = "";
+          paintCast();
+        });
+      });
+    }
+
+    function renderCharacter() {
+      const many = CAST.length > 1;
+      const shown = castByName(shownCastName());
+      const tokens = CAST.map((item) => `
+        <button type="button" class="cast-token ${many ? "mini" : "stand"}" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
+          <img src="${many ? item.chibi : item.stand}" alt="">
+          <span>${esc(item.name)}</span>
+        </button>`).join("");
+      const hero = many ? `<img class="cast-hero" src="${shown.stand}" alt="${esc(shown.name)}の立ち絵">` : "";
+      castShown = "";
       root.innerHTML = `
         <div class="cast-screen">
-          <button type="button" class="cast-back" data-action="${castPicked ? "cast-back" : "title"}">もどる</button>
+          <button type="button" class="cast-back" data-action="title">もどる</button>
           <h1 class="cast-title">初期ジョブを選択してください</h1>
-          ${stage}
+          <div class="cast-roster ${many ? "many" : ""}">${tokens}</div>
+          ${hero}
+          <div class="cast-main"></div>
         </div>`;
+      paintCast();
+      bindCastHover();
     }
 
     function dungeonArt(name) {
@@ -3893,7 +4029,12 @@
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
         if (name === "album") { screen = "album"; render(); }
         if (name === "sheet") { screen = "sheet"; render(); }
-        if (name === "character") { screen = "character"; render(); }
+        if (name === "character") { castHover = ""; castLock = "戦士"; screen = "character"; render(); }
+        if (name === "cast-token") {
+          castLock = action.dataset.cast || castLock;
+          castHover = "";
+          paintCast();
+        }
         if (name === "cast-pick") { castPicked = true; render(); }
         if (name === "cast-back") { castPicked = false; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
