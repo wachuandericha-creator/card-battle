@@ -2966,7 +2966,7 @@
       const deck = CARD_POOL.map(([name, count]) => `${name}×${count}`).join("、");
       const stage = castPicked ? `
           <div class="cast-detail">
-            <img class="cast-stand" src="job-stand.jpg?v=1" alt="戦士の立ち絵">
+            <img class="cast-stand" src="job-stand.jpg?v=2" alt="戦士の立ち絵">
             <div class="cast-plaque">
               <h1>${CHARACTER_NAME}</h1>
               <p class="stats">HP 30　ATK+2　DEF+2</p>
@@ -2982,7 +2982,7 @@
           </div>` : `
           <div class="cast-stage">
             <button type="button" class="cast-pick" data-action="cast-pick" aria-label="${CHARACTER_NAME}">
-              <img src="job-warrior.png?v=4" alt="">
+              <img src="job-warrior.png?v=5" alt="">
               <span>${CHARACTER_NAME}</span>
             </button>
           </div>`;
@@ -3015,7 +3015,7 @@
             <h2>設定資料</h2>
             <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
             <h3>戦士</h3>
-            <img class="sheet-art" src="warrior-f-sheet.jpg?v=5" alt="戦士。真正面、右向き、左向き、斜め後ろ、後ろ、手を腰。">
+            <img class="sheet-art" src="warrior-f-sheet.jpg?v=6" alt="戦士。真正面、右向き、左向き、斜め後ろ、後ろ、手を腰。">
             <p class="sheet-cap">左から、真正面、右向き、左向き、斜め後ろ、後ろ、決めポーズ。</p>
             <h3>魔法使い・女・白</h3>
             <img class="sheet-art" src="mage-f-sheet.jpg?v=2" alt="女の魔法使い。真正面、右向き、左向き、斜め後ろ、後ろ、決めポーズ。">
@@ -3202,7 +3202,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=11";
+          img.src = "hero-shoulder.png?v=12";
         });
       }
       return heroImageTask;
@@ -3221,7 +3221,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=11" alt="戦士"></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=12" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
