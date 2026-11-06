@@ -152,25 +152,27 @@
       left: 0;
       bottom: 0;
       z-index: 3;
-      width: min(52%, 420px);
       height: 100%;
+      width: auto;
+      aspect-ratio: 863 / 1076;
+      max-width: min(52%, 420px);
       pointer-events: none;
-      display: flex;
-      align-items: flex-end;
     }
     .hero-fig {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: contain;
-      object-position: right bottom;
+      object-position: center bottom;
       filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
     }
     .hero-vitals {
       position: absolute;
-      left: 10px;
-      bottom: 8px;
+      left: 50%;
+      top: 50%;
       z-index: 4;
-      width: min(46%, 320px);
+      width: min(320px, 150%);
+      transform: translate(-50%, -50%);
       pointer-events: none;
     }
     .enemy-main {
@@ -3598,8 +3600,8 @@
       return t * t * (3 - 2 * t);
     }
 
-    function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士"></div>`;
+    function heroShoulder(vitals) {
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士">${vitals}</div>`;
     }
 
     function startHeroIdle() {
@@ -4092,8 +4094,7 @@
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
             </div>
-            ${heroShoulder()}
-            <div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>
+            ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`)}
             ${turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
