@@ -179,11 +179,18 @@
       pointer-events: none;
     }
     .battle-plate .hint { pointer-events: auto; }
-    .hero-plate { left: 12px; bottom: 8px; width: min(240px, 32%); }
-    .foe-plate { top: 8px; right: 12px; }
-    .foe-plate[data-rank="雑魚"] { width: min(220px, 30%); }
-    .foe-plate[data-rank="普通"] { width: min(290px, 38%); }
-    .foe-plate[data-rank="強敵"] { width: min(360px, 48%); }
+    .hero-shoulder .hero-plate,
+    .enemy-main .foe-plate {
+      left: 50%;
+      right: auto;
+      top: auto;
+      bottom: 0;
+      transform: translateX(-50%);
+    }
+    .hero-shoulder .hero-plate { width: min(210px, 48vw); }
+    .foe-plate[data-rank="雑魚"] { width: min(200px, 46vw); }
+    .foe-plate[data-rank="普通"] { width: min(250px, 54vw); }
+    .foe-plate[data-rank="強敵"] { width: min(300px, 62vw); }
     .battle-plate h2 {
       margin: 0 0 4px;
       font-size: 20px;
@@ -4800,25 +4807,20 @@
           <div class="stage" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
             <div class="enemy-field">
             ${traitNote()}
+            <div class="enemy-main${encounter ? " arrive" : ""}">
+            <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
+              <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
+              ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
+            </div>
             <section class="battle-plate foe-plate" data-rank="${esc(enemyNow().rank || "普通")}">
               <h2>${esc(enemy.name)}${bossNow() ? "　ボス" : ""}</h2>
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
               <div class="hp-line"><b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
               ${poisonStacks(enemy) ? poisonBadge(poisonStacks(enemy)) : ""}
             </section>
-            <div class="enemy-main${encounter ? " arrive" : ""}">
-            <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
-              <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
-              ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
-            </div>
             </div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
-            ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
-            <section class="battle-plate hero-plate">
-              <h2>${esc(CHARACTER_NAME)}</h2>
-              ${meters("player", playerShown, player.maxHp, player.block)}
-              <div class="hp-line"><b data-hp="player">${playerShown}</b> / ${player.maxHp}</div>
-            </section>
+            ${heroShoulder(`<section class="battle-plate hero-plate"><h2>${esc(CHARACTER_NAME)}</h2>${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line"><b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></section>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
