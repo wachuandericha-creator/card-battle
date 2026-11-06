@@ -746,8 +746,6 @@
     .sprite.slash .cut { animation: slash calc(0.7s + var(--pow, 0.35) * 0.18s) cubic-bezier(0.16, 0.7, 0.28, 1) forwards; }
     .battle-screen.block { animation: screen-shake 0.55s linear; }
     .screen-hurt,
-    .screen-block,
-    .screen-guard,
     .screen-heal {
       position: fixed;
       inset: 0;
@@ -756,25 +754,30 @@
       animation: hurt-fade 1.15s ease-out forwards;
     }
     .screen-hurt { background: rgba(150, 18, 12, 0.46); }
-    .screen-guard {
+    .hero-guard {
+      position: absolute;
+      inset: -12% -18%;
+      z-index: 3;
       display: grid;
       place-items: center;
-      background: radial-gradient(circle at 50% 44%, rgba(186, 220, 255, 0.34), transparent 34%);
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 48%, rgba(186, 220, 255, 0.5), transparent 68%);
+      animation: hurt-fade 1.15s ease-out forwards;
     }
-    .screen-guard .mark {
-      width: min(28vw, 240px);
+    .hero-guard .mark {
+      width: 78%;
       height: auto;
-      filter: drop-shadow(0 16px 18px rgba(12, 36, 72, 0.62));
+      filter: drop-shadow(0 12px 14px rgba(12, 36, 72, 0.62));
       animation: guard-mark 1.15s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .screen-block.break { background: transparent; z-index: 26; }
-    .screen-block.break .half {
+    .hero-guard.break { background: transparent; }
+    .hero-guard.break .half {
       position: absolute;
       left: 50%;
-      top: 42%;
-      width: min(46vw, 440px);
+      top: 50%;
+      width: 92%;
     }
-    .screen-block.break .iron {
+    .hero-guard.break .iron {
       position: static;
       display: block;
       width: 100%;
@@ -782,20 +785,20 @@
       filter: drop-shadow(0 18px 22px rgba(8, 16, 32, 0.6));
       animation: none;
     }
-    .screen-block.break .half.left {
+    .hero-guard.break .half.left {
       clip-path: polygon(0 0, 54% 0, 46% 38%, 60% 62%, 40% 100%, 0 100%);
       animation: shard-left 1.25s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .screen-block.break .half.right {
+    .hero-guard.break .half.right {
       clip-path: polygon(54% 0, 100% 0, 100% 100%, 40% 100%, 60% 62%, 46% 38%);
       animation: shard-right 1.25s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .screen-block.break .crack {
+    .hero-guard.break .crack {
       position: absolute;
       left: 50%;
-      top: 24%;
-      width: 10px;
-      height: 48vh;
+      top: 12%;
+      width: 8px;
+      height: 76%;
       background: linear-gradient(#fff, #ffd0c8 40%, #d4261a);
       transform: translateX(-50%) rotate(7deg);
       animation: crack-flash 1.25s ease-out forwards;
@@ -3809,9 +3812,14 @@
       return t * t * (3 - 2 * t);
     }
 
-    function heroShoulder(vitals, hurt, pow) {
+    function heroShoulder(vitals, hurt, pow, guard) {
       const hit = hurt ? `<div class="hero-hit" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="cut a"></span><span class="cut b"></span><span class="cut c"></span><span class="spark"></span><span class="spark b"></span><span class="spark c"></span></div>` : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士">${hit}${vitals}</div>`;
+      const guardHtml = guard === "hold"
+        ? `<div class="hero-guard" aria-label="ダメージなし">${guardMark()}</div>`
+        : guard === "break"
+          ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
+          : "";
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
     }
 
     function startHeroIdle() {
@@ -4285,8 +4293,6 @@
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}">
-        ${guardNow === "hold" ? `<div class="screen-guard" aria-label="ダメージなし">${guardMark()}</div>` : ""}
-        ${guardNow === "break" ? `<div class="screen-block break" aria-hidden="true">${brokenShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
@@ -4318,7 +4324,7 @@
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
             </div>
-            ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow)}
+            ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
