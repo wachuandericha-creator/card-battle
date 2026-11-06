@@ -444,6 +444,10 @@
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
     .ref-grid img.enemy-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid img.card-ref { aspect-ratio: 4 / 3; }
+    .ref-grid img.cut-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
+    .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
+    .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
+    .ref-grid figure.span-2 { grid-column: span 2; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
     .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 28px 16px; overflow: hidden; }
     .cast-back {
@@ -640,9 +644,11 @@
       overflow: hidden;
     }
     .cast-action {
-      width: 100%;
-      height: 100%;
+      width: 88%;
+      height: 84%;
       min-height: 0;
+      justify-self: center;
+      align-self: center;
       object-fit: cover;
       object-position: center;
       border-radius: 16px;
@@ -1970,7 +1976,7 @@
       .cast-title { font-size: 24px; letter-spacing: 0.06em; }
       .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
       .cast-main { grid-template-columns: 1fr; overflow: auto; }
-      .cast-action { height: 36vh; }
+      .cast-action { width: 92%; height: 30vh; }
       .cast-token.stand img { height: 22vh; }
       .cast-stand { height: 42vh; }
       .cast-plaque h1 { font-size: 36px; }
@@ -3661,10 +3667,20 @@
               <p><b>魔法使い</b>女は白、男は黒。杖は同じで、先が一つの渦巻き。戦士の服は使わない。</p>
               <p><b>戦闘</b>自分は、この戦士の背中。ポケモンと同じ構図。右を向き、武器を構える。表情はきりっとしている。敵はその奥。</p>
             </div>
+            <h3>ジョブ選択</h3>
+            <div class="ref-grid">
+              <figure><img class="cut-ref" src="job-front.png?v=1" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
+              <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=1" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
+            </div>
+            <h3>戦闘の絵</h3>
+            <div class="ref-grid">
+              <figure><img class="cut-ref" src="hero-shoulder.png?v=18" alt=""><figcaption>戦闘の戦士</figcaption></figure>
+            </div>
             <h3>タイトル</h3>
             <img class="sheet-art" src="title-party.jpg" alt="タイトル。四人がわいわいしている。">
             <h3>カード</h3>
             <div class="ref-grid">
+              <figure><img class="back-ref" src="card-back.jpg?v=1" alt=""><figcaption>裏面</figcaption></figure>
               <figure><img class="card-ref" src="card-attack.jpg?v=1" alt=""><figcaption>アタック</figcaption></figure>
               <figure><img class="card-ref" src="card-charge.jpg?v=1" alt=""><figcaption>チャージアタック</figcaption></figure>
               <figure><img class="card-ref" src="card-focus.jpg?v=1" alt=""><figcaption>集中</figcaption></figure>
@@ -3689,6 +3705,12 @@
               <figure><img src="path-dash.jpg?v=2" alt=""><figcaption>走り抜ける</figcaption></figure>
               <figure><img src="path-search.jpg?v=2" alt=""><figcaption>探索</figcaption></figure>
               <figure><img src="path-unknown.jpg" alt=""><figcaption>未知</figcaption></figure>
+            </div>
+            <h3>ダンジョン</h3>
+            <div class="ref-grid">
+              <figure><img class="land-ref" src="dungeon-cave.jpg?v=1" alt=""><figcaption>はじまりの洞窟</figcaption></figure>
+              <figure><img class="land-ref" src="dungeon-50.jpg?v=1" alt=""><figcaption>50</figcaption></figure>
+              <figure><img class="land-ref" src="dungeon-100.jpg?v=1" alt=""><figcaption>100</figcaption></figure>
             </div>
             <h3>祝福</h3>
             <img class="sheet-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">
