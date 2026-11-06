@@ -1912,6 +1912,17 @@
     }
     .turn-call.player b { color: #f0c36a; }
     .turn-call.enemy b { color: #e24b3a; }
+    .encounter-call, .encounter-call b { animation-duration: 1.6s; }
+    .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
+    .enemy-main.arrive { animation: foe-arrive 1.05s cubic-bezier(0.16, 0.84, 0.32, 1) both; }
+    @keyframes foe-arrive {
+      0% { transform: translate(36%, 10%) scale(0.58); opacity: 0; }
+      42% { opacity: 1; }
+      100% { transform: none; opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .enemy-main.arrive { animation: none; }
+    }
     @keyframes turn-wash {
       0% { opacity: 0; }
       10% { opacity: 1; }
@@ -2075,6 +2086,7 @@
     let enemyLoop = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     let phase = "player";
+    let encounter = false;
     let note = "";
     let banner = "";
     let outcome = null;
@@ -2243,6 +2255,7 @@
       for (const floor of jobFloors) route[floor - 1] = "出来事:ジョブ";
       if (route[floors - 1] !== "出来事:ジョブ") route[floors - 1] = DUNGEON.boss;
       if (floors > 1) route[0] = "出来事:祝福";
+      if (floors > 2) route[1] = rollRank(1);
       const open = [];
       for (let i = 0; i < floors; i++) if (!route[i]) open.push(i);
       const combatTarget = Math.floor(floors / 2);
@@ -3232,7 +3245,8 @@
       bindShown();
       turn = 0;
       startEnemyLoop(true);
-      phase = "player";
+      phase = "intro";
+      encounter = true;
       note = "";
       banner = "";
       outcome = null;
@@ -3240,6 +3254,14 @@
       logLines = [];
       saveNote = "";
       buildDeck();
+      render();
+      timer = setTimeout(beginEncounter, 1700);
+    }
+
+    function beginEncounter() {
+      timer = null;
+      if (phase !== "intro" || outcome) return;
+      encounter = false;
       startPlayerTurn();
     }
 
@@ -3428,6 +3450,9 @@
       } else if (screen === "battle" && phase === "recoil" && !outcome) {
         render();
         timer = setTimeout(startPlayerTurn, 650);
+      } else if (screen === "battle" && phase === "intro" && !outcome) {
+        encounter = false;
+        startPlayerTurn();
       } else {
         render();
       }
@@ -4434,7 +4459,7 @@
           <div class="stage" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
             <div class="enemy-field">
             ${traitNote()}
-            <div class="enemy-main">
+            <div class="enemy-main${encounter ? " arrive" : ""}">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
               <img src="${esc(enemy.image || "enemy-slime.png?v=3")}" alt="">
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
@@ -4448,7 +4473,7 @@
             <div class="note">${esc(note)}</div>
             </div>
             ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
-            ${turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
+            ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
           ${playRow()}
