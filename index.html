@@ -1693,6 +1693,14 @@
       text-shadow: 0 3px 0 #6a4a16, 0 0 16px rgba(240, 195, 106, 0.4);
     }
     .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
+    .bless-art {
+      width: min(980px, 92vw);
+      max-height: min(48vh, 460px);
+      object-fit: cover;
+      border-radius: 18px;
+      border: 2px solid rgba(228, 177, 90, 0.88);
+      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
+    }
     .menu button, .title-actions button, .small-btn {
       min-width: 220px;
       border-radius: 14px;
@@ -2220,6 +2228,7 @@
         : JOB_CHANGE_FLOORS.filter((floor) => floor >= 1 && floor <= floors);
       for (const floor of jobFloors) route[floor - 1] = "出来事:ジョブ";
       if (route[floors - 1] !== "出来事:ジョブ") route[floors - 1] = DUNGEON.boss;
+      if (floors > 1) route[0] = "出来事:祝福";
       const open = [];
       for (let i = 0; i < floors; i++) if (!route[i]) open.push(i);
       const combatTarget = Math.floor(floors / 2);
@@ -3213,6 +3222,27 @@
       startPlayerTurn();
     }
 
+    function grantBlessing() {
+      const roll = Math.floor(Math.random() * 3);
+      if (roll === 0) {
+        const gift = { id: "bless-item", name: "アイテム", effect: "使い捨て。効果はまだ無い。" };
+        if (!gear.itemL) gear.itemL = gift;
+        else if (!gear.itemR) gear.itemR = { ...gift };
+        else gear.itemL = gift;
+        return "あなたにアイテムを。アイテムを1つ受け取った。";
+      }
+      if (roll === 1) {
+        const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
+        gear[item.slot] = { ...item };
+        syncGearStats();
+        return `あなたに装備を。${item.name}を受け取った。`;
+      }
+      const names = Object.keys(CARDS);
+      const name = names[Math.floor(Math.random() * names.length)];
+      stolen.push(keepCard({ name, ...CARDS[name] }));
+      return `あなたに技を。${name}を1枚受け取った。`;
+    }
+
     function grantExplore() {
       const kind = ["カード", "装備", "アイテム"][Math.floor(Math.random() * 3)];
       if (kind === "カード") {
@@ -3257,7 +3287,10 @@
       floorNote = "";
       floorPhase = "show";
       ultimatePicks = [];
-      if (kind === "キャンプ") {
+      if (kind === "祝福") {
+        floorKind = "挑戦者に祝福を";
+        floorNote = grantBlessing();
+      } else if (kind === "キャンプ") {
         floorHp = 30;
         if (player) player.hp = 30;
         floorNote = "体力が全快した。";
@@ -3643,6 +3676,9 @@
               <figure><img src="path-search.jpg?v=2" alt=""><figcaption>探索</figcaption></figure>
               <figure><img src="path-unknown.jpg" alt=""><figcaption>未知</figcaption></figure>
             </div>
+            <h3>祝福</h3>
+            <img class="sheet-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">
+            <p class="sheet-cap">1層目。挑戦者に祝福を。大きな目の気。</p>
             <h3>敵</h3>
             <div class="ref-grid">
               <figure><img class="enemy-ref" src="enemy-slime.png?v=3" alt=""><figcaption>スライム</figcaption></figure>
@@ -3702,10 +3738,14 @@
         ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
         : "";
       const next = floorPhase === "show" ? menuButton("進む", "floor-next", true) : "";
+      const art = floorKind === "挑戦者に祝福を"
+        ? `<img class="bless-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">`
+        : "";
       root.innerHTML = `
         <div class="menu">
           <h1>${esc(floorKind)}</h1>
           <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
+          ${art}
           <p>${esc(floorNote)}</p>
           ${jobs}
           ${ultimates}
