@@ -2143,6 +2143,8 @@
         rank: "普通",
         hp: 24,
         pattern: [
+          { name: "アタック+", cost: 1, text: "12ダメージ", damage: 12 },
+          { name: "ブロック+", cost: 1, text: "ブロック10", block: 10 },
           { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
           { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
           { name: "叩き", cost: 1, text: "8ダメージ", damage: 8 },
@@ -2155,6 +2157,8 @@
         rank: "強敵",
         hp: 30,
         pattern: [
+          { name: "アタック+", cost: 1, text: "15ダメージ", damage: 15 },
+          { name: "ブロック+", cost: 1, text: "ブロック12", block: 12 },
           { name: "静止", cost: 1, text: "このターンは動かない" },
           { name: "重撃", cost: 2, text: "12ダメージ", damage: 12 },
           { name: "堅守", cost: 2, text: "ブロック8", block: 8 },
@@ -4524,6 +4528,15 @@
       return next;
     }
 
+    function playerCopy(card) {
+      const name = String(card.name || "");
+      if (name.endsWith("+")) {
+        const base = name.slice(0, -1);
+        if (CARDS[base]) return { ...keepCard({ name: base, ...CARDS[base], stars: 1 }), source: "敵" };
+      }
+      return { ...keepCard({ ...card, stars: 1 }), source: "敵" };
+    }
+
     function classCards() {
       if (job !== "戦士" && job !== "パラディン") return [];
       return Object.keys(WARRIOR).map((name) => ({ ...keepCard({ name, ...WARRIOR[name], stars: 1 }), source: "戦士" }));
@@ -4534,9 +4547,10 @@
       list.push(...classCards());
       const seen = new Set();
       for (const card of enemyNow().pattern) {
-        if (seen.has(card.name)) continue;
-        seen.add(card.name);
-        list.push({ ...keepCard(card), source: "敵" });
+        const reward = playerCopy(card);
+        if (seen.has(reward.name)) continue;
+        seen.add(reward.name);
+        list.push(reward);
       }
       return list;
     }
