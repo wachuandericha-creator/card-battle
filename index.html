@@ -85,14 +85,17 @@
     }
     .status-row {
       display: flex;
-      align-items: center;
-      gap: 16px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      width: max-content;
     }
     .status-stars {
       color: var(--gold);
       font-size: 28px;
       font-weight: 800;
       letter-spacing: 0.04em;
+      text-align: center;
       white-space: nowrap;
     }
     .hud-actions { display: flex; gap: 8px; }
@@ -976,31 +979,36 @@
     }
     .gear-rail h2 {
       margin: 0 0 4px;
+      width: 0;
+      min-width: 100%;
       font-size: 13px;
       letter-spacing: 0.08em;
+      text-align: center;
       color: var(--gold);
     }
     .gear-rail .party-stack {
       margin-top: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       align-self: stretch;
-      width: auto;
+      width: max-content;
       max-width: 100%;
       flex: none;
     }
     .gear-board {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
+      justify-content: space-between;
       gap: 4px;
-      width: auto;
+      width: 0;
+      min-width: 100%;
       max-width: 100%;
       min-height: 0;
-      min-width: 0;
       flex: 1 1 auto;
-      overflow: auto;
+      overflow: hidden;
+      container-type: size;
       overflow-anchor: none;
     }
     .gear-pair {
@@ -1015,7 +1023,8 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      width: auto;
+      width: 100%;
+      min-width: 0;
       margin: 0;
       padding: 0;
       border: 0;
@@ -1029,8 +1038,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 64px;
-      height: 64px;
+      width: min(100cqi, calc((100cqb - 168px) / 7));
+      height: auto;
       aspect-ratio: 1;
       flex: none;
       overflow: hidden;
@@ -1057,11 +1066,13 @@
       font-weight: 800;
       letter-spacing: 0.02em;
       text-align: center;
-      max-width: 9em;
+      max-width: 100%;
       line-height: 1.2;
     }
     .gear-effect {
       margin: 4px 0 0;
+      width: 0;
+      min-width: 100%;
       padding: 8px;
       border: 1px solid rgba(228, 177, 90, 0.7);
       border-radius: 10px;
@@ -3741,7 +3752,7 @@
         ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
         ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
         ${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-row"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
