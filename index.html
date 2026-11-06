@@ -1288,16 +1288,24 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash { animation: none; transition: none; }
+      .victory-flash { display: none; }
+      .fly-star {
+        left: 50%;
+        top: 12vh;
+        opacity: 1;
+        transform: translate(calc(-50% + (var(--i) - (var(--n) - 1) / 2) * 110px), 0);
+      }
       .pip.on { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
     }
-    .card.attack, .card.block, .card.skill {
+    .card.attack, .card.block, .card.skill, .card.foe {
       clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
     }
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
     .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
+    .card.foe { background: #6a3d86; border-color: #45245c; color: #fbf6ff; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
@@ -1321,6 +1329,7 @@
     .card.attack .nameplate { background: linear-gradient(180deg, #f0c2b8 0%, #b55246 54%, #7a2e26 100%); color: #fff8f4; }
     .card.block .nameplate { background: linear-gradient(180deg, #e4f0fb 0%, #5b90c6 56%, #2a5584 100%); color: #f7fbff; }
     .card.skill .nameplate { background: linear-gradient(180deg, #fff6d8 0%, #f0c56a 56%, #c9963c 100%); color: #2a2118; }
+    .card.foe .nameplate { background: linear-gradient(180deg, #f3e4fb 0%, #8d55b0 54%, #4c2870 100%); color: #fff8ff; }
     .card .cost {
       position: absolute;
       top: 50%;
@@ -1479,6 +1488,59 @@
     }
     .overlay h2 { margin: 0 0 8px; font-size: 28px; color: var(--cream); letter-spacing: 0.06em; }
     .overlay p { margin: 0 0 16px; color: var(--muted); }
+    .overlay.victory {
+      background:
+        radial-gradient(ellipse at 70% 28%, rgba(255, 220, 140, 0.28), transparent 36%),
+        rgba(8, 6, 4, 0.8);
+    }
+    .overlay.victory .panel {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(180deg, #4a3418 0%, #24180f 100%);
+      border: 2px solid #e4b15a;
+      box-shadow: 0 0 0 6px rgba(36, 24, 12, 0.72), 0 0 48px rgba(228, 177, 90, 0.5);
+      padding: 34px 40px 28px;
+    }
+    .overlay.victory h2 {
+      font-size: 64px;
+      letter-spacing: 0.32em;
+      color: #ffe7a8;
+      text-shadow: 0 2px 0 #6a4a16, 0 0 18px rgba(255, 220, 140, 0.85);
+    }
+    .victory-count { color: #ffe7a8; font-size: 28px; font-weight: 800; }
+    .victory-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(255, 236, 170, 0.7), transparent 46%);
+      animation: victory-flash 0.8s ease-out forwards;
+      pointer-events: none;
+    }
+    .victory-flash { z-index: 0; }
+    .star-burst { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    .fly-star {
+      position: absolute;
+      left: 72%;
+      top: 28%;
+      font-size: 88px;
+      line-height: 1;
+      color: #ffe28a;
+      text-shadow: 0 0 8px #fff6d0, 0 0 24px #e4b15a, 0 8px 16px rgba(0, 0, 0, 0.45);
+      animation: star-fly 1.05s cubic-bezier(0.16, 0.84, 0.28, 1) both;
+      animation-delay: calc(var(--i) * 0.16s);
+    }
+    @keyframes victory-flash {
+      0% { opacity: 0; }
+      18% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes star-fly {
+      0% { opacity: 0; transform: translate(0, 24px) scale(0.15) rotate(-36deg); }
+      22% { opacity: 1; }
+      100% {
+        opacity: 1;
+        transform: translate(calc(-22vw + (var(--i) - (var(--n) - 1) / 2) * 110px), -16vh) scale(1) rotate(0deg);
+      }
+    }
     .overlay button {
       border: 0;
       background: var(--gold);
@@ -1975,6 +2037,7 @@
     let ultimatePicks = [];
     let rewardReady = false;
     let rewardStars = 0;
+    let starBurst = 0;
     let rewardPicks = [];
     let rewardPaths = [];
     let rewardStep = "cards";
@@ -2038,10 +2101,11 @@
       };
     }
 
-    function log(msg, card) {
+    function log(msg, card, foe) {
       const line = { text: msg };
       const snap = cardSnapshot(card);
       if (snap) line.card = snap;
+      if (foe && snap) line.foe = true;
       const marker = logLines.findIndex((item) => item && item.kind);
       if (marker === -1) logLines.unshift(line);
       else {
@@ -2508,7 +2572,7 @@
       if (player.parry) {
         player.parry = false;
         noteHit("player", 0, raw);
-        log(`${enemy.name}は${name}。パリィで無効。`, card);
+        log(`${enemy.name}は${name}。パリィで無効。`, card, true);
         return;
       }
       const cut = mitigate(raw, player.def);
@@ -2518,7 +2582,7 @@
         noteHit("player", result.hpLoss, cut.dealt);
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
-      log(hurtSentence(enemy.name, name, raw, cut.reduced, result), card);
+      log(hurtSentence(enemy.name, name, raw, cut.reduced, result), card, true);
     }
 
     function restoreHp(amount) {
@@ -2779,17 +2843,17 @@
         if (card.press) {
           const amount = enemy.block || 0;
           if (amount > 0) takeEnemyHit(amount, card);
-          else log(`${enemy.name}は${card.name}で0ダメージ。`, card);
+          else log(`${enemy.name}は${card.name}で0ダメージ。`, card, true);
         } else if (card.damage) {
           takeEnemyHit(card.damage, card);
         } else if (card.block) {
           enemy.block += card.block;
-          log(`${enemy.name}は${card.name}でブロック${card.block}。`, card);
+          log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
         } else if (card.poison) {
           player.poison = true;
-          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`, card);
+          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`, card, true);
         } else {
-          log(`${enemy.name}は${card.name}。${card.text}`, card);
+          log(`${enemy.name}は${card.name}。${card.text}`, card, true);
         }
         advanceEnemyLoop();
         if (player.hp <= 0) {
@@ -3603,7 +3667,8 @@
         line.addEventListener("pointerenter", () => {
           const card = logLines[Number(line.dataset.log)] && logLines[Number(line.dataset.log)].card;
           if (!card) return;
-          peek.innerHTML = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
+          const tone = line.dataset.foe === "1" ? "foe" : cardKind(card);
+          peek.innerHTML = `<div class="card preview ${tone}">${cardFace(card, false)}</div>`;
           const rect = line.getBoundingClientRect();
           const width = 148;
           const height = Math.round(width * 300 / 204);
@@ -3666,15 +3731,16 @@
       return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div></div>`;
     }
 
-    function playFace(card, on, adjusted) {
-      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, adjusted)}</div></div>`;
+    function playFace(card, on, adjusted, foe) {
+      const tone = foe ? "foe" : cardKind(card);
+      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${tone}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, adjusted)}</div></div>`;
     }
 
     function playRow() {
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i, true)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length, false)}</div></div></div>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label">自分</span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label">敵</span><div class="play-cards">${playFace(foe, hot === inPlay.length, false, true)}</div></div></div>`;
     }
 
     let heroImage = null;
@@ -3960,6 +4026,7 @@
       if (rewardReady) return;
       rewardReady = true;
       rewardStars = enemyNow().tier || starsForRank(enemyNow().rank);
+      starBurst = rewardStars;
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       localStorage.setItem(META_KEY, JSON.stringify(meta));
       rewardPicks = drawDistinct(3);
@@ -4077,11 +4144,23 @@
       applyPath(id);
     }
 
+    function offerTone(card) {
+      return card && card.source === "敵" ? "foe" : cardKind(card);
+    }
+
+    function victoryStars() {
+      const count = starBurst;
+      if (!count) return "";
+      starBurst = 0;
+      const stars = Array.from({ length: count }, (_, i) => `<span class="fly-star" style="--i:${i};--n:${count}">★</span>`).join("");
+      return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="星${count}">${stars}</div>`;
+    }
+
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
-        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${cardKind(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay"><div class="panel wide"><h2>勝った</h2><p>★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
+        return `<div class="overlay victory">${victoryStars()}<div class="panel wide"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -4098,7 +4177,7 @@
         return `<div class="overlay"><div class="panel"><h2>探索</h2><p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const bonus = bonusCard
-        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${cardKind(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
+        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
         : "";
       return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
@@ -4163,7 +4242,8 @@
         const kind = line && line.kind;
         const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
         const hover = line && line.card ? ` data-log="${index}"` : "";
-        return `<p class="${cls}"${hover}>${esc(text)}</p>`;
+        const foe = line && line.foe ? ` data-foe="1"` : "";
+        return `<p class="${cls}"${hover}${foe}>${esc(text)}</p>`;
       }).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
