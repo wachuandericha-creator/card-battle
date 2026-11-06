@@ -175,6 +175,58 @@
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
+    .hero-shoulder.hurt { animation: shake 0.5s linear; }
+    .hero-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .hero-hit .flash {
+      position: absolute;
+      inset: -10%;
+      background:
+        radial-gradient(circle at 48% 46%, rgba(255, 250, 236, 0.95), rgba(255, 92, 28, 0.72) 26%, rgba(140, 10, 4, 0.28) 52%, transparent 72%);
+      mix-blend-mode: screen;
+      animation: hero-flash 0.9s ease-out forwards;
+    }
+    .hero-hit .cut {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: calc(138% + var(--pow, 0.35) * 36%);
+      height: calc(22px + var(--pow, 0.35) * 26px);
+      background: linear-gradient(90deg, transparent 0%, #fff 16%, #fff 48%, #ffd0c4 70%, transparent 100%);
+      box-shadow:
+        0 0 16px 6px rgba(255, 54, 18, 0.9),
+        0 0 36px 14px rgba(255, 214, 150, 0.65);
+      clip-path: polygon(0 50%, 7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%);
+      opacity: 0;
+    }
+    .hero-hit .cut.a { animation: hero-slash-a 0.78s cubic-bezier(0.16, 0.7, 0.28, 1) forwards; }
+    .hero-hit .cut.b {
+      height: calc(14px + var(--pow, 0.35) * 16px);
+      animation: hero-slash-b 0.82s 0.05s cubic-bezier(0.16, 0.7, 0.28, 1) forwards;
+    }
+    .hero-hit .cut.c {
+      height: calc(11px + var(--pow, 0.35) * 12px);
+      animation: hero-slash-c 0.74s 0.02s cubic-bezier(0.16, 0.7, 0.28, 1) forwards;
+    }
+    .hero-hit .spark {
+      position: absolute;
+      left: 46%;
+      top: 44%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 14px 8px #ff5a18, 0 0 28px 12px rgba(255, 220, 140, 0.8);
+      opacity: 0;
+      animation: spark-a 0.72s ease-out forwards;
+    }
+    .hero-hit .spark.b { animation-name: spark-b; animation-delay: 0.04s; }
+    .hero-hit .spark.c { left: 54%; animation-name: spark-c; animation-delay: 0.07s; }
     .enemy-main {
       position: absolute;
       right: 2%;
@@ -695,7 +747,6 @@
       z-index: 4;
     }
     .sprite.slash .cut { animation: slash calc(0.7s + var(--pow, 0.35) * 0.18s) cubic-bezier(0.16, 0.7, 0.28, 1) forwards; }
-    .battle-screen.hurt,
     .battle-screen.block { animation: screen-shake 0.55s linear; }
     .screen-hurt,
     .screen-block,
@@ -1640,6 +1691,41 @@
       0% { opacity: 0; }
       14% { opacity: 1; }
       100% { opacity: 0; }
+    }
+    @keyframes hero-flash {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes hero-slash-a {
+      0% { opacity: 0; transform: translate(-72%, -86%) rotate(-62deg) scaleX(0.18); }
+      16% { opacity: 1; transform: translate(-50%, -50%) rotate(-36deg) scaleX(1); }
+      100% { opacity: 0; transform: translate(-22%, -16%) rotate(-22deg) scaleX(1.08); }
+    }
+    @keyframes hero-slash-b {
+      0% { opacity: 0; transform: translate(-24%, -92%) rotate(48deg) scaleX(0.16); }
+      18% { opacity: 1; transform: translate(-50%, -48%) rotate(30deg) scaleX(1); }
+      100% { opacity: 0; transform: translate(-68%, -14%) rotate(16deg) scaleX(1.06); }
+    }
+    @keyframes hero-slash-c {
+      0% { opacity: 0; transform: translate(-84%, -18%) rotate(-6deg) scaleX(0.2); }
+      16% { opacity: 1; transform: translate(-50%, -42%) rotate(8deg) scaleX(1); }
+      100% { opacity: 0; transform: translate(-16%, -64%) rotate(14deg) scaleX(1.05); }
+    }
+    @keyframes spark-a {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-80px, -90px) scale(0.15); }
+    }
+    @keyframes spark-b {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(70px, -60px) scale(0.15); }
+    }
+    @keyframes spark-c {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(20px, 80px) scale(0.15); }
     }
     .turn-call {
       position: absolute;
@@ -3587,8 +3673,9 @@
       return t * t * (3 - 2 * t);
     }
 
-    function heroShoulder(vitals) {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士">${vitals}</div>`;
+    function heroShoulder(vitals, hurt, pow) {
+      const hit = hurt ? `<div class="hero-hit" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="cut a"></span><span class="cut b"></span><span class="cut c"></span><span class="spark"></span><span class="spark b"></span><span class="spark c"></span></div>` : "";
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=18" alt="戦士">${hit}${vitals}</div>`;
     }
 
     function startHeroIdle() {
@@ -4046,8 +4133,7 @@
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
-        <div class="battle-screen${showLog ? "" : " no-log"}${hurtNow ? " hurt" : ""}">
-        ${hurtNow ? `<div class="screen-hurt" aria-hidden="true"></div>` : ""}
+        <div class="battle-screen${showLog ? "" : " no-log"}">
         ${guardNow === "hold" ? `<div class="screen-guard" aria-label="ダメージなし">${guardMark()}</div>` : ""}
         ${guardNow === "break" ? `<div class="screen-block break" aria-hidden="true">${brokenShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
@@ -4081,7 +4167,7 @@
             <div class="banner">${esc(banner)}</div>
             <div class="note">${esc(note)}</div>
             </div>
-            ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`)}
+            ${heroShoulder(`<div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow)}
             ${turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
