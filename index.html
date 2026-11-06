@@ -301,14 +301,27 @@
     .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
     .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
-    .deck-view .panel {
-      width: min(1080px, calc(100vw - 48px));
-      max-height: calc(100vh - 56px);
-      overflow: auto;
+    .overlay.deck-view .panel {
+      width: min(1480px, calc(100vw - 20px));
+      height: min(920px, calc(100vh - 16px));
+      max-height: calc(100vh - 16px);
+      padding: 20px 24px 18px;
+      overflow: hidden;
       align-items: stretch;
       text-align: left;
     }
-    .deck-view .panel h2 { text-align: center; }
+    .deck-view .panel h2 {
+      text-align: center;
+      margin: 0 0 8px;
+      font-size: 52px;
+      letter-spacing: 0.16em;
+      color: #ffe7a8;
+    }
+    .deck-view .deck-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
     .deck-group { width: 100%; margin: 0 0 18px; }
     .deck-group h3 {
       margin: 0 0 8px;
@@ -317,10 +330,21 @@
       letter-spacing: 0.12em;
       font-weight: 800;
     }
+    .deck-view .deck-group h3 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      text-align: center;
+    }
     .deck-cards { display: flex; flex-wrap: wrap; gap: 10px; }
-    .deck-view .card.preview { width: 132px; height: auto; }
-    .deck-empty { margin: 0; color: var(--muted); }
-    .deck-view .panel > button { align-self: center; }
+    .deck-view .deck-cards { gap: 16px; justify-content: center; }
+    .deck-view .card.preview { width: min(208px, calc((100% - 64px) / 5)); height: auto; }
+    .deck-empty { margin: 0; color: var(--muted); text-align: center; font-size: 22px; }
+    .deck-view .panel > button {
+      align-self: center;
+      margin-top: 12px;
+      font-size: 22px;
+      padding: 12px 40px;
+    }
     .album-screen {
       height: 100%;
       display: grid;
@@ -4010,13 +4034,14 @@
       const faces = sortedCards(cards).map((card) =>
         `<div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`
       ).join("");
-      return `<section class="deck-group"><h3>${label} ${cards.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
+      const heading = label ? `${label} ${cards.length}` : `${cards.length}枚`;
+      return `<section class="deck-group"><h3>${heading}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
     }
 
     function deckOverlay() {
       if (!showDeck || outcome || askLeave) return "";
       const cards = openingDeck.length ? openingDeck : deck.concat(hand, inPlay, discard);
-      return `<div class="overlay deck-view"><div class="panel"><h2>戦闘開始前のデッキ</h2>${deckGroup("開始前", cards)}<button type="button" data-action="close-deck">閉じる</button></div></div>`;
+      return `<div class="overlay deck-view"><div class="panel"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
     const PATHS = {
