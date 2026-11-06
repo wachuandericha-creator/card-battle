@@ -1130,6 +1130,15 @@
     }
     .battle-log p.turn-player { color: #7eb6ff; }
     .battle-log p.turn-enemy { color: #ff5c4a; }
+    .battle-log p[data-log] { cursor: pointer; }
+    .log-peek {
+      position: fixed;
+      z-index: 40;
+      width: 148px;
+      pointer-events: none;
+    }
+    .log-peek[hidden] { display: none; }
+    .log-peek .card { width: 148px; }
     .gear-rail {
       width: max-content;
       max-width: 100%;
@@ -2012,8 +2021,27 @@
       trimLog();
     }
 
-    function log(msg) {
+    function cardSnapshot(card) {
+      if (!card || typeof card !== "object" || !card.name) return null;
+      return {
+        name: card.name,
+        cost: card.cost || 0,
+        text: card.text || "",
+        damage: card.damage || 0,
+        block: card.block || 0,
+        focus: card.focus || 0,
+        parry: !!card.parry,
+        press: !!card.press,
+        poison: !!card.poison,
+        stars: card.stars || 1,
+        note: card.note || "",
+      };
+    }
+
+    function log(msg, card) {
       const line = { text: msg };
+      const snap = cardSnapshot(card);
+      if (snap) line.card = snap;
       const marker = logLines.findIndex((item) => item && item.kind);
       if (marker === -1) logLines.unshift(line);
       else {
@@ -2412,13 +2440,13 @@
       requestAnimationFrame(frame);
     }
 
+    function finalDamageLine(actor, card, result) {
+      if (result.blocked && !result.hpLoss) return `${actor}は${card}。ブロックで防いだ。`;
+      return `${actor}は${card}で${result.hpLoss}ダメージ。`;
+    }
+
     function damageSentence(actor, card, raw, result) {
-      const head = `${actor}は${card}で${raw}ダメージ。`;
-      if (result.blocked && result.hpLoss) {
-        return `${head}ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
-      }
-      if (result.blocked) return `${head}ブロックで防いだ。`;
-      return head;
+      return finalDamageLine(actor, card, result);
     }
 
     function mitigate(amount, defense) {
@@ -2427,31 +2455,11 @@
     }
 
     function hurtSentence(actor, card, raw, reduced, result) {
-      const head = `${actor}は${card}で${raw}ダメージ。`;
-      if (!reduced) return damageSentence(actor, card, raw, result);
-      if (!result.hpLoss && !result.blocked) return `${head}防御で防いだ。`;
-      if (result.blocked && result.hpLoss) {
-        return `${head}防御で${reduced}軽減し、ブロックで${result.blocked}防ぎ、体力${result.hpLoss}。`;
-      }
-      if (result.blocked) return `${head}防御で${reduced}軽減し、残りはブロックで防いだ。`;
-      return `${head}防御で${reduced}軽減し、体力${result.hpLoss}。`;
+      return finalDamageLine(actor, card, result);
     }
 
     function strikeSentence(actor, card, base, focusAdd, atk, result) {
-      const boosted = base + (focusAdd || 0);
-      const total = boosted + (atk || 0);
-      let head = `${actor}は${card}で${base}ダメージ。`;
-      if (focusAdd) head += `集中で${focusAdd}加算し、${boosted}。`;
-      if (!atk) {
-        if (result.blocked && result.hpLoss) return `${head}ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
-        if (result.blocked) return `${head}ブロックで防いだ。`;
-        return focusAdd ? head : damageSentence(actor, card, base, result);
-      }
-      if (result.blocked && result.hpLoss) {
-        return `${head}攻撃で${atk}加算し、ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
-      }
-      if (result.blocked) return `${head}攻撃で${atk}加算し、ブロックで防いだ。`;
-      return `${head}攻撃で${atk}加算し、${total}。`;
+      return finalDamageLine(actor, card, result);
     }
 
     function hitPower(n) {
@@ -2465,12 +2473,8 @@
     }
 
     function poisonSentence(name, raw, reduced, result) {
-      let line = `${name}は毒で${raw}ダメージ。`;
-      if (reduced) line += `防御で${reduced}軽減し、`;
-      if (!result.hpLoss && !result.blocked) return `${line}防いだ。`;
-      if (result.blocked && result.hpLoss) return `${line}ブロックで${result.blocked}軽減し、体力${result.hpLoss}。`;
-      if (result.blocked) return `${line}残りはブロックで防いだ。`;
-      return reduced ? `${line}体力${result.hpLoss}。` : line;
+      if (result.blocked && !result.hpLoss) return `${name}は毒。ブロックで防いだ。`;
+      return `${name}は毒で${result.hpLoss}ダメージ。`;
     }
 
     function tickPoison(who) {
@@ -2479,7 +2483,7 @@
       const name = who === "player" ? CHARACTER_NAME : enemy.name;
       if (who === "player" && player.parry) {
         player.parry = false;
-        log(`${name}は毒で${POISON_DAMAGE}ダメージ。パリィで無効。`);
+        log(`${name}は毒。パリィで無効。`);
         return false;
       }
       const defense = who === "player" ? player.def : 0;
@@ -2499,11 +2503,12 @@
       return target.hp <= 0;
     }
 
-    function takeEnemyHit(raw, label) {
+    function takeEnemyHit(raw, card) {
+      const name = card && card.name ? card.name : "攻撃";
       if (player.parry) {
         player.parry = false;
         noteHit("player", 0, raw);
-        log(`${enemy.name}は${label || "攻撃"}で${raw}ダメージ。パリィで無効。`);
+        log(`${enemy.name}は${name}。パリィで無効。`, card);
         return;
       }
       const cut = mitigate(raw, player.def);
@@ -2513,7 +2518,7 @@
         noteHit("player", result.hpLoss, cut.dealt);
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
-      log(hurtSentence(enemy.name, label || "攻撃", raw, cut.reduced, result));
+      log(hurtSentence(enemy.name, name, raw, cut.reduced, result), card);
     }
 
     function restoreHp(amount) {
@@ -2596,21 +2601,21 @@
     function resolveCard(card) {
       if (card.focus) {
         player.focus = (player.focus || 0) + card.focus;
-        log(`${CHARACTER_NAME}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`);
+        log(`${CHARACTER_NAME}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
         return;
       }
       if (card.parry) {
-        if (player.parry) log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`);
+        if (player.parry) log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`, card);
         else {
           player.parry = true;
-          log(`${CHARACTER_NAME}は${card.name}。パリィを得た。次の攻撃を無効。攻撃を受けるまで残る。`);
+          log(`${CHARACTER_NAME}は${card.name}。パリィを得た。次の攻撃を無効。攻撃を受けるまで残る。`, card);
         }
         return;
       }
       if (card.press) {
         const amount = player.block || 0;
         if (!amount) {
-          log(`${CHARACTER_NAME}は${card.name}。ブロックが無く、0ダメージ。`);
+          log(`${CHARACTER_NAME}は${card.name}で0ダメージ。`, card);
           return;
         }
         const result = applyDamage(enemy, amount);
@@ -2618,12 +2623,12 @@
           fxSlash = true;
           noteHit("enemy", result.hpLoss, amount);
         }
-        log(damageSentence(CHARACTER_NAME, card.name, amount, result));
+        log(damageSentence(CHARACTER_NAME, card.name, amount, result), card);
         return;
       }
       if (card.poison) {
         enemy.poison = true;
-        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒状態。`);
+        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒状態。`, card);
         return;
       }
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
@@ -2636,15 +2641,14 @@
           fxSlash = true;
           noteHit("enemy", result.hpLoss, amount);
         }
-        log(strikeSentence(CHARACTER_NAME, card.name, card.damage, added, atk, result));
+        log(strikeSentence(CHARACTER_NAME, card.name, card.damage, added, atk, result), card);
       }
       if (card.block) {
         const gain = card.block + added;
         player.block += gain;
-        const boost = added ? `集中で${added}加算し、${gain}。` : "";
-        log(`${CHARACTER_NAME}は${card.name}でブロック${card.block}。${boost}いま${player.block}。`);
+        log(`${CHARACTER_NAME}は${card.name}でブロック${gain}。`, card);
       }
-      if (!card.damage && !card.block) log(`${CHARACTER_NAME}は${card.name}。${card.text}`);
+      if (!card.damage && !card.block) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
     }
 
     function playCard(index) {
@@ -2774,18 +2778,18 @@
         if (!card.press) enemy.block = 0;
         if (card.press) {
           const amount = enemy.block || 0;
-          if (amount > 0) takeEnemyHit(amount, card.name);
-          else log(`${enemy.name}は${card.name}。ブロックが無く、0ダメージ。`);
+          if (amount > 0) takeEnemyHit(amount, card);
+          else log(`${enemy.name}は${card.name}で0ダメージ。`, card);
         } else if (card.damage) {
-          takeEnemyHit(card.damage, card.name);
+          takeEnemyHit(card.damage, card);
         } else if (card.block) {
           enemy.block += card.block;
-          log(`${enemy.name}は${card.name}でブロック${card.block}。`);
+          log(`${enemy.name}は${card.name}でブロック${card.block}。`, card);
         } else if (card.poison) {
           player.poison = true;
-          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`);
+          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒状態。`, card);
         } else {
-          log(`${enemy.name}は${card.name}。${card.text}`);
+          log(`${enemy.name}は${card.name}。${card.text}`, card);
         }
         advanceEnemyLoop();
         if (player.hp <= 0) {
@@ -3580,7 +3584,41 @@
         </div>`;
     }
 
+    function hideLogPeek() {
+      const peek = document.querySelector(".log-peek");
+      if (peek) peek.hidden = true;
+    }
+
+    function bindLogPeek() {
+      const host = document.querySelector(".battle-log");
+      if (!host) return;
+      let peek = document.querySelector(".log-peek");
+      if (!peek) {
+        peek = document.createElement("div");
+        peek.className = "log-peek";
+        peek.hidden = true;
+        document.body.appendChild(peek);
+      }
+      host.querySelectorAll("[data-log]").forEach((line) => {
+        line.addEventListener("pointerenter", () => {
+          const card = logLines[Number(line.dataset.log)] && logLines[Number(line.dataset.log)].card;
+          if (!card) return;
+          peek.innerHTML = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
+          const rect = line.getBoundingClientRect();
+          const width = 148;
+          const height = Math.round(width * 300 / 204);
+          peek.hidden = false;
+          peek.style.left = `${Math.max(8, rect.left - width - 12)}px`;
+          peek.style.top = `${Math.max(8, Math.min(window.innerHeight - height - 8, rect.top + rect.height / 2 - height / 2))}px`;
+        });
+        line.addEventListener("pointerleave", () => {
+          peek.hidden = true;
+        });
+      });
+    }
+
     function render() {
+      hideLogPeek();
       if (screen === "title") return renderTitle();
       if (screen === "character") return renderCharacter();
       if (screen === "dungeon") return renderDungeon();
@@ -4120,11 +4158,12 @@
       fxDeal = false;
       const turnNow = turnCall;
       turnCall = "";
-      const logHtml = logLines.map((line) => {
+      const logHtml = logLines.map((line, index) => {
         const text = typeof line === "string" ? line : line.text;
         const kind = line && line.kind;
         const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
-        return `<p class="${cls}">${esc(text)}</p>`;
+        const hover = line && line.card ? ` data-log="${index}"` : "";
+        return `<p class="${cls}"${hover}>${esc(text)}</p>`;
       }).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
@@ -4187,6 +4226,7 @@
       persistLive();
       kickHp();
       startManaFires();
+      bindLogPeek();
     }
 
     root.addEventListener("click", (event) => {
