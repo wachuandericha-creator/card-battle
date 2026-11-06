@@ -1777,6 +1777,16 @@
     }
     .menu button:disabled, .title-actions button:disabled { opacity: 0.35; cursor: default; }
     .menu button { font-size: 22px; padding: 16px 22px; }
+    .menu.beggar { justify-content: flex-start; overflow: auto; }
+    .menu .beggar-cards { width: min(980px, 100%); justify-content: center; }
+    .menu button.beggar-card {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .menu button.beggar-card:hover .card.preview { transform: translateY(-8px); }
     .dungeon-gate { position: relative; height: 100%; }
     .dungeon-cover {
       position: absolute;
@@ -2157,6 +2167,8 @@
     let gear = emptyGear();
     let gearOpen = null;
     let stolen = [];
+    let removed = [];
+    let beggarCut = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
     let manaFireGen = 0;
@@ -2313,7 +2325,7 @@
       const combatsPlaced = route.filter((node) => node && !isEventNode(node)).length;
       const combatLeft = Math.max(0, combatTarget - combatsPlaced);
       const eventLeft = open.length - combatLeft;
-      const events = ["出来事:探索", "出来事:未知", "出来事:キャンプ", "出来事:お店"];
+      const events = ["出来事:探索", "出来事:未知", "出来事:キャンプ", "出来事:お店", "出来事:物乞い"];
       const filler = [];
       for (let i = 0; i < combatLeft; i++) filler.push(rollRank(i < combatLeft / 2 ? 1 : 2));
       for (let i = 0; i < eventLeft; i++) filler.push(events[i % events.length]);
@@ -2759,14 +2771,32 @@
       return gain;
     }
 
-    function buildDeck() {
-      const specs = [];
-      for (const [name, count] of CARD_POOL) {
-        for (let i = 0; i < count; i++) {
-          specs.push({ uid: uid++, name, ...CARDS[name] });
-        }
+    function runDeck() {
+      const cards = [];
+      const skip = {};
+      for (const card of removed) {
+        if (!card || !card.name) continue;
+        skip[card.name] = (skip[card.name] || 0) + 1;
       }
-      for (const extra of stolen) specs.push({ uid: uid++, ...extra });
+      for (const [name, count] of CARD_POOL) {
+        let left = count;
+        const cut = Math.min(left, skip[name] || 0);
+        left -= cut;
+        skip[name] = (skip[name] || 0) - cut;
+        for (let i = 0; i < left; i++) cards.push(keepCard({ name, ...CARDS[name] }));
+      }
+      for (const extra of stolen) {
+        if (skip[extra.name] > 0) {
+          skip[extra.name] -= 1;
+          continue;
+        }
+        cards.push({ ...extra });
+      }
+      return cards;
+    }
+
+    function buildDeck() {
+      const specs = runDeck().map((card) => ({ uid: uid++, ...card }));
       deck = shuffle(specs);
       openingDeck = deck.map((card) => ({ ...card }));
       hand = [];
@@ -3167,6 +3197,7 @@
         enemy,
         gear,
         stolen,
+        removed,
         battleTotal,
         route,
         retreatUsed,
@@ -3252,6 +3283,7 @@
       syncGearStats();
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
+      removed = Array.isArray(data.removed) ? data.removed.filter((card) => card && card.name) : [];
       if (Array.isArray(data.route) && data.route.length) {
         route = data.route.map((name) => (name === "仮の相手" ? "スライム" : name));
       } else {
@@ -3380,6 +3412,7 @@
       floorKind = kind;
       floorNote = "";
       floorPhase = "show";
+      beggarCut = false;
       ultimatePicks = [];
       if (kind === "祝福") {
         floorKind = "挑戦者に祝福を";
@@ -3413,11 +3446,25 @@
         } else {
           floorNote = "未知は、お店だった。品ぞろえは、これから決める。";
         }
+      } else if (kind === "物乞い") {
+        floorKind = "物乞いに遭遇";
+        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
         floorNote = `いまのジョブは${job}。カードは捨てない。`;
       }
       screen = "floor";
+      render();
+    }
+
+    function dropBeggar(index) {
+      if (floorKind !== "物乞いに遭遇" || beggarCut) return;
+      const cards = runDeck();
+      const card = cards[index];
+      if (!card) return;
+      removed.push(keepCard(card));
+      beggarCut = true;
+      floorNote = `${card.name}を1枚、デッキから外した。`;
       render();
     }
 
@@ -3439,6 +3486,7 @@
       gear = starterGear();
       gearOpen = null;
       stolen = [];
+      removed = [];
       job = "戦士";
       jobsHad = ["戦士"];
       ultimate = "";
@@ -3857,16 +3905,24 @@
       const ultimates = floorPhase === "ultimate"
         ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
         : "";
-      const next = floorPhase === "show" ? menuButton("進む", "floor-next", true) : "";
+      const next = floorPhase === "show" ? menuButton(floorKind === "物乞いに遭遇" && !beggarCut ? "外さずに進む" : "進む", "floor-next", true) : "";
+      const beggar = floorKind === "物乞いに遭遇"
+        ? `<div class="deck-cards beggar-cards">${runDeck().map((card, i) => {
+          const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
+          if (beggarCut) return face;
+          return `<button type="button" class="beggar-card" data-action="beggar-drop" data-index="${i}">${face}</button>`;
+        }).join("") || `<p>外せるカードは無い。</p>`}</div>`
+        : "";
       const art = floorKind === "挑戦者に祝福を"
         ? `<img class="bless-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">`
         : "";
       root.innerHTML = `
-        <div class="menu">
+        <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">
           <h1>${esc(floorKind)}</h1>
           <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
           ${art}
           <p>${esc(floorNote)}</p>
+          ${beggar}
           ${jobs}
           ${ultimates}
           ${next}
@@ -4599,6 +4655,7 @@
           if (chosen) beginRun(chosen.floors, chosen.name);
         }
         if (name === "floor-next") advance(1);
+        if (name === "beggar-drop") dropBeggar(Number(action.dataset.index));
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
           job = nextJob;
