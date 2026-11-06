@@ -365,7 +365,7 @@
     .ref-grid figure { margin: 0; }
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
-    .cast-screen { position: relative; min-height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 96px 20px 24px; }
+    .cast-screen { position: relative; height: 100%; min-height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 92px 28px 24px; }
     .cast-back {
       position: absolute;
       top: 16px;
@@ -398,6 +398,101 @@
     .cast-gear img { width: 96px; height: 96px; object-fit: cover; display: block; }
     .cast-gear figcaption, .cast-deck { font-size: 14px; }
     .cast-blank { min-height: 1.4em; color: var(--muted); }
+    .cast-title {
+      margin: 0;
+      text-align: center;
+      color: #f6d48a;
+      font-size: clamp(26px, 2.6vw, 38px);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-shadow: 0 3px 0 #6a4a16, 0 0 18px rgba(240, 195, 106, 0.45);
+    }
+    .cast-title::after {
+      content: "";
+      display: block;
+      width: min(360px, 70%);
+      height: 3px;
+      margin: 12px auto 0;
+      background: linear-gradient(90deg, transparent, #f0c36a, transparent);
+      box-shadow: 0 0 12px rgba(240, 195, 106, 0.65);
+    }
+    .cast-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+    .cast-pick {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #f6d48a;
+    }
+    .cast-pick img {
+      width: min(420px, 46vw);
+      height: min(68vh, 640px);
+      object-fit: contain;
+      filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.45));
+    }
+    .cast-pick span {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-shadow: 0 2px 0 #6a4a16;
+    }
+    .cast-detail {
+      flex: 1;
+      min-height: 0;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(280px, 1.1fr) minmax(300px, 460px);
+      gap: 28px;
+      align-items: center;
+    }
+    .cast-stand {
+      width: 100%;
+      height: min(74vh, 720px);
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.55));
+    }
+    .cast-plaque {
+      background: linear-gradient(180deg, rgba(54, 40, 26, 0.94), rgba(16, 12, 10, 0.94));
+      border: 2px solid #e4b15a;
+      border-radius: 18px;
+      padding: 22px 26px 24px;
+      box-shadow: inset 0 0 0 1px rgba(255, 236, 190, 0.28), 0 14px 28px rgba(0, 0, 0, 0.35);
+    }
+    .cast-plaque h1 {
+      margin: 0 0 8px;
+      color: #f6d48a;
+      font-size: 48px;
+      letter-spacing: 0.2em;
+      text-shadow: 0 3px 0 #6a4a16;
+    }
+    .cast-plaque .stats {
+      margin: 0;
+      color: #fff6e4;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
+    .cast-plaque h2 {
+      margin: 18px 0 8px;
+      color: #f0c36a;
+      font-size: 18px;
+      letter-spacing: 0.18em;
+    }
+    .cast-plaque .cast-deck { margin: 0; color: #fff6e4; font-size: 20px; font-weight: 700; line-height: 1.65; }
+    .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
+    .cast-go {
+      width: 100%;
+      margin-top: 20px;
+      font-size: 22px;
+      padding: 16px 20px;
+      border-radius: 999px;
+      letter-spacing: 0.08em;
+    }
     .sprite {
       width: 100%;
       height: 100%;
@@ -1272,8 +1367,14 @@
       gap: 16px;
       padding: 8px 24px 40px;
     }
-    .menu h1 { font-size: 32px; letter-spacing: 0.14em; }
-    .menu p { margin: 0; color: var(--muted); }
+    .menu h1 {
+      margin: 0;
+      color: #f6d48a;
+      font-size: 40px;
+      letter-spacing: 0.16em;
+      text-shadow: 0 3px 0 #6a4a16, 0 0 16px rgba(240, 195, 106, 0.4);
+    }
+    .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
     .menu button, .title-actions button, .small-btn {
       min-width: 220px;
       border-radius: 14px;
@@ -1290,6 +1391,7 @@
       font-weight: 800;
     }
     .menu button:disabled, .title-actions button:disabled { opacity: 0.35; cursor: default; }
+    .menu button { font-size: 22px; padding: 16px 22px; }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
       25% { transform: translateX(-6px); }
@@ -1422,6 +1524,10 @@
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
       .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
+      .cast-title { font-size: 24px; letter-spacing: 0.06em; }
+      .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
+      .cast-stand { height: 42vh; }
+      .cast-plaque h1 { font-size: 36px; }
       .party-band { flex-direction: column; }
     }
   </style>
@@ -1549,6 +1655,7 @@
     let route = CLASSIC_ROUTE.slice();
     let retreatUsed = false;
     let job = "戦士";
+    let castPicked = false;
     let jobsHad = ["戦士"];
     let ultimate = "";
     let floorKind = "";
@@ -2857,19 +2964,12 @@
 
     function renderCharacter() {
       const deck = CARD_POOL.map(([name, count]) => `${name}×${count}`).join("、");
-      root.innerHTML = `
-        <div class="cast-screen">
-          <button type="button" class="cast-back" data-action="title">もどる</button>
-          <div class="cast-row">
-            <button type="button" class="cast-mini" data-action="cast-stay" aria-label="${CHARACTER_NAME}"><span class="cast-front"><img class="cast-portrait" src="job-warrior.png?v=4" alt=""></span></button>
-          </div>
-          <div class="cast-body">
-            <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="前のキャラ">◀</button>
-            <div class="cast-front big"><img class="cast-portrait" src="job-warrior.png?v=4" alt="戦士"></div>
-            <div class="cast-info">
-              <p>初期ジョブ</p>
+      const stage = castPicked ? `
+          <div class="cast-detail">
+            <img class="cast-stand" src="job-stand.jpg?v=1" alt="戦士の立ち絵">
+            <div class="cast-plaque">
               <h1>${CHARACTER_NAME}</h1>
-              <p>HP 30　ATK+2　DEF+2</p>
+              <p class="stats">HP 30　ATK+2　DEF+2</p>
               <h2>初期装備</h2>
               <div class="cast-gear">
                 <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
@@ -2877,14 +2977,20 @@
               </div>
               <h2>初期デッキ</h2>
               <p class="cast-deck">${deck}</p>
-              <h2>特長</h2>
-              <p class="cast-blank"></p>
-              <h2>遊び方</h2>
-              <p class="cast-blank"></p>
-              ${menuButton("このジョブではじめる", "character-next", true)}
+              <button type="button" class="primary cast-go" data-action="character-next">このジョブではじめる</button>
             </div>
-            <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="次のキャラ">▶</button>
-          </div>
+          </div>` : `
+          <div class="cast-stage">
+            <button type="button" class="cast-pick" data-action="cast-pick" aria-label="${CHARACTER_NAME}">
+              <img src="job-warrior.png?v=4" alt="">
+              <span>${CHARACTER_NAME}</span>
+            </button>
+          </div>`;
+      root.innerHTML = `
+        <div class="cast-screen">
+          <button type="button" class="cast-back" data-action="${castPicked ? "cast-back" : "title"}">もどる</button>
+          <h1 class="cast-title">初期ジョブを選択してください</h1>
+          ${stage}
         </div>`;
     }
 
@@ -3653,6 +3759,8 @@
         if (name === "album") { screen = "album"; render(); }
         if (name === "sheet") { screen = "sheet"; render(); }
         if (name === "character") { screen = "character"; render(); }
+        if (name === "cast-pick") { castPicked = true; render(); }
+        if (name === "cast-back") { castPicked = false; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
         if (name === "cast-stay") { screen = "character"; render(); }
         if (name === "dungeon-start") beginRun(Number(action.dataset.floors) || 20, action.dataset.dungeon || "はじまりの洞窟");
@@ -3674,9 +3782,9 @@
         }
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
-          else { screen = "character"; render(); }
+          else { castPicked = false; screen = "character"; render(); }
         }
-        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); screen = "character"; render(); }
+        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); castPicked = false; screen = "character"; render(); }
         if (name === "continue") continueGame();
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
         if (name === "reward-bonus") takeBonus();
