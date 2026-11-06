@@ -585,7 +585,20 @@
     .cast-side .cast-plaque .stats { font-size: 18px; }
     .cast-side .cast-gear figure { width: 56px; }
     .cast-side .cast-gear img { width: 56px; height: 56px; }
-    .cast-side .cast-deck .card.preview { width: 60px; }
+    .cast-side .cast-deck .card.preview { width: 72px; }
+    .cast-deck .stack-count {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      z-index: 2;
+      color: #2a2118;
+      background: #f0c36a;
+      border-radius: 999px;
+      padding: 0 5px;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 800;
+    }
     .cast-start {
       position: static;
       align-self: flex-end;
@@ -3154,13 +3167,10 @@
     }
 
     function starterDeckMarkup() {
-      const cards = [];
-      for (const [name, count] of CARD_POOL) {
-        for (let i = 0; i < count; i++) cards.push({ name, ...CARDS[name] });
-      }
-      return cards.map((card) => {
-        const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<div class="card preview ${cardKind(card)}" aria-label="${esc(label)}">${cardFace(card, false)}</div>`;
+      return CARD_POOL.map(([name, count]) => {
+        const card = { name, ...CARDS[name] };
+        const label = `${card.cost} ${card.name} x${count} ${String(card.text).replace(/\n/g, " ")}`;
+        return `<div class="card preview ${cardKind(card)}" aria-label="${esc(label)}">${cardFace(card, false)}<b class="stack-count">x${count}</b></div>`;
       }).join("");
     }
 
