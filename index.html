@@ -548,11 +548,17 @@
       pointer-events: none;
       animation: dmg-pop 1.05s ease-out forwards;
     }
+    .stage-fx {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+    }
     .dmg-pop.me {
-      position: fixed;
-      left: 46%;
-      top: 42%;
-      z-index: 26;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
       transform: translate(-50%, -50%);
       font-size: calc(124px + var(--pow, 0.35) * 96px);
       animation-name: dmg-pop-me;
@@ -632,10 +638,10 @@
       animation: crack-flash 1.25s ease-out forwards;
     }
     .dmg-pop.foe-hit {
-      position: fixed;
-      left: 46%;
-      top: 42%;
-      z-index: 26;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
       transform: translate(-50%, -50%);
     }
     .screen-heal {
@@ -1486,28 +1492,26 @@
       100% { opacity: 0; }
     }
     .turn-call {
-      position: fixed;
+      position: absolute;
       inset: 0;
-      z-index: 28;
-      display: block;
+      z-index: 1;
+      display: grid;
+      place-items: center;
       pointer-events: none;
       animation: turn-wash 1.15s ease-out forwards;
     }
     .turn-call.player {
       background:
-        radial-gradient(circle at 50% 46%, rgba(255, 214, 120, 0.5), transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(255, 214, 120, 0.5), transparent 42%),
         rgba(86, 54, 12, 0.38);
     }
     .turn-call.enemy {
       background:
-        radial-gradient(circle at 50% 46%, rgba(255, 96, 72, 0.52), transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(255, 96, 72, 0.52), transparent 42%),
         rgba(92, 16, 12, 0.42);
     }
     .turn-call b {
-      position: absolute;
-      left: 46%;
-      top: 34%;
-      transform: translate(-50%, -50%);
+      position: static;
       margin: 0;
       font-size: min(11vw, 96px);
       font-weight: 800;
@@ -3769,9 +3773,6 @@
         ${guardNow === "hold" ? `<div class="screen-guard" aria-label="ダメージなし">${guardMark()}</div>` : ""}
         ${guardNow === "break" ? `<div class="screen-block break" aria-hidden="true">${brokenShield()}</div>` : ""}
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        ${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}
-        ${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}
-        ${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
@@ -3804,6 +3805,7 @@
             </div>
             ${heroShoulder()}
             <div class="hero-vitals"><div class="vitals">${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line">体力 <b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></div></div>
+            ${turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
           ${playRow()}
