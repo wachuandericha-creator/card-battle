@@ -366,15 +366,31 @@
     .ref-grid figure { margin: 0; }
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
-    .cast-screen { min-height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px 20px 24px; }
+    .cast-screen { position: relative; min-height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 96px 20px 24px; }
+    .cast-back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 6;
+      border-radius: 16px;
+      border: 1px solid rgba(228, 177, 90, 0.8);
+      background: rgba(18, 14, 12, 0.88);
+      color: var(--cream);
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      padding: 16px 32px;
+      cursor: pointer;
+    }
     .cast-row { display: flex; gap: 8px; }
     .cast-mini { width: 72px; height: 84px; padding: 0; overflow: hidden; border: 2px solid var(--gold); background: #1a1614; }
     .cast-mini .cast-front { width: 72px; height: 84px; }
     .cast-body { flex: 1; display: grid; grid-template-columns: auto minmax(180px, 34vw) minmax(0, 1fr) auto; gap: 16px; align-items: center; }
     .cast-arrow { width: 64px; height: 64px; border-radius: 50%; font-size: 28px; }
     .cast-front { overflow: hidden; background: #120e0c; }
-    .cast-front.big { height: min(72vh, 640px); }
+    .cast-front.big { height: min(78vh, 720px); display: flex; align-items: center; justify-content: center; background: transparent; }
     .cast-front img { width: 500%; height: 100%; max-width: none; object-fit: cover; object-position: left center; }
+    .cast-front img.cast-portrait { width: 100%; height: 100%; max-width: 100%; object-fit: contain; object-position: center center; }
     .cast-mini .cast-front { height: 64px; }
     .cast-info h1 { margin: 0 0 8px; color: var(--gold); }
     .cast-info h2 { margin: 14px 0 6px; font-size: 16px; }
@@ -2851,12 +2867,13 @@
       const deck = CARD_POOL.map(([name, count]) => `${name}×${count}`).join("、");
       root.innerHTML = `
         <div class="cast-screen">
+          <button type="button" class="cast-back" data-action="title">もどる</button>
           <div class="cast-row">
-            <button type="button" class="cast-mini" data-action="cast-stay" aria-label="${CHARACTER_NAME}"><span class="cast-front"><img src="warrior-f-sheet.jpg?v=3" alt=""></span></button>
+            <button type="button" class="cast-mini" data-action="cast-stay" aria-label="${CHARACTER_NAME}"><span class="cast-front"><img class="cast-portrait" src="job-warrior.png?v=1" alt=""></span></button>
           </div>
           <div class="cast-body">
             <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="前のキャラ">◀</button>
-            <div class="cast-front big"><img src="warrior-f-sheet.jpg?v=3" alt="戦士の真正面"></div>
+            <div class="cast-front big"><img class="cast-portrait" src="job-warrior.png?v=1" alt="戦士"></div>
             <div class="cast-info">
               <p>初期ジョブ</p>
               <h1>${CHARACTER_NAME}</h1>
@@ -2877,7 +2894,6 @@
               <p>シールドを固めて、シールドで倒す。</p>
               <p>パリィして、一時的に火力を上げて倒す。</p>
               ${menuButton("このジョブではじめる", "character-next", true)}
-              ${menuButton("もどる", "title")}
             </div>
             <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="次のキャラ">▶</button>
           </div>
