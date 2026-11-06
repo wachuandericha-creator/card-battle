@@ -3181,6 +3181,7 @@
       rewardStars = data.rewardStars || 0;
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
       rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
+      if (rewardPaths.includes("skip")) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
       bonusCard = data.bonusCard || null;
       if (outcome === "win" && !rewardReady) prepareReward();
@@ -4098,7 +4099,7 @@
     }
 
     function rollPaths() {
-      const ids = ["skip", "shop", "search", "unknown"];
+      const ids = ["shop", "search", "unknown"];
       if (!retreatUsed) ids.push("retreat");
       return ["straight"].concat(shuffle(ids).slice(0, 2));
     }
