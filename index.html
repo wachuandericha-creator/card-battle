@@ -1567,6 +1567,53 @@
       padding: 16px 28px;
       border-radius: 999px;
     }
+    .dungeon-pick { background: transparent; }
+    .dungeon-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .dungeon-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(12, 9, 8, 0.62), rgba(12, 9, 8, 0.28) 36%, rgba(12, 9, 8, 0.55));
+    }
+    .dungeon-pick .cast-title { position: relative; z-index: 2; }
+    .dungeon-roster {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 28px;
+    }
+    .dungeon-token {
+      min-width: 180px;
+      border-radius: 16px;
+      border: 2px solid rgba(228, 177, 90, 0.45);
+      background: rgba(18, 14, 12, 0.72);
+      color: #f6d48a;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 18px 22px;
+      cursor: pointer;
+    }
+    .dungeon-token.shown { border-color: #f0c36a; box-shadow: 0 0 16px rgba(240, 195, 106, 0.45); }
+    .dungeon-token.locked { background: rgba(228, 177, 90, 0.28); }
+    .dungeon-pick .cast-start {
+      position: absolute;
+      right: 24px;
+      bottom: 16px;
+      z-index: 6;
+      margin: 0;
+    }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
       25% { transform: translateX(-6px); }
@@ -1735,7 +1782,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=2",
+        image: "enemy-slime.png?v=3",
         tier: 1,
         rank: "雑魚",
         hp: 22,
@@ -1748,7 +1795,7 @@
       },
       {
         name: "荒くれ",
-        image: "enemy-goblin.png?v=2",
+        image: "enemy-goblin.png?v=3",
         tier: 2,
         rank: "普通",
         hp: 24,
@@ -1760,7 +1807,7 @@
       },
       {
         name: "重騎士",
-        image: "enemy-minotaur.png?v=2",
+        image: "enemy-minotaur.png?v=3",
         tier: 3,
         rank: "強敵",
         hp: 30,
@@ -1861,6 +1908,8 @@
     ];
     let dungeonName = "はじまりの洞窟";
     let pendingDungeon = DUNGEON_LIST[0];
+    let dungeonHover = "";
+    let dungeonLock = "";
     let meta = { uses: 0, clears: 0, stars: 0 };
 
     function shuffle(list) {
@@ -3274,14 +3323,62 @@
         </div>`;
     }
 
+    function shownDungeonName() {
+      return dungeonHover || dungeonLock;
+    }
+
+    function paintDungeon() {
+      const name = shownDungeonName();
+      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
+      const bg = root.querySelector(".dungeon-bg");
+      if (bg) {
+        if (item) {
+          if (bg.getAttribute("src") !== item.art) bg.src = item.art;
+          bg.hidden = false;
+        } else {
+          bg.hidden = true;
+        }
+      }
+      const fixed = Boolean(dungeonLock) && (!dungeonHover || dungeonHover === dungeonLock);
+      const start = root.querySelector(".dungeon-pick .cast-start");
+      if (start) start.hidden = !fixed;
+      root.querySelectorAll(".dungeon-token").forEach((token) => {
+        token.classList.toggle("locked", token.dataset.dungeon === dungeonLock);
+        token.classList.toggle("shown", token.dataset.dungeon === name);
+      });
+    }
+
+    function bindDungeonHover() {
+      root.querySelectorAll(".dungeon-token").forEach((token) => {
+        token.addEventListener("pointerenter", () => {
+          const next = token.dataset.dungeon || "";
+          if (dungeonHover === next) return;
+          dungeonHover = next;
+          paintDungeon();
+        });
+        token.addEventListener("pointerleave", () => {
+          if (dungeonHover !== token.dataset.dungeon) return;
+          dungeonHover = "";
+          paintDungeon();
+        });
+      });
+    }
+
     function renderDungeon() {
+      const tokens = DUNGEON_LIST.map((item) => `
+        <button type="button" class="dungeon-token" data-action="dungeon-token" data-dungeon="${esc(item.name)}">${esc(item.name)}</button>
+      `).join("");
       root.innerHTML = `
-        <div class="menu">
-          <h1>ダンジョン</h1>
-          <p>初期ジョブは${job}。階層の半分が戦闘。ジョブチェンジは、はじまりの洞窟のあと。10、20、30、40、50、60、70、80、90、99階。</p>
-          ${DUNGEON_LIST.map((item) => `<button type="button" class="primary" data-action="dungeon-start" data-floors="${item.floors}" data-dungeon="${esc(item.name)}">${esc(item.name)}</button>`).join("")}
-          ${menuButton("もどる", "character")}
+        <div class="cast-screen dungeon-pick">
+          <img class="dungeon-bg" alt="" hidden>
+          <div class="dungeon-scrim"></div>
+          <button type="button" class="cast-back" data-action="character">もどる</button>
+          <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
+          <div class="dungeon-roster">${tokens}</div>
+          <button type="button" class="primary cast-start" data-action="dungeon-enter" hidden>挑戦開始</button>
         </div>`;
+      paintDungeon();
+      bindDungeonHover();
     }
 
     function albumCatalog() {
@@ -3333,9 +3430,9 @@
             </div>
             <h3>敵</h3>
             <div class="ref-grid">
-              <figure><img class="enemy-ref" src="enemy-slime.png?v=2" alt=""><figcaption>スライム</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-goblin.png?v=2" alt=""><figcaption>ゴブリン</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=2" alt=""><figcaption>ミノタウロス</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-slime.png?v=3" alt=""><figcaption>スライム</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-goblin.png?v=3" alt=""><figcaption>ゴブリン</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=3" alt=""><figcaption>ミノタウロス</figcaption></figure>
             </div>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
@@ -3984,7 +4081,7 @@
             ${traitNote()}
             <div class="enemy-main">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
-              <img src="${esc(enemy.image || "enemy-slime.png?v=2")}" alt="">
+              <img src="${esc(enemy.image || "enemy-slime.png?v=3")}" alt="">
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
@@ -4047,15 +4144,24 @@
         }
         if (name === "cast-pick") { castPicked = true; render(); }
         if (name === "cast-back") { castPicked = false; render(); }
-        if (name === "character-next") { screen = "dungeon"; render(); }
+        if (name === "character-next") { dungeonHover = ""; dungeonLock = ""; screen = "dungeon"; render(); }
         if (name === "cast-stay") { screen = "character"; render(); }
         if (name === "dungeon-list") { screen = "dungeon"; render(); }
+        if (name === "dungeon-token") {
+          dungeonLock = action.dataset.dungeon || "";
+          dungeonHover = "";
+          pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
+          paintDungeon();
+        }
         if (name === "dungeon-start") {
           pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === action.dataset.dungeon) || DUNGEON_LIST[0];
           screen = "dungeon-gate";
           render();
         }
-        if (name === "dungeon-enter") beginRun(pendingDungeon.floors, pendingDungeon.name);
+        if (name === "dungeon-enter") {
+          const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || pendingDungeon;
+          if (chosen) beginRun(chosen.floors, chosen.name);
+        }
         if (name === "floor-next") advance(1);
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
