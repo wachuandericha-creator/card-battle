@@ -1160,17 +1160,21 @@
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block { color: #1a120e; }
     .end {
-      width: 92px;
-      height: 92px;
+      width: auto;
+      height: 86%;
+      min-width: 148px;
+      min-height: 148px;
+      aspect-ratio: 1;
       flex: none;
-      align-self: flex-end;
-      margin: 0 8px 8px;
+      align-self: center;
+      margin: 0 12px;
       border-radius: 50%;
-      border: 2px solid var(--gold);
-      background: transparent;
+      border: 4px solid var(--gold);
+      background: rgba(18, 14, 12, 0.72);
       color: var(--gold);
-      font-size: 15px;
+      font-size: 28px;
       font-weight: 800;
+      line-height: 1.15;
       cursor: pointer;
     }
     .fly-card {
@@ -1419,7 +1423,7 @@
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
-      .end { width: 96px; height: 96px; font-size: 14px; }
+      .end { min-width: 128px; min-height: 128px; font-size: 24px; }
       .pip { width: 40px; height: 40px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
@@ -3625,7 +3629,7 @@
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
               <div class="hand">${cards}</div>
-              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>
+              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>
             </div>
           </div>
         </div>
