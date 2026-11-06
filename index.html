@@ -1615,7 +1615,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=1",
+        image: "enemy-slime.png?v=2",
         tier: 1,
         rank: "雑魚",
         hp: 22,
@@ -1628,7 +1628,7 @@
       },
       {
         name: "荒くれ",
-        image: "enemy-goblin.png?v=1",
+        image: "enemy-goblin.png?v=2",
         tier: 2,
         rank: "普通",
         hp: 24,
@@ -1640,7 +1640,7 @@
       },
       {
         name: "重騎士",
-        image: "enemy-minotaur.png?v=1",
+        image: "enemy-minotaur.png?v=2",
         tier: 3,
         rank: "強敵",
         hp: 30,
@@ -3137,9 +3137,9 @@
             </div>
             <h3>敵</h3>
             <div class="ref-grid">
-              <figure><img class="enemy-ref" src="enemy-slime.png?v=1" alt=""><figcaption>スライム</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-goblin.png?v=1" alt=""><figcaption>ゴブリン</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=1" alt=""><figcaption>ミノタウロス</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-slime.png?v=2" alt=""><figcaption>スライム</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-goblin.png?v=2" alt=""><figcaption>ゴブリン</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=2" alt=""><figcaption>ミノタウロス</figcaption></figure>
             </div>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
@@ -3287,7 +3287,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=12";
+          img.src = "hero-shoulder.png?v=13";
         });
       }
       return heroImageTask;
@@ -3306,7 +3306,7 @@
     }
 
     function heroShoulder() {
-      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=12" alt="戦士"></div>`;
+      return `<div class="hero-shoulder"><img class="hero-fig" src="hero-shoulder.png?v=13" alt="戦士"></div>`;
     }
 
     function startHeroIdle() {
@@ -3791,7 +3791,7 @@
             ${traitNote()}
             <div class="enemy-main">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
-              <img src="${esc(enemy.image || "enemy-slime.png?v=1")}" alt="">
+              <img src="${esc(enemy.image || "enemy-slime.png?v=2")}" alt="">
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
