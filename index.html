@@ -1124,7 +1124,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready { animation: none; transition: none; }
       .pip.on { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
     }
@@ -1284,6 +1284,16 @@
     }
     .end:disabled { opacity: 0.4; cursor: default; }
     .end:not(:disabled):hover { background: rgba(228, 177, 90, 0.12); }
+    .end.ready {
+      background: rgba(228, 177, 90, 0.34);
+      color: #fff6d8;
+      box-shadow: 0 0 18px 4px rgba(228, 177, 90, 0.9);
+      animation: end-glow 1.05s ease-in-out infinite;
+    }
+    @keyframes end-glow {
+      0%, 100% { box-shadow: 0 0 8px 2px rgba(228, 177, 90, 0.45); filter: brightness(1); }
+      50% { box-shadow: 0 0 26px 8px rgba(255, 224, 150, 0.95); filter: brightness(1.28); }
+    }
     .overlay {
       position: fixed;
       inset: 0;
@@ -2395,12 +2405,22 @@
       inPlay.push(card);
       note = "";
       pullFromBracelets();
-      if (!hand.length || (autoEndTurn && player.energy <= 0 && !hand.some((item) => item.cost === 0))) {
+      if (finishIfStuck()) return true;
+      render();
+      return true;
+    }
+
+    function noPlayableHand() {
+      return !hand.some((card) => (Number(card.cost) || 0) <= player.energy);
+    }
+
+    function finishIfStuck() {
+      if (phase !== "player" || outcome || !noPlayableHand()) return false;
+      if (!hand.length || autoEndTurn) {
         endTurn();
         return true;
       }
-      render();
-      return true;
+      return false;
     }
 
     function handCardBox(index) {
@@ -2555,6 +2575,7 @@
       fxDeal = true;
       turnCall = "player";
       phase = "player";
+      if (finishIfStuck()) return;
       render();
     }
 
@@ -3005,7 +3026,7 @@
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "使い切ったらターン終了：オン" : "使い切ったらターン終了：オフ", "toggle-auto-end", true)}
-          <p>マナが0になったら、ターンを終える。手札にコスト0があるときは終わらない。</p>
+          <p>手札に使えるカードが無くなったら、ターン終了が光る。オンなら、そのとき自動で終わる。コスト0が残っていて払えるときは光らない。</p>
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -3792,7 +3813,7 @@
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
               <div class="hand">${cards}</div>
-              <button type="button" class="end" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>
+              <button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>
             </div>
           </div>
         </div>
