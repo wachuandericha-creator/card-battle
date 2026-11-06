@@ -926,7 +926,7 @@
       font-weight: 600;
     }
     .pile-label { font-size: 20px; letter-spacing: 0.12em; color: var(--cream); font-weight: 800; }
-    .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 0; }
+    .hand { flex: 1 1 auto; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 8px 8px 24px; }
     .battle-log {
       min-width: 0;
       min-height: 0;
@@ -1092,8 +1092,8 @@
       transition: transform 0.15s ease;
     }
     .hand .card {
-      height: calc(100% - 8px);
-      max-height: calc(100% - 8px);
+      height: 100%;
+      max-height: 100%;
       width: auto;
       max-width: none;
     }
@@ -1548,7 +1548,7 @@
       100% { --hot-x: 36%; --hot-y: 58%; filter: brightness(0.86); }
     }
     @media (max-width: 720px) {
-      .hand .card { height: calc(100% - 8px); }
+      .hand .card { height: 100%; }
       .sprite { width: 100%; height: 100%; }
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
@@ -3686,8 +3686,10 @@
       const cards = hand.map((card, i) => {
         const poor = player.energy < card.cost;
         const mid = (hand.length - 1) / 2;
-        const fan = (i - mid) * 8;
-        const drop = Math.abs(i - mid) * 12;
+        const dist = i - mid;
+        const t = mid === 0 ? 0 : dist / mid;
+        const fan = Math.round(t * 10 * 10) / 10;
+        const drop = Math.round((8 * Math.abs(t) + 4 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
