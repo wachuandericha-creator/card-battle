@@ -988,14 +988,14 @@
     .pip.on .mana-fire {
       position: absolute;
       left: 50%;
-      bottom: -6px;
-      width: 96px;
-      height: 130px;
+      bottom: -10px;
+      width: 168px;
+      height: 228px;
       transform: translateX(-50%);
       pointer-events: none;
     }
     .energy-band { display: flex; align-items: flex-end; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 0 56px; gap: 128px; }
-    .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; }
+    .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: flex-end; gap: 72px; }
     .ailment-slot { display: flex; align-items: center; gap: 10px; min-height: 36px; color: var(--cream); font-weight: 800; }
     .ailment-slot span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
@@ -1741,7 +1741,7 @@
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
       .pip { width: 48px; height: 48px; }
-      .pip.on .mana-fire { width: 68px; height: 92px; }
+      .pip.on .mana-fire { width: 118px; height: 160px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -2275,11 +2275,11 @@
       return {
         x: w * (0.32 + Math.random() * 0.36),
         y: h * (fresh ? 0.64 + Math.random() * 0.2 : 0.8),
-        vx: (Math.random() - 0.5) * 22,
-        vy: -70 - Math.random() * 80,
+        vx: (Math.random() - 0.5) * 22 * (h / 128),
+        vy: (-70 - Math.random() * 80) * (h / 128),
         life,
         max: life,
-        r: 14 + Math.random() * 14,
+        r: (14 + Math.random() * 14) * (h / 128),
       };
     }
 
@@ -2323,7 +2323,7 @@
             if (bit.life <= 0) Object.assign(bit, spawnManaBit(canvas.width, canvas.height, false));
             bit.x += bit.vx * dt;
             bit.y += bit.vy * dt;
-            bit.vx += (Math.random() - 0.5) * 80 * dt;
+            bit.vx += (Math.random() - 0.5) * 80 * (canvas.height / 128) * dt;
             paintManaBit(ctx, bit);
           });
         });
@@ -3181,7 +3181,7 @@
     function pips() {
       return Array.from({ length: player.maxEnergy }, (_, i) =>
         i < player.energy
-          ? `<i class="pip on"><canvas class="mana-fire" width="128" height="128"></canvas></i>`
+          ? `<i class="pip on"><canvas class="mana-fire" width="168" height="228"></canvas></i>`
           : `<i class="pip"></i>`
       ).join("");
     }
