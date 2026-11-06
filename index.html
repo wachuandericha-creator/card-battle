@@ -1393,12 +1393,13 @@
       .pip.on { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
     }
-    .card.attack, .card.block, .card.skill, .card.foe {
+    .card.attack, .card.block, .card.skill, .card.power, .card.foe {
       clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
     }
     .card.attack { background: #9d3a32; border-color: #7a2a24; color: #fff7f4; }
     .card.block { background: #3a6ea6; border-color: #274e78; color: #f5f9ff; }
     .card.skill { background: #e4b15a; border-color: #b8882e; color: #2a2118; }
+    .card.power { background: #2f7a45; border-color: #1e5430; color: #f4fff6; }
     .card.foe { background: #6a3d86; border-color: #45245c; color: #fbf6ff; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
@@ -1423,6 +1424,7 @@
     .card.attack .nameplate { background: linear-gradient(180deg, #f0c2b8 0%, #b55246 54%, #7a2e26 100%); color: #fff8f4; }
     .card.block .nameplate { background: linear-gradient(180deg, #e4f0fb 0%, #5b90c6 56%, #2a5584 100%); color: #f7fbff; }
     .card.skill .nameplate { background: linear-gradient(180deg, #fff6d8 0%, #f0c56a 56%, #c9963c 100%); color: #2a2118; }
+    .card.power .nameplate { background: linear-gradient(180deg, #e7ffe8 0%, #3f9a58 56%, #1e5430 100%); color: #f4fff6; }
     .card.foe .nameplate { background: linear-gradient(180deg, #f3e4fb 0%, #8d55b0 54%, #4c2870 100%); color: #fff8ff; }
     .card .cost {
       position: absolute;
@@ -2079,13 +2081,26 @@
       チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
       集中: { cost: 0, text: "次の攻撃か防御の数値+2", focus: 2 },
-      パリィ: { cost: 2, text: "パリィを得る", parry: true, note: "パリィは次回の攻撃を無効化する。重複なし。攻撃を受けるまで残る。" },
+      パリィ: { cost: 2, text: "パリィを得る", parry: true, note: "パリィは次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。パリィがあるあいだは、シールドを得られない。" },
+    };
+    const WARRIOR = {
+      捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
+      怒り: { cost: 0, text: "この戦闘中 ATK+1 DEF-2", kind: "skill", rage: true },
+      パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
+      臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る\n使ったらこの戦闘のデッキから廃棄", kind: "power", power: true, coward: true },
+      ライフフルネスアタック: { cost: 3, text: "10ダメージ\n体力が満タンなら+5", damage: 10, kind: "attack", fullBonus: 5 },
+      ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
+      余裕の構え: { cost: 1, text: "満タンならパリィ\n満タンでないならシールド1", kind: "skill", poise: true },
+      致命の一撃: { cost: 3, text: "パリィをすべて消費\n消費した数×15ダメージ", kind: "attack", finisher: true },
+      シールドアタック: { cost: 2, text: "ブロックの数だけダメージ", kind: "attack", press: true },
     };
     const COMMON = {
       斬撃: { cost: 1, text: "6ダメージ", damage: 6 },
       防御: { cost: 1, text: "ブロック5", block: 5 },
       強撃: { cost: 2, text: "12ダメージ", damage: 12 },
       踏み込み: { cost: 1, text: "4ダメージ\nブロック3", damage: 4, block: 3 },
+      頭突き: { cost: 1, text: "2ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 2, kind: "attack", headbutt: true },
+      キック: { cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
     };
     const ENEMIES = [
       {
@@ -2139,6 +2154,7 @@
     let hand = [];
     let discard = [];
     let inPlay = [];
+    let battleExile = [];
     let resolveAt = 0;
     let player = null;
     let enemy = null;
@@ -2146,6 +2162,7 @@
     let intentIndex = 0;
     let enemyLoop = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
+    const PARRY_NOTE = "パリィは次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。パリィがあるあいだは、シールドを得られない。奥義「パリィが重複する」のときは重なる。";
     let phase = "player";
     let encounter = false;
     let note = "";
@@ -2262,6 +2279,8 @@
         block: card.block || 0,
         focus: card.focus || 0,
         parry: !!card.parry,
+        kind: card.kind || "",
+        power: !!card.power,
         press: !!card.press,
         poison: Number(card.poison) || 0,
         stars: card.stars || 1,
@@ -2400,8 +2419,10 @@
 
     function syncGearStats() {
       if (!player) return;
-      player.atk = gear.sword && gear.sword.atk ? gear.sword.atk : 0;
-      player.def = gear.shield && gear.shield.def ? gear.shield.def : 0;
+      const atkMod = Number(player.atkMod) || 0;
+      const defMod = Number(player.defMod) || 0;
+      player.atk = (gear.sword && gear.sword.atk ? gear.sword.atk : 0) + atkMod;
+      player.def = (gear.shield && gear.shield.def ? gear.shield.def : 0) + defMod;
     }
 
     function medalIcon() {
@@ -2684,8 +2705,51 @@
     }
 
     function mitigate(amount, defense) {
-      const reduced = Math.min(Math.max(0, defense || 0), Math.max(0, amount));
-      return { reduced, dealt: amount - reduced };
+      const def = Number(defense) || 0;
+      const incoming = Math.max(0, amount);
+      if (def < 0) return { reduced: 0, dealt: incoming - def };
+      const reduced = Math.min(def, incoming);
+      return { reduced, dealt: incoming - reduced };
+    }
+
+    function parryCount(target) {
+      if (!target || !target.parry) return 0;
+      if (target.parry === true) return 1;
+      return Math.max(0, Number(target.parry) || 0);
+    }
+
+    function clearBattleMods() {
+      if (!player) return;
+      player.atkMod = 0;
+      player.defMod = 0;
+      player.expose = 0;
+      player.guardThrough = false;
+      player.parry = 0;
+      player.hurtThis = false;
+      player.hurtLast = false;
+      syncGearStats();
+    }
+
+    function gainParry(card) {
+      const now = parryCount(player);
+      if (now > 0 && ultimate !== "パリィが重複する") {
+        log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`, card);
+        return;
+      }
+      player.parry = now + 1;
+      const detail = ultimate === "パリィが重複する" ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
+      log(`${CHARACTER_NAME}は${card.name}。${detail}`, card);
+    }
+
+    function gainBlock(amount, card) {
+      const gain = Math.max(0, Math.floor(Number(amount) || 0));
+      if (!gain) return;
+      if (parryCount(player) > 0 && !player.guardThrough) {
+        log(`${CHARACTER_NAME}は${card.name}。パリィ中はシールドを得られない。`, card);
+        return;
+      }
+      player.block += gain;
+      log(`${CHARACTER_NAME}は${card.name}でブロック${gain}。`, card);
     }
 
     function hurtSentence(actor, card, raw, reduced, result) {
@@ -2729,11 +2793,20 @@
       const stacks = poisonStacks(target);
       if (!stacks) return false;
       const name = who === "player" ? CHARACTER_NAME : enemy.name;
-      const result = applyDamage(target, stacks);
+      let amount = stacks;
+      if (who === "player") {
+        const extra = Math.max(0, Number(player.expose) || 0);
+        if (extra) {
+          player.expose = 0;
+          amount += extra;
+        }
+      }
+      const result = applyDamage(target, amount);
+      if (who === "player" && result.hpLoss > 0) player.hurtThis = true;
       if (who === "player") {
         if (result.hpLoss > 0) {
           fxHurt = true;
-          noteHit("player", result.hpLoss, stacks);
+          noteHit("player", result.hpLoss, amount);
         }
         if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       } else if (result.hpLoss || result.blocked) {
@@ -2746,20 +2819,24 @@
 
     function takeEnemyHit(raw, card) {
       const name = card && card.name ? card.name : "攻撃";
-      if (player.parry) {
-        player.parry = false;
+      const stacks = parryCount(player);
+      if (stacks > 0) {
+        player.parry = stacks - 1;
         noteHit("player", 0, raw);
         log(`${enemy.name}は${name}。パリィで無効。`, card, true);
         return;
       }
-      const cut = mitigate(raw, player.def);
+      const extra = Math.max(0, Number(player.expose) || 0);
+      if (extra) player.expose = 0;
+      const cut = mitigate(raw + extra, player.def);
       const result = applyDamage(player, cut.dealt);
       if (result.hpLoss > 0) {
+        player.hurtThis = true;
         fxHurt = true;
         noteHit("player", result.hpLoss, cut.dealt);
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
-      log(hurtSentence(enemy.name, name, raw, cut.reduced, result), card, true);
+      log(hurtSentence(enemy.name, name, raw + extra, cut.reduced, result), card, true);
     }
 
     function restoreHp(amount) {
@@ -2857,32 +2934,52 @@
       }
     }
 
+    function strike(card, amount) {
+      const result = applyDamage(enemy, amount);
+      if (amount > 0 && (result.hpLoss || result.blocked)) {
+        fxSlash = true;
+        noteHit("enemy", result.hpLoss, amount);
+      }
+      log(damageSentence(CHARACTER_NAME, card.name, amount, result), card);
+    }
+
     function resolveCard(card) {
+      if (card.power) {
+        if (card.coward) {
+          player.guardThrough = true;
+          log(`${CHARACTER_NAME}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードは、この戦闘のデッキから廃棄。`, card);
+        }
+        return;
+      }
+      if (card.rage) {
+        player.atkMod = (Number(player.atkMod) || 0) + 1;
+        player.defMod = (Number(player.defMod) || 0) - 2;
+        syncGearStats();
+        log(`${CHARACTER_NAME}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。戦闘が終わると戻る。`, card);
+        return;
+      }
+      if (card.poise) {
+        if (player.hp >= player.maxHp) gainParry(card);
+        else gainBlock(1, card);
+        return;
+      }
+      if (card.finisher) {
+        const stacks = parryCount(player);
+        player.parry = 0;
+        strike(card, stacks * 15);
+        return;
+      }
       if (card.focus) {
         player.focus = (player.focus || 0) + card.focus;
         log(`${CHARACTER_NAME}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
         return;
       }
-      if (card.parry) {
-        if (player.parry) log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`, card);
-        else {
-          player.parry = true;
-          log(`${CHARACTER_NAME}は${card.name}。パリィを得た。次の攻撃を無効。攻撃を受けるまで残る。`, card);
-        }
+      if (card.parry && !card.damage) {
+        gainParry(card);
         return;
       }
       if (card.press) {
-        const amount = player.block || 0;
-        if (!amount) {
-          log(`${CHARACTER_NAME}は${card.name}で0ダメージ。`, card);
-          return;
-        }
-        const result = applyDamage(enemy, amount);
-        if (result.hpLoss || result.blocked) {
-          fxSlash = true;
-          noteHit("enemy", result.hpLoss, amount);
-        }
-        log(damageSentence(CHARACTER_NAME, card.name, amount, result), card);
+        strike(card, player.block || 0);
         return;
       }
       if (card.poison) {
@@ -2893,21 +2990,27 @@
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
       if (added) player.focus = 0;
       if (card.damage) {
+        let bonus = 0;
+        if (card.fullBonus && player.hp >= player.maxHp) bonus += card.fullBonus;
+        if (card.safeBonus && !player.hurtLast) bonus += card.safeBonus;
+        if (card.kick && enemy.block > 0) bonus += card.kick;
         const atk = player.atk || 0;
-        const amount = card.damage + added + atk;
-        const result = applyDamage(enemy, amount);
-        if (amount > 0 && (result.hpLoss || result.blocked)) {
-          fxSlash = true;
-          noteHit("enemy", result.hpLoss, amount);
-        }
-        log(strikeSentence(CHARACTER_NAME, card.name, card.damage, added, atk, result), card);
+        strike(card, card.damage + added + atk + bonus);
       }
-      if (card.block) {
-        const gain = card.block + added;
-        player.block += gain;
-        log(`${CHARACTER_NAME}は${card.name}でブロック${gain}。`, card);
+      if (card.expose) {
+        player.expose = (Number(player.expose) || 0) + card.expose;
+        log(`${CHARACTER_NAME}は次に受けるダメージ+${player.expose}。`, card);
       }
-      if (!card.damage && !card.block) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
+      if (card.parry && card.damage) gainParry(card);
+      if (card.block) gainBlock(card.block + added, card);
+      if (!card.damage && !card.block && !card.expose) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
+    }
+
+    function cardPlayable(card) {
+      if (!card) return false;
+      if ((Number(card.cost) || 0) > player.energy) return false;
+      if (card.headbutt && !inPlay.length) return false;
+      return true;
     }
 
     function playCard(index) {
@@ -2919,8 +3022,18 @@
         render();
         return false;
       }
+      if (card.headbutt && !inPlay.length) {
+        note = "プレイエリアの自分のカードを廃棄すると使える";
+        render();
+        return false;
+      }
       player.energy -= card.cost;
       hand.splice(index, 1);
+      if (card.headbutt) {
+        const names = inPlay.map((item) => item.name).join("、");
+        while (inPlay.length) battleExile.push(inPlay.shift());
+        log(`${CHARACTER_NAME}は${names}を廃棄した。`);
+      }
       inPlay.push(card);
       note = "";
       pullFromBracelets();
@@ -2930,7 +3043,7 @@
     }
 
     function noPlayableHand() {
-      return !hand.some((card) => (Number(card.cost) || 0) <= player.energy);
+      return !hand.some((card) => cardPlayable(card));
     }
 
     function finishIfStuck() {
@@ -2962,7 +3075,7 @@
       const to = target.getBoundingClientRect();
       if (!to.width || !to.height || !from.w || !from.h) return;
       const ghost = target.cloneNode(true);
-      const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : "skill";
+      const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : target.classList.contains("power") ? "power" : "skill";
       ghost.className = `card fly-card ${kind}`;
       ghost.style.left = `${from.cx - from.w / 2}px`;
       ghost.style.top = `${from.cy - from.h / 2}px`;
@@ -2999,7 +3112,11 @@
     }
 
     function scrapPlay() {
-      while (inPlay.length) discard.push(inPlay.shift());
+      while (inPlay.length) {
+        const card = inPlay.shift();
+        if (card.power) battleExile.push(card);
+        else discard.push(card);
+      }
       resolveAt = 0;
     }
 
@@ -3086,6 +3203,8 @@
       }
       logTurn("player");
       turn += 1;
+      player.hurtLast = !!player.hurtThis;
+      player.hurtThis = false;
       player.block = 0;
       player.maxEnergy = MANA;
       player.energy = MANA;
@@ -3100,6 +3219,7 @@
 
     function finish(kind) {
       clearTimer();
+      clearBattleMods();
       outcome = kind;
       phase = "end";
       banner = "";
@@ -3270,7 +3390,11 @@
         player.maxEnergy = MANA;
         if (player.energy > MANA) player.energy = MANA;
         player.focus = player.focus || 0;
-        player.parry = !!player.parry;
+        player.parry = player.parry === true ? 1 : Math.max(0, Number(player.parry) || 0);
+        player.atkMod = Number(player.atkMod) || 0;
+        player.defMod = Number(player.defMod) || 0;
+        player.expose = Number(player.expose) || 0;
+        player.guardThrough = !!player.guardThrough;
         player.poison = poisonStacks(player);
       }
       if (enemy) {
@@ -3321,7 +3445,8 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: false, poison: 0, hit: false };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false };
+      battleExile = [];
       syncGearStats();
       const foe = enemyNow();
       enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, hit: false };
@@ -3372,9 +3497,10 @@
     function grantExplore() {
       const kind = ["カード", "装備", "アイテム"][Math.floor(Math.random() * 3)];
       if (kind === "カード") {
-        const names = Object.keys(COMMON);
-        const name = names[Math.floor(Math.random() * names.length)];
-        stolen.push(keepCard({ name, ...COMMON[name], stars: 1 }));
+        const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name] })).concat(classCards());
+        const pick = offers[Math.floor(Math.random() * offers.length)];
+        stolen.push(keepCard({ ...pick, stars: 1 }));
+        const name = pick.name;
         return `${name}のカードをもらった。`;
       }
       if (kind === "装備") {
@@ -3395,13 +3521,16 @@
       return list;
     }
 
-    function rollUltimates() {
+    function rollUltimates(nextJob) {
       const pairs = [];
       for (let w = 0; w <= 4; w++) pairs.push(`${w}:${4 - w}`);
-      return shuffle(pairs).slice(0, 2);
+      const picks = shuffle(pairs).slice(0, nextJob === "戦士" ? 1 : 2);
+      if (nextJob === "戦士") picks.unshift("parry-stack");
+      return picks;
     }
 
     function ultimateLabel(pair) {
+      if (pair === "parry-stack") return "パリィが重複する";
       const [w, m] = String(pair).split(":");
       return `戦士${w}と魔法使い${m}`;
     }
@@ -3999,6 +4128,9 @@
     }
 
     function cardKind(card) {
+      if (!card) return "skill";
+      if (card.kind === "power" || card.power) return "power";
+      if (card.kind === "attack" || card.kind === "block" || card.kind === "skill") return card.kind;
       if (card.parry) return "block";
       if (card.focus) return "skill";
       if (card.press) return "attack";
@@ -4015,10 +4147,12 @@
       let noteText = esc(card.text).replaceAll("\n", "<br>");
       if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
       if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
-      const effects = [
+      const icons = [
         card.damage ? `<span class="fx attack">${swordIcon()}<b class="${tone}">${shown}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
-      ].join("") || `<span class="fx note">${noteText}</span>`;
+      ].join("");
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || (card.parry && card.damage);
+      const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
       return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div></div>`;
@@ -4281,18 +4415,33 @@
 
     function keepCard(card) {
       const next = { name: card.name, cost: card.cost, text: card.text, damage: card.damage, block: card.block };
+      if (card.kind) next.kind = card.kind;
       if (card.focus) next.focus = card.focus;
       if (card.parry) next.parry = true;
       if (card.poison) next.poison = Number(card.poison) || 1;
       if (card.press) next.press = true;
+      if (card.power) next.power = true;
+      if (card.rage) next.rage = true;
+      if (card.expose) next.expose = card.expose;
+      if (card.fullBonus) next.fullBonus = card.fullBonus;
+      if (card.safeBonus) next.safeBonus = card.safeBonus;
+      if (card.kick) next.kick = card.kick;
+      if (card.headbutt) next.headbutt = true;
+      if (card.poise) next.poise = true;
+      if (card.finisher) next.finisher = true;
+      if (card.coward) next.coward = true;
+      if (card.note) next.note = card.note;
       return next;
+    }
+
+    function classCards() {
+      if (job !== "戦士" && job !== "パラディン") return [];
+      return Object.keys(WARRIOR).map((name) => ({ ...keepCard({ name, ...WARRIOR[name], stars: 1 }), source: "戦士" }));
     }
 
     function rewardPool() {
       const list = Object.keys(COMMON).map((name) => ({ ...keepCard({ name, ...COMMON[name], stars: 1 }), source: "共通" }));
-      if (job === "パラディン") {
-        for (const name of Object.keys(CARDS)) list.push({ ...keepCard({ name, ...CARDS[name], stars: 1 }), source: "戦士" });
-      }
+      list.push(...classCards());
       const seen = new Set();
       for (const card of enemyNow().pattern) {
         if (seen.has(card.name)) continue;
@@ -4487,7 +4636,8 @@
         if (kind === "attack") return 0;
         if (kind === "block") return 1;
         if (kind === "skill") return 2;
-        return 3;
+        if (kind === "power") return 3;
+        return 4;
       };
       hand.sort((a, b) => rank(a) - rank(b) || a.cost - b.cost || String(a.name).localeCompare(b.name, "ja"));
     }
@@ -4496,7 +4646,7 @@
       sortHand();
       const dealNow = fxDeal;
       const cards = hand.map((card, i) => {
-        const poor = player.energy < card.cost;
+        const poor = !cardPlayable(card);
         const mid = (hand.length - 1) / 2;
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
@@ -4549,7 +4699,7 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div><div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -4589,7 +4739,7 @@
             </div>
           </div>
           ${playRow()}
-          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${player.parry ? "<span>パリィ</span>" : ""}</div></div>
+          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${parryCount(player) ? `<span class="hint">パリィ${parryCount(player) > 1 ? parryCount(player) : ""}<i>${esc(PARRY_NOTE)}</i></span>` : ""}</div></div>
           <div class="handbar">
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
@@ -4661,14 +4811,16 @@
           job = nextJob;
           if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
           floorPhase = "ultimate";
-          ultimatePicks = rollUltimates();
+          ultimatePicks = rollUltimates(nextJob);
           floorNote = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
           render();
         }
         if (name === "ultimate-pick") {
           ultimate = ultimateLabel(action.dataset.ultimate || "");
           floorPhase = "show";
-          floorNote = `奥義は${ultimate}。効果の名前は、まだ無い。`;
+          floorNote = ultimate === "パリィが重複する"
+            ? "奥義はパリィが重複する。パリィは重なる。"
+            : `奥義は${ultimate}。効果の名前は、まだ無い。`;
           render();
         }
         if (name === "new") {
