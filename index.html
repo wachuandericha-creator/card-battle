@@ -231,6 +231,7 @@
     }
     .card.preview:hover { transform: none; }
     .card-fit {
+      position: relative;
       width: 100%;
       height: 100%;
       min-height: 0;
@@ -1095,6 +1096,16 @@
       object-fit: cover;
       display: block;
     }
+    .card .rarity {
+      position: absolute;
+      right: 4cqw;
+      bottom: 3cqw;
+      z-index: 4;
+      color: #1a120e;
+      font-size: 8cqw;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
     .card .text {
       flex: 1 1 auto;
       min-height: 0;
@@ -1412,9 +1423,9 @@
   <script>
     // 戦士の初期デッキ。共通の抽選は COMMON。
     const CARD_POOL = [
-      ["アタック", 2],
+      ["アタック", 4],
       ["チャージアタック", 1],
-      ["ブロック", 2],
+      ["ブロック", 3],
       ["集中", 1],
       ["パリィ", 1],
     ];
@@ -1529,6 +1540,14 @@
     let battleTotal = BATTLE_TOTAL;
     let route = CLASSIC_ROUTE.slice();
     let retreatUsed = false;
+    let job = "戦士";
+    let jobsHad = ["戦士"];
+    let ultimate = "";
+    let floorKind = "";
+    let floorNote = "";
+    let floorPhase = "show";
+    let floorHp = 30;
+    let ultimatePicks = [];
     let rewardReady = false;
     let rewardStars = 0;
     let rewardPicks = [];
@@ -1538,7 +1557,12 @@
     const MANA = 3;
     const HAND_CAP = 10;
     const CHARACTER_NAME = "戦士";
-    const DUNGEON_NAME = "はじまりの洞窟";
+    const DUNGEON_LIST = [
+      { name: "20", floors: 20 },
+      { name: "50", floors: 50 },
+      { name: "100", floors: 100 },
+    ];
+    let dungeonName = "20";
     let meta = { uses: 0, clears: 0, stars: 0 };
 
     function shuffle(list) {
@@ -1598,9 +1622,23 @@
     }
 
     function freshRoute() {
-      const list = DUNGEON.road.map((tier) => rollRank(tier));
-      list.push(DUNGEON.boss);
-      return list;
+      return buildRoute(20);
+    }
+
+    function isEventNode(name) {
+      return String(name || "").startsWith("出来事:");
+    }
+
+    function buildRoute(floors) {
+      const combatCount = Math.floor(floors / 2);
+      const eventCount = floors - combatCount;
+      const body = [];
+      for (let i = 0; i < combatCount - 1; i++) body.push(rollRank(i < (combatCount - 1) / 2 ? 1 : 2));
+      const events = ["出来事:探索", "出来事:未知", "出来事:キャンプ", "出来事:お店", "出来事:ジョブ"];
+      for (let i = 0; i < eventCount; i++) body.push(events[i % events.length]);
+      const mixed = shuffle(body);
+      mixed.push(DUNGEON.boss);
+      return mixed;
     }
 
     function enemyNow() {
@@ -2459,6 +2497,10 @@
         battleTotal,
         route,
         retreatUsed,
+        dungeonName,
+        job,
+        jobsHad,
+        ultimate,
         rewardReady,
         rewardStars,
         rewardPicks,
@@ -2552,6 +2594,10 @@
       battleTotal = route.length;
       restoreEnemyLoop(data);
       retreatUsed = !!data.retreatUsed;
+      if (data.dungeonName) dungeonName = data.dungeonName;
+      job = data.job || "戦士";
+      jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
+      ultimate = data.ultimate || "";
       rewardReady = !!data.rewardReady;
       rewardStars = data.rewardStars || 0;
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
@@ -2587,16 +2633,109 @@
       startPlayerTurn();
     }
 
-    function beginRun() {
+    function grantExplore() {
+      const kind = ["カード", "装備", "アイテム"][Math.floor(Math.random() * 3)];
+      if (kind === "カード") {
+        const names = Object.keys(COMMON);
+        const name = names[Math.floor(Math.random() * names.length)];
+        stolen.push(keepCard({ name, ...COMMON[name], stars: 1 }));
+        return `${name}のカードをもらった。`;
+      }
+      if (kind === "装備") {
+        const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
+        if (!gear || !gear.sword) gear = starterGear();
+        gear[item.slot] = { ...item };
+        syncGearStats();
+        return `${item.name}を装備した。`;
+      }
+      return "アイテムを拾った。効果はまだ無い。";
+    }
+
+    function jobCandidates() {
+      const list = [];
+      if (jobsHad.includes("戦士") && jobsHad.includes("魔法使い")) list.push("パラディン");
+      if (job !== "魔法使い") list.push("魔法使い");
+      if (job !== "戦士") list.push("戦士");
+      return list;
+    }
+
+    function rollUltimates() {
+      const pairs = [];
+      for (let w = 0; w <= 4; w++) pairs.push(`${w}:${4 - w}`);
+      return shuffle(pairs).slice(0, 2);
+    }
+
+    function ultimateLabel(pair) {
+      const [w, m] = String(pair).split(":");
+      return `戦士${w}と魔法使い${m}`;
+    }
+
+    function openFloor(keepHp) {
+      floorHp = keepHp == null ? 30 : Math.min(30, keepHp);
+      const kind = String(route[battleIndex] || "").slice("出来事:".length);
+      floorKind = kind;
+      floorNote = "";
+      floorPhase = "show";
+      ultimatePicks = [];
+      if (kind === "キャンプ") {
+        floorHp = 30;
+        if (player) player.hp = 30;
+        floorNote = "体力が全快した。";
+      } else if (kind === "お店") {
+        floorNote = "品ぞろえは、これから決める。";
+      } else if (kind === "探索") {
+        if (Math.random() < 0.5) {
+          route[battleIndex] = rollRank(battleIndex < route.length / 2 ? 1 : 2);
+          startBattle(floorHp);
+          return;
+        }
+        floorNote = grantExplore();
+      } else if (kind === "未知") {
+        const roll = ["キャンプ", "お店", "探索", "戦闘"][Math.floor(Math.random() * 4)];
+        if (roll === "戦闘") {
+          route[battleIndex] = rollRank(battleIndex < route.length / 2 ? 1 : 2);
+          startBattle(floorHp);
+          return;
+        }
+        if (roll === "キャンプ") {
+          floorHp = 30;
+          if (player) player.hp = 30;
+          floorNote = "未知は、キャンプだった。体力が全快した。";
+        } else if (roll === "探索") {
+          floorNote = `未知は、探索だった。${grantExplore()}`;
+        } else {
+          floorNote = "未知は、お店だった。品ぞろえは、これから決める。";
+        }
+      } else if (kind === "ジョブ") {
+        floorPhase = "job";
+        floorNote = `いまのジョブは${job}。カードは捨てない。`;
+      }
+      screen = "floor";
+      render();
+    }
+
+    function enterNode(keepHp) {
+      if (isEventNode(route[battleIndex])) {
+        openFloor(keepHp);
+        return;
+      }
+      startBattle(keepHp);
+    }
+
+    function beginRun(floors, name) {
+      dungeonName = name || "20";
       battleIndex = 0;
-      route = freshRoute();
+      route = buildRoute(floors || 20);
       battleTotal = route.length;
       retreatUsed = false;
       cleared = false;
       gear = starterGear();
       gearOpen = null;
       stolen = [];
-      startBattle(30);
+      job = "戦士";
+      jobsHad = ["戦士"];
+      ultimate = "";
+      enterNode(30);
     }
 
     function continueGame() {
@@ -2719,6 +2858,7 @@
             <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="前のキャラ">◀</button>
             <div class="cast-front big"><img src="warrior-f-sheet.jpg?v=2" alt="戦士の真正面"></div>
             <div class="cast-info">
+              <p>初期ジョブ</p>
               <h1>${CHARACTER_NAME}</h1>
               <p>HP 30　ATK+2　DEF+2</p>
               <h2>初期装備</h2>
@@ -2732,7 +2872,11 @@
               <p class="cast-blank"></p>
               <h2>遊び方</h2>
               <p class="cast-blank"></p>
-              ${menuButton("このキャラではじめる", "character-next", true)}
+              <h2>ビルド</h2>
+              <p>武器を強化してATKを伸ばし、火力で倒す。</p>
+              <p>シールドを固めて、シールドで倒す。</p>
+              <p>パリィして、一時的に火力を上げて倒す。</p>
+              ${menuButton("このジョブではじめる", "character-next", true)}
               ${menuButton("もどる", "title")}
             </div>
             <button type="button" class="cast-arrow" data-action="cast-stay" aria-label="次のキャラ">▶</button>
@@ -2744,8 +2888,8 @@
       root.innerHTML = `
         <div class="menu">
           <h1>ダンジョン</h1>
-          <p>${CHARACTER_NAME}で攻略する。</p>
-          ${menuButton(DUNGEON_NAME, "dungeon-start", true)}
+          <p>初期ジョブは${job}。階層の半分が戦闘。最後は強敵。</p>
+          ${DUNGEON_LIST.map((item) => `<button type="button" class="primary" data-action="dungeon-start" data-floors="${item.floors}" data-dungeon="${esc(item.name)}">${esc(item.name)}</button>`).join("")}
           ${menuButton("もどる", "character")}
         </div>`;
     }
@@ -2851,11 +2995,30 @@
         </div>`;
     }
 
+    function renderFloor() {
+      const jobs = floorPhase === "job"
+        ? jobCandidates().map((name) => `<button type="button" class="primary" data-action="job-pick" data-job="${esc(name)}">${esc(name)}</button>`).join("")
+        : "";
+      const ultimates = floorPhase === "ultimate"
+        ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
+        : "";
+      const next = floorPhase === "show" ? menuButton("進む", "floor-next", true) : "";
+      root.innerHTML = `
+        <div class="menu">
+          <h1>${esc(floorKind)}</h1>
+          <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
+          <p>${esc(floorNote)}</p>
+          ${jobs}
+          ${ultimates}
+          ${next}
+        </div>`;
+    }
+
     function renderClear() {
       root.innerHTML = `
         <div class="menu">
           <h1>踏破</h1>
-          <p>${DUNGEON_NAME}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
+          <p>${esc(dungeonName)}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
           <p>次の攻略も、初期デッキから。</p>
           ${menuButton("アルバム", "album")}
           ${menuButton("キャラクター選択へ", "character", true)}
@@ -2872,6 +3035,7 @@
       if (screen === "settings") return renderSettings();
       if (screen === "confirm") return renderConfirm();
       if (screen === "clear") return renderClear();
+      if (screen === "floor") return renderFloor();
       renderBattle();
     }
 
@@ -2904,7 +3068,8 @@
         card.damage ? `<span class="fx attack">${swordIcon()}<b class="${tone}">${shown}</b></span>` : "",
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
       ].join("") || `<span class="fx note">${noteText}</span>`;
-      return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div></div>`;
+      const stars = card.stars || 1;
+      return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true"></div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div></div>`;
     }
 
     function playFace(card, on, adjusted) {
@@ -3144,6 +3309,8 @@
       shop: { name: "お店", text: "★で買い物。品ぞろえはこれから。", image: "path-shop.jpg?v=2" },
       retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。", image: "path-retreat.jpg?v=2" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
+      search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg" },
+      unknown: { name: "未知", text: "何があるかわからない。", image: "path-unknown.jpg" },
     };
 
     function starsForRank(rank) {
@@ -3162,7 +3329,10 @@
     }
 
     function rewardPool() {
-      const list = Object.keys(COMMON).map((name) => ({ ...keepCard({ name, ...COMMON[name] }), source: "共通" }));
+      const list = Object.keys(COMMON).map((name) => ({ ...keepCard({ name, ...COMMON[name], stars: 1 }), source: "共通" }));
+      if (job === "パラディン") {
+        for (const name of Object.keys(CARDS)) list.push({ ...keepCard({ name, ...CARDS[name], stars: 1 }), source: "戦士" });
+      }
       const seen = new Set();
       for (const card of enemyNow().pattern) {
         if (seen.has(card.name)) continue;
@@ -3186,7 +3356,7 @@
     }
 
     function rollPaths() {
-      const ids = ["skip", "shop"];
+      const ids = ["skip", "shop", "search", "unknown"];
       if (!retreatUsed) ids.push("retreat");
       return ["straight"].concat(shuffle(ids).slice(0, 2));
     }
@@ -3236,7 +3406,7 @@
     }
 
     function advance(step) {
-      const hp = player.hp;
+      const hp = screen === "floor" ? floorHp : (player ? player.hp : floorHp);
       const next = battleIndex + step;
       outcome = null;
       if (next >= battleTotal) {
@@ -3248,7 +3418,7 @@
         return;
       }
       battleIndex = next;
-      startBattle(hp);
+      enterNode(hp);
     }
 
     function applyPath(id) {
@@ -3269,6 +3439,31 @@
 
     function takePath(id) {
       if (rewardStep !== "paths" || !PATHS[id]) return;
+      if (id === "search" || id === "unknown") {
+        if (id === "unknown" && Math.random() < 0.5) {
+          const roll = Math.random();
+          if (roll < 0.34) {
+            applyPath("camp");
+            return;
+          }
+          if (roll < 0.67) {
+            rewardStep = "shop";
+            persistSave(true);
+            render();
+            return;
+          }
+        }
+        if (Math.random() < 0.5) {
+          addDetourFight();
+          applyPath("straight");
+          return;
+        }
+        floorNote = grantExplore();
+        rewardStep = "event";
+        persistSave(true);
+        render();
+        return;
+      }
       if (id === "shop") {
         rewardStep = "shop";
         persistSave(true);
@@ -3303,6 +3498,9 @@
       }
       if (rewardStep === "shop") {
         return `<div class="overlay"><div class="panel"><h2>お店</h2><p>所持 ★${meta.stars}</p><p>品ぞろえは、これから決める。</p><button type="button" data-action="reward-go">出ていく</button></div></div>`;
+      }
+      if (rewardStep === "event") {
+        return `<div class="overlay"><div class="panel"><h2>探索</h2><p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const bonus = bonusCard
         ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${cardKind(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
@@ -3384,7 +3582,7 @@
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
-              <h1 class="dungeon-name">${esc(DUNGEON_NAME)}</h1>
+              <h1 class="dungeon-name">${esc(dungeonName)}</h1>
               <div class="dungeon-progress">${battleIndex + 1}/${battleTotal}</div>
             </div>
             <div class="hud-actions">
@@ -3456,7 +3654,23 @@
         if (name === "character") { screen = "character"; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
         if (name === "cast-stay") { screen = "character"; render(); }
-        if (name === "dungeon-start") beginRun();
+        if (name === "dungeon-start") beginRun(Number(action.dataset.floors) || 20, action.dataset.dungeon || "20");
+        if (name === "floor-next") advance(1);
+        if (name === "job-pick") {
+          const nextJob = action.dataset.job || "戦士";
+          job = nextJob;
+          if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
+          floorPhase = "ultimate";
+          ultimatePicks = rollUltimates();
+          floorNote = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
+          render();
+        }
+        if (name === "ultimate-pick") {
+          ultimate = ultimateLabel(action.dataset.ultimate || "");
+          floorPhase = "show";
+          floorNote = `奥義は${ultimate}。効果の名前は、まだ無い。`;
+          render();
+        }
         if (name === "new") {
           if (readSave()) { screen = "confirm"; render(); }
           else { screen = "character"; render(); }
