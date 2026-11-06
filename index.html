@@ -1134,10 +1134,6 @@
     .gear-pair {
       display: contents;
     }
-    .gear-board > .gear-slot.medal {
-      width: auto;
-    }
-    .gear-pair .gear-slot { width: 100%; min-width: 0; }
     .gear-slot {
       display: flex;
       flex-direction: column;
@@ -1169,17 +1165,9 @@
       background: rgba(20, 14, 12, 0.5);
     }
     .gear-slot.open .gear-frame { border-color: var(--gold); }
-    .gear-slot.medal .gear-frame { gap: 6cqw; }
-    .medal-count {
-      color: var(--gold);
-      font-size: 28cqw;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-    }
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
     .gear-mark .ico { width: 48cqw; height: 48cqw; }
-    .gear-slot.medal .gear-mark .ico { width: 30cqw; height: 40cqw; }
     .gear-label {
       color: var(--gold);
       font-size: 11px;
@@ -2073,11 +2061,11 @@
     }
 
     function medalIcon() {
-      return `<svg class="ico medal" viewBox="0 0 24 32" aria-hidden="true"><path fill="#d35a4a" d="M1.4.6h6.6L12 13.2H8.2z"/><path fill="#8f2e28" d="M16 .6h6.6L15.8 13.2H12z"/><path fill="#f3b2a4" d="M3.6.6h2.2L10.6 11.4H8.6z"/><circle cx="12" cy="23.2" r="7.3" fill="#7a4c18"/><circle cx="12" cy="22.45" r="7.3" fill="#e4b15a"/><circle cx="12" cy="22.45" r="5.35" fill="none" stroke="#fff3cc" stroke-width="0.8"/><path fill="#fff6d4" transform="translate(12 22.45) scale(.62) translate(-12 -12)" d="M12 8.6 13.05 11.2h2.75l-2.22 1.62.85 2.62L12 13.82 9.57 15.44l.85-2.62-2.22-1.62h2.75z"/></svg>`;
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.2 1.1h7.6L14.4 7.4h-4.8z"/><circle cx="12" cy="14.6" r="7.6" fill="currentColor"/><path fill="#1a120c" d="M12 10.2l1.2 2.5h2.7l-2.2 1.6.85 2.6L12 15.3l-2.55 1.6.85-2.6-2.2-1.6h2.7z"/></svg>`;
     }
 
     function braceletIcon() {
-      return `<svg class="ico bracelet" viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-36 12 12)" fill="none" stroke-linecap="butt"><path d="M3.8 12.5A8.2 4.7 0 0 0 20.2 12.5" stroke="#7a4c18" stroke-width="2.35"/><path d="M3.8 12.5A8.2 4.7 0 0 1 20.2 12.5" stroke="#e4b15a" stroke-width="3.15"/><path d="M5.2 13.15A6.8 3.35 0 0 1 18.8 13.15" stroke="#a56a28" stroke-width="1.35"/><path d="M5.1 13.85A6.9 3.55 0 0 1 18.9 13.85" stroke="#fff3cc" stroke-width="0.85"/></g></svg>`;
+      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M2.2 13.1C2.2 8.4 6.5 4.8 12 4.8s9.8 3.6 9.8 8.3-4.3 7.5-9.8 7.5-9.8-3.2-9.8-7.5zm4.3.2c0 2.1 2.5 3.6 5.5 3.6s5.5-1.5 5.5-3.6-2.5-3.6-5.5-3.6-5.5 1.5-5.5 3.6z"/></svg>`;
     }
 
     function itemIcon() {
@@ -2097,8 +2085,7 @@
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
       const weapons = `<div class="gear-pair">${sword}${shield}</div>`;
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
-      const count = gear.medals || 0;
-      const medal = `<button type="button" class="gear-slot medal${gearOpen === "medal" ? " open" : ""}" data-gear="medal" aria-label="メダル ${count}"><span class="gear-frame"><img src="gear-medal.jpg" alt=""><b class="medal-count">${count}</b></span><span class="gear-label">メダル</span></button>`;
+      const medal = slotButton({ id: "medal", label: "メダル", icon: medalIcon() });
       const items = `<div class="gear-pair">${slotButton({ id: "itemL", label: "アイテム", aria: "使い捨て 左", icon: itemIcon() })}${slotButton({ id: "itemR", label: "アイテム", aria: "使い捨て 右", icon: itemIcon() })}</div>`;
       return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
@@ -2106,7 +2093,7 @@
     function gearEffectText() {
       if (!gearOpen) return "";
       if (gearOpen === "medal") {
-        return `<p class="gear-effect">メダル ${gear.medals || 0}枚。上限はない。多いほど有利。何が増えるかは、これから。</p>`;
+        return `<p class="gear-effect">メダル。上限はない。多いほど有利。何が増えるかは、これから。</p>`;
       }
       if (gearOpen === "itemL" || gearOpen === "itemR") {
         const item = gear[gearOpen];
