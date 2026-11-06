@@ -367,6 +367,7 @@
     }
     .ref-grid figure { margin: 0; }
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
+    .ref-grid img.enemy-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
     .cast-screen { position: relative; height: 100%; min-height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 92px 28px 24px; }
     .cast-back {
@@ -510,8 +511,6 @@
       object-fit: contain;
       object-position: center bottom;
       filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
-      -webkit-mask-image: radial-gradient(ellipse at 50% 58%, #000 72%, transparent 94%);
-      mask-image: radial-gradient(ellipse at 50% 58%, #000 72%, transparent 94%);
     }
     .sprite .eye {
       position: absolute;
@@ -1616,7 +1615,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.jpg",
+        image: "enemy-slime.png?v=1",
         tier: 1,
         rank: "雑魚",
         hp: 22,
@@ -1629,7 +1628,7 @@
       },
       {
         name: "荒くれ",
-        image: "enemy-goblin.jpg",
+        image: "enemy-goblin.png?v=1",
         tier: 2,
         rank: "普通",
         hp: 24,
@@ -1641,7 +1640,7 @@
       },
       {
         name: "重騎士",
-        image: "enemy-minotaur.jpg",
+        image: "enemy-minotaur.png?v=1",
         tier: 3,
         rank: "強敵",
         hp: 30,
@@ -3138,9 +3137,9 @@
             </div>
             <h3>敵</h3>
             <div class="ref-grid">
-              <figure><img src="enemy-slime.jpg" alt=""><figcaption>スライム</figcaption></figure>
-              <figure><img src="enemy-goblin.jpg" alt=""><figcaption>ゴブリン</figcaption></figure>
-              <figure><img src="enemy-minotaur.jpg" alt=""><figcaption>ミノタウロス</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-slime.png?v=1" alt=""><figcaption>スライム</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-goblin.png?v=1" alt=""><figcaption>ゴブリン</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=1" alt=""><figcaption>ミノタウロス</figcaption></figure>
             </div>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
@@ -3792,7 +3791,7 @@
             ${traitNote()}
             <div class="enemy-main">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true">
-              <img src="${esc(enemy.image || "enemy-slime.jpg")}" alt="">
+              <img src="${esc(enemy.image || "enemy-slime.png?v=1")}" alt="">
               ${slashNow ? `<span class="cut" style="--pow:${hitNow && hitNow.side === "enemy" ? hitPow : "0.35"}"></span>` : ""}
             </div>
             <section class="enemy vitals" data-rank="${esc(enemyNow().rank || "普通")}">
