@@ -141,7 +141,7 @@
       border-radius: 12px;
       background:
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
-        url("dungeon-bg.jpg") center 38% / cover no-repeat;
+        var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
     }
     .enemy-field { position: relative; display: flex; align-items: stretch; gap: 12px; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
     .hero-shoulder {
@@ -1392,6 +1392,42 @@
     }
     .menu button:disabled, .title-actions button:disabled { opacity: 0.35; cursor: default; }
     .menu button { font-size: 22px; padding: 16px 22px; }
+    .dungeon-gate { position: relative; height: 100%; }
+    .dungeon-cover {
+      position: absolute;
+      top: 4vh;
+      left: 3vw;
+      width: 94vw;
+      height: 92vh;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 2px solid #e4b15a;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+    }
+    .dungeon-gate-name {
+      position: absolute;
+      top: 8vh;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      margin: 0;
+      text-align: center;
+      color: #f6d48a;
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: 0.14em;
+      text-shadow: 0 3px 0 #1a120c, 0 0 18px rgba(0, 0, 0, 0.85);
+    }
+    .dungeon-enter {
+      position: absolute;
+      left: 50%;
+      bottom: 8vh;
+      z-index: 2;
+      transform: translateX(-50%);
+      min-width: 280px;
+      font-size: 22px;
+      padding: 16px 28px;
+      border-radius: 999px;
+    }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
       25% { transform: translateX(-6px); }
@@ -1673,11 +1709,12 @@
     const HAND_CAP = 10;
     const CHARACTER_NAME = "戦士";
     const DUNGEON_LIST = [
-      { name: "はじまりの洞窟", floors: 20 },
-      { name: "50", floors: 50 },
-      { name: "100", floors: 100 },
+      { name: "はじまりの洞窟", floors: 20, art: "dungeon-cave.jpg?v=1" },
+      { name: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
+      { name: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
     ];
     let dungeonName = "はじまりの洞窟";
+    let pendingDungeon = DUNGEON_LIST[0];
     let meta = { uses: 0, clears: 0, stars: 0 };
 
     function shuffle(list) {
@@ -2994,6 +3031,22 @@
         </div>`;
     }
 
+    function dungeonArt(name) {
+      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
+      return item ? item.art : DUNGEON_LIST[0].art;
+    }
+
+    function renderDungeonGate() {
+      const item = pendingDungeon || DUNGEON_LIST[0];
+      root.innerHTML = `
+        <div class="dungeon-gate">
+          <button type="button" class="cast-back" data-action="dungeon-list">もどる</button>
+          <img class="dungeon-cover" src="${item.art}" alt="${esc(item.name)}">
+          <h1 class="dungeon-gate-name">${esc(item.name)}</h1>
+          <button type="button" class="primary dungeon-enter" data-action="dungeon-enter">このダンジョンに入る</button>
+        </div>`;
+    }
+
     function renderDungeon() {
       root.innerHTML = `
         <div class="menu">
@@ -3136,6 +3189,7 @@
       if (screen === "title") return renderTitle();
       if (screen === "character") return renderCharacter();
       if (screen === "dungeon") return renderDungeon();
+      if (screen === "dungeon-gate") return renderDungeonGate();
       if (screen === "album") return renderAlbum();
       if (screen === "sheet") return renderSheet();
       if (screen === "defeat") return renderDefeat();
@@ -3699,7 +3753,7 @@
             </div>
           </header>
           <div class="battle-bands">
-          <div class="stage">
+          <div class="stage" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
             <div class="enemy-field">
             ${traitNote()}
             <div class="enemy-main">
@@ -3763,7 +3817,13 @@
         if (name === "cast-back") { castPicked = false; render(); }
         if (name === "character-next") { screen = "dungeon"; render(); }
         if (name === "cast-stay") { screen = "character"; render(); }
-        if (name === "dungeon-start") beginRun(Number(action.dataset.floors) || 20, action.dataset.dungeon || "はじまりの洞窟");
+        if (name === "dungeon-list") { screen = "dungeon"; render(); }
+        if (name === "dungeon-start") {
+          pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === action.dataset.dungeon) || DUNGEON_LIST[0];
+          screen = "dungeon-gate";
+          render();
+        }
+        if (name === "dungeon-enter") beginRun(pendingDungeon.floors, pendingDungeon.name);
         if (name === "floor-next") advance(1);
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
