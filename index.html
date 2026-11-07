@@ -3239,9 +3239,10 @@
       grid-template-rows: auto minmax(0, 1fr);
       height: 100%;
       min-height: 0;
-      gap: 10px;
-      padding: 14px 14px 88px;
+      gap: 16px;
+      padding: 18px 24px 96px;
       box-sizing: border-box;
+      place-items: center;
       background:
         radial-gradient(ellipse at 50% 0%, rgba(90, 60, 20, 0.28), transparent 46%),
         #0c0908;
@@ -3251,23 +3252,29 @@
       z-index: 2;
       margin: 4px 0 0;
       text-align: center;
-      font-size: clamp(24px, 3.4vw, 40px);
+      font-size: clamp(22px, 2.8vw, 34px);
       letter-spacing: 0.12em;
       color: #f6d48a;
       text-shadow: 0 2px 0 #1a120c;
     }
     .dungeon-columns {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      width: min(860px, 78vw);
+      height: min(460px, 52vh);
+      max-width: 100%;
       min-height: 0;
+      align-self: center;
+      justify-self: center;
     }
     .dungeon-col {
       position: relative;
       min-width: 0;
       min-height: 0;
+      height: 100%;
       border: 2px solid rgba(120, 90, 50, 0.45);
-      border-radius: 18px;
+      border-radius: 16px;
       overflow: hidden;
       padding: 0;
       background: #120c0a;
@@ -3312,7 +3319,7 @@
       z-index: 3;
       margin: 0;
       text-align: center;
-      font-size: clamp(48px, 8vw, 96px);
+      font-size: clamp(32px, 4.6vw, 56px);
       font-weight: 800;
       letter-spacing: 0.08em;
       color: #fff6e0;
@@ -3327,7 +3334,7 @@
       z-index: 3;
       margin: 0;
       text-align: center;
-      font-size: clamp(14px, 1.6vw, 20px);
+      font-size: clamp(13px, 1.4vw, 18px);
       font-weight: 800;
       letter-spacing: 0.14em;
       color: #f6d48a;
@@ -3396,8 +3403,14 @@
     }
     .dungeon-pick .cast-actions { z-index: 6; }
     @media (max-width: 760px) {
-      .dungeon-columns { grid-template-columns: 1fr; }
-      .dungeon-col { min-height: 28vh; }
+      .dungeon-columns {
+        grid-template-columns: 1fr;
+        width: min(360px, 86vw);
+        height: auto;
+        max-height: none;
+        gap: 12px;
+      }
+      .dungeon-col { min-height: 22vh; height: 22vh; }
     }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
