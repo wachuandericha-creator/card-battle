@@ -262,6 +262,8 @@
       overflow: hidden;
     }
     .battle-plate .meter.hp > span {
+      position: relative;
+      z-index: 1;
       border-radius: 5px 3px 3px 5px;
       background: linear-gradient(180deg, #ff9a86 0%, #e8533f 42%, #b02819 100%);
       box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 10px rgba(255, 90, 60, 0.45);
@@ -270,13 +272,22 @@
       background: linear-gradient(180deg, #ffb4a0 0%, #ff5a3a 42%, #c01c0c 100%);
       animation: hp-low 1.1s ease-in-out infinite;
     }
-    /* 体力バーの目盛りは10HPごと（--max は最大HP）。戦士の初期30HPなら3つ分、限界の100HPなら10つ分 */
-    .battle-plate .meter.hp::before {
-      content: "";
+    /* 体力バーの目盛りは10HPごと。自分は限界100（初期30なら3つ分、伸びる余地が空く）。敵は自分の最大HPいっぱい */
+    .battle-plate .meter.hp .hp-max {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-radius: 5px;
+      background: rgba(92, 42, 36, 0.72);
+      pointer-events: none;
+    }
+    .battle-plate .meter.hp .hp-ticks {
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(90deg, transparent calc(100% - 2px), rgba(0, 0, 0, 0.45) calc(100% - 2px), rgba(0, 0, 0, 0.45) 100%);
-      background-size: calc(100% * 10 / var(--max, 30)) 100%;
+      z-index: 3;
+      background-image: linear-gradient(90deg, transparent calc(100% - 1.5px), rgba(255, 236, 210, 0.38) calc(100% - 1.5px), rgba(0, 0, 0, 0.5) 100%);
+      background-size: calc(100% * 10 / var(--cap, 100)) 100%;
       background-repeat: repeat-x;
       pointer-events: none;
     }
@@ -286,6 +297,7 @@
       left: 2px;
       right: 2px;
       top: 2px;
+      z-index: 2;
       height: 42%;
       border-radius: 4px 4px 2px 2px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04));
@@ -1902,6 +1914,8 @@
       max-width: 100%;
       line-height: 1.2;
     }
+    .gear-effect .item-use { display: block; margin: 8px auto 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; }
+    .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; }
     .gear-effect {
       margin: 4px 0 0;
       width: 0;
@@ -3096,6 +3110,7 @@
     let floorGift = null;
     let blessPicks = [];
     let floorHp = 30;
+    let battleStartHp = 30; // この戦闘を始めたときのHP（天使のペンダントのやり直し用）
     let ultimatePicks = [];
     let rewardReady = false;
     let rewardStars = 0;
@@ -3419,7 +3434,9 @@
       for (const key of ["sword", "shield", "braceletR", "braceletL", "medal", "itemL", "itemR"]) {
         if (key === "itemL" || key === "itemR") {
           const held = data[key];
-          if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。", image: ITEM_IMAGE };
+          const def = held && itemDef(held.id);
+          if (def) next[key] = { ...def };
+          else if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。", image: held.image || ITEM_IMAGE };
           continue;
         }
         const item = data[key] && gearItem(data[key].id);
@@ -3458,7 +3475,7 @@
         const picture = item && item.image
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
-        const title = item && item.name ? item.name + (item.stars ? " ★" : "") : slot.label;
+        const title = item && item.name ? item.name + (item.stars > 0 ? " " + "★".repeat(item.stars) : "") : slot.label;
         return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
@@ -3477,8 +3494,11 @@
       }
       if (gearOpen === "itemL" || gearOpen === "itemR") {
         const item = gear[gearOpen];
-        const text = item && item.effect ? item.effect : "使い捨て。使ったら消える。中身は、これから。";
-        return `<p class="gear-effect">${esc(text)}</p>`;
+        if (!item) return `<p class="gear-effect">使い捨てアイテム。なにも入っていない。</p>`;
+        const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
+        const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
+        const button = item.quick ? `<button type="button" class="item-use" data-use-item="${gearOpen}" ${canUse ? "" : "disabled"}>使う</button>` : "";
+        return `<p class="gear-effect">${esc(item.name)}。${esc(item.effect)}${hint ? "<br>" + esc(hint) : ""}${button}</p>`;
       }
       const item = gear[gearOpen];
       const text = item && item.effect ? item.effect : "なにも入っていない";
@@ -3601,7 +3621,8 @@
         const max = who === "enemy" ? enemy && enemy.maxHp : player && player.maxHp;
         if (hp == null || !max) continue;
         const bar = root.querySelector(`[data-bar="${who}"]`);
-        if (bar) bar.style.width = `${Math.max(0, Math.min(100, (hp / max) * 100))}%`;
+        const cap = who === "player" ? HP_CAP : max;
+        if (bar) bar.style.width = `${Math.max(0, Math.min(100, (hp / cap) * 100))}%`;
         const text = String(Math.max(0, Math.round(hp)));
         root.querySelectorAll(`[data-hp="${who}"]`).forEach((el) => { el.textContent = text; });
       }
@@ -4208,9 +4229,13 @@
           }
         }
         if (player.hp <= 0) {
-          scrapPlay();
-          scheduleFinish("lose");
-          return;
+          const saved = cheatDeath();
+          if (saved === "retry") return;
+          if (!saved) {
+            scrapPlay();
+            scheduleFinish("lose");
+            return;
+          }
         }
       }
       const guardKind = fxGuard;
@@ -4230,8 +4255,12 @@
       const poisoned = tickPoison("player");
       turnCall = "enemy";
       if (poisoned) {
-        scheduleFinish("lose");
-        return;
+        const saved = cheatDeath();
+        if (saved === "retry") return;
+        if (!saved) {
+          scheduleFinish("lose");
+          return;
+        }
       }
       render();
       timer = setTimeout(stepResolve, 1100);
@@ -4239,8 +4268,12 @@
 
     function startPlayerTurn() {
       if (player.hp <= 0) {
-        finish("lose");
-        return;
+        const saved = cheatDeath();
+        if (saved === "retry") return;
+        if (!saved) {
+          finish("lose");
+          return;
+        }
       }
       turn += 1;
       logTurn("player");
@@ -4367,6 +4400,7 @@
         removed,
         battleTotal,
         route,
+        battleStartHp,
         floorZero: true, // 祝福を0層目として数える新しい道（古いセーブの見分け用）
         retreatUsed,
         dungeonName,
@@ -4415,6 +4449,7 @@
     function applySave(data) {
       cleared = !!data.cleared;
       battleIndex = data.battleIndex || 0;
+      battleStartHp = Number(data.battleStartHp) || (data.player && Number(data.player.hp)) || 30;
       turn = data.turn || 0;
       intentIndex = data.intentIndex || 0;
       phase = data.phase || "player";
@@ -4519,6 +4554,7 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
+      battleStartHp = hp;
       player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
       battleExile = [];
       syncGearStats();
@@ -4548,14 +4584,82 @@
     }
 
     const ITEM_IMAGE = "gear-item.jpg?v=1";
+    // 使い捨てアイテム。クイックは戦闘中の自分のターンに押して使う（マナはいらない）。
+    // 天使の輪・天使のペンダントは持っているだけでよく、死んだときひとりでに使われる。
+    // stars が 0 のものはレアリティ未定（お店に並べるときの値段が決まっていない）。
+    const ITEMS = [
+      { id: "herb", name: "薬草", effect: "HP10回復。クイック", heal: 10, quick: true, stars: 1, image: "item-herb.jpg?v=1" },
+      { id: "angel-halo", name: "天使の輪", effect: "一度だけ、死んでも復活する", revive: true, stars: 3, image: "item-angel-halo.jpg?v=1" },
+      { id: "angel-pendant", name: "天使のペンダント", effect: "一度死んだとき、はじめから戦闘をやり直す", retry: true, stars: 3, image: "item-angel-pendant.jpg?v=1" },
+      { id: "spike-ball", name: "棘ボール", effect: "相手に10ダメージ。クイック", damage: 10, quick: true, stars: 0, image: "item-spike-ball.jpg?v=1" },
+    ];
+    function itemDef(id) {
+      return ITEMS.find((item) => item.id === id) || null;
+    }
     function blessItem() {
-      return { id: "bless-item", name: "アイテム", effect: "使い捨て。効果はまだ無い。", image: ITEM_IMAGE };
+      return { ...ITEMS[Math.floor(Math.random() * ITEMS.length)] };
+    }
+    function itemSlotWith(flag) {
+      return ["itemL", "itemR"].find((key) => gear && gear[key] && gear[key][flag]) || "";
     }
 
     function giveItem(gift) {
       if (!gear.itemL) gear.itemL = { ...gift };
       else if (!gear.itemR) gear.itemR = { ...gift };
       else gear.itemL = { ...gift };
+    }
+
+    // クイックのアイテムを使う（自分のターンだけ。マナはいらない。使ったら消える）
+    function useItem(slot) {
+      if (screen !== "battle" || phase !== "player" || outcome) return;
+      const item = gear && gear[slot];
+      if (!item || !item.quick) return;
+      if (item.heal) {
+        const gain = restoreHp(item.heal);
+        log(`${heroName()}は${item.name}を使った。HPが${gain}回復。`);
+      } else if (item.damage) {
+        const result = applyDamage(enemy, item.damage);
+        if (result.hpLoss || result.blocked) {
+          slashFoe();
+          noteHit("enemy", result.hpLoss, item.damage);
+        }
+        log(`${heroName()}は${item.name}を投げた。${enemy.name}に${result.hpLoss}ダメージ。`);
+      }
+      gear[slot] = null;
+      gearOpen = null;
+      if (enemy.hp <= 0) {
+        scrapPlay();
+        scheduleFinish("win");
+        return;
+      }
+      render();
+    }
+
+    // 死んだとき、天使の輪（復活）→天使のペンダント（戦闘をやり直す）の順に、ひとりでに使われる。
+    // 戻り値：使ったものが無ければ ""。"revive" はその場で続行、"retry" は startBattle をやり直し済み。
+    function cheatDeath() {
+      if (!player || player.hp > 0) return "";
+      const halo = itemSlotWith("revive");
+      if (halo) {
+        const item = gear[halo];
+        gear[halo] = null;
+        player.hp = player.maxHp;
+        fxHeal = true;
+        log(`${heroName()}は倒れた。${item.name}が光り、復活した。`);
+        return "revive";
+      }
+      const pendant = itemSlotWith("retry");
+      if (pendant) {
+        const item = gear[pendant];
+        gear[pendant] = null;
+        clearTimer();
+        clearBattleMods();
+        startBattle(battleStartHp);
+        log(`${item.name}が砕けた。時が戻り、戦闘をはじめからやり直す。`);
+        render();
+        return "retry";
+      }
+      return "";
     }
 
     function rollBlessPicks() {
@@ -4807,10 +4911,13 @@
     }
 
     function meters(who, hp, maxHp, block) {
-      const hpPct = Math.max(0, Math.min(100, (hp / maxHp) * 100));
-      const blockPct = Math.max(0, Math.min(100, (block / maxHp) * 100));
+      const cap = who === "player" ? HP_CAP : Math.max(1, maxHp);
+      const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
+      const maxPct = Math.max(0, Math.min(100, (maxHp / cap) * 100));
+      const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div><div class="shield-line">シールド</div></div>` : "";
-      return `<div class="meters">${shield}<div class="meter hp" style="--max:${Math.max(1, maxHp)}"><span data-bar="${who}" style="width:${hpPct}%"></span></div></div>`;
+      const room = who === "player" ? `<i class="hp-max" style="width:${maxPct}%"></i>` : "";
+      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${Math.max(1, maxHp)}">${room}<span data-bar="${who}" style="width:${hpPct}%"></span><i class="hp-ticks"></i></div></div>`;
     }
 
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
@@ -5183,8 +5290,16 @@
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連撃の腕輪</figcaption></figure>
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連守の腕輪</figcaption></figure>
               <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
-              <figure><img src="gear-item.jpg?v=1" alt=""><figcaption>アイテム（効果はまだ無い）</figcaption></figure>
             </div>
+            <h4>使い捨てアイテム</h4>
+            <div class="ref-grid">
+              <figure><img src="item-herb.jpg?v=1" alt=""><figcaption>薬草　★<br>HP10回復。クイック</figcaption></figure>
+              <figure><img src="item-angel-halo.jpg?v=1" alt=""><figcaption>天使の輪　★★★<br>一度だけ、死んでも復活する</figcaption></figure>
+              <figure><img src="item-angel-pendant.jpg?v=1" alt=""><figcaption>天使のペンダント　★★★<br>一度死んだとき、はじめから戦闘をやり直す</figcaption></figure>
+              <figure><img src="item-spike-ball.jpg?v=1" alt=""><figcaption>棘ボール　レアリティ未定<br>相手に10ダメージ。クイック</figcaption></figure>
+              <figure><img src="gear-item.jpg?v=1" alt=""><figcaption>アイテムの枠の絵（小瓶）</figcaption></figure>
+            </div>
+            <p class="sheet-cap">アイテムは2つまで持てる。クイックのものは、戦闘中の自分のターンに左の枠を押して「使う」。マナはいらない。使ったら消える。天使の輪と天使のペンダントは持っているだけでよく、死んだときひとりでに使われる（輪が先、ペンダントが後）。復活はHPが全快。やり直しは、その戦闘を始めたときのHPに戻る。棘ボールのレアリティは未定。</p>
             <h4>ショップ限定の武器</h4>
             <div class="ref-grid">
               <figure><img src="gear-dragon-fang.jpg?v=1" alt=""><figcaption>竜牙の大剣</figcaption></figure>
@@ -6549,6 +6664,11 @@
         return;
       }
       if (screen !== "battle") return;
+      const useBtn = el.closest("[data-use-item]");
+      if (useBtn) {
+        useItem(useBtn.dataset.useItem);
+        return;
+      }
       const gearBtn = el.closest("[data-gear]");
       if (gearBtn) {
         const id = gearBtn.dataset.gear;
