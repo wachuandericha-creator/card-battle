@@ -875,17 +875,20 @@
       flex: 1 1 auto;
       min-height: 0;
       display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(340px, 480px);
+      grid-template-columns: minmax(0, 620px) minmax(400px, 560px);
       grid-template-rows: minmax(0, 1fr);
-      gap: 16px;
+      justify-content: center;
+      gap: 28px;
       align-items: stretch;
       overflow: hidden;
     }
     .cast-action {
-      width: 88%;
+      width: auto;
+      max-width: 84%;
+      aspect-ratio: 4 / 5;
       height: 84%;
       min-height: 0;
-      justify-self: center;
+      justify-self: end;
       align-self: center;
       object-fit: cover;
       object-position: center;
@@ -898,26 +901,137 @@
       overflow: auto;
       display: flex;
       flex-direction: column;
+      justify-content: center;
     }
-    .cast-side .cast-plaque { max-height: none; flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 12px 14px 8px; }
-    .cast-side .cast-plaque h1 { font-size: 32px; margin-bottom: 4px; }
-    .cast-side .cast-plaque h2 { margin: 8px 0 4px; }
-    .cast-side .cast-plaque .stats { font-size: 18px; }
-    .cast-side .cast-gear figure { width: 56px; }
-    .cast-side .cast-gear img { width: 56px; height: 56px; }
-    .cast-side .cast-deck .card.preview { width: 72px; }
+    /* ジョブ選択の右の板：暗い漆に金の縁。初期ステは3つの札、装備は金枠、デッキは大きめ */
+    .cast-side .cast-plaque {
+      position: relative;
+      max-height: none;
+      flex: 0 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(228, 177, 90, 0.85);
+      border-radius: 16px;
+      background:
+        radial-gradient(120% 60% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 60%),
+        linear-gradient(180deg, #2a2019 0%, #1a1310 42%, #120d0b 100%);
+      box-shadow:
+        0 0 0 3px #15100d,
+        0 0 0 4px rgba(228, 177, 90, 0.6),
+        0 18px 34px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 236, 190, 0.22),
+        inset 0 0 48px rgba(0, 0, 0, 0.55);
+    }
+    .cast-side .cast-plaque::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid rgba(228, 177, 90, 0.28);
+      border-radius: 11px;
+      pointer-events: none;
+    }
+    .cast-side .cast-plaque h1 {
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 34px;
+      letter-spacing: 0.22em;
+      text-shadow: 0 2px 0 #5a3d12, 0 0 18px rgba(240, 195, 106, 0.35);
+    }
+    .cast-side .cast-plaque h1::before,
+    .cast-side .cast-plaque h1::after {
+      content: "";
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9));
+    }
+    .cast-side .cast-plaque h1::after { background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent); }
+    .cast-side .cast-plaque h1 span {
+      background: linear-gradient(180deg, #fff1c8 0%, #f6d48a 45%, #d9a04a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+      filter: drop-shadow(0 2px 0 #5a3d12);
+    }
+    .stat-chips {
+      list-style: none;
+      margin: 0 0 6px;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat-chips .chip {
+      --chip: #f6d48a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.3));
+      box-shadow: inset 0 1px 0 rgba(255, 236, 190, 0.14), inset 0 -8px 14px rgba(0, 0, 0, 0.35);
+    }
+    .stat-chips .chip .ico { width: 22px; height: 22px; flex: 0 0 auto; color: var(--chip); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--chip) 60%, transparent)); }
+    .stat-chips .chip .k { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; color: #e4b15a; }
+    .stat-chips .chip b { margin-left: auto; font-size: 27px; line-height: 1; color: #fff6e4; font-variant-numeric: tabular-nums; text-shadow: 0 1px 0 #000; }
+    .stat-chips .chip.hp { --chip: #ff5c4a; }
+    .stat-chips .chip.atk { --chip: #ffb14a; }
+    .stat-chips .chip.def { --chip: #7eb6ff; }
+    .cast-side .cast-plaque h2 {
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 16px;
+      letter-spacing: 0.2em;
+      color: #f0c36a;
+    }
+    .cast-side .cast-plaque h2::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      align-self: center;
+      background: linear-gradient(90deg, rgba(228, 177, 90, 0.75), transparent);
+    }
+    .cast-side .cast-plaque h2 small { font-size: 13px; letter-spacing: 0.08em; color: #fff6e4; opacity: 0.85; }
+    .cast-side .cast-gear { gap: 16px; }
+    .cast-side .cast-gear figure { width: 84px; text-align: center; }
+    .cast-side .cast-gear .frame {
+      display: block;
+      padding: 3px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.85);
+      background: linear-gradient(180deg, #3a2a18, #1a1310);
+      box-shadow: 0 0 0 1px #15100d, 0 6px 12px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 236, 190, 0.2);
+    }
+    .cast-side .cast-gear img { width: 76px; height: 76px; border-radius: 9px; }
+    .cast-side .cast-gear figcaption { margin-top: 5px; font-size: 13px; line-height: 1.2; }
+    .cast-side .cast-deck { gap: 10px; justify-content: flex-start; }
+    .cast-side .cast-deck .card.preview {
+      width: 96px;
+      border-radius: 8px;
+      box-shadow: 0 0 0 1px rgba(228, 177, 90, 0.4), 0 8px 14px rgba(0, 0, 0, 0.45);
+    }
     .cast-deck .stack-count {
       position: absolute;
-      right: 4px;
-      bottom: 4px;
+      right: -4px;
+      bottom: -4px;
       z-index: 2;
+      min-width: 24px;
+      text-align: center;
       color: #2a2118;
-      background: #f0c36a;
+      background: linear-gradient(180deg, #fff1c8, #e4b15a);
+      border: 1px solid #5a3d12;
       border-radius: 999px;
-      padding: 0 5px;
-      font-size: 12px;
-      line-height: 1.35;
+      padding: 0 6px;
+      font-size: 13px;
+      line-height: 1.5;
       font-weight: 800;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
     .cast-start {
       position: static;
@@ -956,7 +1070,14 @@
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
     }
     .cast-actions .cast-back:hover { border-color: #f0c36a; background: rgba(40, 30, 24, 0.95); }
-    .cast-screen:has(.cast-actions) { padding-bottom: 86px; }
+    .cast-screen:has(> .cast-actions) { padding-bottom: 86px; }
+    /* ジョブ選択では、板のすぐ下に並べる（板と同じ右端に揃う） */
+    .cast-side .cast-actions {
+      position: static;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
     .sprite {
       width: 100%;
       height: 100%;
@@ -4328,6 +4449,10 @@
       }).join("");
     }
 
+    function starterDeckCount() {
+      return CARD_POOL.reduce((sum, [, count]) => sum + count, 0);
+    }
+
     function castByName(name) {
       return CAST.find((item) => item.name === name) || CAST[0];
     }
@@ -4341,15 +4466,23 @@
         <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
         <div class="cast-side">
           <div class="cast-plaque">
-            <h1>${esc(item.name)}</h1>
-            <p class="stats">HP 30　ATK+2　DEF+2</p>
-            <h2>初期装備</h2>
+            <h1><span>${esc(item.name)}</span></h1>
+            <ul class="stat-chips" aria-label="初期ステータス">
+              <li class="chip hp">${heartIcon()}<span class="k">HP</span><b>30</b></li>
+              <li class="chip atk">${swordIcon()}<span class="k">ATK</span><b>+2</b></li>
+              <li class="chip def">${shieldIcon()}<span class="k">DEF</span><b>+2</b></li>
+            </ul>
+            <h2><span>初期装備</span></h2>
             <div class="cast-gear">
-              <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
-              <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
+              <figure><span class="frame"><img src="gear-short-sword.jpg?v=2" alt=""></span><figcaption>ショートソード</figcaption></figure>
+              <figure><span class="frame"><img src="gear-buckler.jpg" alt=""></span><figcaption>バックラー</figcaption></figure>
             </div>
-            <h2>初期デッキ</h2>
+            <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
+          </div>
+          <div class="cast-actions">
+            <button type="button" class="cast-back" data-action="title">もどる</button>
+            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
           </div>
         </div>`;
     }
@@ -4405,10 +4538,6 @@
           <div class="cast-roster ${many ? "many" : ""}">${tokens}</div>
           ${hero}
           <div class="cast-main"></div>
-          <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="title">もどる</button>
-            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
-          </div>
         </div>`;
       paintCast();
       bindCastHover();
