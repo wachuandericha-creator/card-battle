@@ -2323,8 +2323,12 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=3" },
+      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=23", battleRatio: "862 / 1146" },
+      { name: "女の戦士", stand: "girl-front.png?v=5", chibi: "job-girl.png?v=1", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=6", battleRatio: "855 / 1145" },
     ];
+    let heroCast = "戦士";
+    function heroItem() { return castByName(heroCast); }
+    function heroName() { return heroItem().name; }
     let jobsHad = ["戦士"];
     let ultimate = "";
     let floorKind = "";
@@ -2343,7 +2347,6 @@
     let shopStock = [];
     const MANA = 3;
     const HAND_CAP = 10;
-    const CHARACTER_NAME = "戦士";
     const DUNGEON_LIST = [
       { name: "はじまりの洞窟", floors: 20, art: "dungeon-cave.jpg?v=1" },
       { name: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
@@ -2378,7 +2381,7 @@
     }
 
     function logTurn(kind) {
-      const text = kind === "player" ? "-戦士のターン-" : "-敵のターン-";
+      const text = kind === "player" ? `-${heroName()}のターン-` : "-敵のターン-";
       logLines.unshift({ kind, text });
       trimLog();
     }
@@ -2833,23 +2836,23 @@
     function gainParry(card) {
       const now = parryCount(player);
       if (now > 0 && ultimate !== "パリィが重複する") {
-        log(`${CHARACTER_NAME}は${card.name}。パリィは重複しない。`, card);
+        log(`${heroName()}は${card.name}。パリィは重複しない。`, card);
         return;
       }
       player.parry = now + 1;
       const detail = ultimate === "パリィが重複する" ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
-      log(`${CHARACTER_NAME}は${card.name}。${detail}`, card);
+      log(`${heroName()}は${card.name}。${detail}`, card);
     }
 
     function gainBlock(amount, card) {
       const gain = Math.max(0, Math.floor(Number(amount) || 0));
       if (!gain) return;
       if (parryCount(player) > 0 && !player.guardThrough) {
-        log(`${CHARACTER_NAME}は${card.name}。パリィ中はシールドを得られない。`, card);
+        log(`${heroName()}は${card.name}。パリィ中はシールドを得られない。`, card);
         return;
       }
       player.block += gain;
-      log(`${CHARACTER_NAME}は${card.name}でブロック${gain}。`, card);
+      log(`${heroName()}は${card.name}でブロック${gain}。`, card);
     }
 
     function hurtSentence(actor, card, raw, reduced, result) {
@@ -2892,7 +2895,7 @@
       const target = who === "player" ? player : enemy;
       const stacks = poisonStacks(target);
       if (!stacks) return false;
-      const name = who === "player" ? CHARACTER_NAME : enemy.name;
+      const name = who === "player" ? heroName() : enemy.name;
       let amount = stacks;
       if (who === "player") {
         const extra = Math.max(0, Number(player.expose) || 0);
@@ -2989,7 +2992,7 @@
           if (!discard.length) break;
           deck = shuffle(discard);
           discard = [];
-          log(`${CHARACTER_NAME}は捨て札を山札に戻した。`);
+          log(`${heroName()}は捨て札を山札に戻した。`);
         }
         hand.push(deck.pop());
       }
@@ -3007,7 +3010,7 @@
       if (!card && !deck.length && discard.length) {
         deck = shuffle(discard);
         discard = [];
-        log(`${CHARACTER_NAME}は捨て札を山札に戻した。`);
+        log(`${heroName()}は捨て札を山札に戻した。`);
         card = take();
       }
       if (!card) return null;
@@ -3019,17 +3022,17 @@
       const right = gear.braceletR;
       const left = gear.braceletL;
       if (right && right.id === "chain-attack" && !hand.some((card) => cardKind(card) === "attack")) {
-        if (hand.length >= HAND_CAP) log(`${CHARACTER_NAME}は${right.name}。手札が10枚なので引かない。`);
+        if (hand.length >= HAND_CAP) log(`${heroName()}は${right.name}。手札が10枚なので引かない。`);
         else {
           const card = pullKind("attack");
-          log(card ? `${CHARACTER_NAME}は${right.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${right.name}。山札に攻撃カードがない。`);
+          log(card ? `${heroName()}は${right.name}で${card.name}を引いた。` : `${heroName()}は${right.name}。山札に攻撃カードがない。`);
         }
       }
       if (left && left.id === "chain-guard" && !hand.some((card) => cardKind(card) === "block")) {
-        if (hand.length >= HAND_CAP) log(`${CHARACTER_NAME}は${left.name}。手札が10枚なので引かない。`);
+        if (hand.length >= HAND_CAP) log(`${heroName()}は${left.name}。手札が10枚なので引かない。`);
         else {
           const card = pullKind("block");
-          log(card ? `${CHARACTER_NAME}は${left.name}で${card.name}を引いた。` : `${CHARACTER_NAME}は${left.name}。山札に防御カードがない。`);
+          log(card ? `${heroName()}は${left.name}で${card.name}を引いた。` : `${heroName()}は${left.name}。山札に防御カードがない。`);
         }
       }
     }
@@ -3041,7 +3044,7 @@
         fxSlash = true;
         noteHit("enemy", result.hpLoss, cut.dealt);
       }
-      log(damageSentence(CHARACTER_NAME, card.name, cut.dealt, result), card);
+      log(damageSentence(heroName(), card.name, cut.dealt, result), card);
     }
 
     function rollCrit(card, base) {
@@ -3054,7 +3057,7 @@
       if (card.power) {
         if (card.coward) {
           player.guardThrough = true;
-          log(`${CHARACTER_NAME}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードは、この戦闘のデッキから廃棄。`, card);
+          log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードは、この戦闘のデッキから廃棄。`, card);
         }
         return;
       }
@@ -3062,7 +3065,7 @@
         player.atkMod = (Number(player.atkMod) || 0) + 1;
         player.defMod = (Number(player.defMod) || 0) - 2;
         syncGearStats();
-        log(`${CHARACTER_NAME}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。戦闘が終わると戻る。`, card);
+        log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。戦闘が終わると戻る。`, card);
         return;
       }
       if (card.poise) {
@@ -3078,7 +3081,7 @@
       }
       if (card.focus) {
         player.focus = (player.focus || 0) + card.focus;
-        log(`${CHARACTER_NAME}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
+        log(`${heroName()}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
         return;
       }
       if (card.parry && !card.damage) {
@@ -3091,18 +3094,18 @@
       }
       if (card.poison) {
         addPoison(enemy, card.poison);
-        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
+        log(`${heroName()}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
         return;
       }
       if (card.heal) {
         const gain = restoreHp(card.heal);
-        log(gain ? `${CHARACTER_NAME}は${card.name}で${gain}回復。` : `${CHARACTER_NAME}は${card.name}。体力は満タン。`, card);
+        log(gain ? `${heroName()}は${card.name}で${gain}回復。` : `${heroName()}は${card.name}。体力は満タン。`, card);
         return;
       }
       if (card.draw) {
         const before = hand.length;
         draw(card.draw);
-        log(`${CHARACTER_NAME}は${card.name}で${hand.length - before}枚引いた。`, card);
+        log(`${heroName()}は${card.name}で${hand.length - before}枚引いた。`, card);
         return;
       }
       if (card.redTimes) {
@@ -3115,7 +3118,7 @@
       if (card.counter) {
         const reds = inPlay.filter((item) => cardKind(item) === "attack").length;
         if (reds) {
-          log(`${CHARACTER_NAME}は${card.name}。プレイエリアにアタックがあるので、発動しない。`, card);
+          log(`${heroName()}は${card.name}。プレイエリアにアタックがあるので、発動しない。`, card);
           return;
         }
         strike(card, card.counter);
@@ -3140,19 +3143,19 @@
       }
       if (card.burn) {
         addBurn(enemy, card.burn);
-        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
+        log(`${heroName()}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
       }
       if (card.expose) {
         player.expose = (Number(player.expose) || 0) + card.expose;
-        log(`${CHARACTER_NAME}は次に受けるダメージ+${player.expose}。`, card);
+        log(`${heroName()}は次に受けるダメージ+${player.expose}。`, card);
       }
       if (card.parry && card.damage) gainParry(card);
       if (card.block) gainBlock(card.block + added, card);
       if (card.nextDraw) {
         player.extraDraw = (Number(player.extraDraw) || 0) + card.nextDraw;
-        log(`${CHARACTER_NAME}は次のターンに${card.nextDraw}枚多く引く。`, card);
+        log(`${heroName()}は次のターンに${card.nextDraw}枚多く引く。`, card);
       }
-      if (!card.damage && !card.block && !card.expose && !card.nextDraw && !card.burn) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
+      if (!card.damage && !card.block && !card.expose && !card.nextDraw && !card.burn) log(`${heroName()}は${card.name}。${card.text}`, card);
     }
 
     function cardPlayable(card) {
@@ -3191,7 +3194,7 @@
       if (card.headbutt) {
         const names = inPlay.map((item) => item.name).join("、");
         while (inPlay.length) battleExile.push(inPlay.shift());
-        log(`${CHARACTER_NAME}は${names}を廃棄した。`);
+        log(`${heroName()}は${names}を廃棄した。`);
       }
       inPlay.push(card);
       note = "";
@@ -3297,10 +3300,10 @@
         log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
       } else if (card.poison) {
         addPoison(player, card.poison);
-        log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒+${player.poison}。`, card, true);
+        log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
       } else if (card.burn) {
         addBurn(player, card.burn);
-        log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は炎上+${player.burn}。`, card, true);
+        log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
       } else {
         log(`${enemy.name}は${card.name}。${card.text}`, card, true);
       }
@@ -3391,7 +3394,7 @@
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
       player.maxEnergy = MANA + halfMana;
       player.energy = MANA + halfMana;
-      if (halfMana) log(`${CHARACTER_NAME}はミノタウロスの腕輪。体力が半分以下なので、このターンのマナ+1。`);
+      if (halfMana) log(`${heroName()}はミノタウロスの腕輪。体力が半分以下なので、このターンのマナ+1。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
       draw(5 + extra);
@@ -3409,7 +3412,7 @@
       outcome = kind;
       phase = "end";
       banner = "";
-      log(kind === "win" ? `${CHARACTER_NAME}は${enemy.name}を倒した。` : `${CHARACTER_NAME}は倒された。`);
+      log(kind === "win" ? `${heroName()}は${enemy.name}を倒した。` : `${heroName()}は倒された。`);
       if (kind === "lose") {
         endRun(false);
         screen = "defeat";
@@ -3508,6 +3511,7 @@
         route,
         retreatUsed,
         dungeonName,
+        heroCast,
         job,
         jobsHad,
         ultimate,
@@ -3623,6 +3627,7 @@
       restoreEnemyLoop(data);
       retreatUsed = !!data.retreatUsed;
       if (data.dungeonName) dungeonName = data.dungeonName === "20" ? "はじまりの洞窟" : data.dungeonName;
+      heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
       ultimate = data.ultimate || "";
@@ -3820,6 +3825,7 @@
       gearOpen = null;
       stolen = [];
       removed = [];
+      heroCast = castByName(castLock).name;
       job = "戦士";
       jobsHad = ["戦士"];
       ultimate = "";
@@ -4104,7 +4110,7 @@
     }
 
     function albumCatalog() {
-      return Object.keys(CARDS).map((name) => ({ name, klass: CHARACTER_NAME, ...CARDS[name] }));
+      return Object.keys(CARDS).map((name) => ({ name, klass: "戦士", ...CARDS[name] }));
     }
 
     function renderSheet() {
@@ -4129,7 +4135,7 @@
               <figure><img class="cut-ref" src="girl-defeat.png?v=5" alt="女の戦士の敗北"><figcaption>敗北</figcaption></figure>
               <figure><img class="cut-ref" src="girl-victory.png?v=5" alt="女の戦士の勝利"><figcaption>勝利</figcaption></figure>
             </div>
-            <p class="sheet-cap">向きごとに別の絵。スタイルは良く、露出は増やさない。大剣の鞘は左肩から。戦闘では背中を向け、目線は敵。左手の先は盾と体で隠す。戦闘ではショートソードを出さない。敗北は座り込んで泣き、服が破れる。いま戦う戦士は、男のまま。</p>
+            <p class="sheet-cap">向きごとに別の絵。スタイルは良く、露出は増やさない。大剣の鞘は左肩から。戦闘では背中を向け、目線は敵。左手の先は盾と体で隠す。戦闘ではショートソードを出さない。敗北は座り込んで泣き、服が破れる。初期ジョブ選択で選べる。選ぶと、戦闘の絵と名前が女の戦士になる。</p>
             <img class="sheet-art" src="girl-action.jpg?v=1" alt="女の戦士の一枚絵。草原でお茶をしている">
             <p class="sheet-cap">女の戦士の一枚絵。草原でお茶をしている。顔と服は正面と同じ。</p>
             <h3>魔法使い・女・白</h3>
@@ -4141,15 +4147,24 @@
             <div class="sheet-locks">
               <p><b>体</b>戦士は、4頭身。頭は全身のおよそ4分の1。描き直しても変えない。魔法使いは、いまの2頭身のまま。</p>
               <p><b>戦士</b>赤いマント、白いシャツ、紺の胴着、腰のベルトは一本。マントは正面の首元で留める。肩当ては無い。戦闘のときは、左手に丸い盾、右手にロングソード。ショートソードは出さない。戦っていないときは、ロングソードは背中の鞘で、柄は肩の上に大きく出る。盾は背中で、正面からは見えない。腰にショートソード。リュックは無い。</p>
-              <p><b>女の戦士</b>別の人。4頭身。頭は全身のおよそ4分の1。蜂蜜色の長い髪を高い結びにして、桃色のリボン。大きな琥珀色の目。やわらかい笑み。薔薇色のマント、金の縁、フードは下ろす。白いブラウス、体に沿う桃色の胴着、腰のベルトは一本。短い紺のスカート。脚は素足で、タイツは無い。茶色のブーツ。大きな剣はマントの上から背中。小さな剣は腰。盾とリュックと肩当ては無い。四つは向きごとに別の絵。正面、戦闘（ポケモンの画角）、敗北、勝利。戦闘は背中で、右を向き、剣を構える。戦闘ではショートソードを出さない。一枚絵は、草原でお茶。いま戦うのは、男の戦士。</p>
+              <p><b>女の戦士</b>別の人。4頭身。頭は全身のおよそ4分の1。蜂蜜色の長い髪を高い結びにして、桃色のリボン。大きな琥珀色の目。やわらかい笑み。薔薇色のマント、金の縁、フードは下ろす。白いブラウス、体に沿う桃色の胴着、腰のベルトは一本。短い紺のスカート。脚は素足で、タイツは無い。茶色のブーツ。大きな剣はマントの上から背中。小さな剣は腰。盾とリュックと肩当ては無い。四つは向きごとに別の絵。正面、戦闘（ポケモンの画角）、敗北、勝利。戦闘は背中で、右を向き、剣を構える。戦闘ではショートソードを出さない。一枚絵は、草原でお茶。初期ジョブ選択で選べる。選ぶと、戦闘の絵と名前が女の戦士になる。</p>
               <p><b>魔法使い</b>女は白、男は黒。杖は同じで、先が一つの渦巻き。戦士の服は使わない。</p>
-              <p><b>戦闘</b>自分は、この戦士の背中。ポケモンと同じ構図。右を向き、左手に丸い盾、右手にロングソード。ショートソードは出さない。表情はきりっとしている。敵はその奥。</p>
+              <p><b>戦闘</b>自分は、選んだ戦士の背中。ポケモンと同じ構図。右を向き、左手に丸い盾、右手にロングソード。ショートソードは出さない。表情はきりっとしている。敵はその奥。</p>
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
               <figure><img class="cut-ref" src="job-front.png?v=5" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
               <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=3" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
             </div>
+            <div class="ref-grid">
+              <figure><img class="cut-ref" src="girl-front.png?v=5" alt=""><figcaption>女の戦士の立ち絵</figcaption></figure>
+              <figure class="span-2"><img class="land-ref" src="girl-action.jpg?v=1" alt=""><figcaption>女の戦士の一枚絵</figcaption></figure>
+            </div>
+            <div class="ref-grid">
+              <figure><img class="cut-ref" src="job-warrior.png?v=8" alt=""><figcaption>戦士の選択コマ</figcaption></figure>
+              <figure><img class="cut-ref" src="job-girl.png?v=1" alt=""><figcaption>女の戦士の選択コマ</figcaption></figure>
+            </div>
+            <p class="sheet-cap">初期ジョブ選択は、戦士と女の戦士。コマは横向きの小さな絵。選ぶと、立ち絵と一枚絵が切り替わり、戦闘の絵と名前もその戦士になる。</p>
             <h3>戦闘の絵</h3>
             <div class="ref-grid">
               <figure><img class="cut-ref" src="hero-shoulder.png?v=23" alt=""><figcaption>戦闘の戦士</figcaption></figure>
@@ -4279,7 +4294,7 @@
         <div class="menu">
           <h1>倒された</h1>
           <p>初期デッキに戻った。装備を失った。★${meta.stars}は残っている。</p>
-          <p>${CHARACTER_NAME}の使いこみ　${meta.uses}</p>
+          <p>${heroName()}の使いこみ　${meta.uses}</p>
           ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
     }
@@ -4456,14 +4471,16 @@
     let heroLiveGen = 0;
     let heroLiveRaf = 0;
 
+    let heroImageSrc = "";
     function ensureHeroImage() {
+      if (heroImageSrc !== heroItem().battle) { heroImage = null; heroImageTask = null; heroImageSrc = heroItem().battle; }
       if (heroImage) return Promise.resolve(heroImage);
       if (!heroImageTask) {
         heroImageTask = new Promise((resolve, reject) => {
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=23";
+          img.src = heroItem().battle;
         });
       }
       return heroImageTask;
@@ -4488,7 +4505,8 @@
         : guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=23" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
+      const who = heroItem();
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}${vitals}</div>`;
     }
 
     function startHeroIdle() {
@@ -4827,7 +4845,7 @@
       shopStock = [];
       if (medal) {
         giveGear(medal);
-        log(`${CHARACTER_NAME}は${medal.name}を手に入れた。`);
+        log(`${heroName()}は${medal.name}を手に入れた。`);
         rewardPicks = [];
         bossPicks = bossChoices();
         rewardStep = "boss";
@@ -5129,7 +5147,7 @@
             </section>
             </div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
-            ${heroShoulder(`<section class="battle-plate hero-plate"><h2>${esc(CHARACTER_NAME)}</h2>${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line"><b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></section>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
+            ${heroShoulder(`<section class="battle-plate hero-plate"><h2>${esc(heroName())}</h2>${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line"><b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></section>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
