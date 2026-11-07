@@ -324,19 +324,20 @@
     .battle-plate h2 {
       position: relative;
       margin: 0 0 4px;
-      padding: 0 0 3px;
+      padding: 0 0 4px;
       display: flex;
-      align-items: baseline;
-      gap: 8px;
-      font-size: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 8px;
+      font-size: 22px;
       font-weight: 800;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-align: left;
       color: #fff6e6;
       text-shadow: 0 1px 0 #000, 0 0 12px rgba(228, 177, 90, 0.25);
       border-bottom: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .battle-plate h2 .who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .battle-plate h2 .who { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .battle-plate h2 .tag {
       flex: 0 0 auto;
       padding: 1px 7px 2px;
@@ -538,28 +539,37 @@
     }
     .battle-plate.low .hp-line b { color: #ffb0a0; }
     .battle-plate .hp-line small { font-size: 12px; color: #c9b38c; letter-spacing: 0.02em; }
-    .battle-plate .plate-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .battle-plate .plate-badges:empty { display: none; }
+    /* 状態異常は名前の右に横並び */
+    .battle-plate h2 .plate-badges {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+      margin: 0;
+      min-width: 0;
+    }
+    .battle-plate h2 .plate-badges:empty { display: none; }
     /* 状態のアイコン札：丸い暗地に色つきアイコン。重なるものは右に数字 */
     .status-chip {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
-      height: 32px;
-      padding: 0 8px 0 4px;
+      gap: 2px;
+      height: 28px;
+      padding: 0 7px 0 3px;
       border-radius: 999px;
       background: rgba(12, 8, 6, 0.78);
       border: 1px solid rgba(255, 236, 200, 0.28);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
       line-height: 1;
       pointer-events: auto;
       cursor: default;
+      flex: 0 0 auto;
     }
-    .status-chip svg { width: 25px; height: 25px; display: block; flex: 0 0 auto; filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
-    .status-chip b { font-size: 17px; letter-spacing: 0; text-shadow: 0 1px 0 #000; }
+    .status-chip svg { width: 22px; height: 22px; display: block; flex: 0 0 auto; filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
+    .status-chip b { font-size: 15px; letter-spacing: 0; text-shadow: 0 1px 0 #000; }
     .status-chip.hint, .status-chip.hint b { text-decoration: none; border-bottom: 0; }
     .status-chip:has(> b) { padding-right: 8px; }
     .status-chip.poison { border-color: rgba(180, 140, 200, 0.45); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
@@ -7095,11 +7105,13 @@
       const shieldBadge = block > 0 ? `<div class="shield-badge" aria-label="シールド ${block}"><i class="plate-shield" aria-hidden="true"></i><b>${block}</b></div>` : "";
       const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
+      const badges = extra && extra.badges
+        ? `<span class="plate-badges">${extra.badges}</span>`
+        : "";
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
-        <h2><span class="who">${esc(name)}</span>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}</h2>
+        <h2><span class="who">${esc(name)}</span>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
-        ${extra && extra.badges ? `<div class="plate-badges">${extra.badges}</div>` : ""}
       </section>`;
     }
 
