@@ -147,15 +147,16 @@
         var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
     }
     .enemy-field { position: relative; display: flex; align-items: stretch; gap: 12px; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .enemy-field { --hero-zoom: 1.42; }
     .hero-shoulder {
       position: absolute;
-      left: 24%;
-      bottom: 0;
+      left: 10%;
+      bottom: calc((1 - var(--hero-zoom)) * 100%);
       z-index: 3;
-      height: 100%;
+      height: calc(var(--hero-zoom) * 100%);
       width: auto;
       aspect-ratio: 862 / 1146;
-      max-width: min(36%, 340px);
+      max-width: min(46%, 520px);
       pointer-events: none;
     }
     .hero-fig {
@@ -187,10 +188,12 @@
       bottom: 0;
       transform: translateX(-50%);
     }
-    .hero-shoulder .hero-plate { width: min(210px, 48vw); }
+    .hero-shoulder .hero-plate { width: min(210px, 48vw); left: 40%; bottom: calc((1 - 1 / var(--hero-zoom)) * 100%); }
+    .hero-shoulder .hero-guard { inset: -12% -18% 18%; }
+    .enemy-main .foe-plate { transform: translateX(-44%); }
     .foe-plate[data-rank="雑魚"] { width: min(200px, 46vw); }
-    .foe-plate[data-rank="普通"] { width: min(250px, 54vw); }
-    .foe-plate[data-rank="強敵"] { width: min(300px, 62vw); }
+    .foe-plate[data-rank="普通"] { width: min(240px, 54vw); }
+    .foe-plate[data-rank="強敵"] { width: min(280px, 62vw); }
     .battle-plate h2 {
       margin: 0 0 4px;
       font-size: 20px;
@@ -287,10 +290,11 @@
     .hero-hit .spark.c { left: 54%; animation-name: spark-c; animation-delay: 0.07s; }
     .enemy-main {
       position: absolute;
-      right: 6%;
+      right: auto;
       top: 108px;
       bottom: auto;
-      left: auto;
+      left: 61%;
+      margin-left: calc(min(32%, 260px) * -0.5);
       z-index: 1;
       width: min(32%, 260px);
       height: calc(100% - 116px);
@@ -1282,6 +1286,45 @@
     .battle-log p.turn-player { color: #7eb6ff; }
     .battle-log p.turn-enemy { color: #ff5c4a; }
     .battle-log p[data-log] { cursor: pointer; }
+    .foe-pile {
+      position: absolute;
+      right: -92px;
+      bottom: 0;
+      z-index: 7;
+      width: 76px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      pointer-events: auto;
+      font-family: inherit;
+    }
+    .foe-pile .pile-card { width: 64px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
+    .foe-pile .pile-count { font-size: 30px; }
+    .foe-pile .pile-label { font-size: 13px; letter-spacing: 0.08em; white-space: nowrap; }
+    .foe-pile:hover .pile-card { box-shadow: 0 0 14px rgba(200, 150, 62, 0.75), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(90, 81, 72, 0.75); }
+    .foe-peek {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 12;
+      max-width: min(72%, 640px);
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(14, 10, 8, 0.9);
+      border: 1px solid rgba(228, 177, 90, 0.7);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+    .foe-peek[hidden] { display: none; }
+    .foe-peek h3 { margin: 0 0 6px; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
+    .foe-peek .deck-cards { gap: 8px; justify-content: center; }
+    .foe-peek .card.preview { width: 84px; height: auto; }
     .log-peek {
       position: fixed;
       z-index: 40;
@@ -2311,6 +2354,7 @@
     let returnScreen = "title";
     let askLeave = false;
     let showDeck = false;
+    let showFoeDeck = false;
     let albumTab = "all";
     let openingDeck = [];
     let gear = emptyGear();
@@ -4775,6 +4819,31 @@
       return `<div class="overlay deck-view"><div class="panel"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
+    // 敵の行動パターン（山札）。順番は見せず、中身だけ。
+    function foeDeckCards() {
+      const cards = sortedCards(sourcePattern());
+      const faces = cards.map((card) => `<div class="card preview foe" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`).join("");
+      return `<div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div>`;
+    }
+
+    function foePileMarkup() {
+      const count = sourcePattern().length;
+      return `<button type="button" class="foe-pile" data-action="foe-deck" aria-label="${esc(enemy.name)}の山札 ${count}枚"><div class="pile-card back discard${count > 1 ? " stack" : ""}"><span class="pile-count">${count}</span></div><div class="pile-label">敵の山札</div></button>`;
+    }
+
+    function foeDeckOverlay() {
+      if (!showFoeDeck || outcome || askLeave) return "";
+      return `<div class="overlay deck-view"><div class="panel"><h2>${esc(enemy.name)}の山札</h2><p class="album-meta">敵は毎ターン、この中から1枚ずつ使う。順番は切り混ぜ。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div><button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
+    }
+
+    function bindFoePeek() {
+      const pile = root.querySelector(".foe-pile");
+      const peek = root.querySelector(".foe-peek");
+      if (!pile || !peek) return;
+      pile.addEventListener("pointerenter", () => { peek.hidden = false; });
+      pile.addEventListener("pointerleave", () => { peek.hidden = true; });
+    }
+
     const PATHS = {
       straight: { name: "戦闘", text: "次の戦いに進む。", image: "path-fight.jpg?v=3" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=4" },
@@ -5225,7 +5294,9 @@
               ${poisonStacks(enemy) ? poisonBadge(poisonStacks(enemy)) : ""}
               ${burnBadge(burnStacks(enemy))}
             </section>
+            ${foePileMarkup()}
             </div>
+            <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
             ${heroShoulder(`<section class="battle-plate hero-plate"><h2>${esc(heroName())}</h2>${meters("player", playerShown, player.maxHp, player.block)}<div class="hp-line"><b data-hp="player">${playerShown}</b> / ${player.maxHp}</div></section>`, Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? `<b class="dmg-pop foe-hit">${hitNow.n}</b>` : ""}</div>` : ""}
@@ -5244,6 +5315,7 @@
         ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
         </div>
         ${deckOverlay()}
+        ${foeDeckOverlay()}
         ${overlay}
         ${leaveOverlay}`;
       player.hit = false;
@@ -5251,6 +5323,7 @@
       persistLive();
       kickHp();
       bindLogPeek();
+      bindFoePeek();
       fitHand();
       requestAnimationFrame(fitHand);
     }
@@ -5314,6 +5387,8 @@
         if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
         if (name === "deck") { showDeck = true; render(); }
         if (name === "close-deck") { showDeck = false; render(); }
+        if (name === "foe-deck") { showFoeDeck = true; render(); }
+        if (name === "close-foe-deck") { showFoeDeck = false; render(); }
         if (name === "stay") { askLeave = false; render(); }
         if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
         if (name === "back") { screen = returnScreen; render(); }
@@ -5402,8 +5477,8 @@
 
     document.addEventListener("keydown", (event) => {
       if (screen !== "battle" || askLeave) return;
-      if (showDeck) {
-        if (event.key === "Escape") { showDeck = false; render(); }
+      if (showDeck || showFoeDeck) {
+        if (event.key === "Escape") { showDeck = false; showFoeDeck = false; render(); }
         return;
       }
       if (event.key === "Enter") endTurn();
