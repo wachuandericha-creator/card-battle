@@ -790,7 +790,7 @@
       container-type: inline-size;
     }
     .reward-row { display: flex; gap: 28px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 22px; }
-    /* 報酬のカード：うしろの黄色い地は無し。カードだけを大きく。乗せると少し浮く */
+    /* 報酬のカード：うしろの黄色い地は無し。カードだけを大きく。装備と同じく乗せても動かさない */
     .reward-pick {
       display: flex;
       flex-direction: column;
@@ -800,11 +800,9 @@
       border-radius: 0;
       background: transparent !important;
       box-shadow: none;
-      transition: transform 0.18s ease;
     }
-    .reward-pick:hover { transform: translateY(-10px); }
     .reward-pick .card.preview { width: min(250px, 24vw); height: auto; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
-    .reward-pick:hover .card.preview { box-shadow: 0 0 0 3px rgba(255, 231, 168, 0.9), 0 0 28px rgba(228, 177, 90, 0.6), 0 24px 40px rgba(0, 0, 0, 0.6); }
+    .reward-pick:hover .card.preview { box-shadow: 0 0 0 2px rgba(228, 177, 90, 0.75), 0 18px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100vw - 40px)); padding: 36px 48px 32px; }
     .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
