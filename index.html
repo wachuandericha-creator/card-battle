@@ -766,6 +766,25 @@
     .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; }
+    /* 色ごとの空の枠（設定資料）。名札・効果は薄く、絵柄の場所に点線の案内 */
+    .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
+    .blank-grid .card.preview:hover { transform: none; }
+    .card.blank .nameplate .name, .card.blank .text .note, .card.blank .cost, .card.blank .rarity { opacity: 0.4; }
+    .card.blank .art { display: grid; place-items: center; }
+    .card.blank .art::before {
+      content: "絵柄 4:3";
+      position: absolute;
+      inset: 6%;
+      display: grid;
+      place-items: center;
+      border: 2px dashed rgba(255, 236, 200, 0.5);
+      border-radius: 6px;
+      color: rgba(255, 236, 200, 0.75);
+      font-size: 9cqw;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
     .ref-grid.pose-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; object-position: center bottom; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
@@ -5045,6 +5064,9 @@
             <div class="ref-grid">
               <figure><img class="back-ref" src="card-back.jpg?v=1" alt=""><figcaption>裏面</figcaption></figure>
             </div>
+            <h4>色ごとの空の枠</h4>
+            <div class="ref-grid blank-grid">${blankCardSheet()}</div>
+            <p class="sheet-cap">絵柄の入っていない枠。カードは、この6色のどれかの枠に、横4:縦3の絵柄をはめて作る。上の名札にコストと名前、真ん中に絵柄、下の白地に効果、右下に★。枠の色は、攻撃が赤、防御が青、技が黄、パワーが緑、インスタントが白、敵のカードが紫。自分の手札に入った敵のカードは、その分類の色に変わる。</p>
             <h4>基本</h4>
             <div class="ref-grid">
               <figure><img class="card-ref" src="card-attack.jpg?v=2" alt=""><figcaption>アタック</figcaption></figure>
@@ -5317,6 +5339,22 @@
       if (card.damage && !card.block) return "attack";
       if (card.block && !card.damage) return "block";
       return "skill";
+    }
+
+    // 設定資料用：絵柄の無い空の枠を、色（分類）ごとに1枚ずつ
+    const BLANK_FRAMES = [
+      { kind: "attack", label: "攻撃（赤）" },
+      { kind: "block", label: "防御（青）" },
+      { kind: "skill", label: "技（黄）" },
+      { kind: "power", label: "パワー（緑）" },
+      { kind: "instant", label: "インスタント（白）" },
+      { kind: "foe", label: "敵のカード（紫）" },
+    ];
+    function blankCardSheet() {
+      return BLANK_FRAMES.map((frame) => {
+        const face = cardFace({ name: "カード名", cost: "0", text: "効果" });
+        return `<figure><div class="card preview blank ${frame.kind}">${face}</div><figcaption>${esc(frame.label)}</figcaption></figure>`;
+      }).join("");
     }
 
     function cardFace(card, adjusted) {
