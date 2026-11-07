@@ -3870,11 +3870,11 @@
     const HP_CAP = 100; // 最大HPの限界。体力が伸びる仕組みを足すときは、この数で止める
     const HAND_CAP = 10;
     const DUNGEON_LIST = [
-      { name: "はじまりの洞窟", label: "20", floors: 20, art: "dungeon-cave.jpg?v=1" },
-      { name: "50", label: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
-      { name: "100", label: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
+      { name: "骸洞窟", label: "20", floors: 20, art: "dungeon-cave.jpg?v=1" },
+      { name: "竜の遺骸城", label: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
+      { name: "深淵なる寝所", label: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
     ];
-    let dungeonName = "はじまりの洞窟";
+    let dungeonName = "骸洞窟";
     let pendingDungeon = DUNGEON_LIST[0];
     let dungeonHover = "";
     let dungeonLock = "";
@@ -4127,7 +4127,7 @@
     }
 
     function freshRoute() {
-      return buildRoute(20, "はじまりの洞窟");
+      return buildRoute(20, "骸洞窟");
     }
 
     function isEventNode(name) {
@@ -4139,7 +4139,7 @@
     // 0層目は祝福（階層の数には入れない）。1層目は雑魚で固定。最後の層はボス。route の添え字＝層の番号
     function buildRoute(floors, name) {
       const route = new Array(floors + 1);
-      const jobFloors = !name || name === "はじまりの洞窟"
+      const jobFloors = !name || name === "骸洞窟" || floors <= 20
         ? []
         : JOB_CHANGE_FLOORS.filter((floor) => floor >= 2 && floor <= floors);
       for (const floor of jobFloors) route[floor] = "出来事:ジョブ";
@@ -5902,7 +5902,10 @@
         enemy.atk = hiddenAtk(foe);
       }
       restoreEnemyLoop(data);
-      if (data.dungeonName) dungeonName = data.dungeonName === "20" ? "はじまりの洞窟" : data.dungeonName;
+      if (data.dungeonName) {
+        const legacy = { "20": "骸洞窟", "はじまりの洞窟": "骸洞窟", "50": "竜の遺骸城", "100": "深淵なる寝所" };
+        dungeonName = legacy[data.dungeonName] || data.dungeonName;
+      }
       heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
@@ -6217,7 +6220,7 @@
       lastFoeBlow = null;
       fxFatal = false;
       fatalHold = false;
-      dungeonName = name || "はじまりの洞窟";
+      dungeonName = name || "骸洞窟";
       battleIndex = 0;
       route = buildRoute(floors || 20, dungeonName);
       battleTotal = route.length;
@@ -6679,9 +6682,9 @@
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
-              <figure><img class="land-ref" src="dungeon-cave.jpg?v=1" alt=""><figcaption>はじまりの洞窟</figcaption></figure>
-              <figure><img class="land-ref" src="dungeon-50.jpg?v=1" alt=""><figcaption>50</figcaption></figure>
-              <figure><img class="land-ref" src="dungeon-100.jpg?v=1" alt=""><figcaption>100</figcaption></figure>
+              <figure><img class="land-ref" src="dungeon-cave.jpg?v=1" alt=""><figcaption>骸洞窟</figcaption></figure>
+              <figure><img class="land-ref" src="dungeon-50.jpg?v=1" alt=""><figcaption>竜の遺骸城</figcaption></figure>
+              <figure><img class="land-ref" src="dungeon-100.jpg?v=1" alt=""><figcaption>深淵なる寝所</figcaption></figure>
             </div>
             <h3>祝福</h3>
             <img class="sheet-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">
