@@ -819,16 +819,18 @@
       padding: 12px 40px;
     }
     .album-screen {
+      position: relative;
       height: 100%;
       display: flex;
       align-items: stretch;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 18px;
       padding: 24px;
       box-sizing: border-box;
     }
     .album-screen .panel {
-      width: min(1080px, calc(100vw - 48px));
+      margin-left: 236px;
+      width: min(1080px, calc(100vw - 48px - 236px));
       max-height: calc(100vh - 56px);
       overflow: auto;
       align-items: stretch;
@@ -841,11 +843,8 @@
       flex-direction: column;
       flex: 0 1 auto;
     }
-    .album-screen.has-zoom {
-      justify-content: flex-start;
-    }
     .album-screen.has-zoom .panel {
-      width: min(760px, calc(100vw - 48px - min(420px, 38vw) - 18px));
+      width: min(760px, calc(100vw - 48px - 236px - min(420px, 38vw) - 18px));
       flex: 1 1 auto;
     }
     .album-screen h2 {
@@ -958,13 +957,19 @@
       cursor: pointer;
     }
     @media (max-width: 900px) {
-      .album-screen.has-zoom {
+      .album-screen {
         flex-direction: column;
       }
+      .album-screen .panel,
       .album-screen.has-zoom .panel,
       .art-zoom-side {
+        margin-left: 0;
         width: min(1080px, calc(100vw - 48px));
         flex: 0 0 auto;
+      }
+      .album-screen .panel {
+        margin-top: 72px;
+        max-height: calc(100vh - 56px - 72px);
       }
       .art-zoom-side {
         position: static;
@@ -6811,6 +6816,7 @@
       ).join("");
       root.innerHTML = `
         <div class="album-screen${albumZoom ? " has-zoom" : ""}">
+          <button type="button" class="sheet-home" data-action="title">タイトルに<br>もどる</button>
           <div class="panel">
             <h2>カードリスト</h2>
             <h3>裏面・枠</h3>
@@ -6822,7 +6828,6 @@
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右に絵柄を拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
-            <button type="button" data-action="title">もどる</button>
           </div>
           ${artZoomSide(albumZoom)}
         </div>`;
