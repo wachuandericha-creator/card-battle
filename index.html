@@ -1716,6 +1716,8 @@
     .play-side.foe .play-label { color: #fff8f4; background: #d24b3c; }
     .play-cards { display: flex; align-items: flex-end; justify-content: center; gap: 10px; min-height: 0; height: 100%; }
     .play-card { height: 100%; display: flex; align-items: flex-end; }
+    .play-card.can-recall { cursor: pointer; }
+    .play-card.can-recall:hover .card.preview { transform: translateY(-10px); filter: brightness(1.08); }
     .play-row .card.preview {
       width: auto;
       height: 100%;
@@ -4292,6 +4294,16 @@
       syncEnergyTotal();
     }
 
+    function refundEnergy(cost) {
+      let left = Math.max(0, Number(cost) || 0);
+      const room = Math.max(0, (Number(player.baseMax) || 0) - (Number(player.baseEnergy) || 0));
+      const toBase = Math.min(room, left);
+      player.baseEnergy = (Number(player.baseEnergy) || 0) + toBase;
+      left -= toBase;
+      if (left > 0) player.tempEnergy = (Number(player.tempEnergy) || 0) + left;
+      syncEnergyTotal();
+    }
+
     function weaponChangeText(keep, item) {
       const from = weaponAtk(keep);
       const to = weaponAtk(item);
@@ -5166,6 +5178,7 @@
       }
       if (card.headbutt) {
         const names = inPlay.map((item) => item.name).join("、");
+        capturePlayClearFlights(null, "exile");
         while (inPlay.length) battleExile.push(inPlay.shift());
         log(`${heroName()}は${names}を廃棄した。`);
       }
@@ -5253,56 +5266,70 @@
       return true;
     }
 
-    let pendingDiscardFly = [];
+    let pendingPlayClearFly = [];
 
-    // プレイエリアの自分のカードを、捨て札の位置へ飛ばす準備（実体は次の描画のあとで動かす）
-    function capturePlayDiscardFlights() {
-      pendingDiscardFly.forEach((item) => item.ghost.remove());
-      pendingDiscardFly = [];
+    function makeFlyGhost(el) {
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const ghost = el.cloneNode(true);
+      ghost.classList.add("fly-card");
+      ghost.style.left = `${rect.left}px`;
+      ghost.style.top = `${rect.top}px`;
+      ghost.style.width = `${rect.width}px`;
+      ghost.style.height = `${rect.height}px`;
+      ghost.style.margin = "0";
+      ghost.style.transition = "none";
+      ghost.style.transform = "none";
+      ghost.style.opacity = "1";
+      document.body.appendChild(ghost);
+      return { ghost, from: rect };
+    }
+
+    // プレイエリアの自分のカード：捨て札へ／廃棄へ飛ばす準備（次の描画のあとで動かす）
+    // forceMode があれば全枚その行き先（頭突きの一括廃棄など）
+    function capturePlayClearFlights(cards, forceMode) {
+      pendingPlayClearFly.forEach((item) => item.ghost.remove());
+      pendingPlayClearFly = [];
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const list = cards || inPlay;
       const nodes = [...document.querySelectorAll(".play-side.mine .play-card .card")];
       nodes.forEach((el, i) => {
-        const card = inPlay[i];
-        if (!goesToDiscard(card)) return;
-        const rect = el.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-        const ghost = el.cloneNode(true);
-        ghost.classList.add("fly-card");
-        ghost.style.left = `${rect.left}px`;
-        ghost.style.top = `${rect.top}px`;
-        ghost.style.width = `${rect.width}px`;
-        ghost.style.height = `${rect.height}px`;
-        ghost.style.margin = "0";
-        ghost.style.transition = "none";
-        ghost.style.transform = "none";
-        ghost.style.opacity = "1";
-        document.body.appendChild(ghost);
-        pendingDiscardFly.push({ ghost, from: rect });
+        const card = list[i];
+        if (!card) return;
+        const made = makeFlyGhost(el);
+        if (!made) return;
+        const mode = forceMode || (goesToDiscard(card) ? "discard" : "exile");
+        pendingPlayClearFly.push({ ...made, mode });
       });
     }
 
-    function launchPendingDiscardFly() {
-      const flights = pendingDiscardFly;
-      pendingDiscardFly = [];
+    function launchPendingPlayClearFly() {
+      const flights = pendingPlayClearFly;
+      pendingPlayClearFly = [];
       if (!flights.length) return 0;
+      const discards = flights.filter((item) => item.mode === "discard");
+      const exiles = flights.filter((item) => item.mode === "exile");
       const dest = document.querySelector('[data-pile="discard"] .pile-card');
-      if (!dest) {
-        flights.forEach((item) => item.ghost.remove());
-        return 0;
-      }
-      const to = dest.getBoundingClientRect();
-      const countEl = dest.querySelector(".pile-count");
+      const countEl = dest && dest.querySelector(".pile-count");
       const finalCount = discard.length;
-      const startCount = Math.max(0, finalCount - flights.length);
+      const startCount = Math.max(0, finalCount - discards.length);
       if (countEl) countEl.textContent = String(startCount);
       let landed = 0;
-      flights.forEach((item, i) => {
-        const ghost = item.ghost;
+      let maxWait = 0;
+
+      discards.forEach((item, i) => {
+        if (!dest) {
+          item.ghost.remove();
+          return;
+        }
+        const to = dest.getBoundingClientRect();
         const from = item.from;
+        const ghost = item.ghost;
         const dx = to.left + to.width / 2 - (from.left + from.width / 2);
         const dy = to.top + to.height / 2 - (from.top + from.height / 2);
         const scale = Math.max(0.22, to.height / from.height);
         const delay = i * 70;
+        maxWait = Math.max(maxWait, 560 + delay);
         const finish = () => {
           if (ghost.dataset.landed) return;
           ghost.dataset.landed = "1";
@@ -5320,17 +5347,95 @@
         ghost.addEventListener("transitionend", finish, { once: true });
         setTimeout(finish, 560 + delay);
       });
-      return 480 + Math.max(0, flights.length - 1) * 70;
+
+      exiles.forEach((item, i) => {
+        const ghost = item.ghost;
+        const delay = i * 80;
+        maxWait = Math.max(maxWait, 620 + delay);
+        const finish = () => {
+          if (ghost.dataset.landed) return;
+          ghost.dataset.landed = "1";
+          ghost.remove();
+        };
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            ghost.style.transition = `transform 0.55s cubic-bezier(0.2, 0.75, 0.2, 1) ${delay}ms, opacity 0.5s ease ${delay + 40}ms, filter 0.5s ease ${delay}ms`;
+            ghost.style.transform = "translateY(-120px) rotate(22deg) scale(0.35)";
+            ghost.style.opacity = "0";
+            ghost.style.filter = "brightness(1.4) saturate(0.2)";
+          });
+        });
+        ghost.addEventListener("transitionend", finish, { once: true });
+        setTimeout(finish, 640 + delay);
+      });
+
+      return maxWait;
     }
 
     function scrapPlay() {
-      capturePlayDiscardFlights();
+      capturePlayClearFlights();
       while (inPlay.length) {
         const card = inPlay.shift();
         if (card.power || card.instant) battleExile.push(card);
         else discard.push(card);
       }
       resolveAt = 0;
+    }
+
+    function flyPlayToHand(from, handIndex) {
+      if (!from || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const target = document.querySelector(`.hand [data-card="${handIndex}"]`);
+      if (!target) return;
+      const to = target.getBoundingClientRect();
+      if (!to.width || !to.height || !from.width || !from.height) return;
+      const ghost = target.cloneNode(true);
+      const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : target.classList.contains("power") ? "power" : "skill";
+      ghost.className = `card fly-card ${kind}`;
+      ghost.style.left = `${from.left}px`;
+      ghost.style.top = `${from.top}px`;
+      ghost.style.width = `${from.width}px`;
+      ghost.style.height = `${from.height}px`;
+      ghost.style.transition = "none";
+      ghost.style.transform = "none";
+      document.body.appendChild(ghost);
+      target.style.visibility = "hidden";
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      const scale = to.height / from.height;
+      const fan = parseFloat(target.style.getPropertyValue("--fan")) || 0;
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        ghost.remove();
+        if (target.isConnected) target.style.visibility = "";
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.42s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transform = `translate(${dx}px, ${dy}px) rotate(${fan}deg) scale(${scale})`;
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 520);
+    }
+
+    function unplayFromPlay(index) {
+      if (phase !== "player" || outcome) return false;
+      const card = inPlay[index];
+      if (!card) return false;
+      const el = document.querySelector(`.play-side.mine .play-card[data-unplay="${index}"] .card`)
+        || document.querySelectorAll(".play-side.mine .play-card .card")[index];
+      const from = el ? el.getBoundingClientRect() : null;
+      inPlay.splice(index, 1);
+      refundEnergy(card.cost);
+      hand.push(card);
+      sortHand();
+      note = "";
+      const handIndex = hand.indexOf(card);
+      render();
+      if (from) flyPlayToHand(from, handIndex);
+      return true;
     }
 
     function enemyUseCard(card) {
@@ -5374,7 +5479,9 @@
         scheduleFinish("win");
         return;
       }
-      const wait = pendingDiscardFly.length ? 560 + (pendingDiscardFly.length - 1) * 70 : 0;
+      const wait = pendingPlayClearFly.length
+        ? 560 + (pendingPlayClearFly.length - 1) * 70
+        : 0;
       render();
       if (wait) timer = setTimeout(startPlayerTurn, wait);
       else startPlayerTurn();
@@ -6930,15 +7037,20 @@
       return `<div class="card-fit ${rank}${forecast ? " has-forecast" : ""}">${forecastHtml}<div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
-    function playFace(card, on, live, foe) {
+    function playFace(card, on, live, foe, recallIndex) {
       const tone = foe ? "foe" : cardKind(card);
-      return `<div class="play-card${on ? " on" : ""}"><div class="card preview ${tone}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, live, foe)}</div></div>`;
+      const recall = recallIndex != null && phase === "player" && !outcome;
+      const attrs = recall ? ` data-unplay="${recallIndex}" class="play-card can-recall${on ? " on" : ""}"` : ` class="play-card${on ? " on" : ""}"`;
+      const label = recall
+        ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す`
+        : `${card.cost} ${esc(card.name)}`;
+      return `<div${attrs}><div class="card preview ${tone}" aria-label="${label}">${cardFace(card, live, foe)}</div></div>`;
     }
 
     function playRow() {
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
-      const mine = inPlay.map((card, i) => playFace(card, hot === i, true)).join("");
+      const mine = inPlay.map((card, i) => playFace(card, hot === i, true, false, i)).join("");
       const end = `<button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>`;
       return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label"><span>自分</span></span><div class="play-cards">${mine}</div></div>${end}<div class="play-side foe"><span class="play-label"><span>敵</span></span><div class="play-cards">${playFace(foe, hot === inPlay.length, true, true)}</div></div></div>`;
     }
@@ -7842,7 +7954,7 @@
       bindGearHover();
       fitHand();
       requestAnimationFrame(fitHand);
-      launchPendingDiscardFly();
+      launchPendingPlayClearFly();
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。上下のはみ出しは切らない。
@@ -8091,6 +8203,11 @@
         gearOpen = gearOpen === id ? null : id;
         gearHover = id;
         paintGear();
+        return;
+      }
+      const recall = el.closest("[data-unplay]");
+      if (recall) {
+        unplayFromPlay(Number(recall.dataset.unplay));
         return;
       }
       const card = el.closest("[data-card]");
