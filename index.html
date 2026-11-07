@@ -480,16 +480,19 @@
     }
     .hero-hit .spark.b { animation-name: spark-b; animation-delay: 0.04s; }
     .hero-hit .spark.c { left: 54%; animation-name: spark-c; animation-delay: 0.07s; }
+    /* 敵の絵の大きさは強さのランクで小・中・大。ボスは小の2倍 */
     .enemy-main {
+      --foe-w: min(32%, 260px);
+      --foe-h: 0.85;
       position: absolute;
       right: auto;
-      top: 108px;
-      bottom: auto;
+      top: auto;
+      bottom: 8px;
       left: 61%;
-      margin-left: calc(min(32%, 260px) * -0.5);
+      margin-left: calc(var(--foe-w) * -0.5);
       z-index: 1;
-      width: min(32%, 260px);
-      height: calc(100% - 116px);
+      width: var(--foe-w);
+      height: calc((100% - 116px) * var(--foe-h));
       max-width: none;
       min-width: 0;
       display: flex;
@@ -497,6 +500,10 @@
       justify-content: center;
       pointer-events: none;
     }
+    .enemy-main[data-size="small"] { --foe-w: min(25%, 200px); --foe-h: 0.7; }
+    .enemy-main[data-size="medium"] { --foe-w: min(32%, 260px); --foe-h: 0.85; }
+    .enemy-main[data-size="large"] { --foe-w: min(40%, 330px); --foe-h: 1; }
+    .enemy-main[data-size="boss"] { --foe-w: min(50%, 400px); --foe-h: 1.4; }
     .intent { flex: none; text-align: center; background: transparent; border: 0; padding: 0; }
     .intent .now { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 32px; font-weight: 800; line-height: 1.2; }
     .act { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; line-height: 1; }
@@ -3317,6 +3324,15 @@
 
     function bossNow() {
       return battleIndex === route.indexOf(DUNGEON.boss);
+    }
+
+    // 敵の絵の大きさ：雑魚＝小、普通＝中、強敵＝大、ボス＝小の2倍
+    function foeSize() {
+      if (bossNow()) return "boss";
+      const rank = (enemyNow() && enemyNow().rank) || "普通";
+      if (rank === "雑魚") return "small";
+      if (rank === "強敵") return "large";
+      return "medium";
     }
 
     function addDetourFight() {
@@ -6268,7 +6284,7 @@
           <div class="stage" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
             <div class="enemy-field">
             ${traitNote()}
-            <div class="enemy-main${encounter ? " arrive" : ""}">
+            <div class="enemy-main${encounter ? " arrive" : ""}" data-size="${foeSize()}">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
               <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
               ${slashNow ? cutsHtml : ""}
