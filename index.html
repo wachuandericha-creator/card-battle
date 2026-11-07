@@ -2992,6 +2992,10 @@
       pointer-events: none;
       transform-origin: center center;
     }
+    .fly-card.reward-fly {
+      z-index: 60;
+      filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.55));
+    }
     .end:disabled { opacity: 0.4; cursor: default; }
     .end:not(:disabled):hover { background: rgba(228, 177, 90, 0.12); }
     .end.ready {
@@ -8329,10 +8333,14 @@
       if (rewardStep !== "boss") return;
       const pick = bossPicks[index];
       if (!pick) return;
+      const flight = pick.kind === "card" && pick.card
+        ? captureRewardCardFlight(`[data-action="reward-boss"][data-reward="${index}"] .card`)
+        : null;
       if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
       if (pick.kind === "gear" && pick.gear) {
         if (!gear || !gear.sword) gear = starterGear();
         if (offerWeapon(pick.gear, { source: "boss" })) {
+          if (flight) flight.ghost.remove();
           persistSave(true);
           render();
           return;
@@ -8344,6 +8352,7 @@
       rewardStep = "paths";
       persistSave(true);
       render();
+      flyRewardCardToDeck(flight);
     }
 
     // 報酬を選んだあと、もらった★がステータスの★へ飛んで吸い込まれ、届くたびに数が増える
@@ -8456,17 +8465,65 @@
       return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
     }
 
+    function flyRewardCardToDeck(made) {
+      if (!made || !made.ghost) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        made.ghost.remove();
+        return;
+      }
+      const dest = document.querySelector('[data-pile="deck"] .pile-card');
+      if (!dest) {
+        made.ghost.remove();
+        return;
+      }
+      const ghost = made.ghost;
+      ghost.classList.add("reward-fly");
+      const from = made.from;
+      const to = dest.getBoundingClientRect();
+      if (!to.width || !to.height || !from.width || !from.height) {
+        ghost.remove();
+        return;
+      }
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      const scale = Math.max(0.16, to.height / from.height);
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        ghost.remove();
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.55s cubic-bezier(0.22, 0.7, 0.18, 1), opacity 0.48s ease 0.08s";
+          ghost.style.transform = `translate(${dx}px, ${dy}px) rotate(-22deg) scale(${scale})`;
+          ghost.style.opacity = "0.08";
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 700);
+    }
+
+    function captureRewardCardFlight(selector) {
+      const el = document.querySelector(selector);
+      if (!(el instanceof Element)) return null;
+      return makeFlyGhost(el);
+    }
+
     function takeBonus() {
       if (rewardStep !== "detour" || !bonusCard) return;
+      const flight = captureRewardCardFlight('[data-action="reward-bonus"] .card');
       stolen.push(keepCard(bonusCard));
       bonusCard = null;
       persistSave(true);
       render();
+      flyRewardCardToDeck(flight);
     }
     function takeReward(index) {
       if (rewardStep !== "cards") return;
       const card = rewardPicks[index];
       if (!card) return;
+      const flight = captureRewardCardFlight(`[data-action="reward-card"][data-reward="${index}"] .card`);
       const from = starStartPoints();
       stolen.push(keepCard(card));
       rewardPaths = rollPaths();
@@ -8474,6 +8531,7 @@
       persistSave(true);
       render();
       flyStarsHome(from);
+      flyRewardCardToDeck(flight);
     }
 
     function advance(step) {
