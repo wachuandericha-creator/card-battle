@@ -2028,7 +2028,7 @@
     }
     .energy-band { display: flex; align-items: center; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 2px 56px; gap: 128px; margin-bottom: -6px; }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
-    /* 手札をマナ列に重なるほど上げる。下1/6はゲーム外へはみ出してよい */
+    /* 手札をマナ列に重ねて上げる。戦闘画面の下へははみ出さない */
     .handbar {
       width: 100%;
       min-width: 0;
@@ -2100,8 +2100,7 @@
       gap: 0;
       padding: 6px 8px 0;
       overflow: visible;
-      /* 手札の下1/6は帯の外（ゲーム外）へ。量は fitHand が --hand-hang で渡す */
-      margin-bottom: calc(var(--hand-hang, 28px) * -1);
+      margin-bottom: 0;
     }
     .battle-log {
       min-width: 0;
@@ -8192,20 +8191,16 @@
       launchPendingPlayClearFly();
     }
 
-    // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。上下のはみ出しは切らない。
+    // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。マナ列には重ねてよいが、戦闘画面の外へは出さない。
     function fitHand() {
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
       const cards = handEl.querySelectorAll(".card");
       const base = 44 * 0.74;
       handEl.style.setProperty("--hand-card-h", "100%");
-      const setHang = () => {
-        const h = cards[0] ? cards[0].offsetHeight : 0;
-        handEl.style.setProperty("--hand-hang", `${Math.max(24, Math.round(h / 6))}px`);
-      };
+      handEl.style.removeProperty("--hand-hang");
       if (cards.length < 2) {
         handEl.style.setProperty("--overlap", `${base}px`);
-        setHang();
         return;
       }
       const n = cards.length;
@@ -8225,7 +8220,6 @@
       const need = (n * cw - avail) / (n - 1);
       const overlap = Math.min(Math.max(base, need), cw - minStep);
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
-      setHang();
     }
     window.addEventListener("resize", () => { if (screen === "battle") fitHand(); });
 
