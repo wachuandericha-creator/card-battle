@@ -440,6 +440,12 @@
       font-weight: 800;
       text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
     }
+    .field-note.warn {
+      color: #ffe7a8;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8), 0 0 14px rgba(228, 177, 90, 0.55);
+    }
     .hero-shoulder.hurt { animation: shake 0.5s linear; }
     .hero-hit {
       position: absolute;
@@ -1360,6 +1366,7 @@
       100% { filter: none; }
     }
     .battle-screen.block { animation: screen-shake 0.55s linear; }
+    .battle-screen.no-mana { animation: mana-shake 0.38s linear; }
     .screen-hurt,
     .screen-heal {
       position: fixed;
@@ -1982,6 +1989,7 @@
       }
       .pip.on { animation: none; }
       .sprite .eye, .sprite .eye::after { animation: none; }
+      .battle-screen.no-mana, .battle-screen.block { animation: none; }
     }
     .card.attack, .card.block, .card.skill, .card.power, .card.instant, .card.foe {
       clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
@@ -2729,6 +2737,14 @@
       60% { transform: translate(5px, 3px); }
       75% { transform: translate(-3px, 2px); }
     }
+    @keyframes mana-shake {
+      0%, 100% { transform: none; }
+      18% { transform: translateX(-5px); }
+      36% { transform: translateX(5px); }
+      54% { transform: translateX(-3px); }
+      72% { transform: translateX(3px); }
+      86% { transform: translateX(-1px); }
+    }
     @keyframes hurt-fade {
       0% { opacity: 0; }
       14% { opacity: 1; }
@@ -3080,6 +3096,7 @@
     let fxHeal = false;
     let fxHit = null;
     let fxDeal = false;
+    let fxNoMana = false;
     let turnCall = "";
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
@@ -4047,7 +4064,8 @@
       const card = hand[index];
       if (!card) return false;
       if (player.energy < card.cost) {
-        note = "マナが足りない";
+        note = `マナが足りないので、このカードは使えない（いま${player.energy}、必要${card.cost}）`;
+        fxNoMana = true;
         render();
         return false;
       }
@@ -6451,6 +6469,8 @@
       fxHeal = false;
       fxHit = null;
       fxDeal = false;
+      const noManaNow = fxNoMana;
+      fxNoMana = false;
       const turnNow = turnCall;
       turnCall = "";
       // ログは新しいものが上。ターン番号が変わる所に「Nターン目」の区切りを入れる。
@@ -6472,7 +6492,7 @@
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
-        <div class="battle-screen${showLog ? "" : " no-log"}">
+        <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" data-star-count aria-label="スター ${shownStarCount()}">★${shownStarCount()}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
@@ -6501,7 +6521,7 @@
             ${foePileMarkup()}
             </div>
             <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
-            ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
+            ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
             ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) }), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
