@@ -1967,27 +1967,49 @@
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
-    .hint:hover i, .hint:focus-within i,
-    .card:hover .hint i, .card:focus-within .hint i { display: block; }
-    .hint i {
-      display: none;
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 8px);
-      z-index: 20;
+    /* 注釈の本文はカードの中には出さない（カードの外の .kw-tip に写す） */
+    .hint i { display: none; }
+    .kw-tip {
+      position: fixed;
+      z-index: 1000;
       width: max-content;
-      max-width: 240px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      background: #1a120e;
+      max-width: min(320px, calc(100vw - 16px));
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.9);
+      background: linear-gradient(180deg, #2a2019, #140f0c);
       color: #f6e2b6;
-      font-style: normal;
-      font-size: 14px;
-      line-height: 1.45;
+      font-size: 15px;
+      line-height: 1.5;
       text-align: left;
       white-space: normal;
-      transform: translateX(-50%);
+      pointer-events: none;
+      box-shadow: 0 0 0 3px #15100d, 0 0 0 4px rgba(228, 177, 90, 0.45), 0 14px 26px rgba(0, 0, 0, 0.6);
     }
+    .kw-tip[hidden] { display: none; }
+    .kw-tip::after {
+      content: "";
+      position: absolute;
+      left: var(--arrow-x, 50%);
+      bottom: -9px;
+      width: 16px;
+      height: 16px;
+      transform: translateX(-50%) rotate(45deg);
+      background: #140f0c;
+      border-right: 1px solid rgba(228, 177, 90, 0.9);
+      border-bottom: 1px solid rgba(228, 177, 90, 0.9);
+    }
+    .kw-tip.below::after {
+      bottom: auto;
+      top: -9px;
+      background: #2a2019;
+      border: 0;
+      border-left: 1px solid rgba(228, 177, 90, 0.9);
+      border-top: 1px solid rgba(228, 177, 90, 0.9);
+    }
+    .kw-tip p { margin: 0; }
+    .kw-tip p + p { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(228, 177, 90, 0.3); }
+    .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
     .end {
@@ -5772,6 +5794,81 @@
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
     }
     window.addEventListener("resize", () => { if (screen === "battle") fitHand(); });
+
+    // 注釈（パリィ・毒・炎上など）はカードの中ではなく、カードの外の吹き出しに出す。
+    // カードに乗ると、そのカードの注釈をまとめてカードの上（入らなければ下）に出す。札（毒+2 など）に乗ると、その札の上に出す。
+    const kwTip = document.createElement("div");
+    kwTip.className = "kw-tip";
+    kwTip.hidden = true;
+    document.body.appendChild(kwTip);
+    let kwTipAnchor = null;
+
+    function hideKwTip() {
+      kwTipAnchor = null;
+      kwTip.hidden = true;
+    }
+
+    function placeKwTip(anchor) {
+      const r = anchor.getBoundingClientRect();
+      const w = kwTip.offsetWidth;
+      const h = kwTip.offsetHeight;
+      const pad = 8;
+      let left = r.left + r.width / 2 - w / 2;
+      left = Math.max(pad, Math.min(window.innerWidth - w - pad, left));
+      let top = r.top - h - 12;
+      let below = false;
+      if (top < pad) { top = r.bottom + 12; below = true; }
+      if (top + h > window.innerHeight - pad) top = Math.max(pad, window.innerHeight - h - pad);
+      kwTip.style.left = `${Math.round(left)}px`;
+      kwTip.style.top = `${Math.round(top)}px`;
+      const arrowX = r.left + r.width / 2 - left;
+      kwTip.style.setProperty("--arrow-x", `${Math.round(Math.max(14, Math.min(w - 14, arrowX)))}px`);
+      kwTip.classList.toggle("below", below);
+    }
+
+    function showKwTip(anchor) {
+      const hints = anchor.matches(".hint") ? [anchor] : [...anchor.querySelectorAll(".hint")];
+      const items = hints.map((hint) => {
+        const note = hint.querySelector("i");
+        const word = [...hint.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("").trim();
+        return note && note.textContent ? `<p><b>${esc(word)}</b><span>${esc(note.textContent)}</span></p>` : "";
+      }).filter(Boolean);
+      if (!items.length) { hideKwTip(); return; }
+      kwTipAnchor = anchor;
+      kwTip.innerHTML = items.join("");
+      kwTip.hidden = false;
+      placeKwTip(anchor);
+      // 手札は乗ると少し持ち上がるので、動き終わりに合わせて置き直す
+      [120, 280].forEach((ms) => setTimeout(() => {
+        if (kwTipAnchor === anchor && anchor.isConnected && !kwTip.hidden) placeKwTip(anchor);
+      }, ms));
+    }
+
+    function kwAnchorOf(target) {
+      const el = target instanceof Element ? target : target && target.parentElement;
+      if (!el) return null;
+      const card = el.closest(".card");
+      if (card && card.querySelector(".hint")) return card;
+      return el.closest(".hint");
+    }
+
+    root.addEventListener("pointerover", (event) => {
+      const anchor = kwAnchorOf(event.target);
+      if (!anchor) { if (kwTipAnchor) hideKwTip(); return; }
+      if (anchor !== kwTipAnchor) showKwTip(anchor);
+    });
+    root.addEventListener("pointerout", (event) => {
+      if (!kwTipAnchor) return;
+      const next = kwAnchorOf(event.relatedTarget);
+      if (next !== kwTipAnchor) hideKwTip();
+    });
+    root.addEventListener("pointermove", (event) => {
+      if (!kwTipAnchor || kwTipAnchor.isConnected) return;
+      const anchor = kwAnchorOf(event.target);
+      if (anchor) showKwTip(anchor); else hideKwTip();
+    });
+    root.addEventListener("pointerdown", hideKwTip, true);
+    window.addEventListener("scroll", hideKwTip, true);
 
     // ダブルクリックは「選んで進む」。キャラの駒はダンジョン選択へ、ダンジョンの駒は挑戦開始。
     root.addEventListener("dblclick", (event) => {
