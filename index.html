@@ -3675,6 +3675,7 @@
       ライフフルネスアタック: "card-lifefull.jpg?v=1",
       ジャストミート: "card-just-meet.jpg?v=1",
       余裕の構え: "card-poise.jpg?v=2",
+      ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-fatal.jpg?v=1",
       シールドアタック: "card-shield-bash.jpg?v=2",
       斬撃: "card-slash.jpg?v=1",
@@ -3717,7 +3718,8 @@
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る\n使ったらこの戦闘のデッキから廃棄", kind: "power", power: true, coward: true },
       ライフフルネスアタック: { cost: 3, text: "10ダメージ\n体力が満タンなら+5", damage: 10, kind: "attack", fullBonus: 5 },
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
-      余裕の構え: { cost: 1, text: "満タンならパリィ\n満タンでないならシールド1", kind: "skill", poise: true },
+      余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
+      ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, text: "パリィをすべて消費\n消費した数×15ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 2, text: "ブロックの数だけダメージ", kind: "attack", press: true },
     };
@@ -5107,8 +5109,13 @@
         return;
       }
       if (card.poise) {
-        if (player.hp >= player.maxHp) gainParry(card);
-        else gainBlock(1, card);
+        gainParry(card);
+        return;
+      }
+      if (card.guardBreak) {
+        const had = Math.max(0, Number(enemy.block) || 0);
+        enemy.block = 0;
+        log(had ? `${heroName()}は${card.name}。${enemy.name}のシールド${had}をすべて割った。` : `${heroName()}は${card.name}。${enemy.name}にシールドは無かった。`, card);
         return;
       }
       if (card.finisher) {
@@ -5205,6 +5212,7 @@
       if ((Number(card.cost) || 0) > player.energy) return false;
       if (card.headbutt && !inPlay.length) return false;
       if (card.halfOnly && !hpHalf(player)) return false;
+      if (card.fullOnly && player.hp < player.maxHp) return false;
       return true;
     }
 
@@ -5220,6 +5228,11 @@
       }
       if (card.headbutt && !inPlay.length) {
         note = "プレイエリアの自分のカードを廃棄すると使える";
+        render();
+        return false;
+      }
+      if (card.fullOnly && player.hp < player.maxHp) {
+        note = "体力が満タンのときだけ使える";
         render();
         return false;
       }
@@ -7081,7 +7094,7 @@
         card.block ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.hits || card.instant || card.quick || card.burn || (card.parry && card.damage);
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || (card.parry && card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const fromHand = !!(live && !foe && (!inPlay || !inPlay.includes(card)));
       const forecast = live ? expectedDamageLabel(card, fromHand, foe) : "";
@@ -7401,6 +7414,8 @@
       if (card.kick) next.kick = card.kick;
       if (card.headbutt) next.headbutt = true;
       if (card.poise) next.poise = true;
+      if (card.guardBreak) next.guardBreak = true;
+      if (card.fullOnly) next.fullOnly = true;
       if (card.finisher) next.finisher = true;
       if (card.coward) next.coward = true;
       if (card.note) next.note = card.note;
