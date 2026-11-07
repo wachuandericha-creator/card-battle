@@ -506,6 +506,8 @@
     .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; }
+    .ref-grid.pose-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; object-position: center bottom; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
     .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 28px 16px; overflow: hidden; }
     .cast-back {
@@ -2237,7 +2239,7 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=3", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=3" },
+      { name: "戦士", stand: "job-front.png?v=4", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=3" },
     ];
     let jobsHad = ["戦士"];
     let ultimate = "";
@@ -3991,8 +3993,13 @@
             <h2>設定資料</h2>
             <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
             <h3>戦士</h3>
-            <img class="sheet-art" src="warrior-f-sheet.jpg?v=12" alt="戦士。正面、戦闘（ポケモンの画角）、敗北、勝利。">
-            <p class="sheet-cap">左から、正面、戦闘（ポケモンの画角）、敗北、勝利。</p>
+            <div class="ref-grid pose-grid">
+              <figure><img class="cut-ref" src="job-front.png?v=4" alt="戦士の正面"><figcaption>正面</figcaption></figure>
+              <figure><img class="cut-ref" src="hero-shoulder.png?v=20" alt="戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
+              <figure><img class="cut-ref" src="warrior-defeat.png?v=1" alt="戦士の敗北"><figcaption>敗北</figcaption></figure>
+              <figure><img class="cut-ref" src="warrior-victory.png?v=1" alt="戦士の勝利"><figcaption>勝利</figcaption></figure>
+            </div>
+            <p class="sheet-cap">向きごとに別の絵。正面は、ジョブの一枚絵を基準にした。</p>
             <h3>女の戦士</h3>
             <img class="sheet-art" src="warrior-girl-sheet.jpg?v=1" alt="女の戦士。正面、戦闘（ポケモンの画角）、敗北、勝利。">
             <p class="sheet-cap">左から、正面、戦闘（ポケモンの画角）、敗北、勝利。いま戦う戦士は、男のまま。</p>
@@ -4004,14 +4011,14 @@
             <p class="sheet-cap">まだ古い絵。向きは六つのまま。</p>
             <div class="sheet-locks">
               <p><b>体</b>戦士は、4頭身。頭は全身のおよそ4分の1。描き直しても変えない。魔法使いは、いまの2頭身のまま。</p>
-              <p><b>戦士</b>赤いマント、白いシャツ、紺の胴着、腰のベルトは一本。肩当ては無い。戦闘のときは、左手に丸い盾、右手にロングソード。腰にショートソード。戦っていないときは、背中のロングソードの上に丸い盾。腰にショートソード。リュックは無い。</p>
+              <p><b>戦士</b>赤いマント、白いシャツ、紺の胴着、腰のベルトは一本。マントは正面の首元で留める。肩当ては無い。戦闘のときは、左手に丸い盾、右手にロングソード。腰にショートソード。戦っていないときは、ロングソードは背中の鞘で、柄は肩の上に大きく出る。盾は背中で、正面からは見えない。腰にショートソード。リュックは無い。</p>
               <p><b>女の戦士</b>別の人。4頭身。頭は全身のおよそ4分の1。蜂蜜色の長い髪を高い結びにして、桃色のリボン。大きな琥珀色の目。やわらかい笑み。薔薇色のマント、金の縁、フードは下ろす。白いブラウス、桃色の胴着、腰のベルトは一本。紺のスカート、灰色の脚衣、茶色のブーツ。大きな剣はマントの上から背中。小さな剣は腰。盾とリュックと肩当ては無い。四つは一枚。左から、正面、戦闘（ポケモンの画角）、敗北、勝利。戦闘は背中で、右を向き、剣を構える。いま戦うのは、男の戦士。</p>
               <p><b>魔法使い</b>女は白、男は黒。杖は同じで、先が一つの渦巻き。戦士の服は使わない。</p>
               <p><b>戦闘</b>自分は、この戦士の背中。ポケモンと同じ構図。右を向き、左手に丸い盾、右手にロングソード。腰にショートソード。表情はきりっとしている。敵はその奥。</p>
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="job-front.png?v=3" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
+              <figure><img class="cut-ref" src="job-front.png?v=4" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
               <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=3" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
             </div>
             <h3>戦闘の絵</h3>
