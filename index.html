@@ -578,7 +578,12 @@
     .shop-slot .card.preview { width: 120px; height: auto; }
     .shop-slot b { font-size: 16px; }
     .shop-slot small { font-size: 12px; line-height: 1.4; font-weight: 700; }
-    .shop-slot span { margin-top: auto; color: var(--gold); font-weight: 800; }
+    .shop-slot span { margin-top: auto; color: var(--gold); font-weight: 800; font-size: 18px; }
+    .shop-slot .shop-buy { padding: 6px 18px; font-size: 15px; border-radius: 999px; border: 1px solid #e4b15a; background: linear-gradient(#f3d58c, #c9922f); color: #2b1a08; font-weight: 800; cursor: pointer; }
+    .shop-slot .shop-buy:hover:not(:disabled) { filter: brightness(1.08); }
+    .shop-slot .shop-buy:disabled { background: rgba(60, 48, 36, 0.8); color: rgba(255, 246, 228, 0.45); border-color: rgba(228, 177, 90, 0.3); cursor: not-allowed; }
+    .shop-slot .shop-sold { margin-top: 0; padding: 6px 18px; font-size: 15px; border-radius: 999px; border: 1px solid rgba(228, 177, 90, 0.4); color: rgba(255, 246, 228, 0.6); font-weight: 800; }
+    .shop-slot.sold { opacity: 0.55; }
     .menu.shop-floor { justify-content: flex-start; padding-top: 18px; overflow-y: auto; }
     .menu.shop-floor .shop-panel { width: min(100%, 760px); }
     .burn-mark { color: #ffb15c; }
@@ -5785,10 +5790,38 @@
       return picks;
     }
 
+    // お店の値段はレアリティ（★の数）と同じ。★が決まっていない品は値段も未定で、買えない。
+    function shopPrice(slot) {
+      if (!slot) return null;
+      if (slot.kind === "card" && slot.card) return Number(slot.card.stars) || 1;
+      if (slot.kind === "gear" && slot.gear) return Number(slot.gear.stars) > 0 ? Number(slot.gear.stars) : null;
+      return null;
+    }
+
     function rollShopStock() {
-      const cards = shuffle(classCards()).slice(0, 2).map((card) => ({ kind: "card", card, price: null }));
-      const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item, price: null }));
-      return cards.concat(items);
+      const cards = shuffle(classCards()).slice(0, 2).map((card) => ({ kind: "card", card }));
+      const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item }));
+      return cards.concat(items).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
+    }
+
+    function buyShop(index) {
+      const slot = (shopStock || [])[index];
+      if (!slot || slot.sold) return;
+      const price = slot.price == null ? shopPrice(slot) : slot.price;
+      if (price == null) return;
+      const have = Number(meta.stars) || 0;
+      if (have < price) return;
+      meta.stars = have - price;
+      localStorage.setItem(META_KEY, JSON.stringify(meta));
+      if (slot.kind === "card") {
+        stolen.push(keepCard(slot.card));
+      } else if (slot.kind === "gear") {
+        if (!gear || !gear.sword) gear = starterGear();
+        giveGear(slot.gear);
+      }
+      slot.sold = true;
+      persistSave(true);
+      render();
     }
 
     function prepareReward() {
@@ -5915,18 +5948,25 @@
     }
 
     function shopMarkup(stock, heading) {
-      const slots = (stock || []).map((slot) => {
-        const price = slot.price == null ? "値段は未定" : `★${slot.price}`;
+      const have = Number(meta.stars) || 0;
+      const slots = (stock || []).map((slot, index) => {
+        const price = slot.price == null ? shopPrice(slot) : slot.price;
+        const tag = price == null ? "値段は未定" : `★${price}`;
+        let action = "";
+        if (slot.sold) action = `<span class="shop-sold">売り切れ</span>`;
+        else if (price == null) action = `<button type="button" class="shop-buy" disabled>買えない</button>`;
+        else action = `<button type="button" class="shop-buy" data-action="shop-buy" data-slot="${index}" ${have < price ? "disabled" : ""}>買う</button>`;
+        const sold = slot.sold ? " sold" : "";
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot"><div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(price)}</span></div>`;
+          return `<div class="shop-slot${sold}"><div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
           const picture = slot.gear.image ? `<img class="shop-gear" src="${esc(slot.gear.image)}" alt="">` : "";
-          return `<div class="shop-slot">${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(price)}</span></div>`;
+          return `<div class="shop-slot${sold}">${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
-      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${meta.stars}</p><p>品は4つ。カード2つと装備2つ。値段が決まるまで、買えない。</p><div class="shop-row">${slots}</div>`;
+      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は4つ。カード2つと装備2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
     }
 
     function takeBonus() {
@@ -6446,6 +6486,7 @@
         if (name === "reward-skip") skipReward();
         if (name === "reward-path") takePath(action.dataset.path || "");
         if (name === "reward-go") applyPath("straight");
+        if (name === "shop-buy") buyShop(Number(action.dataset.slot));
         return;
       }
       const albumBtn = el.closest("[data-album]");
