@@ -8028,8 +8028,8 @@
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
         // ゆるい扇：端ほど少し傾ける。中央はマナ列へ上がり、端はなだらかに垂らす
-        const fan = Math.round(t * 12 * 10) / 10;
-        const drop = Math.round((-16 + 36 * t * t) * 10) / 10;
+        const fan = Math.round(t * 8 * 10) / 10;
+        const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
