@@ -3066,6 +3066,17 @@
           { name: "ファイアパラダイス", cost: 3, text: "相手を炎上+3", burn: 3, kind: "skill" },
         ],
       },
+      {
+        name: "物乞い",
+        image: "enemy-beggar.jpg?v=1",
+        rank: "雑魚",
+        hp: 15,
+        atkHidden: 3,
+        trait: "この戦闘で、物乞いにあげたカードを使う。",
+        pattern: [
+          { name: "アタック" },
+        ],
+      },
     ];
     const ENEMY_RENAME = { 荒くれ: "ゴブリン", 重騎士: "ミノタウロス", 仮の相手: "スライム" };
     const DUNGEON = {
@@ -3115,6 +3126,7 @@
     let gearOpen = null;
     let stolen = [];
     let removed = [];
+    let beggarGift = [];
     let beggarCut = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
@@ -3287,6 +3299,7 @@
     }
 
     function hiddenAtk(foe) {
+      if (foe && foe.atkHidden != null) return Number(foe.atkHidden) || 0;
       return HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
     }
 
@@ -3729,7 +3742,11 @@
 
     function sourcePattern() {
       const foe = enemyNow();
-      return (foe.pattern || []).map((card) => applyEnemyHidden(card, foe));
+      const base = (foe.pattern || []).map((card) => applyEnemyHidden(card, foe));
+      if (foe.name === "物乞い") {
+        return base.concat((beggarGift || []).map((card) => ({ ...card })));
+      }
+      return base;
     }
 
     function deckKey(cards) {
@@ -4669,6 +4686,7 @@
         gear,
         stolen,
         removed,
+        beggarGift,
         battleTotal,
         route,
         battleStartHp,
@@ -4779,6 +4797,7 @@
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
       removed = Array.isArray(data.removed) ? data.removed.filter((card) => card && card.name) : [];
+      beggarGift = Array.isArray(data.beggarGift) ? data.beggarGift.filter((card) => card && card.name) : [];
       if (Array.isArray(data.route) && data.route.length) {
         route = data.route.map((name) => enemyKey(name));
       } else {
@@ -5072,7 +5091,8 @@
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
-        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。";
+        beggarGift = [];
+        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。進むと、物乞いが襲ってくる。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
         floorNote = `いまのジョブは${job}。カードは捨てない。`;
@@ -5086,9 +5106,11 @@
       const cards = runDeck();
       const card = cards[index];
       if (!card) return;
-      removed.push(keepCard(card));
+      const gift = keepCard(card);
+      removed.push(gift);
+      beggarGift = [gift];
       beggarCut = true;
-      floorNote = `${card.name}を1枚、デッキから外した。`;
+      floorNote = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
       render();
     }
 
@@ -5112,6 +5134,7 @@
       gearOffer = null;
       stolen = [];
       removed = [];
+      beggarGift = [];
       heroCast = castByName(castLock).name;
       job = "戦士";
       jobsHad = ["戦士"];
@@ -5602,8 +5625,9 @@
               <figure><img class="enemy-ref" src="enemy-goblin.png?v=3" alt=""><figcaption>ゴブリン</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-minotaur.png?v=4" alt=""><figcaption>ミノタウロス</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-beggar.jpg?v=1" alt=""><figcaption>物乞い</figcaption></figure>
             </div>
-            <p class="sheet-cap">ちびドラゴンは体力30。はじまりの洞窟の後半に出る。山札はファイアーボール、ファイアソード、ファイアパラダイス各1枚。アタックとブロックは、ランクが決まるまで入れない。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。敵はみな左を向く。</p>
+            <p class="sheet-cap">ちびドラゴンは体力30。はじまりの洞窟の後半に出る。山札はファイアーボール、ファイアソード、ファイアパラダイス各1枚。アタックとブロックは、ランクが決まるまで入れない。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。物乞いは体力15、隠しATK+3。アタック1枚に、この戦闘であげたカードを足して使う。物乞いに遭遇したあとに出る。敵はみな左を向く。</p>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
         </div>`;
@@ -6453,6 +6477,10 @@
     }
 
     function advance(step) {
+      if (screen === "floor" && floorKind === "物乞いに遭遇" && step > 0 && route[battleIndex + 1] !== "物乞い") {
+        route.splice(battleIndex + 1, 0, "物乞い");
+        battleTotal = route.length;
+      }
       const hp = screen === "floor" ? floorHp : (player ? player.hp : floorHp);
       const next = battleIndex + step;
       outcome = null;
