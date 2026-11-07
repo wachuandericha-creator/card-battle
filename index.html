@@ -4500,6 +4500,7 @@
     const MANA = 3;
     const HP_CAP = 100; // 最大HPの限界。体力が伸びる仕組みを足すときは、この数で止める
     const HAND_CAP = 10;
+    const DRAW_PER_TURN = 5; /* SPD＝毎ターン引く枚数の基本 */
     const DUNGEON_LIST = [
       { name: "骸洞窟", label: "20", floors: 20, art: "dungeon-cave.jpg?v=1" },
       { name: "竜の遺骸城", label: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
@@ -6361,7 +6362,7 @@
       if (carried > 0) log(`${heroName()}は持ち越したマナ${carried}（オレンジ）。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
-      draw(5 + extra);
+      draw(DRAW_PER_TURN + extra);
       pullFromBracelets();
       fxDeal = true;
       slashSeq = 0;
@@ -8857,7 +8858,7 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}<div class="party-stack"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}<div class="party-stack"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0)}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
