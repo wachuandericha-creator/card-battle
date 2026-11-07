@@ -1741,6 +1741,19 @@
       animation: mana-glow 7s ease-in-out infinite;
       animation-delay: calc(var(--i, 0) * 0.3s);
     }
+    /* 再利用の腕輪で持ち越した一時マナ。使うと空枠を残さず消える */
+    .pip.temp {
+      border-color: rgba(255, 160, 60, 0.95);
+      background: radial-gradient(circle at 42% 38%, #fff0d0 0%, #ff9a3a 40%, #e06010 72%, #8a3008 100%);
+      box-shadow: 0 0 10px rgba(255, 140, 40, 0.6), 0 0 22px rgba(255, 100, 20, 0.35);
+      animation: mana-glow-temp 7s ease-in-out infinite;
+      animation-delay: calc(var(--i, 0) * 0.3s);
+    }
+    @keyframes mana-glow-temp {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 140, 40, 0.6), 0 0 22px rgba(255, 100, 20, 0.35); filter: brightness(1); }
+      6% { box-shadow: 0 0 22px rgba(255, 190, 100, 0.95), 0 0 48px rgba(255, 120, 40, 0.7); filter: brightness(1.3); }
+      14% { box-shadow: 0 0 10px rgba(255, 140, 40, 0.6), 0 0 22px rgba(255, 100, 20, 0.35); filter: brightness(1); }
+    }
     @keyframes mana-glow {
       0%, 100% { box-shadow: 0 0 10px rgba(255, 210, 80, 0.55), 0 0 24px rgba(255, 180, 40, 0.3); filter: brightness(1); }
       6% { box-shadow: 0 0 22px rgba(255, 236, 150, 0.95), 0 0 52px rgba(255, 200, 60, 0.7); filter: brightness(1.35); }
@@ -3847,8 +3860,13 @@
     }
 
     function addBurn(target, amount) {
+      if (target === player && hasStatusImmune()) {
+        log(`${heroName()}は${gear.shield.name}。炎上を無視した。`);
+        return false;
+      }
       target.burn = burnStacks(target) + Math.max(1, Number(amount) || 1);
       if (target === player) syncGearStats();
+      return true;
     }
 
     function enemyDef() {
@@ -3978,11 +3996,20 @@
     const GEAR_ITEMS = [
       { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=2" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=2" },
+      { id: "poison-sword", name: "ポイズンソード", slot: "sword", atk: 1, poisonHit: 1, effect: "ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.svg" },
+      { id: "flame-sword", name: "フレイムソード", slot: "sword", atk: 2, burnHit: 1, effect: "ATK+2。与えるダメージを通すたび炎上+1", image: "gear-flame-sword.svg" },
+      { id: "excalibur", name: "エクスカリバー", slot: "sword", stars: 5, atk: 5, ignoreDef: true, effect: "★★★★★　ATK+5。敵のDEFを無視する", image: "gear-excalibur.svg" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-buckler.jpg" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", def: 2, reflectDef: true, effect: "DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.svg" },
+      { id: "eagle-shield", name: "鷲の金盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.svg" },
+      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.svg" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-bracelet.jpg" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", effect: "手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-bracelet.jpg" },
+      { id: "power-bracelet", name: "力の腕輪", slot: "braceletR", stars: 2, atk: 3, effect: "★★　右手。ATK+3", image: "gear-power-bracelet.svg" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.svg" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", carryMana: true, effect: "使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.svg" },
     ];
     // ボスの報酬だけで手に入る。ランダムな装備には入れない。
     const BOSS_GEAR = [
@@ -4022,8 +4049,42 @@
     }
 
     function weaponExtra(item) {
-      if (item && Number(item.burnHit) > 0) return `攻撃が当たるたび、相手を炎上+${item.burnHit}`;
-      return "";
+      if (!item) return "";
+      const bits = [];
+      if (Number(item.poisonHit) > 0) bits.push(`アタックで毒+${item.poisonHit}（シールドでも）`);
+      if (Number(item.burnHit) > 0) bits.push(`ダメージを通すたび炎上+${item.burnHit}`);
+      if (item.ignoreDef) bits.push("敵のDEFを無視");
+      return bits.join("。");
+    }
+
+    function hasReuseBracelet() {
+      return !!(gear && ((gear.braceletL && gear.braceletL.carryMana) || (gear.braceletR && gear.braceletR.carryMana)));
+    }
+
+    function hasStatusImmune() {
+      return !!(gear && gear.shield && gear.shield.statusImmune);
+    }
+
+    function hasReflectDef() {
+      return !!(gear && gear.shield && gear.shield.reflectDef);
+    }
+
+    function syncEnergyTotal() {
+      if (!player) return;
+      player.baseEnergy = Math.max(0, Number(player.baseEnergy) || 0);
+      player.tempEnergy = Math.max(0, Number(player.tempEnergy) || 0);
+      player.baseMax = Math.max(0, Number(player.baseMax) || 0);
+      player.energy = player.baseEnergy + player.tempEnergy;
+      player.maxEnergy = player.baseMax + player.tempEnergy;
+    }
+
+    function spendEnergy(cost) {
+      let left = Math.max(0, Number(cost) || 0);
+      const fromTemp = Math.min(Math.max(0, Number(player.tempEnergy) || 0), left);
+      player.tempEnergy = (Number(player.tempEnergy) || 0) - fromTemp;
+      left -= fromTemp;
+      player.baseEnergy = Math.max(0, (Number(player.baseEnergy) || 0) - left);
+      syncEnergyTotal();
     }
 
     function weaponChangeText(keep, item) {
@@ -4159,13 +4220,22 @@
       return next;
     }
 
+    function gearStatSum(stat) {
+      let n = 0;
+      for (const key of ["sword", "shield", "braceletR", "braceletL"]) {
+        const item = gear && gear[key];
+        if (item && item[stat]) n += Number(item[stat]) || 0;
+      }
+      return n;
+    }
+
     function syncGearStats() {
       if (!player) return;
       const atkMod = Number(player.atkMod) || 0;
       const defMod = Number(player.defMod) || 0;
       const medalAtk = gear.medal && gear.medal.halfAtk && hpHalf(player) ? gear.medal.halfAtk : 0;
-      player.atk = (gear.sword && gear.sword.atk ? gear.sword.atk : 0) + atkMod + medalAtk;
-      player.def = (gear.shield && gear.shield.def ? gear.shield.def : 0) + defMod - burnStacks(player);
+      player.atk = gearStatSum("atk") + atkMod + medalAtk;
+      player.def = gearStatSum("def") + defMod - burnStacks(player);
     }
 
     function medalIcon() {
@@ -4474,7 +4544,12 @@
     }
 
     function addPoison(target, amount) {
+      if (target === player && hasStatusImmune()) {
+        log(`${heroName()}は${gear.shield.name}。毒を無視した。`);
+        return false;
+      }
       target.poison = poisonStacks(target) + Math.max(1, Number(amount) || 1);
+      return true;
     }
 
     function poisonBadge(stacks) {
@@ -4541,6 +4616,19 @@
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       log(hurtSentence(enemy.name, name, raw + extra, cut.reduced, result), card, true);
+      // バトルカウンター：ダメージを食らったら、いまのDEFだけ相手へ
+      if (result.hpLoss > 0 && hasReflectDef() && enemy.hp > 0 && player.hp > 0) {
+        const reflect = Math.max(0, Number(player.def) || 0);
+        if (reflect > 0) {
+          const back = mitigate(reflect, enemyDef());
+          const hit = applyDamage(enemy, back.dealt);
+          if (back.dealt > 0 && (hit.hpLoss || hit.blocked)) {
+            slashFoe();
+            noteHit("enemy", hit.hpLoss, back.dealt);
+          }
+          log(`${gear.shield.name}。${enemy.name}に${back.dealt}ダメージ。`, card);
+        }
+      }
     }
 
     function restoreHp(amount) {
@@ -4639,14 +4727,22 @@
     }
 
     function strike(card, amount) {
-      const cut = amount > 0 ? mitigate(amount, enemyDef()) : { reduced: 0, dealt: 0 };
+      const pierce = !!(gear && gear.sword && gear.sword.ignoreDef);
+      const defense = pierce ? 0 : enemyDef();
+      const cut = amount > 0 ? mitigate(amount, defense) : { reduced: 0, dealt: 0 };
       const result = applyDamage(enemy, cut.dealt);
       if (cut.dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
         noteHit("enemy", result.hpLoss, cut.dealt);
       }
       log(damageSentence(heroName(), card.name, cut.dealt, result), card);
-      // 業火の剣：攻撃が当たるたび、相手を炎上させる
+      // ポイズンソード：アタックカードなら、シールドで防がれても毒
+      const poisonHit = gear && gear.sword && Number(gear.sword.poisonHit) || 0;
+      if (poisonHit > 0 && amount > 0 && cardKind(card) === "attack" && enemy.hp > 0) {
+        addPoison(enemy, poisonHit);
+        log(`${gear.sword.name}の毒。${enemy.name}は毒+${enemy.poison}。`, card);
+      }
+      // フレイムソード／業火の剣：ダメージが通るたび炎上
       const burnHit = gear && gear.sword && Number(gear.sword.burnHit) || 0;
       if (burnHit > 0 && cut.dealt > 0 && enemy.hp > 0) {
         addBurn(enemy, burnHit);
@@ -4792,7 +4888,7 @@
         render();
         return false;
       }
-      player.energy -= card.cost;
+      spendEnergy(card.cost);
       hand.splice(index, 1);
       if (card.quick) {
         resolveCard(card);
@@ -4984,8 +5080,8 @@
         return;
       }
       if (card.burnFirst && card.burn) {
-        addBurn(player, card.burn);
-        log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
+        if (addBurn(player, card.burn)) log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
+        else log(`${enemy.name}は${card.name}。`, card, true);
       }
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
@@ -4994,12 +5090,12 @@
         enemy.block += card.block;
         log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
       } else if (card.poison) {
-        addPoison(player, card.poison);
-        log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
+        if (addPoison(player, card.poison)) log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
+        else log(`${enemy.name}は${card.name}。`, card, true);
       }
       if (card.burn && !card.burnFirst) {
-        addBurn(player, card.burn);
-        log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
+        if (addBurn(player, card.burn)) log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
+        else log(`${enemy.name}は${card.name}。`, card, true);
       } else if (!card.damage && !card.block && !card.poison && !card.burnFirst) {
         log(`${enemy.name}は${card.name}。${card.text}`, card, true);
       }
@@ -5070,6 +5166,13 @@
 
     function endTurn() {
       if (phase !== "player" || outcome) return;
+      if (hasReuseBracelet()) {
+        const left = Math.max(0, Number(player.energy) || 0);
+        player.pendingCarry = left;
+        if (left > 0) log(`${heroName()}は再利用の腕輪。マナ${left}を次のターンへ持ち越す。`);
+      } else {
+        player.pendingCarry = 0;
+      }
       phase = "resolve";
       resolveAt = 0;
       while (hand.length) discard.push(hand.pop());
@@ -5106,9 +5209,14 @@
       // シールドはターンの終わりに消えない。削られるまで残る
       syncGearStats();
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
-      player.maxEnergy = MANA + halfMana;
-      player.energy = MANA + halfMana;
+      const carried = Math.max(0, Number(player.pendingCarry) || 0);
+      player.pendingCarry = 0;
+      player.baseMax = MANA + halfMana;
+      player.baseEnergy = player.baseMax;
+      player.tempEnergy = carried;
+      syncEnergyTotal();
       if (halfMana) log(`${heroName()}はミノタウロスの腕輪。体力が半分以下なので、このターンのマナ+1。`);
+      if (carried > 0) log(`${heroName()}は持ち越したマナ${carried}（オレンジ）。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
       draw(5 + extra);
@@ -5364,6 +5472,11 @@
         if (player.hp > player.maxHp) player.hp = player.maxHp;
         player.maxEnergy = Math.min(MANA + 1, Math.max(MANA, Number(player.maxEnergy) || MANA));
         if (player.energy > player.maxEnergy) player.energy = player.maxEnergy;
+        if (player.baseMax == null) player.baseMax = Math.max(0, Number(player.maxEnergy) || MANA);
+        if (player.tempEnergy == null) player.tempEnergy = 0;
+        if (player.baseEnergy == null) player.baseEnergy = Math.max(0, (Number(player.energy) || 0) - (Number(player.tempEnergy) || 0));
+        if (player.pendingCarry == null) player.pendingCarry = 0;
+        syncEnergyTotal();
         player.burn = burnStacks(player);
         player.focus = player.focus || 0;
         player.parry = player.parry === true ? 1 : Math.max(0, Number(player.parry) || 0);
@@ -5453,7 +5566,7 @@
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
       battleStartHp = hp;
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -5843,11 +5956,18 @@
     }
 
     function pips() {
-      return Array.from({ length: player.maxEnergy }, (_, i) =>
-        i < player.energy
+      const baseMax = Math.max(0, Number(player.baseMax) || Number(player.maxEnergy) || 0);
+      const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
+      const temp = Math.max(0, Number(player.tempEnergy) || 0);
+      const yellow = Array.from({ length: baseMax }, (_, i) =>
+        i < baseOn
           ? `<i class="pip on" style="--i:${i}"></i>`
           : `<i class="pip"></i>`
       ).join("");
+      const orange = Array.from({ length: temp }, (_, i) =>
+        `<i class="pip temp" style="--i:${baseMax + i}" title="持ち越しの一時マナ"></i>`
+      ).join("");
+      return yellow + orange;
     }
 
     function menuButton(label, action, primary, disabled) {
@@ -6197,13 +6317,23 @@
             <div class="ref-grid">
               <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
               <figure><img src="gear-long-sword.jpg?v=2" alt=""><figcaption>ロングソード</figcaption></figure>
+              <figure><img src="gear-poison-sword.svg" alt=""><figcaption>ポイズンソード</figcaption></figure>
+              <figure><img src="gear-flame-sword.svg" alt=""><figcaption>フレイムソード</figcaption></figure>
+              <figure><img src="gear-excalibur.svg" alt=""><figcaption>エクスカリバー</figcaption></figure>
               <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
               <figure><img src="gear-leather-shield.jpg" alt=""><figcaption>皮の盾</figcaption></figure>
               <figure><img src="gear-iron-shield.jpg" alt=""><figcaption>鉄の盾</figcaption></figure>
+              <figure><img src="gear-battle-counter.svg" alt=""><figcaption>バトルカウンター</figcaption></figure>
+              <figure><img src="gear-eagle-shield.svg" alt=""><figcaption>鷲の金盾</figcaption></figure>
+              <figure><img src="gear-lion-shield.svg" alt=""><figcaption>獅子の盾</figcaption></figure>
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連撃の腕輪</figcaption></figure>
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連守の腕輪</figcaption></figure>
+              <figure><img src="gear-power-bracelet.svg" alt=""><figcaption>力の腕輪</figcaption></figure>
+              <figure><img src="gear-guard-bracelet.svg" alt=""><figcaption>守りの腕輪</figcaption></figure>
+              <figure><img src="gear-reuse-bracelet.svg" alt=""><figcaption>再利用の腕輪</figcaption></figure>
               <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
             </div>
+            <p class="sheet-cap">新しい装備の絵は仮の印（差し替え可）。ポイズンソードはアタックで毒+1（シールドでも）。フレイムソードはダメージが通るたび炎上+1。エクスカリバーはDEF無視。バトルカウンターは被ダメでDEF分反撃。鷲の金盾は状態異常無視。再利用の腕輪は余りマナをオレンジで持ち越し。</p>
             <h4>使い捨てアイテム</h4>
             <div class="ref-grid">
               <figure><img src="item-herb.jpg?v=1" alt=""><figcaption>薬草　★<br>HP10回復。クイック</figcaption></figure>
