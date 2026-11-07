@@ -8,16 +8,26 @@
     :root {
       --hand-scale: 0.74;
       --card-ratio: 204 / 300;
-      --bg: #12100e;
-      --ink: #2a2118;
-      --cream: #f4ead7;
-      --gold: #e4b15a;
-      --hp: #d85a4a;
-      --hp-bg: #3a2422;
-      --block: #7eb0e6;
-      --attack: #e07a55;
-      --guard: #6f9ed4;
-      --muted: #b7a898;
+      --bg: #0a0908;
+      --ink: #1a1612;
+      --cream: #f0e4cc;
+      --gold: #d4a84a;
+      --gold-soft: rgba(212, 168, 74, 0.55);
+      --gold-line: rgba(212, 168, 74, 0.72);
+      --panel-face: linear-gradient(180deg, rgba(22, 18, 14, 0.98), rgba(6, 5, 4, 0.99));
+      --panel-sheen: radial-gradient(120% 80% at 50% 0%, rgba(212, 168, 74, 0.1), transparent 55%);
+      --panel-frame:
+        0 0 0 1px rgba(8, 6, 5, 0.96),
+        0 0 0 2px rgba(212, 168, 74, 0.58),
+        0 0 0 5px rgba(8, 6, 5, 0.9),
+        0 12px 26px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 232, 180, 0.12);
+      --hp: #c24a3c;
+      --hp-bg: #2a1a18;
+      --block: #9bb4cc;
+      --attack: #c88858;
+      --guard: #8aa0b8;
+      --muted: #a89880;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; }
@@ -25,8 +35,8 @@
       font-family: "Yu Gothic UI", "Meiryo", "Segoe UI", sans-serif;
       color: var(--cream);
       background:
-        radial-gradient(ellipse at 50% 18%, #3a2c24 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 100%, #1c1612 0%, #12100e 70%);
+        radial-gradient(ellipse at 50% 18%, #241c14 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 100%, #100e0c 0%, #0a0908 70%);
     }
     button, body { -webkit-user-select: none; user-select: none; }
     .battle-screen {
@@ -44,9 +54,9 @@
       column-gap: 10px;
       overflow: visible;
       background:
-        radial-gradient(ellipse at 50% 8%, rgba(90, 62, 36, 0.32), transparent 52%),
-        radial-gradient(ellipse at 50% 100%, rgba(28, 18, 12, 0.9), #0c0907 72%),
-        #120e0b;
+        radial-gradient(ellipse at 50% 8%, rgba(70, 48, 22, 0.22), transparent 52%),
+        radial-gradient(ellipse at 50% 100%, rgba(8, 6, 5, 0.95), #050403 72%),
+        #0a0908;
     }
     .battle-screen.no-log {
       grid-template-columns: auto minmax(0, 1fr);
@@ -98,15 +108,8 @@
       padding: 10px 18px;
       border-radius: 14px;
       border: 0;
-      background:
-        radial-gradient(110% 140% at 0% 40%, rgba(126, 182, 255, 0.16), transparent 52%),
-        linear-gradient(180deg, rgba(38, 44, 56, 0.96), rgba(12, 14, 20, 0.98));
-      box-shadow:
-        0 0 0 1px rgba(10, 12, 18, 0.95),
-        0 0 0 2px rgba(150, 176, 210, 0.45),
-        0 0 0 5px rgba(10, 12, 18, 0.88),
-        0 10px 22px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(200, 220, 255, 0.16);
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
     }
     .dungeon { display: flex; align-items: baseline; gap: 16px; }
     .dungeon-name {
@@ -248,7 +251,7 @@
       object-position: center bottom;
       filter: none;
     }
-    /* 名前と体力の板。暗い漆塗りに金の縁。左の帯は自分が青、敵が赤。 */
+    /* 名前と体力の板。黒漆に金の縁。自分と敵も同じ黒金でそろえる。 */
     .battle-plate {
       --plate-accent: var(--gold);
       position: absolute;
@@ -257,17 +260,17 @@
       width: min(300px, 40%);
       padding: 8px 12px 8px 16px;
       border-radius: 12px;
-      border: 1px solid rgba(228, 177, 90, 0.7);
+      border: 1px solid var(--gold-line);
       background:
-        radial-gradient(120% 90% at 0% 0%, rgba(255, 236, 200, 0.12), transparent 55%),
-        linear-gradient(180deg, rgba(62, 46, 34, 0.97), rgba(26, 18, 14, 0.98));
+        radial-gradient(120% 90% at 0% 0%, rgba(255, 232, 180, 0.08), transparent 55%),
+        linear-gradient(180deg, rgba(28, 22, 16, 0.98), rgba(8, 6, 5, 0.99));
       color: var(--cream);
       box-shadow:
-        0 0 0 3px rgba(18, 12, 9, 0.92),
-        0 0 0 4px rgba(228, 177, 90, 0.42),
-        0 14px 24px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 236, 200, 0.22),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+        0 0 0 3px rgba(8, 6, 5, 0.95),
+        0 0 0 4px rgba(212, 168, 74, 0.4),
+        0 14px 24px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 232, 180, 0.14),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.65);
       pointer-events: none;
     }
     .battle-plate::before {
@@ -278,19 +281,19 @@
       bottom: 10px;
       width: 4px;
       border-radius: 2px;
-      background: linear-gradient(180deg, #fff 0%, var(--plate-accent) 30%, var(--plate-accent) 70%, rgba(0, 0, 0, 0.4) 100%);
-      box-shadow: 0 0 10px var(--plate-accent);
+      background: linear-gradient(180deg, #fff2d0 0%, var(--plate-accent) 30%, var(--plate-accent) 70%, rgba(0, 0, 0, 0.45) 100%);
+      box-shadow: 0 0 8px rgba(212, 168, 74, 0.35);
     }
     .battle-plate::after {
       content: "";
       position: absolute;
       inset: 3px;
       border-radius: 9px;
-      border: 1px solid rgba(228, 177, 90, 0.18);
+      border: 1px solid rgba(212, 168, 74, 0.16);
       pointer-events: none;
     }
-    .battle-plate.hero-plate { --plate-accent: #7eb6ff; }
-    .battle-plate.foe-plate { --plate-accent: #ff5c4a; }
+    .battle-plate.hero-plate { --plate-accent: var(--gold); }
+    .battle-plate.foe-plate { --plate-accent: #c89848; }
     .battle-plate .hint { pointer-events: auto; }
     .hero-shoulder .hero-plate,
     .enemy-main .foe-plate {
@@ -387,7 +390,7 @@
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04));
       pointer-events: none;
     }
-    .battle-plate .shield-row { position: relative; height: 14px; margin-bottom: 5px; border-radius: 6px; background: rgba(60, 110, 170, 0.18); box-shadow: inset 0 0 0 1px rgba(126, 182, 255, 0.35); }
+    .battle-plate .shield-row { position: relative; height: 14px; margin-bottom: 5px; border-radius: 6px; background: rgba(40, 34, 24, 0.55); box-shadow: inset 0 0 0 1px rgba(212, 168, 74, 0.28); }
     .battle-plate .shield-row .meter.shield {
       height: 100%;
       border-radius: 6px;
@@ -396,8 +399,8 @@
     }
     .battle-plate .meter.shield > span {
       border-radius: 6px;
-      background: linear-gradient(180deg, #e8f4ff 0%, #8cc0ff 45%, #3f7ccc 100%);
-      box-shadow: 0 0 12px rgba(126, 182, 255, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      background: linear-gradient(180deg, #f2e4c0 0%, #c8a86a 45%, #8a6e38 100%);
+      box-shadow: 0 0 8px rgba(212, 168, 74, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
     .battle-plate .shield-line {
       position: absolute;
@@ -409,32 +412,32 @@
       font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.22em;
-      color: #f2f8ff;
+      color: #f2e8d0;
       text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.9);
     }
-    /* シールドの札：板の右上に大きく。盾の形の青い札に白い数字 */
-    .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(126, 182, 255, 0.75), 0 0 22px rgba(126, 182, 255, 0.45), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(220, 238, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
-    /* パリィ中：体力バーを無敵っぽく（次の攻撃を受けない） */
+    /* シールドの札：板の右上。黒金の盾札 */
+    .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(212, 168, 74, 0.62), 0 0 16px rgba(212, 168, 74, 0.22), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 232, 180, 0.18), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
+    /* パリィ中：金の光で無敵感を出す（次の攻撃を受けない） */
     .battle-plate.parried {
-      box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(170, 220, 255, 0.95), 0 0 28px rgba(120, 200, 255, 0.7), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(230, 245, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(232, 200, 120, 0.85), 0 0 20px rgba(212, 168, 74, 0.4), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 236, 200, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
     }
     .battle-plate.parried.shielded {
-      box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(170, 220, 255, 0.95), 0 0 0 6px rgba(126, 182, 255, 0.45), 0 0 28px rgba(120, 200, 255, 0.75), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(230, 245, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(232, 200, 120, 0.85), 0 0 0 6px rgba(212, 168, 74, 0.35), 0 0 20px rgba(212, 168, 74, 0.45), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 236, 200, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
     }
     .battle-plate.parried .meter.hp {
-      background: linear-gradient(180deg, #1a2838, #2a4058);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(180, 230, 255, 0.9), 0 0 16px rgba(120, 200, 255, 0.75);
+      background: linear-gradient(180deg, #2a2214, #3a3020);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(232, 200, 120, 0.7), 0 0 12px rgba(212, 168, 74, 0.4);
     }
     .battle-plate.parried .meter.hp .hp-max {
-      background: rgba(40, 70, 100, 0.55);
+      background: rgba(60, 48, 28, 0.55);
     }
     .battle-plate.parried .meter.hp > span {
-      background: linear-gradient(180deg, #ffffff 0%, #c8e8ff 28%, #6eb4ff 58%, #3a78d0 100%);
-      box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 14px rgba(140, 210, 255, 0.95);
+      background: linear-gradient(180deg, #fff8e8 0%, #e8d090 28%, #c8a050 58%, #8a6a28 100%);
+      box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 0 10px rgba(212, 168, 74, 0.55);
       animation: parry-invuln 1.35s ease-in-out infinite;
     }
     .battle-plate.parried.low .meter.hp > span {
-      background: linear-gradient(180deg, #ffffff 0%, #c8e8ff 28%, #6eb4ff 58%, #3a78d0 100%);
+      background: linear-gradient(180deg, #fff8e8 0%, #e8d090 28%, #c8a050 58%, #8a6a28 100%);
       animation: parry-invuln 1.35s ease-in-out infinite;
     }
     .battle-plate.parried .meter.hp::before {
@@ -447,22 +450,22 @@
       font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.28em;
-      color: #ffffff;
-      text-shadow: 0 0 6px rgba(80, 160, 255, 0.95), 0 1px 0 #1a3a60, 0 0 12px rgba(180, 230, 255, 0.9);
+      color: #fff8e8;
+      text-shadow: 0 0 6px rgba(212, 168, 74, 0.85), 0 1px 0 #3a2810, 0 0 10px rgba(232, 200, 120, 0.7);
       pointer-events: none;
       white-space: nowrap;
     }
     .battle-plate.parried .hp-line .lbl .ico {
-      color: #9fd0ff;
-      filter: drop-shadow(0 0 5px rgba(120, 190, 255, 0.85));
+      color: #e8d090;
+      filter: drop-shadow(0 0 4px rgba(212, 168, 74, 0.55));
     }
     .battle-plate.parried .hp-line b {
-      color: #e8f6ff;
-      text-shadow: 0 1px 0 #000, 0 0 12px rgba(140, 200, 255, 0.55);
+      color: #fff4dc;
+      text-shadow: 0 1px 0 #000, 0 0 10px rgba(212, 168, 74, 0.4);
     }
     @keyframes parry-invuln {
-      0%, 100% { filter: brightness(1) saturate(1); box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 14px rgba(140, 210, 255, 0.85); }
-      50% { filter: brightness(1.28) saturate(1.15); box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 22px rgba(200, 235, 255, 1); }
+      0%, 100% { filter: brightness(1) saturate(1); box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 0 10px rgba(212, 168, 74, 0.45); }
+      50% { filter: brightness(1.18) saturate(1.08); box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 16px rgba(232, 200, 120, 0.7); }
     }
     .battle-plate .shield-badge {
       position: absolute;
@@ -473,21 +476,21 @@
       z-index: 2;
       display: grid;
       place-items: center;
-      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(126, 182, 255, 0.7));
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 8px rgba(212, 168, 74, 0.35));
     }
     .battle-plate .shield-badge .plate-shield {
       position: absolute;
       inset: 0;
       clip-path: polygon(50% 0, 100% 14%, 100% 52%, 86% 78%, 50% 100%, 14% 78%, 0 52%, 0 14%);
-      background: linear-gradient(180deg, #eaf5ff 0%, #8cc0ff 30%, #3b78c8 70%, #1f4b86 100%);
-      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.55);
+      background: linear-gradient(180deg, #fff0c8 0%, #d4a84a 30%, #8a6a28 70%, #3a2a10 100%);
+      box-shadow: inset 0 0 0 3px rgba(255, 236, 200, 0.4);
     }
     .battle-plate .shield-badge .plate-shield::after {
       content: "";
       position: absolute;
       inset: 4px;
       clip-path: inherit;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.18) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.22) 100%);
     }
     .battle-plate .shield-badge b {
       position: relative;
@@ -496,8 +499,8 @@
       font-size: 26px;
       font-weight: 900;
       line-height: 1;
-      color: #fff;
-      text-shadow: 0 2px 0 #1f3f6e, 0 0 8px rgba(0, 40, 90, 0.9);
+      color: #fff8e8;
+      text-shadow: 0 2px 0 #3a2810, 0 0 6px rgba(0, 0, 0, 0.85);
       letter-spacing: 0;
     }
     .battle-plate .hp-line {
@@ -549,14 +552,14 @@
     .status-chip b { font-size: 17px; letter-spacing: 0; text-shadow: 0 1px 0 #000; }
     .status-chip.hint, .status-chip.hint b { text-decoration: none; border-bottom: 0; }
     .status-chip:has(> b) { padding-right: 8px; }
-    .status-chip.poison { border-color: rgba(200, 140, 255, 0.7); box-shadow: 0 0 10px rgba(160, 90, 230, 0.55), 0 2px 6px rgba(0, 0, 0, 0.55); }
-    .status-chip.poison b { color: #e6c6ff; }
-    .status-chip.burn { border-color: rgba(255, 170, 80, 0.75); box-shadow: 0 0 10px rgba(255, 120, 40, 0.6), 0 2px 6px rgba(0, 0, 0, 0.55); }
-    .status-chip.burn b { color: #ffd9a8; }
-    .status-chip.parry { border-color: rgba(140, 190, 255, 0.8); box-shadow: 0 0 10px rgba(110, 170, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.55); }
-    .status-chip.parry b { color: #d6ebff; }
-    .status-chip.focus { border-color: rgba(255, 214, 122, 0.8); box-shadow: 0 0 10px rgba(255, 200, 90, 0.55), 0 2px 6px rgba(0, 0, 0, 0.55); }
-    .status-chip.focus b { color: #ffe9b0; }
+    .status-chip.poison { border-color: rgba(180, 140, 200, 0.45); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.poison b { color: #d8c4e8; }
+    .status-chip.burn { border-color: rgba(200, 140, 80, 0.5); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.burn b { color: #e8c8a0; }
+    .status-chip.parry { border-color: rgba(212, 168, 74, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.parry b { color: #f0e0b8; }
+    .status-chip.focus { border-color: rgba(212, 168, 74, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.focus b { color: #f0e0b8; }
     .battle-plate .poison-mark { display: inline-block; margin-top: 0; }
     @keyframes hp-low {
       0%, 100% { filter: brightness(1); }
@@ -2074,10 +2077,8 @@
       padding: 10px 22px 10px 40px;
       gap: 128px;
       border-radius: 16px;
-      background:
-        radial-gradient(90% 120% at 12% 40%, rgba(255, 214, 120, 0.08), transparent 42%),
-        linear-gradient(180deg, rgba(52, 36, 24, 0.88), rgba(16, 11, 9, 0.92));
-      box-shadow: none;
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
     }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
     /* 手札はマナ列にだけ重ねる。プレイエリア（battle-bands）より上へは出さない */
@@ -2170,22 +2171,15 @@
       padding: 16px 12px;
       border-radius: 16px;
       border: 0;
-      background:
-        radial-gradient(100% 70% at 80% 0%, rgba(140, 170, 120, 0.12), transparent 48%),
-        linear-gradient(180deg, rgba(30, 36, 28, 0.97), rgba(10, 12, 10, 0.98));
-      box-shadow:
-        0 0 0 1px rgba(10, 12, 10, 0.95),
-        0 0 0 2px rgba(150, 168, 120, 0.42),
-        0 0 0 5px rgba(10, 12, 10, 0.88),
-        0 14px 28px rgba(0, 0, 0, 0.42),
-        inset 0 1px 0 rgba(200, 220, 180, 0.12);
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
     }
     .battle-log h2 {
       margin: 0 0 14px;
       padding-bottom: 12px;
       border-bottom: 0;
-      background: linear-gradient(90deg, transparent 4%, rgba(160, 180, 130, 0.5) 50%, transparent 96%);
+      background: linear-gradient(90deg, transparent 4%, rgba(212, 168, 74, 0.55) 50%, transparent 96%);
       background-size: 100% 1px;
       background-repeat: no-repeat;
       background-position: bottom center;
@@ -2193,8 +2187,8 @@
       font-weight: 700;
       letter-spacing: 0.28em;
       text-align: center;
-      color: #c8d6a8;
-      text-shadow: 0 0 12px rgba(140, 170, 110, 0.28);
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(212, 168, 74, 0.22);
     }
     .battle-log h2::after {
       content: "◆";
@@ -2202,7 +2196,7 @@
       margin-top: 6px;
       font-size: 11px;
       letter-spacing: 0;
-      color: rgba(160, 180, 130, 0.65);
+      color: rgba(212, 168, 74, 0.65);
     }
     .battle-log p {
       margin: 0 0 16px;
@@ -2211,22 +2205,22 @@
       line-height: 1.65;
       letter-spacing: 0.04em;
       text-align: center;
-      color: #f6e2b6;
-      text-shadow: 0 1px 0 rgba(36, 22, 10, 0.85);
+      color: #ead8b0;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
     }
-    .battle-log p.turn-player { color: #7eb6ff; }
-    .battle-log p.turn-enemy { color: #ff5c4a; }
-    .battle-log .who-me { color: #7eb6ff; }
-    .battle-log .who-foe { color: #ff5c4a; }
+    .battle-log p.turn-player { color: #e8d4a0; }
+    .battle-log p.turn-enemy { color: #c4a070; }
+    .battle-log .who-me { color: #f0e0b8; }
+    .battle-log .who-foe { color: #b89060; }
     .battle-log p.turn-head {
       margin: 4px 0 12px;
       padding-top: 10px;
-      border-top: 1px solid rgba(150, 170, 120, 0.45);
+      border-top: 1px solid rgba(212, 168, 74, 0.35);
       font-size: 17px;
       font-weight: 700;
       letter-spacing: 0.08em;
       white-space: nowrap;
-      color: #c8d6a8;
+      color: var(--gold);
       text-shadow: none;
     }
     .battle-log h2 + p.turn-head { border-top: 0; padding-top: 0; }
@@ -2296,15 +2290,8 @@
       padding: 12px 14px 14px;
       border: 0;
       border-radius: 16px;
-      background:
-        radial-gradient(110% 70% at 20% 0%, rgba(255, 130, 70, 0.16), transparent 50%),
-        linear-gradient(180deg, rgba(62, 30, 20, 0.97), rgba(16, 9, 7, 0.98));
-      box-shadow:
-        0 0 0 1px rgba(18, 10, 8, 0.95),
-        0 0 0 2px rgba(210, 120, 70, 0.55),
-        0 0 0 5px rgba(18, 10, 8, 0.88),
-        0 14px 28px rgba(0, 0, 0, 0.42),
-        inset 0 1px 0 rgba(255, 190, 140, 0.16);
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
     }
     .gear-rail h2 {
       margin: 0 0 2px;
@@ -2315,9 +2302,9 @@
       font-weight: 800;
       letter-spacing: 0.28em;
       text-align: center;
-      color: #f0b078;
-      text-shadow: 0 0 12px rgba(255, 140, 80, 0.28);
-      background: linear-gradient(90deg, transparent 6%, rgba(210, 120, 70, 0.55) 50%, transparent 94%);
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(212, 168, 74, 0.22);
+      background: linear-gradient(90deg, transparent 6%, rgba(212, 168, 74, 0.55) 50%, transparent 94%);
       background-size: 100% 1px;
       background-repeat: no-repeat;
       background-position: bottom center;
@@ -2328,7 +2315,7 @@
       margin-top: 5px;
       font-size: 10px;
       letter-spacing: 0;
-      color: rgba(210, 130, 80, 0.7);
+      color: rgba(212, 168, 74, 0.65);
     }
     .gear-rail .party-stack {
       margin-top: auto;
