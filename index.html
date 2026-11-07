@@ -154,7 +154,7 @@
       z-index: 3;
       height: 100%;
       width: auto;
-      aspect-ratio: 851 / 1084;
+      aspect-ratio: 864 / 1136;
       max-width: min(36%, 340px);
       pointer-events: none;
     }
@@ -2237,7 +2237,7 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=2", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=2" },
+      { name: "戦士", stand: "job-front.png?v=3", chibi: "job-warrior.png?v=8", action: "job-action.jpg?v=3" },
     ];
     let jobsHad = ["戦士"];
     let ultimate = "";
@@ -3991,7 +3991,7 @@
             <h2>設定資料</h2>
             <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
             <h3>戦士</h3>
-            <img class="sheet-art" src="warrior-f-sheet.jpg?v=11" alt="戦士。正面、戦闘（ポケモンの画角）、敗北、勝利。">
+            <img class="sheet-art" src="warrior-f-sheet.jpg?v=12" alt="戦士。正面、戦闘（ポケモンの画角）、敗北、勝利。">
             <p class="sheet-cap">左から、正面、戦闘（ポケモンの画角）、敗北、勝利。</p>
             <h3>女の戦士</h3>
             <img class="sheet-art" src="warrior-girl-sheet.jpg?v=1" alt="女の戦士。正面、戦闘（ポケモンの画角）、敗北、勝利。">
@@ -4011,12 +4011,12 @@
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="job-front.png?v=2" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
-              <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=2" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
+              <figure><img class="cut-ref" src="job-front.png?v=3" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
+              <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=3" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
             </div>
             <h3>戦闘の絵</h3>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="hero-shoulder.png?v=19" alt=""><figcaption>戦闘の戦士</figcaption></figure>
+              <figure><img class="cut-ref" src="hero-shoulder.png?v=20" alt=""><figcaption>戦闘の戦士</figcaption></figure>
             </div>
             <h3>タイトル</h3>
             <img class="sheet-art" src="title-party.jpg" alt="タイトル。四人がわいわいしている。">
@@ -4057,6 +4057,9 @@
             <h3>祝福</h3>
             <img class="sheet-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">
             <p class="sheet-cap">1層目。挑戦者に祝福を。大きな目の気。</p>
+            <h3>お店</h3>
+            <img class="sheet-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている">
+            <p class="sheet-cap">お店の挿絵。怪しげな商人がこちらを見て笑っている。</p>
             <h3>敵</h3>
             <div class="ref-grid">
               <figure><img class="enemy-ref" src="enemy-slime.png?v=4" alt=""><figcaption>スライム</figcaption></figure>
@@ -4267,7 +4270,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=19";
+          img.src = "hero-shoulder.png?v=20";
         });
       }
       return heroImageTask;
@@ -4292,7 +4295,7 @@
         : guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=19" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=20" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
     }
 
     function startHeroIdle() {
