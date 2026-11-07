@@ -3828,7 +3828,6 @@
     const BATTLE_TOTAL = 3;
     let battleTotal = BATTLE_TOTAL;
     let route = CLASSIC_ROUTE.slice();
-    let retreatUsed = false;
     let job = "戦士";
     let castPicked = false;
     let castHover = "";
@@ -5768,7 +5767,6 @@
         route,
         battleStartHp,
         floorZero: true, // 祝福を0層目として数える新しい道（古いセーブの見分け用）
-        retreatUsed,
         dungeonName,
         heroCast,
         job,
@@ -5904,7 +5902,6 @@
         enemy.atk = hiddenAtk(foe);
       }
       restoreEnemyLoop(data);
-      retreatUsed = !!data.retreatUsed;
       if (data.dungeonName) dungeonName = data.dungeonName === "20" ? "はじまりの洞窟" : data.dungeonName;
       heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
@@ -6224,7 +6221,6 @@
       battleIndex = 0;
       route = buildRoute(floors || 20, dungeonName);
       battleTotal = route.length;
-      retreatUsed = false;
       cleared = false;
       gear = starterGear();
       gearOpen = null;
@@ -6676,7 +6672,6 @@
             <h3>道</h3>
             <div class="ref-grid">
               <figure><img src="path-fight.jpg?v=3" alt=""><figcaption>戦闘</figcaption></figure>
-              <figure><img src="path-retreat.jpg?v=4" alt=""><figcaption>引き返す</figcaption></figure>
               <figure><img src="path-shop.jpg?v=4" alt=""><figcaption>お店</figcaption></figure>
               <figure><img src="path-dash.jpg?v=4" alt=""><figcaption>走り抜ける</figcaption></figure>
               <figure><img src="path-search.jpg?v=4" alt=""><figcaption>探索</figcaption></figure>
@@ -7314,7 +7309,6 @@
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=4" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=4" },
-      retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。", image: "path-retreat.jpg?v=4" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
       search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg?v=4" },
       unknown: { name: "未知との遭遇", text: "左の2つ以外の出来事が起きる。戦闘もある。", image: "path-unknown.jpg?v=3" },
@@ -7423,9 +7417,7 @@
     }
 
     function rollPaths() {
-      const ids = PATH_POOL.slice();
-      if (!retreatUsed) ids.push("retreat");
-      return shuffle(ids).slice(0, 2).concat(["unknown"]);
+      return shuffle(PATH_POOL.slice()).slice(0, 2).concat(["unknown"]);
     }
 
     function unknownOutcomes() {
@@ -7688,17 +7680,8 @@
 
     function applyPath(id) {
       if (rewardStep === "done" || rewardStep === "cards") return;
-      const from = rewardStep;
       rewardStep = "done";
       if (id === "camp") restoreHp(player.maxHp - player.hp);
-      if (id === "retreat") {
-        if (from !== "paths") return;
-        retreatUsed = true;
-        const hp = player.hp;
-        outcome = null;
-        startBattle(hp);
-        return;
-      }
       advance(id === "skip" ? 2 : 1);
     }
 
