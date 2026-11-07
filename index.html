@@ -4030,7 +4030,7 @@
       } else {
         logTurn("enemy");
         const card = intentAt(0);
-        if (!card.press) enemy.block = 0;
+        // シールドはターンの終わりに消えない（敵も同じ。削られるまで残る）
         enemyUseCard(card);
         advanceEnemyLoop();
         if (player.hp > 0 && enemyNow().trait && !enemy.rallied && hpHalf(enemy)) {
@@ -4081,7 +4081,7 @@
       logTurn("player");
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
-      player.block = 0;
+      // シールドはターンの終わりに消えない。削られるまで残る
       syncGearStats();
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
       player.maxEnergy = MANA + halfMana;
