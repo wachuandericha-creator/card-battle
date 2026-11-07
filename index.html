@@ -356,7 +356,21 @@
     .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
     .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .reward-pick .card.preview { width: 132px; height: auto; }
-    .reward-source { margin: 0; color: var(--gold); font-size: 13px; font-weight: 800; }
+    .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
+    .reward-pick.gear-pick b { font-size: 16px; }
+    .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
+    .shop-gear { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(228, 177, 90, 0.7); }
+    .shop-panel { text-align: center; }
+    .shop-art { width: min(100%, 420px); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; margin: 0 auto 6px; display: block; }
+    .shop-row { display: flex; gap: 14px; justify-content: center; align-items: stretch; flex-wrap: wrap; margin: 10px 0 14px; }
+    .shop-slot { width: 150px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
+    .shop-slot .card.preview { width: 120px; height: auto; }
+    .shop-slot b { font-size: 16px; }
+    .shop-slot small { font-size: 12px; line-height: 1.4; font-weight: 700; }
+    .shop-slot span { margin-top: auto; color: var(--gold); font-weight: 800; }
+    .menu.shop-floor { justify-content: flex-start; padding-top: 18px; overflow-y: auto; }
+    .menu.shop-floor .shop-panel { width: min(100%, 760px); }
+    .burn-mark { color: #ffb15c; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
     .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
     .overlay.deck-view .panel {
@@ -1128,28 +1142,26 @@
     .energy-pips { display: flex; gap: 20px; justify-content: flex-start; flex-wrap: wrap; }
     .pip {
       position: relative;
-      width: 68px;
-      height: 68px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       border: 3px solid #6e5a42;
       background: #241c16;
     }
     .pip.on {
-      background: transparent;
-      border-color: transparent;
-      box-shadow: none;
+      border-color: rgba(255, 226, 120, 0.9);
+      background: radial-gradient(circle at 42% 38%, #fffbe0 0%, #ffe066 38%, #f0a81e 72%, #a86a08 100%);
+      box-shadow: 0 0 10px rgba(255, 210, 80, 0.55), 0 0 24px rgba(255, 180, 40, 0.3);
+      animation: mana-glow 2.4s ease-in-out infinite;
+      animation-delay: calc(var(--i, 0) * 0.3s);
     }
-    .pip.on .mana-fire {
-      position: absolute;
-      left: 50%;
-      bottom: -10px;
-      width: 168px;
-      height: 228px;
-      transform: translateX(-50%);
-      pointer-events: none;
+    @keyframes mana-glow {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 210, 80, 0.55), 0 0 24px rgba(255, 180, 40, 0.3); filter: brightness(1); }
+      18% { box-shadow: 0 0 22px rgba(255, 236, 150, 0.95), 0 0 52px rgba(255, 200, 60, 0.7); filter: brightness(1.35); }
+      40% { box-shadow: 0 0 10px rgba(255, 210, 80, 0.55), 0 0 24px rgba(255, 180, 40, 0.3); filter: brightness(1); }
     }
-    .energy-band { display: flex; align-items: flex-end; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 0 56px; gap: 128px; }
-    .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: flex-end; gap: 72px; }
+    .energy-band { display: flex; align-items: center; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 14px 0 6px 56px; gap: 128px; }
+    .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
     .ailment-slot { display: flex; align-items: center; gap: 10px; min-height: 36px; color: var(--cream); font-weight: 800; }
     .ailment-slot > span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
@@ -2053,8 +2065,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .pip { width: 48px; height: 48px; }
-      .pip.on .mana-fire { width: 118px; height: 160px; }
+      .pip { width: 40px; height: 40px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -2124,6 +2135,8 @@
       ホテル: { cost: 3, text: "体力を18回復\nインスタント", heal: 18, instant: true, kind: "instant" },
       ダッシュ: { cost: 1, text: "2枚引く\nクイック", quick: true, draw: 2, kind: "skill" },
     };
+    // 敵の隠しATK は ★+2、★★+5、★★★+8。アタック+ はアタック3にそれを足した合計を書く。隠しDEFは0。
+    const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
     const ENEMIES = [
       {
         name: "スライム",
@@ -2132,47 +2145,52 @@
         rank: "雑魚",
         hp: 22,
         pattern: [
-          { name: "アタック+", cost: 1, text: "9ダメージ", damage: 9 },
+          { name: "アタック+", cost: 1, text: "5ダメージ", damage: 5 },
           { name: "ブロック+", cost: 1, text: "ブロック7", block: 7 },
           { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
-          { name: "ボディプレス", cost: 2, text: "ブロックの数だけダメージ\nブロックがなければ0", press: true },
+          { name: "シールドアタック", cost: 2, text: "ブロックの数だけダメージ\nブロックがなければ0", press: true },
+          { name: "ハードブロック", cost: 2, text: "ブロック7", block: 7, kind: "block" },
         ],
       },
       {
-        name: "荒くれ",
+        name: "ゴブリン",
         image: "enemy-goblin.png?v=3",
-        tier: 2,
-        rank: "普通",
+        tier: 1,
+        rank: "雑魚",
         hp: 24,
         pattern: [
-          { name: "アタック+", cost: 1, text: "12ダメージ", damage: 12 },
-          { name: "ブロック+", cost: 1, text: "ブロック10", block: 10 },
-          { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
-          { name: "殴打", cost: 1, text: "4ダメージ", damage: 4 },
-          { name: "叩き", cost: 1, text: "8ダメージ", damage: 8 },
+          { name: "アタック+", cost: 1, text: "5ダメージ", damage: 5 },
+          { name: "アタック+", cost: 1, text: "5ダメージ", damage: 5 },
+          { name: "ブロック+", cost: 1, text: "ブロック7", block: 7 },
+          { name: "キック", cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
         ],
       },
       {
-        name: "重騎士",
+        name: "ミノタウロス",
         image: "enemy-minotaur.png?v=3",
         tier: 3,
         rank: "強敵",
-        hp: 30,
+        hp: 50,
+        medal: "minotaur-medal",
+        trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
         pattern: [
-          { name: "アタック+", cost: 1, text: "15ダメージ", damage: 15 },
-          { name: "ブロック+", cost: 1, text: "ブロック12", block: 12 },
-          { name: "静止", cost: 1, text: "このターンは動かない" },
-          { name: "重撃", cost: 2, text: "12ダメージ", damage: 12 },
-          { name: "堅守", cost: 2, text: "ブロック8", block: 8 },
+          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
+          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
+          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
+          { name: "ブロック", cost: 1, text: "ブロック3", block: 3 },
+          { name: "ブロック", cost: 1, text: "ブロック3", block: 3 },
+          { name: "ミノスの一撃", cost: 3, text: "12ダメージ\n20%で20ダメージ", damage: 12, kind: "attack", crit: 20, critChance: 0.2 },
+          { name: "タウロスアタック", cost: 2, text: "12ダメージ\n体力が最大の半分以下のときだけ使える", damage: 12, kind: "attack", halfOnly: true },
         ],
       },
     ];
+    const ENEMY_RENAME = { 荒くれ: "ゴブリン", 重騎士: "ミノタウロス", 仮の相手: "スライム" };
     const DUNGEON = {
       road: [1, 2],
-      pools: { 1: ["スライム"], 2: ["荒くれ"] },
-      boss: "重騎士",
+      pools: { 1: ["スライム"], 2: ["ゴブリン"] },
+      boss: "ミノタウロス",
     };
-    const CLASSIC_ROUTE = ["スライム", "荒くれ", "重騎士"];
+    const CLASSIC_ROUTE = ["スライム", "ゴブリン", "ミノタウロス"];
 
     const root = document.getElementById("game");
     let uid = 1;
@@ -2216,7 +2234,6 @@
     let beggarCut = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
-    let manaFireGen = 0;
     let hpStamp = 0;
     let fxSlash = false;
     let fxHurt = false;
@@ -2255,6 +2272,8 @@
     let rewardPaths = [];
     let rewardStep = "cards";
     let bonusCard = null;
+    let bossPicks = [];
+    let shopStock = [];
     const MANA = 3;
     const HAND_CAP = 10;
     const CHARACTER_NAME = "戦士";
@@ -2339,9 +2358,37 @@
       timer = null;
     }
 
+    function enemyKey(name) {
+      return ENEMY_RENAME[name] || name;
+    }
+
     function enemyByName(name) {
-      const key = name === "仮の相手" ? "スライム" : name;
+      const key = enemyKey(name);
       return ENEMIES.find((item) => item.name === key) || ENEMIES[0];
+    }
+
+    function hiddenAtk(foe) {
+      return HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
+    }
+
+    function burnStacks(target) {
+      return Math.max(0, Number(target && target.burn) || 0);
+    }
+
+    function addBurn(target, amount) {
+      target.burn = burnStacks(target) + Math.max(1, Number(amount) || 1);
+      if (target === player) syncGearStats();
+    }
+
+    function enemyDef() {
+      return (Number(enemy && enemy.def) || 0) - burnStacks(enemy);
+    }
+
+    const BURN_NOTE = "炎上は、受けた側のDEFを重なった数だけ下げる。この戦闘中だけ。終わると戻る。";
+
+    function burnBadge(stacks) {
+      if (!stacks) return "";
+      return `<span class="hint burn-mark">炎上+${stacks}<i>${esc(BURN_NOTE)}</i></span>`;
     }
 
     function rollRank(tier) {
@@ -2415,9 +2462,33 @@
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", effect: "手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-bracelet.jpg" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", effect: "手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-bracelet.jpg" },
     ];
+    // ボスの報酬だけで手に入る。ランダムな装備には入れない。
+    const BOSS_GEAR = [
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", effect: "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg", halfAtk: 2 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", effect: "左右どちらかの腕輪枠に付けられる。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg", halfMana: 1 },
+    ];
 
     function emptyGear() {
-      return { sword: null, shield: null, braceletR: null, braceletL: null, itemL: null, itemR: null, medals: 0 };
+      return { sword: null, shield: null, braceletR: null, braceletL: null, medal: null, itemL: null, itemR: null, medals: 0 };
+    }
+
+    function hpHalf(target) {
+      return !!target && target.hp <= target.maxHp / 2;
+    }
+
+    function hasGear(id) {
+      return ["sword", "shield", "braceletR", "braceletL", "medal"].some((key) => gear[key] && gear[key].id === id);
+    }
+
+    function giveGear(item) {
+      if (!item) return;
+      if (item.slot === "braceletAny") {
+        const key = !gear.braceletL ? "braceletL" : !gear.braceletR ? "braceletR" : "braceletL";
+        gear[key] = { ...item };
+      } else {
+        gear[item.slot] = { ...item };
+      }
+      syncGearStats();
     }
 
     function starterGear() {
@@ -2428,20 +2499,21 @@
     }
 
     function gearItem(id) {
-      return GEAR_ITEMS.find((item) => item.id === id) || null;
+      return GEAR_ITEMS.find((item) => item.id === id) || BOSS_GEAR.find((item) => item.id === id) || null;
     }
 
     function normalizeGear(data) {
       const next = emptyGear();
       if (!data) return next;
-      for (const key of ["sword", "shield", "braceletR", "braceletL", "itemL", "itemR"]) {
+      for (const key of ["sword", "shield", "braceletR", "braceletL", "medal", "itemL", "itemR"]) {
         if (key === "itemL" || key === "itemR") {
           const held = data[key];
           if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。" };
           continue;
         }
         const item = data[key] && gearItem(data[key].id);
-        if (item && item.slot === key) next[key] = { ...item };
+        const fits = item && (item.slot === key || (item.slot === "braceletAny" && (key === "braceletL" || key === "braceletR")));
+        if (fits) next[key] = { ...item };
       }
       const medals = Math.floor(Number(data.medals) || 0);
       next.medals = medals > 0 ? medals : 0;
@@ -2452,8 +2524,9 @@
       if (!player) return;
       const atkMod = Number(player.atkMod) || 0;
       const defMod = Number(player.defMod) || 0;
-      player.atk = (gear.sword && gear.sword.atk ? gear.sword.atk : 0) + atkMod;
-      player.def = (gear.shield && gear.shield.def ? gear.shield.def : 0) + defMod;
+      const medalAtk = gear.medal && gear.medal.halfAtk && hpHalf(player) ? gear.medal.halfAtk : 0;
+      player.atk = (gear.sword && gear.sword.atk ? gear.sword.atk : 0) + atkMod + medalAtk;
+      player.def = (gear.shield && gear.shield.def ? gear.shield.def : 0) + defMod - burnStacks(player);
     }
 
     function medalIcon() {
@@ -2488,8 +2561,8 @@
 
     function gearEffectText() {
       if (!gearOpen) return "";
-      if (gearOpen === "medal") {
-        return `<p class="gear-effect">メダル。上限はない。多いほど有利。何が増えるかは、これから。</p>`;
+      if (gearOpen === "medal" && !gear.medal) {
+        return `<p class="gear-effect">メダル。ボスを倒すと確定でもらえる。</p>`;
       }
       if (gearOpen === "itemL" || gearOpen === "itemR") {
         const item = gear[gearOpen];
@@ -2653,79 +2726,6 @@
       hpFrame = requestAnimationFrame(pumpHp);
     }
 
-    function spawnManaBit(w, h, fresh) {
-      const life = 0.26 + Math.random() * 0.22;
-      return {
-        x: w * (0.32 + Math.random() * 0.36),
-        y: h * (fresh ? 0.64 + Math.random() * 0.2 : 0.8),
-        vx: (Math.random() - 0.5) * 22 * (h / 128),
-        vy: (-70 - Math.random() * 80) * (h / 128),
-        life,
-        max: life,
-        r: (14 + Math.random() * 14) * (h / 128),
-      };
-    }
-
-    function paintManaBit(ctx, bit) {
-      const t = 1 - bit.life / bit.max;
-      const radius = bit.r * (1 - t * 0.55);
-      const glow = ctx.createRadialGradient(bit.x, bit.y, 0, bit.x, bit.y, radius);
-      if (t < 0.3) {
-        glow.addColorStop(0, "rgba(255, 252, 230, 0.95)");
-        glow.addColorStop(0.4, "rgba(255, 186, 48, 0.75)");
-        glow.addColorStop(1, "rgba(255, 70, 8, 0)");
-      } else if (t < 0.65) {
-        glow.addColorStop(0, "rgba(255, 196, 60, 0.8)");
-        glow.addColorStop(0.55, "rgba(255, 78, 12, 0.45)");
-        glow.addColorStop(1, "rgba(160, 20, 0, 0)");
-      } else {
-        glow.addColorStop(0, "rgba(255, 60, 10, 0.28)");
-        glow.addColorStop(1, "rgba(90, 8, 0, 0)");
-      }
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(bit.x, bit.y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function startManaFires() {
-      const gen = ++manaFireGen;
-      const canvases = [...document.querySelectorAll(".pip.on .mana-fire")];
-      if (!canvases.length) return;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const fires = canvases.map((canvas) => {
-        const ctx = canvas.getContext("2d");
-        const bits = Array.from({ length: 34 }, () => spawnManaBit(canvas.width, canvas.height, true));
-        return { canvas, ctx, bits };
-      });
-      const draw = (dt) => {
-        fires.forEach(({ canvas, ctx, bits }) => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          bits.forEach((bit) => {
-            bit.life -= dt;
-            if (bit.life <= 0) Object.assign(bit, spawnManaBit(canvas.width, canvas.height, false));
-            bit.x += bit.vx * dt;
-            bit.y += bit.vy * dt;
-            bit.vx += (Math.random() - 0.5) * 80 * (canvas.height / 128) * dt;
-            paintManaBit(ctx, bit);
-          });
-        });
-      };
-      if (reduce) {
-        draw(0);
-        return;
-      }
-      let last = 0;
-      const frame = (now) => {
-        if (gen !== manaFireGen) return;
-        const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
-        last = now;
-        draw(dt);
-        requestAnimationFrame(frame);
-      };
-      requestAnimationFrame(frame);
-    }
-
     function finalDamageLine(actor, card, result) {
       if (result.blocked && !result.hpLoss) return `${actor}は${card}。ブロックで防いだ。`;
       return `${actor}は${card}で${result.hpLoss}ダメージ。`;
@@ -2756,6 +2756,7 @@
       player.expose = 0;
       player.guardThrough = false;
       player.parry = 0;
+      player.burn = 0;
       player.hurtThis = false;
       player.hurtLast = false;
       player.extraDraw = 0;
@@ -2967,15 +2968,22 @@
     }
 
     function strike(card, amount) {
-      const result = applyDamage(enemy, amount);
-      if (amount > 0 && (result.hpLoss || result.blocked)) {
+      const cut = amount > 0 ? mitigate(amount, enemyDef()) : { reduced: 0, dealt: 0 };
+      const result = applyDamage(enemy, cut.dealt);
+      if (cut.dealt > 0 && (result.hpLoss || result.blocked)) {
         fxSlash = true;
-        noteHit("enemy", result.hpLoss, amount);
+        noteHit("enemy", result.hpLoss, cut.dealt);
       }
-      log(damageSentence(CHARACTER_NAME, card.name, amount, result), card);
+      log(damageSentence(CHARACTER_NAME, card.name, cut.dealt, result), card);
+    }
+
+    function rollCrit(card, base) {
+      if (!card.crit) return base;
+      return Math.random() < (Number(card.critChance) || 0) ? card.crit : base;
     }
 
     function resolveCard(card) {
+      syncGearStats();
       if (card.power) {
         if (card.coward) {
           player.guardThrough = true;
@@ -3061,7 +3069,11 @@
         if (card.safeBonus && !player.hurtLast) bonus += card.safeBonus;
         if (card.kick && enemy.block > 0) bonus += card.kick;
         const atk = player.atk || 0;
-        strike(card, card.damage + added + atk + bonus);
+        strike(card, rollCrit(card, card.damage) + added + atk + bonus);
+      }
+      if (card.burn) {
+        addBurn(enemy, card.burn);
+        log(`${CHARACTER_NAME}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
       }
       if (card.expose) {
         player.expose = (Number(player.expose) || 0) + card.expose;
@@ -3073,13 +3085,14 @@
         player.extraDraw = (Number(player.extraDraw) || 0) + card.nextDraw;
         log(`${CHARACTER_NAME}は次のターンに${card.nextDraw}枚多く引く。`, card);
       }
-      if (!card.damage && !card.block && !card.expose && !card.nextDraw) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
+      if (!card.damage && !card.block && !card.expose && !card.nextDraw && !card.burn) log(`${CHARACTER_NAME}は${card.name}。${card.text}`, card);
     }
 
     function cardPlayable(card) {
       if (!card) return false;
       if ((Number(card.cost) || 0) > player.energy) return false;
       if (card.headbutt && !inPlay.length) return false;
+      if (card.halfOnly && !hpHalf(player)) return false;
       return true;
     }
 
@@ -3200,6 +3213,32 @@
       resolveAt = 0;
     }
 
+    function enemyUseCard(card) {
+      if (card.halfOnly && !hpHalf(enemy)) {
+        log(`${enemy.name}は${card.name}。体力が半分より上なので、使えない。`, card, true);
+        return;
+      }
+      if (card.press) {
+        const amount = enemy.block || 0;
+        if (amount > 0) takeEnemyHit(amount, card);
+        else log(`${enemy.name}は${card.name}で0ダメージ。`, card, true);
+      } else if (card.damage) {
+        const kick = card.kick && player.block > 0 ? card.kick : 0;
+        takeEnemyHit(rollCrit(card, card.damage) + kick, card);
+      } else if (card.block) {
+        enemy.block += card.block;
+        log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
+      } else if (card.poison) {
+        addPoison(player, card.poison);
+        log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒+${player.poison}。`, card, true);
+      } else if (card.burn) {
+        addBurn(player, card.burn);
+        log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は炎上+${player.burn}。`, card, true);
+      } else {
+        log(`${enemy.name}は${card.name}。${card.text}`, card, true);
+      }
+    }
+
     function finishResolve() {
       timer = null;
       scrapPlay();
@@ -3231,22 +3270,17 @@
         logTurn("enemy");
         const card = intentAt(0);
         if (!card.press) enemy.block = 0;
-        if (card.press) {
-          const amount = enemy.block || 0;
-          if (amount > 0) takeEnemyHit(amount, card);
-          else log(`${enemy.name}は${card.name}で0ダメージ。`, card, true);
-        } else if (card.damage) {
-          takeEnemyHit(card.damage, card);
-        } else if (card.block) {
-          enemy.block += card.block;
-          log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
-        } else if (card.poison) {
-          addPoison(player, card.poison);
-          log(`${enemy.name}は${card.name}。${CHARACTER_NAME}は毒+${player.poison}。`, card, true);
-        } else {
-          log(`${enemy.name}は${card.name}。${card.text}`, card, true);
-        }
+        enemyUseCard(card);
         advanceEnemyLoop();
+        if (player.hp > 0 && enemyNow().trait && !enemy.rallied && hpHalf(enemy)) {
+          enemy.rallied = true;
+          const extra = shuffle(sourcePattern()).slice(0, 2);
+          log(`${enemy.name}の特性。デッキから2枚引いて、続けて使う。`, null, true);
+          for (const more of extra) {
+            if (player.hp <= 0) break;
+            enemyUseCard(more);
+          }
+        }
         if (player.hp <= 0) {
           scrapPlay();
           scheduleFinish("lose");
@@ -3286,8 +3320,11 @@
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
       player.block = 0;
-      player.maxEnergy = MANA;
-      player.energy = MANA;
+      syncGearStats();
+      const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
+      player.maxEnergy = MANA + halfMana;
+      player.energy = MANA + halfMana;
+      if (halfMana) log(`${CHARACTER_NAME}はミノタウロスの腕輪。体力が半分以下なので、このターンのマナ+1。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
       draw(5 + extra);
@@ -3413,6 +3450,8 @@
         rewardPaths,
         rewardStep,
         bonusCard,
+        bossPicks,
+        shopStock,
       };
     }
 
@@ -3469,8 +3508,9 @@
         player.def = player.def || 0;
         player.maxHp = 30;
         if (player.hp > player.maxHp) player.hp = player.maxHp;
-        player.maxEnergy = MANA;
-        if (player.energy > MANA) player.energy = MANA;
+        player.maxEnergy = Math.min(MANA + 1, Math.max(MANA, Number(player.maxEnergy) || MANA));
+        if (player.energy > player.maxEnergy) player.energy = player.maxEnergy;
+        player.burn = burnStacks(player);
         player.focus = player.focus || 0;
         player.parry = player.parry === true ? 1 : Math.max(0, Number(player.parry) || 0);
         player.atkMod = Number(player.atkMod) || 0;
@@ -3483,7 +3523,16 @@
       if (enemy) {
         enemy.hit = false;
         enemy.poison = poisonStacks(enemy);
-        if (enemy.name === "仮の相手") enemy.name = "スライム";
+        enemy.burn = burnStacks(enemy);
+        enemy.def = Number(enemy.def) || 0;
+        enemy.rallied = !!enemy.rallied;
+        enemy.name = enemyKey(enemy.name);
+        const foe = enemyByName(enemy.name);
+        enemy.atk = hiddenAtk(foe);
+        if (enemy.maxHp !== foe.hp) {
+          enemy.maxHp = foe.hp;
+          if (enemy.hp > foe.hp) enemy.hp = foe.hp;
+        }
       }
       gear = normalizeGear(data.gear);
       if (!gear.sword && !gear.shield) gear = starterGear();
@@ -3492,7 +3541,7 @@
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
       removed = Array.isArray(data.removed) ? data.removed.filter((card) => card && card.name) : [];
       if (Array.isArray(data.route) && data.route.length) {
-        route = data.route.map((name) => (name === "仮の相手" ? "スライム" : name));
+        route = data.route.map((name) => enemyKey(name));
       } else {
         route = CLASSIC_ROUTE.slice();
         const total = data.battleTotal || route.length;
@@ -3517,6 +3566,8 @@
       if (rewardPaths.includes("skip")) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
       bonusCard = data.bonusCard || null;
+      bossPicks = Array.isArray(data.bossPicks) ? data.bossPicks : [];
+      shopStock = Array.isArray(data.shopStock) ? data.shopStock : [];
       if (outcome === "win" && !rewardReady) prepareReward();
       saveNote = "";
       bindShown();
@@ -3528,11 +3579,11 @@
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
+      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, hit: false };
+      enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: 0, atk: hiddenAtk(foe), rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -3634,7 +3685,8 @@
         if (player) player.hp = 30;
         floorNote = "体力が全快した。";
       } else if (kind === "お店") {
-        floorNote = "品ぞろえは、これから決める。";
+        shopStock = rollShopStock();
+        floorNote = "怪しげな商人が笑っている。";
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
           route[battleIndex] = rollRank(battleIndex < route.length / 2 ? 1 : 2);
@@ -3656,7 +3708,9 @@
         } else if (roll === "探索") {
           floorNote = `未知は、探索だった。${grantExplore()}`;
         } else {
-          floorNote = "未知は、お店だった。品ぞろえは、これから決める。";
+          floorKind = "お店";
+          shopStock = rollShopStock();
+          floorNote = "未知は、お店だった。怪しげな商人が笑っている。";
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
@@ -3780,7 +3834,7 @@
     function pips() {
       return Array.from({ length: player.maxEnergy }, (_, i) =>
         i < player.energy
-          ? `<i class="pip on"><canvas class="mana-fire" width="168" height="228"></canvas></i>`
+          ? `<i class="pip on" style="--i:${i}"></i>`
           : `<i class="pip"></i>`
       ).join("");
     }
@@ -4141,6 +4195,16 @@
       const art = floorKind === "挑戦者に祝福を"
         ? `<img class="bless-art" src="blessing-spirit.jpg?v=1" alt="大きな目の気が祝福を授けている">`
         : "";
+      if (floorKind === "お店" && floorPhase === "show") {
+        root.innerHTML = `
+          <div class="menu shop-floor">
+            <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
+            <div class="shop-panel">${shopMarkup(shopStock, "お店")}</div>
+            <p>${esc(floorNote)}</p>
+            ${next}
+          </div>`;
+        return;
+      }
       root.innerHTML = `
         <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">
           <h1>${esc(floorKind)}</h1>
@@ -4500,7 +4564,7 @@
       straight: { name: "戦闘", text: "次の戦いに進む。", image: "path-fight.jpg" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=2" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
-      shop: { name: "お店", text: "★で買い物。品ぞろえはこれから。", image: "path-shop.jpg?v=2" },
+      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=2" },
       retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。", image: "path-retreat.jpg?v=2" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
       search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg" },
@@ -4539,6 +4603,9 @@
       if (card.instant) next.instant = true;
       if (card.quick) next.quick = true;
       if (card.draw) next.draw = card.draw;
+      if (card.crit) { next.crit = card.crit; next.critChance = card.critChance; }
+      if (card.halfOnly) next.halfOnly = true;
+      if (card.burn) next.burn = card.burn;
       next.stars = card.stars || 1;
       return next;
     }
@@ -4574,6 +4641,23 @@
       return shuffle(rewardPool()).slice(0, n);
     }
 
+    // ふだんの3枚は、共通・クラス専用・敵のカードの3プールから1枚ずつ。足りないプールは全体から補う。
+    function rewardTrio() {
+      const all = rewardPool();
+      const pools = ["共通", "戦士", "敵"].map((source) => shuffle(all.filter((card) => card.source === source)));
+      const picks = [];
+      const seen = new Set();
+      for (const pool of pools) {
+        const card = pool.find((item) => !seen.has(item.name));
+        if (card) { picks.push(card); seen.add(card.name); }
+      }
+      for (const card of shuffle(all)) {
+        if (picks.length >= 3) break;
+        if (!seen.has(card.name)) { picks.push(card); seen.add(card.name); }
+      }
+      return shuffle(picks);
+    }
+
     function clearReward() {
       rewardReady = false;
       rewardStars = 0;
@@ -4589,21 +4673,69 @@
       return ["straight"].concat(shuffle(ids).slice(0, 2));
     }
 
+    function isBossFight() {
+      return !!enemyNow().medal;
+    }
+
+    function bossChoices() {
+      const foe = enemyNow();
+      const card = shuffle(foe.pattern.map((item) => playerCopy(item)))[0] || null;
+      const item = shuffle(GEAR_ITEMS)[0] || null;
+      const bracelet = BOSS_GEAR.find((entry) => entry.id === "minotaur-bracelet") || null;
+      const picks = [];
+      if (card) picks.push({ kind: "card", card });
+      if (item) picks.push({ kind: "gear", gear: item });
+      if (bracelet) picks.push({ kind: "gear", gear: bracelet });
+      return picks;
+    }
+
+    function rollShopStock() {
+      const cards = shuffle(classCards()).slice(0, 2).map((card) => ({ kind: "card", card, price: null }));
+      const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item, price: null }));
+      return cards.concat(items);
+    }
+
     function prepareReward() {
       if (rewardReady) return;
       rewardReady = true;
-      rewardStars = enemyNow().tier || starsForRank(enemyNow().rank);
+      const foe = enemyNow();
+      const medal = foe.medal ? gearItem(foe.medal) : null;
+      rewardStars = medal ? 0 : (foe.tier || starsForRank(foe.rank));
       starBurst = rewardStars;
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       localStorage.setItem(META_KEY, JSON.stringify(meta));
-      rewardPicks = drawDistinct(3);
       rewardPaths = [];
-      rewardStep = "cards";
       bonusCard = null;
+      bossPicks = [];
+      shopStock = [];
+      if (medal) {
+        giveGear(medal);
+        log(`${CHARACTER_NAME}は${medal.name}を手に入れた。`);
+        rewardPicks = [];
+        bossPicks = bossChoices();
+        rewardStep = "boss";
+        return;
+      }
+      rewardPicks = rewardTrio();
+      rewardStep = "cards";
+    }
+
+    function takeBossPick(index) {
+      if (rewardStep !== "boss") return;
+      const pick = bossPicks[index];
+      if (!pick) return;
+      if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
+      if (pick.kind === "gear" && pick.gear) giveGear(pick.gear);
+      bossPicks = [];
+      rewardPaths = rollPaths();
+      rewardStep = "paths";
+      persistSave(true);
+      render();
     }
 
     function skipReward() {
-      if (rewardStep === "cards") {
+      if (rewardStep === "cards" || rewardStep === "boss") {
+        bossPicks = [];
         rewardPaths = rollPaths();
         rewardStep = "paths";
         persistSave(true);
@@ -4614,6 +4746,28 @@
         bonusCard = null;
         render();
       }
+    }
+
+    function openShop() {
+      shopStock = rollShopStock();
+      rewardStep = "shop";
+      persistSave(true);
+      render();
+    }
+
+    function shopMarkup(stock, heading) {
+      const slots = (stock || []).map((slot) => {
+        const price = slot.price == null ? "値段は未定" : `★${slot.price}`;
+        if (slot.kind === "card" && slot.card) {
+          return `<div class="shop-slot"><div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(price)}</span></div>`;
+        }
+        if (slot.kind === "gear" && slot.gear) {
+          const picture = slot.gear.image ? `<img class="shop-gear" src="${esc(slot.gear.image)}" alt="">` : "";
+          return `<div class="shop-slot">${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(price)}</span></div>`;
+        }
+        return "";
+      }).join("");
+      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${meta.stars}</p><p>品は4つ。カード2つと装備2つ。値段が決まるまで、買えない。</p><div class="shop-row">${slots}</div>`;
     }
 
     function takeBonus() {
@@ -4676,9 +4830,7 @@
             return;
           }
           if (roll < 0.67) {
-            rewardStep = "shop";
-            persistSave(true);
-            render();
+            openShop();
             return;
           }
         }
@@ -4694,9 +4846,7 @@
         return;
       }
       if (id === "shop") {
-        rewardStep = "shop";
-        persistSave(true);
-        render();
+        openShop();
         return;
       }
       if (id === "detour") {
@@ -4726,8 +4876,20 @@
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
-        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><p class="reward-source">${esc(card.source || "")}</p><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
+        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
         return `<div class="overlay victory">${victoryStars()}<div class="panel wide"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+      }
+      if (rewardStep === "boss") {
+        const medal = gear.medal ? `<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
+        const picks = bossPicks.map((pick, i) => {
+          if (pick.kind === "card" && pick.card) {
+            return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
+          }
+          const item = pick.gear || {};
+          const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
+          return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
+        }).join("");
+        return `<div class="overlay victory"><div class="panel wide"><h2>勝利</h2>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -4738,7 +4900,7 @@
         return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
-        return `<div class="overlay"><div class="panel"><h2>お店</h2><p>所持 ★${meta.stars}</p><p>品ぞろえは、これから決める。</p><button type="button" data-action="reward-go">出ていく</button></div></div>`;
+        return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
       }
       if (rewardStep === "event") {
         return `<div class="overlay"><div class="panel"><h2>探索</h2><p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
@@ -4846,6 +5008,7 @@
               ${meters("enemy", shownEnemy(), enemy.maxHp, enemy.block)}
               <div class="hp-line"><b data-hp="enemy">${enemyShown}</b> / ${enemy.maxHp}</div>
               ${poisonStacks(enemy) ? poisonBadge(poisonStacks(enemy)) : ""}
+              ${burnBadge(burnStacks(enemy))}
             </section>
             </div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
@@ -4854,7 +5017,7 @@
             </div>
           </div>
           ${playRow()}
-          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${parryCount(player) ? `<span class="hint">パリィ${parryCount(player) > 1 ? parryCount(player) : ""}<i>${esc(PARRY_NOTE)}</i></span>` : ""}</div></div>
+          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${burnBadge(burnStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${parryCount(player) ? `<span class="hint">パリィ${parryCount(player) > 1 ? parryCount(player) : ""}<i>${esc(PARRY_NOTE)}</i></span>` : ""}</div></div>
           <div class="handbar">
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
@@ -4872,9 +5035,29 @@
       enemy.hit = false;
       persistLive();
       kickHp();
-      startManaFires();
       bindLogPeek();
     }
+
+    // ダブルクリックは「選んで進む」。キャラの駒はダンジョン選択へ、ダンジョンの駒は挑戦開始。
+    root.addEventListener("dblclick", (event) => {
+      const el = event.target instanceof Element ? event.target : event.target.parentElement;
+      if (!el) return;
+      const action = el.closest("[data-action]");
+      if (!action) return;
+      const name = action.dataset.action;
+      if (name === "cast-token") {
+        castLock = action.dataset.cast || castLock;
+        dungeonHover = "";
+        dungeonLock = "";
+        screen = "dungeon";
+        render();
+      }
+      if (name === "dungeon-token") {
+        dungeonLock = action.dataset.dungeon || dungeonLock;
+        const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
+        if (chosen) beginRun(chosen.floors, chosen.name);
+      }
+    });
 
     root.addEventListener("click", (event) => {
       const el = event.target instanceof Element ? event.target : event.target.parentElement;
@@ -4945,6 +5128,7 @@
         if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); castPicked = false; screen = "character"; render(); }
         if (name === "continue") continueGame();
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
+        if (name === "reward-boss") takeBossPick(Number(action.dataset.reward));
         if (name === "reward-bonus") takeBonus();
         if (name === "reward-skip") skipReward();
         if (name === "reward-path") takePath(action.dataset.path || "");
