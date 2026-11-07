@@ -7110,9 +7110,9 @@
       sheetZoom = null;
     }
 
-    function zoomSidePanel(title, body, note) {
+    function zoomSidePanel(title, body) {
       if (!title || !body) return "";
-      return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<p class="art-zoom-note">${esc(note)}</p><button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
+      return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
     }
 
     function artZoomSide(name) {
@@ -7122,14 +7122,14 @@
       const body = src
         ? `<img class="art-zoom-img" src="${esc(src)}" alt="${esc(name)}の絵柄">`
         : `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
-      return zoomSidePanel(name, body, src ? "絵柄を拡大表示中" : "カードを拡大表示中");
+      return zoomSidePanel(name, body);
     }
 
     function sheetZoomSide() {
       if (!sheetZoom || !sheetZoom.src) return "";
       const title = sheetZoom.title || "画像";
       const body = `<img class="art-zoom-img" src="${esc(sheetZoom.src)}" alt="${esc(title)}">`;
-      return zoomSidePanel(title, body, "画像を拡大表示中");
+      return zoomSidePanel(title, body);
     }
 
     function sheetFig(src, caption, imgClass, figureClass) {
