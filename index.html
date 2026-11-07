@@ -1174,6 +1174,7 @@
     .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
+    .ref-grid figure.wide-land { grid-column: 1 / -1; max-width: 720px; }
     /* 色ごとの空の枠（設定資料）。名札・効果は薄く、絵柄の場所に点線の案内 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
@@ -3411,6 +3412,12 @@
       object-position: center bottom;
       filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55));
     }
+    .end-screen .end-portraits figure.scene img {
+      width: 100%;
+      height: auto;
+      max-height: min(42vh, 420px);
+      object-position: center center;
+    }
     .end-screen .end-portraits figure.foe img {
       height: min(48vh, 560px);
       filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(255, 70, 40, 0.35));
@@ -4462,7 +4469,7 @@
     let castShown = "";
     const CAST = [
       { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3" },
-      { name: "女の戦士", stand: "girl-front.png?v=9", chibi: "job-girl.png?v=3", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=11", battleRatio: "864 / 1152", defeat: "girl-defeat.png?v=7", victory: "girl-victory.png?v=8" },
+      { name: "女の戦士", stand: "girl-front.png?v=9", chibi: "job-girl.png?v=3", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=11", battleRatio: "864 / 1152", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9" },
     ];
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
@@ -7439,8 +7446,10 @@
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=9", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-battle.png?v=11", "戦闘", "cut-ref")}
-              ${sheetFig("girl-defeat.png?v=7", "敗北", "cut-ref")}
-              ${sheetFig("girl-victory.png?v=8", "勝利", "cut-ref")}
+            </div>
+            <div class="ref-grid">
+              ${sheetFig("girl-defeat.png?v=8", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=9", "勝利", "land-ref", "wide-land")}
             </div>
             ${sheetBanner("girl-action.jpg?v=1", "女の戦士の一枚絵", "女の戦士の一枚絵。草原でお茶をしている")}
             <h3>ジョブ選択</h3>
@@ -7575,7 +7584,7 @@
           <h1>倒された</h1>
           <p class="end-why">${esc(snap.why || `${snap.foeName || "敵"}に倒された。`)}</p>
           <div class="end-portraits">
-            <figure>
+            <figure class="scene">
               <img src="${esc(snap.defeatArt || heroItem().defeat)}" alt="">
               <figcaption>${esc(snap.hero || heroName())}</figcaption>
             </figure>
