@@ -339,6 +339,56 @@
     }
     /* シールドの札：板の右上に大きく。盾の形の青い札に白い数字 */
     .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(126, 182, 255, 0.75), 0 0 22px rgba(126, 182, 255, 0.45), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(220, 238, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
+    /* パリィ中：体力バーを無敵っぽく（次の攻撃を受けない） */
+    .battle-plate.parried {
+      box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(170, 220, 255, 0.95), 0 0 28px rgba(120, 200, 255, 0.7), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(230, 245, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+    }
+    .battle-plate.parried.shielded {
+      box-shadow: 0 0 0 3px rgba(18, 12, 9, 0.92), 0 0 0 4px rgba(170, 220, 255, 0.95), 0 0 0 6px rgba(126, 182, 255, 0.45), 0 0 28px rgba(120, 200, 255, 0.75), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(230, 245, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+    }
+    .battle-plate.parried .meter.hp {
+      background: linear-gradient(180deg, #1a2838, #2a4058);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(180, 230, 255, 0.9), 0 0 16px rgba(120, 200, 255, 0.75);
+    }
+    .battle-plate.parried .meter.hp .hp-max {
+      background: rgba(40, 70, 100, 0.55);
+    }
+    .battle-plate.parried .meter.hp > span {
+      background: linear-gradient(180deg, #ffffff 0%, #c8e8ff 28%, #6eb4ff 58%, #3a78d0 100%);
+      box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 14px rgba(140, 210, 255, 0.95);
+      animation: parry-invuln 1.35s ease-in-out infinite;
+    }
+    .battle-plate.parried.low .meter.hp > span {
+      background: linear-gradient(180deg, #ffffff 0%, #c8e8ff 28%, #6eb4ff 58%, #3a78d0 100%);
+      animation: parry-invuln 1.35s ease-in-out infinite;
+    }
+    .battle-plate.parried .meter.hp::before {
+      content: "パリィ";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 4;
+      transform: translate(-50%, -50%);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.28em;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(80, 160, 255, 0.95), 0 1px 0 #1a3a60, 0 0 12px rgba(180, 230, 255, 0.9);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .battle-plate.parried .hp-line .lbl .ico {
+      color: #9fd0ff;
+      filter: drop-shadow(0 0 5px rgba(120, 190, 255, 0.85));
+    }
+    .battle-plate.parried .hp-line b {
+      color: #e8f6ff;
+      text-shadow: 0 1px 0 #000, 0 0 12px rgba(140, 200, 255, 0.55);
+    }
+    @keyframes parry-invuln {
+      0%, 100% { filter: brightness(1) saturate(1); box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 14px rgba(140, 210, 255, 0.85); }
+      50% { filter: brightness(1.28) saturate(1.15); box-shadow: inset 0 -2px 0 rgba(20, 50, 90, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 22px rgba(200, 235, 255, 1); }
+    }
     .battle-plate .shield-badge {
       position: absolute;
       right: -14px;
@@ -6058,9 +6108,12 @@
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
     function plateMarkup(cls, who, name, tag, shownHp, maxHp, block, extra) {
       const low = maxHp > 0 && shownHp / maxHp <= 0.3 ? " low" : "";
+      const parried = who === "player" && typeof player !== "undefined" && player && parryCount(player) > 0;
       // シールドがあるときは、板の右上に大きな盾の札で数を出す（自分も敵も同じ）
       const shieldBadge = block > 0 ? `<div class="shield-badge" aria-label="シールド ${block}"><i class="plate-shield" aria-hidden="true"></i><b>${block}</b></div>` : "";
-      return `<section class="battle-plate ${cls}${low}${block > 0 ? " shielded" : ""}"${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
+      const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
+      const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
+      return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
         <h2><span class="who">${esc(name)}</span>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
