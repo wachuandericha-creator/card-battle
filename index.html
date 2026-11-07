@@ -2279,53 +2279,179 @@
       gap: 14px;
       padding: 24px;
     }
-    .title-screen { height: 100%; display: flex; flex-direction: column; }
+    /* タイトル：一枚絵を画面いっぱいに敷き、ロゴと操作を重ねる */
+    .title-screen {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #0a0706;
+      isolation: isolate;
+    }
+    .title-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 28%;
+      z-index: 0;
+      animation: title-drift 26s ease-in-out infinite alternate;
+      transform-origin: 50% 30%;
+    }
+    @keyframes title-drift {
+      0% { transform: scale(1.02) translateY(0); }
+      100% { transform: scale(1.08) translateY(-1.2%); }
+    }
+    .title-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse 72% 60% at 50% 40%, transparent 40%, rgba(6, 4, 3, 0.55) 100%),
+        linear-gradient(180deg, rgba(6, 4, 3, 0.55) 0%, rgba(6, 4, 3, 0) 22%, rgba(6, 4, 3, 0) 50%, rgba(6, 4, 3, 0.72) 78%, rgba(6, 4, 3, 0.94) 100%);
+    }
+    .title-embers { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+    .title-embers i {
+      position: absolute;
+      bottom: -4vh;
+      left: calc(6% + var(--x, 0) * 1%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #ffb866;
+      box-shadow: 0 0 8px 2px rgba(255, 150, 70, 0.8);
+      opacity: 0;
+      animation: ember-rise var(--d, 9s) linear var(--delay, 0s) infinite;
+    }
+    .title-embers i:nth-child(1) { --x: 4; --d: 11s; --delay: 0s; }
+    .title-embers i:nth-child(2) { --x: 14; --d: 9s; --delay: 2.2s; width: 3px; height: 3px; }
+    .title-embers i:nth-child(3) { --x: 22; --d: 13s; --delay: 4.1s; }
+    .title-embers i:nth-child(4) { --x: 31; --d: 10s; --delay: 1.3s; width: 4px; height: 4px; }
+    .title-embers i:nth-child(5) { --x: 40; --d: 12s; --delay: 6.4s; width: 3px; height: 3px; }
+    .title-embers i:nth-child(6) { --x: 49; --d: 9.5s; --delay: 3.6s; }
+    .title-embers i:nth-child(7) { --x: 57; --d: 14s; --delay: 0.8s; width: 3px; height: 3px; }
+    .title-embers i:nth-child(8) { --x: 65; --d: 10.5s; --delay: 5.2s; }
+    .title-embers i:nth-child(9) { --x: 73; --d: 12.5s; --delay: 2.9s; width: 4px; height: 4px; }
+    .title-embers i:nth-child(10) { --x: 80; --d: 9s; --delay: 7.1s; width: 3px; height: 3px; }
+    .title-embers i:nth-child(11) { --x: 87; --d: 13.5s; --delay: 1.9s; }
+    .title-embers i:nth-child(12) { --x: 93; --d: 11s; --delay: 4.8s; width: 3px; height: 3px; }
+    @keyframes ember-rise {
+      0% { transform: translate(0, 0); opacity: 0; }
+      8% { opacity: 0.95; }
+      50% { transform: translate(18px, -50vh); opacity: 0.8; }
+      100% { transform: translate(-10px, -104vh); opacity: 0; }
+    }
+    /* ロゴは右上の暗い柱の上、操作は右下。二人とミノタウロスの顔を隠さない */
     .title-hero {
-      flex: 1 1 50%;
+      position: absolute;
+      z-index: 3;
+      top: clamp(18px, 5vh, 56px);
+      right: clamp(20px, 5vw, 96px);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 6px;
-      padding: 12px 24px 8px;
+      align-items: flex-end;
+      gap: 0;
+      padding: 0;
     }
-    .title-art {
-      width: min(920px, 94vw);
-      max-height: 34vh;
-      object-fit: contain;
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 90%, transparent);
-      mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 90%, transparent);
-      -webkit-mask-composite: source-in;
-      mask-composite: intersect;
+    .title-kicker {
+      margin: 0 0 6px;
+      align-self: flex-end;
+      color: rgba(255, 236, 196, 0.85);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(11px, 1.1vw, 15px);
+      letter-spacing: 0.62em;
+      text-indent: 0.62em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
     }
-    .title-hero h1 {
+    .title-logo {
       margin: 0;
-      color: var(--gold);
-      font-size: clamp(40px, 6.2vw, 84px);
-      letter-spacing: 0.18em;
-      text-shadow: 0 3px 0 #6a4a16, 0 0 22px rgba(240, 195, 106, 0.55);
-      text-align: center;
-      line-height: 1.2;
-      font-weight: 800;
-    }
-    .title-hero h1::after {
-      content: "";
-      display: block;
-      width: min(280px, 46vw);
-      height: 3px;
-      margin: 14px auto 0;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      box-shadow: 0 0 12px rgba(240, 195, 106, 0.7);
-    }
-    .title-actions {
-      flex: 1 1 50%;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 8px 24px 40px;
+      align-items: flex-end;
+      text-align: right;
+      line-height: 1;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-weight: 800;
+      color: #f6d48a;
+      filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 26px rgba(255, 196, 110, 0.35));
     }
+    .title-logo > span {
+      display: block;
+      font-size: clamp(44px, 6.4vw, 104px);
+      letter-spacing: 0.1em;
+      text-indent: 0.1em;
+      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 28%, #e2ad4a 52%, #a8731c 60%, #ffe39a 78%, #d9a548 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(90, 58, 14, 0.75);
+      paint-order: stroke fill;
+    }
+    .title-logo > span.sub {
+      margin-top: 0.12em;
+      font-size: clamp(18px, 2.3vw, 36px);
+      letter-spacing: 0.46em;
+      text-indent: 0.46em;
+      background: linear-gradient(180deg, #fff6e0 0%, #f2d48e 45%, #c9953a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 0.6px rgba(90, 58, 14, 0.7);
+    }
+    .title-rule {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: min(520px, 42vw);
+      margin: 16px 0 0;
+      color: #f0c36a;
+      text-shadow: 0 0 10px rgba(240, 195, 106, 0.9);
+      font-size: 14px;
+    }
+    .title-rule i { flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(240, 195, 106, 0.95)); box-shadow: 0 0 8px rgba(240, 195, 106, 0.6); }
+    .title-rule i:last-child { background: linear-gradient(90deg, rgba(240, 195, 106, 0.95), transparent); }
+    .title-actions {
+      position: absolute;
+      z-index: 3;
+      right: clamp(20px, 5vw, 96px);
+      bottom: clamp(20px, 6vh, 64px);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      gap: 14px;
+      padding: 0;
+    }
+    .title-actions > button.primary {
+      min-width: 320px;
+      padding: 16px 28px;
+      font-size: 22px;
+      letter-spacing: 0.32em;
+      text-indent: 0.32em;
+      border-radius: 999px;
+      border: 1px solid #ffe6a8;
+      background: linear-gradient(180deg, #ffe9ae 0%, #e4b15a 48%, #b9842a 100%);
+      color: #2a1c0c;
+      box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.22), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .title-actions > button.primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 3px rgba(255, 230, 170, 0.45), 0 0 32px rgba(255, 200, 110, 0.55), 0 14px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
+    .title-sub-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .title-sub-actions button {
+      min-width: 0;
+      padding: 10px 22px;
+      font-size: 16px;
+      letter-spacing: 0.14em;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 195, 106, 0.55);
+      background: rgba(14, 9, 6, 0.62);
+      color: #fff1d2;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+    }
+    .title-sub-actions button:hover:not(:disabled) { border-color: #ffe6a8; background: rgba(60, 38, 16, 0.78); transform: translateY(-1px); }
     .menu h1 {
       margin: 0;
       color: #f6d48a;
@@ -2629,7 +2755,9 @@
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
-      .title-hero h1 { font-size: 22px; letter-spacing: 0.12em; }
+      .title-logo > span { font-size: 40px; }
+      .title-logo > span.sub { font-size: 18px; letter-spacing: 0.3em; }
+      .title-actions > button.primary { min-width: 240px; font-size: 18px; }
       .cast-title { font-size: 24px; letter-spacing: 0.06em; }
       .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
       .cast-main { grid-template-columns: 1fr; overflow: auto; }
@@ -4541,16 +4669,22 @@
     function renderTitle() {
       root.innerHTML = `
         <div class="title-screen">
+          <img class="title-bg" src="title-key.jpg?v=1" alt="">
+          <div class="title-vignette" aria-hidden="true"></div>
+          <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="title-hero">
-            <img class="title-art" src="title-duo.jpg?v=1" alt="戦士2人が背中合わせで協力している">
-            <h1>わちゅえりカードゲーム</h1>
+            <p class="title-kicker">WACHUERI CARD GAME</p>
+            <h1 class="title-logo"><span>わちゅえり</span><span class="sub">カードゲーム</span></h1>
+            <div class="title-rule" aria-hidden="true"><i></i><b>◆</b><i></i></div>
           </div>
           <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
-            ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
-            ${menuButton("アルバム", "album")}
-            ${menuButton("設定資料", "sheet")}
-            ${menuButton("オプション", "settings")}
+            <div class="title-sub-actions">
+              ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
+              ${menuButton("アルバム", "album")}
+              ${menuButton("設定資料", "sheet")}
+              ${menuButton("オプション", "settings")}
+            </div>
           </div>
         </div>`;
     }
@@ -4804,8 +4938,8 @@
               <figure><img class="cut-ref" src="hero-shoulder.png?v=25" alt=""><figcaption>戦闘の戦士</figcaption></figure>
             </div>
             <h3>タイトル</h3>
-            <img class="sheet-art" src="title-duo.jpg?v=1" alt="タイトル。戦士2人が背中合わせで協力している。">
-            <p class="sheet-cap">いまのキャラデザ。男と女の戦士が背中合わせで協力する。四人の古い絵は使わない。</p>
+            <img class="sheet-art" src="title-key.jpg?v=1" alt="タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。">
+            <p class="sheet-cap">いまのキャラデザ。男と女の戦士が背中合わせで構え、その後ろに赤い目のミノタウロスが大斧を持って立ちはだかる。この絵を画面いっぱいに敷き、金のロゴ（明朝）を重ねる。四人の古い絵は使わない。</p>
             <h3>カード</h3>
             <div class="ref-grid">
               <figure><img class="back-ref" src="card-back.jpg?v=1" alt=""><figcaption>裏面</figcaption></figure>
