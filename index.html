@@ -379,8 +379,38 @@
     }
     .battle-plate.low .hp-line b { color: #ffb0a0; }
     .battle-plate .hp-line small { font-size: 12px; color: #c9b38c; letter-spacing: 0.02em; }
-    .battle-plate .plate-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+    .battle-plate .plate-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .battle-plate .plate-badges:empty { display: none; }
+    /* 状態のアイコン札：丸い暗地に色つきアイコン。重なるものは右に数字 */
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      height: 32px;
+      padding: 0 8px 0 4px;
+      border-radius: 999px;
+      background: rgba(12, 8, 6, 0.78);
+      border: 1px solid rgba(255, 236, 200, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1;
+      pointer-events: auto;
+      cursor: default;
+    }
+    .status-chip svg { width: 25px; height: 25px; display: block; flex: 0 0 auto; filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
+    .status-chip b { font-size: 17px; letter-spacing: 0; text-shadow: 0 1px 0 #000; }
+    .status-chip.hint, .status-chip.hint b { text-decoration: none; border-bottom: 0; }
+    .status-chip:has(> b) { padding-right: 8px; }
+    .status-chip.poison { border-color: rgba(200, 140, 255, 0.7); box-shadow: 0 0 10px rgba(160, 90, 230, 0.55), 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.poison b { color: #e6c6ff; }
+    .status-chip.burn { border-color: rgba(255, 170, 80, 0.75); box-shadow: 0 0 10px rgba(255, 120, 40, 0.6), 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.burn b { color: #ffd9a8; }
+    .status-chip.parry { border-color: rgba(140, 190, 255, 0.8); box-shadow: 0 0 10px rgba(110, 170, 255, 0.6), 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.parry b { color: #d6ebff; }
+    .status-chip.focus { border-color: rgba(255, 214, 122, 0.8); box-shadow: 0 0 10px rgba(255, 200, 90, 0.55), 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.focus b { color: #ffe9b0; }
     .battle-plate .poison-mark { display: inline-block; margin-top: 0; }
     @keyframes hp-low {
       0%, 100% { filter: brightness(1); }
@@ -1600,8 +1630,6 @@
     }
     .energy-band { display: flex; align-items: center; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 2px 56px; gap: 128px; margin-bottom: -6px; }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
-    .ailment-slot { display: flex; align-items: center; gap: 10px; min-height: 36px; color: var(--cream); font-weight: 800; }
-    .ailment-slot > span { padding: 4px 8px; border-radius: 8px; background: rgba(20, 14, 10, 0.55); }
     .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
@@ -3178,6 +3206,40 @@
     function burnBadge(stacks) {
       if (!stacks) return "";
       return `<span class="hint burn-mark">炎上+${stacks}<i>${esc(BURN_NOTE)}</i></span>`;
+    }
+
+    // 状態のアイコン札（戦闘画面の名前板に並べる）。重なるものは右に数字
+    const FOCUS_NOTE = "集中は、次の攻撃カードか防御カードの数値に、その数だけ足す。使うと消える。";
+    function statusIconSvg(kind) {
+      if (kind === "poison") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.2 4.6 6.2 8.2 6.2 12.2a6.2 6.2 0 0 1-12.4 0C5.8 10.7 8.8 7.1 12 2.5z" fill="url(#g-poison)"/><circle cx="9.6" cy="14.2" r="1.3" fill="#2b0a3a"/><circle cx="14.4" cy="14.2" r="1.3" fill="#2b0a3a"/><path d="M9.4 17.4c1.6 1.2 3.6 1.2 5.2 0" stroke="#2b0a3a" stroke-width="1.4" stroke-linecap="round" fill="none"/><defs><linearGradient id="g-poison" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b6ff"/><stop offset="1" stop-color="#8a3fd6"/></linearGradient></defs></svg>`;
+      }
+      if (kind === "burn") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.4 2c.6 4.2 5.1 6.3 5.1 11.3A5.6 5.6 0 0 1 6.3 13.6c0-2.2 1-3.6 1.9-4.8.3 1.9 1.3 2.7 2.2 2.8C9.6 8.4 11.6 5.2 12.4 2z" fill="url(#g-burn)"/><path d="M12 11.2c.3 2 2.3 2.8 2.3 4.8a2.3 2.3 0 0 1-4.6 0c0-1.1.6-1.9 1.1-2.4.2.8.6 1.1.9 1.1-.2-1.4.1-2.4.3-3.5z" fill="#fff3c4"/><defs><linearGradient id="g-burn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd25a"/><stop offset="1" stop-color="#e8471e"/></linearGradient></defs></svg>`;
+      }
+      if (kind === "parry") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l13 13M20 4L7 17" stroke="#dff0ff" stroke-width="3" stroke-linecap="round"/><path d="M4 4l13 13M20 4L7 17" stroke="#6fb0ff" stroke-width="1.2" stroke-linecap="round"/><path d="M15 18.6l2.4-2.4 2.6 2.6-2.4 2.4zM9 18.6l-2.4-2.4L4 18.8l2.4 2.4z" fill="#c9a24a"/></svg>`;
+      }
+      if (kind === "focus") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="#fff3c4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="#ffd67a" stroke-width="2" stroke-linecap="round"/></svg>`;
+      }
+      return "";
+    }
+    function statusChip(kind, word, count, note) {
+      const num = count > 0 ? `<b>${count}</b>` : "";
+      return `<span class="status-chip ${kind} hint" data-word="${esc(word)}" aria-label="${esc(word)}${count > 0 ? ` ${count}` : ""}">${statusIconSvg(kind)}${num}<i>${esc(note)}</i></span>`;
+    }
+    function statusChips(target) {
+      if (!target) return "";
+      const parts = [];
+      const poison = poisonStacks(target);
+      if (poison) parts.push(statusChip("poison", "毒", poison, POISON_NOTE));
+      const burn = burnStacks(target);
+      if (burn) parts.push(statusChip("burn", "炎上", burn, BURN_NOTE));
+      const parry = parryCount(target);
+      if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
+      if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
+      return parts.join("");
     }
 
     function rollRank(tier) {
@@ -6110,17 +6172,17 @@
               ${slashNow ? cutsHtml : ""}
             </div>
             ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
-            ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: `${poisonStacks(enemy) ? poisonBadge(poisonStacks(enemy)) : ""}${burnBadge(burnStacks(enemy))}` })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy) })}
             ${foePileMarkup()}
             </div>
             <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
-            ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, null), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
+            ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) }), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
             ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
           ${playRow()}
-          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div><div class="ailment-slot">${poisonBadge(poisonStacks(player))}${burnBadge(burnStacks(player))}${player.focus ? `<span>集中+${player.focus}</span>` : ""}${parryCount(player) ? `<span class="hint">パリィ${parryCount(player) > 1 ? parryCount(player) : ""}<i>${esc(PARRY_NOTE)}</i></span>` : ""}</div></div>
+          <div class="energy-band" aria-label="マナ ${player.energy}"><div class="mana-slot">${pips()}</div></div>
           <div class="handbar">
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
@@ -6208,7 +6270,7 @@
       const hints = anchor.matches(".hint") ? [anchor] : [...anchor.querySelectorAll(".hint")];
       const items = hints.map((hint) => {
         const note = hint.querySelector("i");
-        const word = [...hint.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("").trim();
+        const word = hint.dataset.word || [...hint.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE).map((node) => node.textContent).join("").trim();
         return note && note.textContent ? `<p><b>${esc(word)}</b><span>${esc(note.textContent)}</span></p>` : "";
       }).filter(Boolean);
       if (!items.length) { hideKwTip(); return; }
