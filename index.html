@@ -2246,6 +2246,21 @@
       display: grid;
       place-items: center;
     }
+    .overlay.gear-offer { z-index: 32; }
+    .overlay.gear-offer .panel { width: min(720px, calc(100vw - 32px)); }
+    .gear-offer-lead { font-size: 22px; font-weight: 800; color: #ffe7a8; margin: 0 0 16px; }
+    .gear-compare { display: flex; gap: 18px; justify-content: center; align-items: stretch; flex-wrap: wrap; margin: 0 0 16px; }
+    .gear-compare .side { width: 220px; padding: 12px 10px 14px; border-radius: 16px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.45); color: var(--cream); }
+    .gear-compare .side.new { border-color: #e4b15a; box-shadow: 0 0 0 1px rgba(228, 177, 90, 0.35); }
+    .gear-compare .side img { width: 100%; height: 140px; object-fit: contain; margin-bottom: 8px; }
+    .gear-compare .side b { display: block; font-size: 18px; margin-bottom: 4px; }
+    .gear-compare .side small { display: block; color: var(--muted); line-height: 1.4; }
+    .gear-compare .arrow { align-self: center; font-size: 36px; color: #e4b15a; font-weight: 800; }
+    .gear-delta { margin: 0 0 18px; font-size: 20px; font-weight: 800; color: #fff6d8; line-height: 1.5; }
+    .gear-delta .up { color: #9fe8a8; }
+    .gear-delta .down { color: #ff8a7a; }
+    .gear-delta .same { color: #e8dcc8; }
+    .gear-offer-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .overlay .panel {
       background: #2a221c;
       border: 1px solid rgba(244, 234, 215, 0.2);
@@ -3143,6 +3158,7 @@
     let bonusCard = null;
     let bossPicks = [];
     let shopStock = [];
+    let gearOffer = null; // 武器を付け替える確認 { item, keep, source, shopIndex, price }
     const MANA = 3;
     const HP_CAP = 100; // 最大HPの限界。体力が伸びる仕組みを足すときは、この数で止める
     const HAND_CAP = 10;
@@ -3425,6 +3441,115 @@
         gear[item.slot] = { ...item };
       }
       syncGearStats();
+    }
+
+    function needsWeaponReplace(item) {
+      return !!(item && item.slot === "sword" && gear && gear.sword);
+    }
+
+    function weaponAtk(item) {
+      return Number(item && item.atk) || 0;
+    }
+
+    function weaponExtra(item) {
+      if (item && Number(item.burnHit) > 0) return `攻撃が当たるたび、相手を炎上+${item.burnHit}`;
+      return "";
+    }
+
+    function weaponChangeText(keep, item) {
+      const from = weaponAtk(keep);
+      const to = weaponAtk(item);
+      const d = to - from;
+      const atk = d === 0
+        ? `<span class="same">ATKは${signed(from)}のまま</span>`
+        : d > 0
+          ? `<span class="up">ATKが${signed(from)}から${signed(to)}になる（+${d}）</span>`
+          : `<span class="down">ATKが${signed(from)}から${signed(to)}になる（${d}）</span>`;
+      const extraKeep = weaponExtra(keep);
+      const extraNew = weaponExtra(item);
+      let extra = "";
+      if (!extraKeep && extraNew) extra = `。新たに「${extraNew}」が付く`;
+      else if (extraKeep && !extraNew) extra = `。「${extraKeep}」は無くなる`;
+      else if (extraKeep && extraNew && extraKeep !== extraNew) extra = `。効果が「${extraNew}」に変わる`;
+      return atk + extra;
+    }
+
+    function offerWeapon(item, extra) {
+      if (!item || !needsWeaponReplace(item)) return false;
+      gearOffer = { item: { ...item }, keep: { ...gear.sword }, source: (extra && extra.source) || "gift", shopIndex: extra && extra.shopIndex, price: extra && extra.price };
+      return true;
+    }
+
+    function gearSideMarkup(item, label, cls) {
+      const picture = item && item.image ? `<img src="${esc(item.image)}" alt="">` : "";
+      const extra = weaponExtra(item);
+      const stars = item && item.stars > 0 ? "　" + "★".repeat(item.stars) : "";
+      return `<div class="side${cls ? " " + cls : ""}"><span>${esc(label)}</span>${picture}<b>${esc(item.name || "")}</b><small>ATK ${signed(weaponAtk(item))}${stars}${extra ? "<br>" + esc(extra) : ""}</small></div>`;
+    }
+
+    function gearOfferMarkup() {
+      const offer = gearOffer;
+      if (!offer) return "";
+      const shop = offer.source === "shop" && offer.price != null;
+      const yes = shop ? `付け替える（★${offer.price}）` : "付け替える";
+      return `<div class="overlay gear-offer"><div class="panel"><h2>武器を付け替える？</h2>
+        <p class="gear-offer-lead">${weaponChangeText(offer.keep, offer.item)}</p>
+        <div class="gear-compare">${gearSideMarkup(offer.keep, "いまの武器")}<div class="arrow" aria-hidden="true">→</div>${gearSideMarkup(offer.item, "新しい武器", "new")}</div>
+        <p>${shop ? `付け替えたときだけ ★${offer.price} 払う。今のままなら払わない。` : "今の武器のままなら、新しい武器は手に入らない。"}</p>
+        <div class="gear-offer-actions">
+          <button type="button" class="primary" data-action="gear-offer-yes">${esc(yes)}</button>
+          <button type="button" data-action="gear-offer-no">今の武器のまま</button>
+        </div>
+      </div></div>`;
+    }
+
+    function paintGearOffer() {
+      if (!gearOffer) return;
+      root.insertAdjacentHTML("beforeend", gearOfferMarkup());
+    }
+
+    function acceptGearOffer() {
+      const offer = gearOffer;
+      if (!offer) return;
+      if (offer.source === "shop") {
+        const price = Number(offer.price) || 0;
+        const have = Number(meta.stars) || 0;
+        if (have < price) return;
+        meta.stars = have - price;
+        localStorage.setItem(META_KEY, JSON.stringify(meta));
+        const slot = shopStock && shopStock[offer.shopIndex];
+        if (slot) slot.sold = true;
+      }
+      giveGear(offer.item);
+      if (offer.source === "gift") {
+        floorGift = { kind: "gear", gear: { ...offer.item } };
+        floorNote = `${offer.item.name}に付け替えた。`;
+      }
+      if (offer.source === "boss") {
+        bossPicks = [];
+        rewardPaths = rollPaths();
+        rewardStep = "paths";
+      }
+      gearOffer = null;
+      persistSave(true);
+      render();
+    }
+
+    function declineGearOffer() {
+      const offer = gearOffer;
+      if (!offer) return;
+      gearOffer = null;
+      if (offer.source === "gift") {
+        floorGift = null;
+        floorNote = `${offer.keep.name}のままにした。`;
+      }
+      if (offer.source === "boss") {
+        bossPicks = [];
+        rewardPaths = rollPaths();
+        rewardStep = "paths";
+      }
+      persistSave(true);
+      render();
     }
 
     function starterGear() {
@@ -4515,6 +4640,7 @@
         floorGift,
         bossPicks,
         shopStock,
+        gearOffer,
       };
     }
 
@@ -4640,6 +4766,7 @@
       floorGift = data.floorGift && data.floorGift.kind ? data.floorGift : null;
       bossPicks = Array.isArray(data.bossPicks) ? data.bossPicks : [];
       shopStock = Array.isArray(data.shopStock) ? data.shopStock : [];
+      gearOffer = data.gearOffer && data.gearOffer.item ? data.gearOffer : null;
       if (outcome === "win" && !rewardReady) prepareReward();
       saveNote = "";
       bindShown();
@@ -4779,8 +4906,8 @@
       }
       if (pick.kind === "gear") {
         if (!gear || !gear.sword) gear = starterGear();
-        gear[pick.gear.slot] = { ...pick.gear };
-        syncGearStats();
+        if (offerWeapon(pick.gear, { source: "gift" })) return "";
+        giveGear(pick.gear);
         floorGift = { kind: "gear", gear: { ...pick.gear } };
         return `${pick.gear.name}を受け取った。`;
       }
@@ -4933,6 +5060,7 @@
       cleared = false;
       gear = starterGear();
       gearOpen = null;
+      gearOffer = null;
       stolen = [];
       removed = [];
       heroCast = castByName(castLock).name;
@@ -5582,8 +5710,13 @@
       if (screen === "settings") return renderSettings();
       if (screen === "confirm") return renderConfirm();
       if (screen === "clear") return renderClear();
-      if (screen === "floor") return renderFloor();
+      if (screen === "floor") {
+        renderFloor();
+        paintGearOffer();
+        return;
+      }
       renderBattle();
+      paintGearOffer();
     }
 
     function pileMarkup(kind, count) {
@@ -6080,6 +6213,11 @@
         stolen.push(keepCard(slot.card));
       } else if (slot.kind === "gear") {
         if (!gear || !gear.sword) gear = starterGear();
+        if (offerWeapon(slot.gear, { source: "shop", shopIndex: index, price })) {
+          persistSave(true);
+          render();
+          return;
+        }
         giveGear(slot.gear);
       }
       slot.sold = true;
@@ -6118,7 +6256,15 @@
       const pick = bossPicks[index];
       if (!pick) return;
       if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
-      if (pick.kind === "gear" && pick.gear) giveGear(pick.gear);
+      if (pick.kind === "gear" && pick.gear) {
+        if (!gear || !gear.sword) gear = starterGear();
+        if (offerWeapon(pick.gear, { source: "boss" })) {
+          persistSave(true);
+          render();
+          return;
+        }
+        giveGear(pick.gear);
+      }
       bossPicks = [];
       rewardPaths = rollPaths();
       rewardStep = "paths";
@@ -6755,6 +6901,8 @@
         if (name === "reward-path") takePath(action.dataset.path || "");
         if (name === "reward-go") applyPath("straight");
         if (name === "shop-buy") buyShop(Number(action.dataset.slot));
+        if (name === "gear-offer-yes") acceptGearOffer();
+        if (name === "gear-offer-no") declineGearOffer();
         return;
       }
       const albumBtn = el.closest("[data-album]");
