@@ -2813,38 +2813,48 @@
       gap: 14px;
       padding: 24px;
     }
-    /* タイトル：一枚絵を画面いっぱいに敷き、ロゴと操作を重ねる */
+    /* タイトル：一枚絵は大きすぎない枠に収め、演出は残す。操作は中央下 */
     .title-screen {
       position: relative;
       height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background: #0a0706;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 38%, #2a1c14 0%, transparent 70%),
+        #0a0706;
       isolation: isolate;
     }
     .title-bg {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      left: 50%;
+      top: 42%;
+      z-index: 0;
+      width: min(78vw, 920px);
+      height: min(58vh, 520px);
       object-fit: cover;
       object-position: 50% 28%;
-      z-index: 0;
+      border-radius: 18px;
+      box-shadow:
+        0 0 0 1px rgba(228, 177, 90, 0.28),
+        0 18px 48px rgba(0, 0, 0, 0.65),
+        0 0 80px rgba(255, 140, 60, 0.12);
       animation: title-drift 26s ease-in-out infinite alternate;
-      transform-origin: 50% 30%;
+      transform: translate(-50%, -50%) scale(1.02);
+      transform-origin: 50% 40%;
     }
     @keyframes title-drift {
-      0% { transform: scale(1.02) translateY(0); }
-      100% { transform: scale(1.08) translateY(-1.2%); }
+      0% { transform: translate(-50%, -50%) scale(1.02); }
+      100% { transform: translate(-50%, -52%) scale(1.06); }
     }
     .title-vignette {
       position: absolute;
       inset: 0;
       z-index: 1;
+      pointer-events: none;
       background:
-        radial-gradient(ellipse 72% 60% at 50% 40%, transparent 40%, rgba(6, 4, 3, 0.55) 100%),
-        linear-gradient(180deg, rgba(6, 4, 3, 0.55) 0%, rgba(6, 4, 3, 0) 22%, rgba(6, 4, 3, 0) 50%, rgba(6, 4, 3, 0.72) 78%, rgba(6, 4, 3, 0.94) 100%);
+        radial-gradient(ellipse 58% 48% at 50% 40%, transparent 35%, rgba(6, 4, 3, 0.42) 100%),
+        linear-gradient(180deg, rgba(6, 4, 3, 0.5) 0%, rgba(6, 4, 3, 0.12) 28%, rgba(6, 4, 3, 0.2) 52%, rgba(6, 4, 3, 0.78) 78%, rgba(6, 4, 3, 0.96) 100%);
     }
     .title-embers { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
     .title-embers i {
@@ -2877,21 +2887,24 @@
       50% { transform: translate(18px, -50vh); opacity: 0.8; }
       100% { transform: translate(-10px, -104vh); opacity: 0; }
     }
-    /* ロゴは右上の暗い柱の上、操作は右下。二人とミノタウロスの顔を隠さない */
+    /* ロゴは上中央、操作は画面中央下（端すぎると押しにくい） */
     .title-hero {
       position: absolute;
       z-index: 3;
-      top: clamp(18px, 5vh, 56px);
-      right: clamp(20px, 5vw, 96px);
+      top: clamp(20px, 4.5vh, 48px);
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: center;
       gap: 0;
       padding: 0;
+      pointer-events: none;
     }
     .title-kicker {
       margin: 0 0 6px;
-      align-self: flex-end;
+      align-self: center;
       color: rgba(255, 236, 196, 0.85);
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
       font-size: clamp(11px, 1.1vw, 15px);
@@ -2903,8 +2916,8 @@
       margin: 0;
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
-      text-align: right;
+      align-items: center;
+      text-align: center;
       line-height: 1;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
       font-weight: 800;
@@ -2937,8 +2950,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      width: min(520px, 42vw);
-      margin: 16px 0 0;
+      width: min(420px, 56vw);
+      margin: 16px auto 0;
       color: #f0c36a;
       text-shadow: 0 0 10px rgba(240, 195, 106, 0.9);
       font-size: 14px;
@@ -2947,18 +2960,24 @@
     .title-rule i:last-child { background: linear-gradient(90deg, rgba(240, 195, 106, 0.95), transparent); }
     .title-actions {
       position: absolute;
-      z-index: 3;
-      right: clamp(20px, 5vw, 96px);
-      bottom: clamp(20px, 6vh, 64px);
+      z-index: 4;
+      left: 50%;
+      right: auto;
+      bottom: clamp(56px, 11vh, 108px);
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: center;
       justify-content: flex-end;
       gap: 14px;
-      padding: 0;
+      padding: 12px 16px;
+      width: min(420px, calc(100% - 64px));
+      pointer-events: auto;
     }
     .title-actions > button.primary {
-      min-width: 320px;
+      width: 100%;
+      min-width: 0;
+      min-height: 56px;
       padding: 16px 28px;
       font-size: 22px;
       letter-spacing: 0.32em;
@@ -2971,15 +2990,17 @@
       transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
     .title-actions > button.primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 3px rgba(255, 230, 170, 0.45), 0 0 32px rgba(255, 200, 110, 0.55), 0 14px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
-    .title-sub-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .title-sub-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
     .title-sub-actions button {
+      width: 100%;
       min-width: 0;
-      padding: 10px 22px;
+      min-height: 44px;
+      padding: 12px 22px;
       font-size: 16px;
       letter-spacing: 0.14em;
       border-radius: 999px;
       border: 1px solid rgba(240, 195, 106, 0.55);
-      background: rgba(14, 9, 6, 0.62);
+      background: rgba(14, 9, 6, 0.72);
       color: #fff1d2;
       backdrop-filter: blur(6px);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
@@ -6432,7 +6453,7 @@
             </div>
             <h3>タイトル</h3>
             <img class="sheet-art" src="title-key.jpg?v=1" alt="タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。">
-            <p class="sheet-cap">いまのキャラデザ。男と女の戦士が背中合わせで構え、その後ろに赤い目のミノタウロスが大斧を持って立ちはだかる。この絵を画面いっぱいに敷き、金のロゴ（明朝）を重ねる。四人の古い絵は使わない。</p>
+            <p class="sheet-cap">いまのキャラデザ。男と女の戦士が背中合わせで構え、その後ろに赤い目のミノタウロスが大斧を持って立ちはだかる。タイトルでは中央の枠に収め（画面いっぱいにしない）、上中央に金のロゴ（明朝）、中央下にメニューを置く。ズームと火の粉の演出は残す。四人の古い絵は使わない。</p>
             <h3>カード</h3>
             <div class="ref-grid">
               <figure><img class="back-ref" src="card-back.jpg?v=1" alt=""><figcaption>裏面</figcaption></figure>
