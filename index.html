@@ -8213,16 +8213,35 @@
     }
 
     function sortHand() {
-      const rank = (card) => {
+      // 色：黄（技）→緑（パワー）→赤（攻撃）→青（防御）
+      const colorRank = (card) => {
         const kind = cardKind(card);
-        if (kind === "attack") return 0;
-        if (kind === "block") return 1;
-        if (kind === "skill") return 2;
-        if (kind === "power") return 3;
+        if (kind === "skill") return 0;
+        if (kind === "power") return 1;
+        if (kind === "attack") return 2;
+        if (kind === "block") return 3;
         return 4;
       };
-      // 手札の並び：コストの小さい順 → 色分け（攻撃・防御・技・パワー）→ 名前
-      hand.sort((a, b) => a.cost - b.cost || rank(a) - rank(b) || String(a.name).localeCompare(b.name, "ja"));
+      const expectDmg = (card) => {
+        const hits = expectedHits(card, true, false);
+        if (!hits || !hits.length) return 0;
+        return hits.reduce((sum, n) => sum + n, 0);
+      };
+      const expectBlk = (card) => {
+        const base = printedBlock(card);
+        if (!base && !card.block) return 0;
+        return Math.max(0, base + focusLeftFor(card, true));
+      };
+      const expectHeal = (card) => Number(card.heal) || 0;
+      // 手札の並び：色 → コスト → 予想ダメージ昇順 → 予想ブロック昇順 → 予想回復量昇順
+      hand.sort((a, b) =>
+        colorRank(a) - colorRank(b)
+        || (Number(a.cost) || 0) - (Number(b.cost) || 0)
+        || expectDmg(a) - expectDmg(b)
+        || expectBlk(a) - expectBlk(b)
+        || expectHeal(a) - expectHeal(b)
+        || String(a.name).localeCompare(b.name, "ja")
+      );
     }
 
     function renderBattle() {
