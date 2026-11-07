@@ -2327,15 +2327,25 @@
       max-width: 100%;
       flex: none;
     }
+    .gear-body {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 10px;
+      min-width: 0;
+      min-height: 0;
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
     .gear-board {
       display: flex;
       flex-direction: column;
       align-items: stretch;
       justify-content: space-between;
       gap: 4px;
-      width: 0;
-      min-width: 100%;
-      max-width: 100%;
+      width: 92px;
+      min-width: 92px;
+      max-width: 92px;
       min-height: 0;
       flex: 1 1 auto;
       overflow: hidden;
@@ -2402,18 +2412,23 @@
       max-width: 100%;
       line-height: 1.2;
     }
-    .gear-effect .item-use { display: block; margin: 8px auto 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; }
+    .gear-effect .item-use { display: block; margin: 10px 0 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; }
     .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; }
     .gear-effect {
-      margin: 4px 0 0;
-      width: 0;
-      min-width: 100%;
-      padding: 8px;
+      margin: 0;
+      width: 148px;
+      min-width: 148px;
+      max-width: 148px;
+      flex: 0 0 148px;
+      align-self: stretch;
+      box-sizing: border-box;
+      padding: 10px 10px;
       border: 0;
       border-radius: 10px;
       color: var(--cream);
       font-size: 13px;
       line-height: 1.45;
+      overflow: auto;
       background:
         linear-gradient(180deg, rgba(40, 28, 20, 0.92), rgba(18, 12, 10, 0.96));
       box-shadow:
@@ -4805,7 +4820,7 @@
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const medal = slotButton({ id: "medal", label: "メダル", icon: medalIcon() });
       const items = `<div class="gear-pair">${slotButton({ id: "itemL", label: "アイテム", aria: "使い捨て 左", icon: itemIcon() })}${slotButton({ id: "itemR", label: "アイテム", aria: "使い捨て 右", icon: itemIcon() })}</div>`;
-      return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
+      return `<div class="gear-body"><div class="gear-board">${weapons}${bracelets}${medal}${items}</div>${gearEffectText()}</div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -4843,14 +4858,16 @@
       });
       const rail = root.querySelector(".gear-rail");
       if (!rail) return;
-      let box = rail.querySelector(".gear-effect");
+      const body = rail.querySelector(".gear-body");
+      if (!body) return;
+      let box = body.querySelector(".gear-effect");
       const html = gearEffectHtml(shown);
       if (!html) {
         if (box) box.remove();
         return;
       }
       if (!box) {
-        const board = rail.querySelector(".gear-board");
+        const board = body.querySelector(".gear-board");
         if (!board) return;
         board.insertAdjacentHTML("afterend", html);
         return;
@@ -8261,7 +8278,7 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" data-star-count aria-label="スター ${shownStarCount()}">★${shownStarCount()}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}<div class="party-stack"><div class="status-stars" data-star-count aria-label="スター ${shownStarCount()}">★${shownStarCount()}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
