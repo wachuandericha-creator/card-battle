@@ -447,6 +447,19 @@
       text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8), 0 0 14px rgba(228, 177, 90, 0.55);
     }
     .hero-shoulder.hurt { animation: shake 0.5s linear; }
+    .hero-shoulder.hurt.fatal { animation: fatal-shake 1.35s linear; }
+    .battle-screen.fatal .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 28% 78%, rgba(180, 12, 8, 0.18), transparent 42%),
+        linear-gradient(180deg, rgba(40, 0, 0, 0.08), rgba(12, 0, 0, 0.55));
+      animation: fatal-veil 2.8s ease-out forwards;
+    }
+    .enemy-main.fatal { animation: fatal-foe 2.6s ease-out both; }
     .hero-hit {
       position: absolute;
       inset: 0;
@@ -498,6 +511,26 @@
     }
     .hero-hit .spark.b { animation-name: spark-b; animation-delay: 0.04s; }
     .hero-hit .spark.c { left: 54%; animation-name: spark-c; animation-delay: 0.07s; }
+    .hero-hit.fatal .flash { animation-duration: 2.4s; }
+    .hero-hit.fatal .cut.a { animation-duration: 2.2s; }
+    .hero-hit.fatal .cut.b { animation-duration: 2.35s; animation-delay: 0.18s; }
+    .hero-hit.fatal .cut.c { animation-duration: 2.15s; animation-delay: 0.12s; }
+    .hero-hit.fatal .spark { animation-duration: 2s; }
+    .dmg-pop.me.fatal { animation-duration: 2.8s; font-size: calc(148px + var(--pow, 0.35) * 110px); }
+    .fatal-call {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      z-index: 9;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      font-size: clamp(52px, 8vw, 92px);
+      font-weight: 800;
+      letter-spacing: 0.42em;
+      color: #ffd8c8;
+      text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
+      animation: fatal-call 2.6s ease-out both;
+    }
     /* 敵の絵の大きさは強さのランクで小・中・大。ボスは小の2倍 */
     .enemy-main {
       --foe-w: min(32%, 260px);
@@ -2011,8 +2044,9 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call { animation: none; transition: none; }
       .victory-flash { display: none; }
+      .hero-hit.fatal .flash, .hero-hit.fatal .cut, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
         left: 50%;
         top: 12vh;
@@ -2321,6 +2355,112 @@
       box-shadow: 0 0 0 6px rgba(36, 24, 12, 0.72), 0 0 48px rgba(228, 177, 90, 0.5);
       padding: 34px 40px 28px;
     }
+    .overlay.victory.finale {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-items: stretch;
+      padding: 12px 18px 18px;
+      background:
+        radial-gradient(ellipse at 50% 18%, rgba(255, 230, 150, 0.42), transparent 42%),
+        radial-gradient(ellipse at 18% 88%, rgba(228, 177, 90, 0.18), transparent 40%),
+        rgba(8, 6, 4, 0.78);
+    }
+    .overlay.victory.finale .win-stage {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.7fr);
+      align-items: end;
+      justify-items: center;
+      overflow: hidden;
+    }
+    .overlay.victory.finale .win-banner {
+      position: absolute;
+      left: 50%;
+      top: 4%;
+      z-index: 4;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 800;
+      letter-spacing: 0.36em;
+      color: #ffe7a8;
+      text-shadow: 0 3px 0 #6a4a16, 0 0 22px rgba(255, 220, 140, 0.9);
+      animation: win-banner 0.9s cubic-bezier(0.12, 1.35, 0.28, 1) both;
+      pointer-events: none;
+    }
+    .overlay.victory.finale .win-pose {
+      height: min(56vh, 640px);
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 36px rgba(255, 220, 140, 0.55));
+      animation: pose-slam 0.95s cubic-bezier(0.12, 1.4, 0.28, 1) both;
+      z-index: 2;
+    }
+    .overlay.victory.finale .win-foe {
+      height: min(34vh, 340px);
+      width: auto;
+      max-width: 90%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: grayscale(0.4) brightness(0.68) drop-shadow(0 12px 18px rgba(0, 0, 0, 0.5));
+      opacity: 0.8;
+      animation: foe-fall 1s 0.12s ease-out both;
+      z-index: 1;
+    }
+    .overlay.victory.finale .win-rays {
+      position: absolute;
+      left: 22%;
+      top: 0%;
+      width: min(78vh, 640px);
+      height: min(78vh, 640px);
+      border-radius: 50%;
+      background: repeating-conic-gradient(from 0deg, rgba(255, 224, 140, 0.34) 0 8deg, transparent 8deg 16deg);
+      mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9), transparent 70%);
+      animation: gold-spin 14s linear infinite;
+      pointer-events: none;
+    }
+    .overlay.victory.finale .win-rain {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .overlay.victory.finale .win-rain i {
+      position: absolute;
+      top: -8%;
+      width: 4px;
+      height: 18px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #fff6d0, rgba(228, 177, 90, 0.15));
+      animation: gold-rain 1.8s linear infinite;
+      opacity: 0.85;
+    }
+    .overlay.victory.finale .win-spark {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff6d0;
+      box-shadow: 0 0 14px 7px rgba(255, 220, 140, 0.9);
+      animation: win-spark 1.5s ease-out infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .overlay.victory.finale .win-spark.s1 { left: 16%; top: 20%; animation-delay: 0s; }
+    .overlay.victory.finale .win-spark.s2 { left: 38%; top: 10%; animation-delay: 0.2s; }
+    .overlay.victory.finale .win-spark.s3 { left: 58%; top: 24%; animation-delay: 0.4s; }
+    .overlay.victory.finale .win-spark.s4 { left: 26%; top: 46%; animation-delay: 0.6s; }
+    .overlay.victory.finale .win-spark.s5 { left: 48%; top: 36%; animation-delay: 0.35s; }
+    .overlay.victory.finale .win-spark.s6 { left: 70%; top: 42%; animation-delay: 0.8s; }
+    .overlay.victory.finale .panel {
+      justify-self: center;
+      max-height: 46vh;
+      overflow: auto;
+    }
     .overlay.victory h2 {
       font-size: 64px;
       letter-spacing: 0.32em;
@@ -2440,6 +2580,101 @@
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
     #game { height: 100%; }
+    .end-screen {
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 18px 22px 28px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(90, 18, 12, 0.45), transparent 46%),
+        #120c0a;
+    }
+    .end-screen.defeat h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      letter-spacing: 0.28em;
+      text-align: center;
+      color: #ffd2c4;
+      text-shadow: 0 3px 0 #4a0c08, 0 0 18px rgba(255, 70, 40, 0.45);
+    }
+    .end-screen .end-why {
+      margin: 0 auto;
+      max-width: 920px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffe7a8;
+      line-height: 1.5;
+    }
+    .end-screen .end-portraits {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: end;
+      min-height: 38vh;
+    }
+    .end-screen .end-portraits figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+    }
+    .end-screen .end-portraits img {
+      height: min(52vh, 620px);
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55));
+    }
+    .end-screen .end-portraits figure.foe img {
+      height: min(48vh, 560px);
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(255, 70, 40, 0.35));
+    }
+    .end-screen .end-portraits figcaption {
+      margin-top: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .end-screen .end-cols {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 16px;
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+    .end-screen .end-log,
+    .end-screen .end-deck {
+      min-height: 0;
+      max-height: 42vh;
+      overflow: auto;
+      padding: 12px 14px;
+      border: 1px solid rgba(228, 177, 90, 0.4);
+      border-radius: 14px;
+      background: rgba(18, 12, 10, 0.72);
+    }
+    .end-screen .end-log h2,
+    .end-screen .end-deck h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      text-align: center;
+    }
+    .end-screen .end-log p { font-size: 18px; margin: 0 0 10px; text-align: center; }
+    .end-screen .end-deck .deck-cards { justify-content: center; }
+    .end-screen .end-deck .card.preview { width: 92px; }
+    .end-screen .end-note { margin: 0; text-align: center; color: var(--muted); }
+    @media (max-width: 900px) {
+      .end-screen .end-portraits,
+      .end-screen .end-cols { grid-template-columns: 1fr; }
+      .end-screen .end-portraits img { height: min(34vh, 360px); }
+    }
     .menu {
       height: 100%;
       display: flex;
@@ -2819,6 +3054,55 @@
       16% { opacity: 1; transform: translate(-50%, -42%) rotate(8deg) scaleX(1); }
       100% { opacity: 0; transform: translate(-16%, -64%) rotate(14deg) scaleX(1.05); }
     }
+    @keyframes fatal-shake {
+      12% { transform: translateX(-10px) translateY(3px); }
+      28% { transform: translateX(9px) translateY(-4px); }
+      44% { transform: translateX(-7px) translateY(2px); }
+      60% { transform: translateX(5px); }
+      76% { transform: translateX(-3px); }
+      100% { transform: none; }
+    }
+    @keyframes fatal-veil {
+      0% { opacity: 0; }
+      18% { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    @keyframes fatal-foe {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.12) translateY(-6px); }
+      100% { transform: scale(1.08); }
+    }
+    @keyframes fatal-call {
+      0% { opacity: 0; transform: translate(-50%, -40%) scale(0.7); letter-spacing: 0.08em; }
+      22% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      70% { opacity: 1; }
+      100% { opacity: 0.2; transform: translate(-50%, -58%) scale(1); }
+    }
+    @keyframes pose-slam {
+      0% { opacity: 0; transform: translateY(36px) scale(1.22); filter: brightness(2.2); }
+      42% { opacity: 1; transform: translateY(-6px) scale(0.97); }
+      100% { opacity: 1; transform: none; filter: brightness(1); }
+    }
+    @keyframes foe-fall {
+      0% { opacity: 0; transform: translateY(-12px) scale(1.06); }
+      100% { opacity: 0.8; transform: translateY(10px) rotate(-4deg) scale(0.92); }
+    }
+    @keyframes gold-spin { to { transform: rotate(360deg); } }
+    @keyframes win-banner {
+      0% { opacity: 0; transform: translate(-50%, -18px) scale(0.7); letter-spacing: 0.08em; }
+      55% { opacity: 1; transform: translate(-50%, 0) scale(1.06); }
+      100% { opacity: 1; transform: translate(-50%, 0) scale(1); letter-spacing: 0.36em; }
+    }
+    @keyframes gold-rain {
+      0% { transform: translateY(0) rotate(12deg); opacity: 0; }
+      12% { opacity: 0.9; }
+      100% { transform: translateY(110vh) rotate(18deg); opacity: 0; }
+    }
+    @keyframes win-spark {
+      0% { opacity: 0; transform: scale(0.2); }
+      30% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0; transform: translateY(-28px) scale(0.2); }
+    }
     @keyframes spark-a {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
       18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -3167,6 +3451,10 @@
     let slashSeq = 0;
     let fxFoeHits = [];
     let fxHurt = false;
+    let fxFatal = false;
+    let fatalHold = false;
+    let lastFoeBlow = null;
+    let defeatSnap = null;
     let fxGuard = "";
     let fxHeal = false;
     let fxHit = null;
@@ -3187,8 +3475,8 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152" },
-      { name: "女の戦士", stand: "girl-front.png?v=7", chibi: "job-girl.png?v=2", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=8", battleRatio: "863 / 1147" },
+      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3" },
+      { name: "女の戦士", stand: "girl-front.png?v=7", chibi: "job-girl.png?v=2", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=8", battleRatio: "863 / 1147", defeat: "girl-defeat.png?v=6", victory: "girl-victory.png?v=7" },
     ];
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
@@ -3872,7 +4160,7 @@
       const enemyGap = enemy ? Math.abs(enemy.hp - shownEnemy()) : 0;
       const playerGap = player ? Math.abs(player.hp - shownPlayer()) : 0;
       const enemyWait = enemyGap < 0.2 ? 0 : Math.min(1700, Math.max(620, (enemyGap / 6.5) * 1000));
-      const playerWait = playerGap < 0.2 ? 0 : Math.min(2400, Math.max(900, (playerGap / 4) * 1000));
+      const playerWait = playerGap < 0.2 ? 0 : Math.min(fxFatal ? 3200 : 2400, Math.max(fxFatal ? 1800 : 900, (playerGap / (fxFatal ? 2.2 : 4)) * 1000));
       return Math.max(enemyWait, playerWait);
     }
 
@@ -3895,7 +4183,11 @@
       const ease = (current, target, quick) => {
         const diff = target - current;
         if (Math.abs(diff) < 0.04) return target;
-        const speed = quick ? Math.max(6.5, Math.abs(diff) / 1.5) : Math.max(4, Math.abs(diff) / 2.4);
+        const speed = quick
+          ? Math.max(6.5, Math.abs(diff) / 1.5)
+          : fatalHold
+            ? Math.max(1.35, Math.abs(diff) / 5.2)
+            : Math.max(4, Math.abs(diff) / 2.4);
         return current + Math.sign(diff) * Math.min(Math.abs(diff), speed * dt);
       };
       let moving = false;
@@ -4042,6 +4334,11 @@
         if (result.hpLoss > 0) {
           fxHurt = true;
           noteHit("player", result.hpLoss, amount);
+          lastFoeBlow = { name: "毒", hpLoss: result.hpLoss };
+          if (target.hp <= 0) {
+            fxFatal = true;
+            fatalHold = true;
+          }
         }
         if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       } else if (result.hpLoss || result.blocked) {
@@ -4069,6 +4366,11 @@
         player.hurtThis = true;
         fxHurt = true;
         noteHit("player", result.hpLoss, cut.dealt);
+        lastFoeBlow = { name, hpLoss: result.hpLoss };
+        if (player.hp <= 0) {
+          fxFatal = true;
+          fatalHold = true;
+        }
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       log(hurtSentence(enemy.name, name, raw + extra, cut.reduced, result), card, true);
@@ -4624,7 +4926,9 @@
         const saved = cheatDeath();
         if (saved === "retry") return;
         if (!saved) {
-          finish("lose");
+          fxFatal = true;
+          fatalHold = true;
+          scheduleFinish("lose");
           return;
         }
       }
@@ -4656,8 +4960,11 @@
       outcome = kind;
       phase = "end";
       banner = "";
+      fatalHold = false;
+      fxFatal = false;
       log(kind === "win" ? `${heroName()}は${enemy.name}を倒した。` : `${heroName()}は倒された。`);
       if (kind === "lose") {
+        defeatSnap = captureDefeat();
         endRun(false);
         screen = "defeat";
         render();
@@ -4674,10 +4981,59 @@
       phase = "end";
       const guardKind = fxGuard;
       const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0);
+      const fatal = kind === "lose" && (fxFatal || fatalHold);
+      if (fatal) {
+        fxFatal = true;
+        fatalHold = true;
+      }
+      const fatalWait = fatal ? 3600 : 0;
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind ? 1300 : 0, fatalWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
+    }
+
+    function captureDefeat() {
+      const blow = lastFoeBlow;
+      const foeName = enemy && enemy.name ? enemy.name : "敵";
+      const hit = blow && blow.hpLoss ? `${blow.hpLoss}ダメージ` : "";
+      const why = blow && blow.name === "毒"
+        ? `毒で体力が尽きた。`
+        : blow && blow.name
+          ? `${foeName}の${blow.name}${hit ? `で${hit}` : ""}。体力が尽きた。`
+          : `${foeName}に倒された。`;
+      return {
+        hero: heroName(),
+        defeatArt: heroItem().defeat,
+        victoryArt: heroItem().victory,
+        foeName,
+        foeImage: enemy && enemy.image ? enemy.image : "",
+        foeHp: enemy ? `${enemy.hp}/${enemy.maxHp}` : "",
+        why,
+        log: (logLines || []).map((line) => (typeof line === "string" ? { text: line } : { ...line })),
+        deck: (openingDeck || []).map((card) => ({ ...card })),
+        dungeon: dungeonName,
+        floor: floorLabel(),
+        stars: meta.stars,
+      };
+    }
+
+    function logLinesHtml(lines) {
+      let logTurnShown = 0;
+      return (lines || []).map((line, index) => {
+        const text = typeof line === "string" ? line : line.text;
+        const kind = line && line.kind;
+        const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
+        const hover = line && line.card ? ` data-log="${index}"` : "";
+        const foe = line && line.foe ? ` data-foe="1"` : "";
+        let head = "";
+        if (kind && line.turn && line.turn !== logTurnShown) {
+          logTurnShown = line.turn;
+          head = `<p class="turn-head"><span>${line.turn}ターン目</span></p>`;
+        }
+        const body = kind ? esc(text) : colorNames(text);
+        return `${head}<p class="${cls}"${hover}${foe}>${body}</p>`;
+      }).join("");
     }
 
     function loadMeta() {
@@ -4914,6 +5270,9 @@
     function startBattle(keepHp) {
       clearTimer();
       clearReward();
+      lastFoeBlow = null;
+      fxFatal = false;
+      fatalHold = false;
       screen = "battle";
       cleared = false;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
@@ -5008,6 +5367,8 @@
         gear[halo] = null;
         player.hp = player.maxHp;
         fxHeal = true;
+        fxFatal = false;
+        fatalHold = false;
         log(`${heroName()}は倒れた。${item.name}が光り、復活した。`);
         return "revive";
       }
@@ -5194,6 +5555,10 @@
     }
 
     function beginRun(floors, name) {
+      defeatSnap = null;
+      lastFoeBlow = null;
+      fxFatal = false;
+      fatalHold = false;
       dungeonName = name || "はじまりの洞窟";
       battleIndex = 0;
       route = buildRoute(floors || 20, dungeonName);
@@ -5725,11 +6090,28 @@
     }
 
     function renderDefeat() {
+      const snap = defeatSnap || captureDefeat();
+      const logHtml = logLinesHtml(snap.log);
+      const deckHtml = deckGroup("この戦闘のデッキ", snap.deck || []);
       root.innerHTML = `
-        <div class="menu">
+        <div class="end-screen defeat">
           <h1>倒された</h1>
-          <p>初期デッキに戻った。装備を失った。★${meta.stars}は残っている。</p>
-          <p>${heroName()}の使いこみ　${meta.uses}</p>
+          <p class="end-why">${esc(snap.why || `${snap.foeName || "敵"}に倒された。`)}</p>
+          <div class="end-portraits">
+            <figure>
+              <img src="${esc(snap.defeatArt || heroItem().defeat)}" alt="">
+              <figcaption>${esc(snap.hero || heroName())}</figcaption>
+            </figure>
+            <figure class="foe">
+              <img src="${esc(snap.foeImage || "")}" alt="">
+              <figcaption>${esc(snap.foeName || "敵")}${snap.foeHp ? `　HP ${esc(snap.foeHp)}` : ""}</figcaption>
+            </figure>
+          </div>
+          <div class="end-cols">
+            <div class="end-log battle-log"><h2>ログ</h2>${logHtml || `<p>記録は無い。</p>`}</div>
+            <div class="end-deck">${deckHtml}</div>
+          </div>
+          <p class="end-note">${esc(snap.dungeon || dungeonName)}　${esc(snap.floor || "")}　初期デッキに戻った。装備を失った。★${meta.stars}は残っている。使いこみ ${meta.uses}</p>
           ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
     }
@@ -6039,15 +6421,15 @@
       return t * t * (3 - 2 * t);
     }
 
-    function heroShoulder(vitals, hurt, pow, guard) {
-      const hit = hurt ? `<div class="hero-hit" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="cut a"></span><span class="cut b"></span><span class="cut c"></span><span class="spark"></span><span class="spark b"></span><span class="spark c"></span></div>` : "";
+    function heroShoulder(vitals, hurt, pow, guard, fatal) {
+      const hit = hurt ? `<div class="hero-hit${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="cut a"></span><span class="cut b"></span><span class="cut c"></span><span class="spark"></span><span class="spark b"></span><span class="spark c"></span></div>` : "";
       const guardHtml = guard === "hold"
         ? `<div class="hero-guard" aria-label="ダメージなし">${guardMark()}</div>`
         : guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}${vitals}</div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${fatal ? " fatal" : ""}" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}${vitals}</div>`;
     }
 
     function startHeroIdle() {
@@ -6729,11 +7111,18 @@
       return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="星${count}">${stars}</div>`;
     }
 
+    function victoryStage() {
+      const pose = heroItem().victory;
+      const foe = enemy && enemy.image ? `<img class="win-foe" src="${esc(enemy.image)}" alt="">` : "";
+      const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${1.5 + (i % 5) * 0.18}s"></i>`).join("");
+      return `<div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
+    }
+
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
@@ -6745,7 +7134,7 @@
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
-        return `<div class="overlay victory"><div class="panel wide"><h2>勝利</h2>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory finale">${victoryStage()}<div class="panel wide"><h2>勝利</h2>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -6794,14 +7183,7 @@
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
-      const overlay = rewardOverlay()
-        || (outcome === "lose"
-        ? `<div class="overlay"><div class="panel">
-            <h2>倒された</h2>
-            <p>初期デッキに戻った。装備を失った。★${meta.stars}は残っている。</p>
-            <button type="button" data-action="character">キャラクター選択へ</button>
-          </div></div>`
-        : "");
+      const overlay = rewardOverlay();
       const leaveOverlay = askLeave
         ? `<div class="overlay"><div class="panel">
             <h2>タイトルに戻る？</h2>
@@ -6815,6 +7197,7 @@
       const slashesNow = fxSlashes;
       const foeHitsNow = fxFoeHits;
       const hurtNow = fxHurt;
+      const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
       const healNow = fxHeal;
       const hitNow = fxHit;
@@ -6832,6 +7215,7 @@
       fxSlashes = [];
       fxFoeHits = [];
       fxHurt = false;
+      fxFatal = false;
       fxGuard = "";
       fxHeal = false;
       fxHit = null;
@@ -6840,26 +7224,11 @@
       fxNoMana = false;
       const turnNow = turnCall;
       turnCall = "";
-      // ログは新しいものが上。ターン番号が変わる所に「Nターン目」の区切りを入れる。
-      let logTurnShown = 0;
-      const logHtml = logLines.map((line, index) => {
-        const text = typeof line === "string" ? line : line.text;
-        const kind = line && line.kind;
-        const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
-        const hover = line && line.card ? ` data-log="${index}"` : "";
-        const foe = line && line.foe ? ` data-foe="1"` : "";
-        let head = "";
-        if (kind && line.turn && line.turn !== logTurnShown) {
-          logTurnShown = line.turn;
-          head = `<p class="turn-head"><span>${line.turn}ターン目</span></p>`;
-        }
-        const body = kind ? esc(text) : colorNames(text);
-        return `${head}<p class="${cls}"${hover}${foe}>${body}</p>`;
-      }).join("");
+      const logHtml = logLinesHtml(logLines);
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
-        <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}">
+        <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" data-star-count aria-label="スター ${shownStarCount()}">★${shownStarCount()}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
@@ -6878,7 +7247,7 @@
           <div class="stage" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
             <div class="enemy-field">
             ${traitNote()}
-            <div class="enemy-main${encounter ? " arrive" : ""}" data-size="${foeSize()}">
+            <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
             <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
               <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
               ${slashNow ? cutsHtml : ""}
@@ -6889,8 +7258,8 @@
             </div>
             <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
             ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
-            ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) }), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
-            ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
+            ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) }), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
+            ${encounter || turnNow || fatalNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${fatalNow ? `<div class="fatal-call" aria-hidden="true">止め</div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
           ${playRow()}
