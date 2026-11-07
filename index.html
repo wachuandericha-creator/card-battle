@@ -3695,8 +3695,6 @@
       ベッド: "card-bed.jpg?v=1",
       ホテル: "card-hotel.jpg?v=1",
       ダッシュ: "card-dash.jpg?v=1",
-      "アタック+": "card-attack-plus.jpg?v=1",
-      "ブロック+": "card-block-plus.jpg?v=1",
       スライム粘液: "card-slime-goo.jpg?v=1",
       ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
@@ -4107,11 +4105,13 @@
     }
 
     function enemyBasic(foe, name) {
-      if (name === "アタック" || name === "アタック+") {
+      // 旧セーブの「アタック+」「ブロック+」は、いまのアタック／ブロックと同じ扱い
+      const key = name === "アタック+" ? "アタック" : name === "ブロック+" ? "ブロック" : name;
+      if (key === "アタック") {
         const dmg = (CARDS.アタック.damage || 3) + hiddenAtk(foe);
         return { name: "アタック", cost: 1, text: CARDS.アタック.text, damage: dmg };
       }
-      if (name === "ブロック" || name === "ブロック+") {
+      if (key === "ブロック") {
         const blk = (CARDS.ブロック.block || 3) + hiddenDef(foe);
         return { name: "ブロック", cost: 1, text: CARDS.ブロック.text, block: blk };
       }
@@ -7014,7 +7014,7 @@
 
     function printedDamage(card) {
       if (!card) return 0;
-      if (card.name === "アタック" || card.name === "アタック+") return CARDS.アタック.damage || 3;
+      if (card.name === "アタック" || card.name === "アタック+") return CARDS.アタック.damage || 3; // 旧名互換
       return Number(card.damage) || 0;
     }
 
@@ -7436,12 +7436,13 @@
     }
 
     function playerCopy(card) {
-      const name = String(card.name || "");
-      const base = name.endsWith("+") ? name.slice(0, -1) : name;
-      if (CARDS[base] && (base === "アタック" || base === "ブロック" || name.endsWith("+"))) {
-        return { ...keepCard({ name: base, ...CARDS[base], stars: 1 }), source: "敵" };
+      // 敵のカードに「+」の概念は無い。アタック／ブロックは奪うと自分の基本版になる。旧名アタック+等は互換だけ。
+      let name = String(card.name || "");
+      if (name === "アタック+" || name === "ブロック+") name = name.slice(0, -1);
+      if (name === "アタック" || name === "ブロック") {
+        return { ...keepCard({ name, ...CARDS[name], stars: 1 }), source: "敵" };
       }
-      return { ...keepCard({ ...card, stars: 1 }), source: "敵" };
+      return { ...keepCard({ ...card, name, stars: 1 }), source: "敵" };
     }
 
     function classCards() {
