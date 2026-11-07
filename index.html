@@ -276,7 +276,8 @@
       bottom: auto;
       transform: none;
       flex: 0 0 auto;
-      margin-top: 6px;
+      margin: 0 0 8px;
+      z-index: 6;
     }
     .hero-shoulder .hero-plate { width: min(220px, 96%); }
     .hero-body .hero-guard { inset: -12% -18% 8%; }
@@ -2158,7 +2159,7 @@
       width: 76px;
       flex: 0 0 auto;
       align-self: flex-end;
-      margin-bottom: 70px;
+      margin-bottom: 12px;
       padding: 0;
       border: 0;
       background: transparent;
@@ -7331,7 +7332,7 @@
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${fatal ? " fatal" : ""}"><div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div>${vitals}</div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -8149,6 +8150,7 @@
             </div>
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
+              ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy) })}
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
@@ -8156,7 +8158,6 @@
               </div>
               ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
-              ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy) })}
               </div>
               ${foePileMarkup()}
               <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
