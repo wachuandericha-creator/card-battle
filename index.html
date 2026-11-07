@@ -4469,7 +4469,7 @@
     let castShown = "";
     const CAST = [
       { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3" },
-      { name: "女の戦士", stand: "girl-front.png?v=9", chibi: "job-girl.png?v=3", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=13", battleRatio: "864 / 1152", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9" },
+      { name: "女の戦士", stand: "girl-front.png?v=9", chibi: "job-girl.png?v=4", action: "girl-action.jpg?v=1", battle: "girl-battle.png?v=13", battleRatio: "864 / 1152", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9" },
     ];
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
@@ -7260,7 +7260,7 @@
     }
 
     function renderCharacter() {
-      // コマは正面向きのデフォルメ絵だけ。4頭身の正面の立ち絵はこの画面には出さない（一枚絵と板で十分）。
+      // コマは正面向きの3頭身デフォルメだけ。4頭身の正面の立ち絵はこの画面には出さない（一枚絵と板で十分）。
       const tokens = CAST.map((item) => `
         <button type="button" class="cast-token mini" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
           <img src="${item.chibi}" alt="">
@@ -7463,7 +7463,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("job-warrior.png?v=9", "戦士の選択コマ（正面デフォルメ）", "cut-ref")}
-              ${sheetFig("job-girl.png?v=3", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=4", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=1", "タイトル", "タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。")}
