@@ -2945,21 +2945,21 @@
     .kw-tip::after {
       content: "";
       position: absolute;
-      left: var(--arrow-x, 50%);
-      bottom: -9px;
+      top: var(--arrow-y, 50%);
+      left: -9px;
       width: 16px;
       height: 16px;
-      transform: translateX(-50%) rotate(45deg);
+      transform: translateY(-50%) rotate(45deg);
       background: #140f0c;
-      border-right: 1px solid rgba(228, 177, 90, 0.9);
+      border-left: 1px solid rgba(228, 177, 90, 0.9);
       border-bottom: 1px solid rgba(228, 177, 90, 0.9);
     }
-    .kw-tip.below::after {
-      bottom: auto;
-      top: -9px;
-      background: #2a2019;
+    .kw-tip.left::after {
+      left: auto;
+      right: -9px;
+      background: #140f0c;
       border: 0;
-      border-left: 1px solid rgba(228, 177, 90, 0.9);
+      border-right: 1px solid rgba(228, 177, 90, 0.9);
       border-top: 1px solid rgba(228, 177, 90, 0.9);
     }
     .kw-tip p { margin: 0; }
@@ -8823,7 +8823,7 @@
     window.addEventListener("resize", () => { if (screen === "battle") fitHand(); });
 
     // 注釈（パリィ・毒・炎上など）はカードの中ではなく、カードの外の吹き出しに出す。
-    // カードに乗ると、そのカードの注釈をまとめてカードの上（入らなければ下）に出す。札（毒+2 など）に乗ると、その札の上に出す。
+    // カードに乗ると、そのカードの注釈をまとめてカードの右（入らなければ左）に出す。
     const kwTip = document.createElement("div");
     kwTip.className = "kw-tip";
     kwTip.hidden = true;
@@ -8840,17 +8840,21 @@
       const w = kwTip.offsetWidth;
       const h = kwTip.offsetHeight;
       const pad = 8;
-      let left = r.left + r.width / 2 - w / 2;
-      left = Math.max(pad, Math.min(window.innerWidth - w - pad, left));
-      let top = r.top - h - 12;
-      let below = false;
-      if (top < pad) { top = r.bottom + 12; below = true; }
-      if (top + h > window.innerHeight - pad) top = Math.max(pad, window.innerHeight - h - pad);
+      const gap = 12;
+      let left = r.right + gap;
+      let sideLeft = false;
+      if (left + w > window.innerWidth - pad) {
+        left = r.left - gap - w;
+        sideLeft = true;
+      }
+      if (left < pad) left = pad;
+      let top = r.top + r.height / 2 - h / 2;
+      top = Math.max(pad, Math.min(window.innerHeight - h - pad, top));
       kwTip.style.left = `${Math.round(left)}px`;
       kwTip.style.top = `${Math.round(top)}px`;
-      const arrowX = r.left + r.width / 2 - left;
-      kwTip.style.setProperty("--arrow-x", `${Math.round(Math.max(14, Math.min(w - 14, arrowX)))}px`);
-      kwTip.classList.toggle("below", below);
+      const arrowY = r.top + r.height / 2 - top;
+      kwTip.style.setProperty("--arrow-y", `${Math.round(Math.max(14, Math.min(h - 14, arrowY)))}px`);
+      kwTip.classList.toggle("left", sideLeft);
     }
 
     function showKwTip(anchor) {
