@@ -2472,32 +2472,201 @@
       max-width: 100%;
       line-height: 1.2;
     }
-    .gear-effect .item-use { display: block; margin: 10px 0 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; pointer-events: auto; }
-    .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; }
-    /* 装備説明はレイアウトを広げず、枠の右に重ねるポップ */
+    .gear-effect .item-use {
+      display: block;
+      width: 100%;
+      margin: 12px 0 0;
+      padding: 9px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 224, 150, 0.95);
+      background:
+        linear-gradient(180deg, #ffe08a 0%, #e4b15a 42%, #b8832c 100%);
+      color: #1a120c;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow:
+        0 0 0 1px rgba(8, 6, 5, 0.85),
+        0 6px 14px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 248, 220, 0.7);
+    }
+    .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; filter: grayscale(0.25); }
+    /* 装備説明はレイアウトを広げず、枠の右に重ねる漆金ポップ */
     .gear-effect {
       position: fixed;
       z-index: 55;
       margin: 0;
-      width: min(220px, calc(100vw - 24px));
-      max-width: 220px;
-      max-height: min(70vh, 360px);
+      width: min(288px, calc(100vw - 24px));
+      max-width: 288px;
+      max-height: min(78vh, 440px);
       box-sizing: border-box;
-      padding: 12px 12px;
+      padding: 0;
       border: 0;
-      border-radius: 12px;
-      color: var(--cream);
+      border-radius: 16px;
+      color: #f6e8c8;
       font-size: 14px;
-      line-height: 1.5;
-      overflow: auto;
+      line-height: 1.55;
+      overflow: hidden;
       pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(22, 16, 12, 0.97), rgba(8, 6, 5, 0.98));
+        radial-gradient(120% 70% at 50% -10%, rgba(255, 214, 140, 0.18), transparent 55%),
+        linear-gradient(165deg, #2a2018 0%, #14100c 48%, #0a0806 100%);
+      box-shadow:
+        0 0 0 1px rgba(8, 6, 5, 0.98),
+        0 0 0 2px rgba(228, 177, 90, 0.78),
+        0 0 0 5px rgba(8, 6, 5, 0.92),
+        0 18px 36px rgba(0, 0, 0, 0.62),
+        inset 0 1px 0 rgba(255, 236, 200, 0.22),
+        inset 0 -18px 40px rgba(0, 0, 0, 0.28);
+    }
+    .gear-effect::before,
+    .gear-effect::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: radial-gradient(circle at 35% 30%, #fff6d0 0%, #ffd766 35%, #b8841a 75%, #6f4d0a 100%);
+      box-shadow: 0 0 8px rgba(255, 215, 120, 0.55);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .gear-effect::before { top: 7px; left: 7px; }
+    .gear-effect::after { top: 7px; right: 7px; }
+    .gear-effect-inner {
+      position: relative;
+      padding: 16px 16px 14px;
+      max-height: min(78vh, 440px);
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    .gear-effect-inner::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 224, 150, 0.7), transparent);
+      pointer-events: none;
+    }
+    .gear-effect-head {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 0 0 12px;
+    }
+    .gear-effect-art {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255, 220, 150, 0.16), transparent 60%),
+        linear-gradient(180deg, #1c1510, #0c0907);
       box-shadow:
         0 0 0 1px rgba(8, 6, 5, 0.95),
         0 0 0 2px rgba(212, 168, 74, 0.7),
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 236, 200, 0.14);
+        inset 0 1px 0 rgba(255, 236, 200, 0.16);
+    }
+    .gear-effect-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .gear-effect-art .gear-mark {
+      color: rgba(228, 177, 90, 0.7);
+      display: flex;
+    }
+    .gear-effect-art .gear-mark .ico { width: 34px; height: 34px; }
+    .gear-effect-meta { min-width: 0; }
+    .gear-effect-slot {
+      display: inline-block;
+      margin: 0 0 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: #1a120c;
+      background: linear-gradient(180deg, #f0d48a, #c9963a);
+      box-shadow: 0 0 0 1px rgba(8, 6, 5, 0.55);
+    }
+    .gear-effect-name {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffe7a8;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 12px rgba(255, 210, 120, 0.28), 0 1px 0 rgba(0, 0, 0, 0.55);
+    }
+    .gear-effect-stars {
+      margin: 5px 0 0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      color: #ffe27a;
+      text-shadow: 0 0 8px rgba(255, 215, 120, 0.55);
+      line-height: 1;
+    }
+    .gear-effect-stars.boss {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: #fff4d4;
+      background: linear-gradient(180deg, #7a2a2a, #3d1212);
+      box-shadow: 0 0 0 1px rgba(228, 177, 90, 0.55);
+    }
+    .gear-effect-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 10px;
+    }
+    .gear-effect-stats span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff6d8;
+      background: rgba(255, 220, 150, 0.1);
+      border: 1px solid rgba(228, 177, 90, 0.45);
+    }
+    .gear-effect-stats .atk { color: #ffc28a; }
+    .gear-effect-stats .def { color: #9ec8ff; }
+    .gear-effect-body {
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(228, 177, 90, 0.28);
+      color: #f3e2bf;
+      font-size: 13.5px;
+      line-height: 1.55;
+      white-space: normal;
+    }
+    .gear-effect-body.empty {
+      color: rgba(232, 214, 176, 0.72);
+      font-style: normal;
+      text-align: center;
+    }
+    .gear-effect-hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(232, 214, 176, 0.72);
     }
     .gear-effect.has-action { pointer-events: auto; }
     .card {
@@ -4906,26 +5075,104 @@
       return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
 
+    function gearSlotLabel(slotId) {
+      if (slotId === "sword") return "剣";
+      if (slotId === "shield") return "盾";
+      if (slotId === "braceletL") return "腕輪・左";
+      if (slotId === "braceletR") return "腕輪・右";
+      if (slotId === "medal") return "メダル";
+      if (slotId === "itemL" || slotId === "itemR") return "アイテム";
+      return "装備";
+    }
+
+    function gearSlotIcon(slotId) {
+      if (slotId === "sword") return swordIcon();
+      if (slotId === "shield") return shieldIcon();
+      if (slotId === "braceletL" || slotId === "braceletR") return braceletIcon();
+      if (slotId === "medal") return medalIcon();
+      return itemIcon();
+    }
+
+    function gearEffectPlain(item) {
+      let text = String((item && item.effect) || "");
+      text = text.replace(/^(?:★+|ボス)[　\s]*/u, "");
+      return text.trim();
+    }
+
+    function gearStatChips(item) {
+      if (!item) return "";
+      const chips = [];
+      if (item.atk) chips.push(`<span class="atk">ATK ${signed(item.atk)}</span>`);
+      if (item.def) chips.push(`<span class="def">DEF ${signed(item.def)}</span>`);
+      if (!chips.length) return "";
+      return `<div class="gear-effect-stats">${chips.join("")}</div>`;
+    }
+
+    function gearPopShell(slotId, opts) {
+      const o = opts || {};
+      const rarity = o.rarity || "";
+      const starsClass = rarity === "ボス" ? "gear-effect-stars boss" : "gear-effect-stars";
+      const art = o.image
+        ? `<img src="${esc(o.image)}" alt="">`
+        : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
+      const name = o.name ? `<p class="gear-effect-name">${esc(o.name)}</p>` : "";
+      const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
+      const bodyClass = o.empty ? "gear-effect-body empty" : "gear-effect-body";
+      const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
+      const button = o.button || "";
+      const action = o.action ? " has-action" : "";
+      return `<div class="gear-effect${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-art">${art}</div><div class="gear-effect-meta"><span class="gear-effect-slot">${esc(gearSlotLabel(slotId))}</span>${name}${stars}</div></div>${o.stats || ""}<p class="${bodyClass}">${o.body || ""}</p>${hint}${button}</div></div>`;
+    }
+
     function gearEffectHtml(slotId) {
       if (!slotId) return "";
       if (slotId === "medal" && !gear.medal) {
-        return `<p class="gear-effect" role="tooltip">メダル。ボスを倒すと確定でもらえる。</p>`;
+        return gearPopShell(slotId, {
+          name: "メダル",
+          body: "ボスを倒すと確定でもらえる。",
+          empty: true,
+        });
       }
       if (slotId === "itemL" || slotId === "itemR") {
         const item = gear[slotId];
-        if (!item) return `<p class="gear-effect" role="tooltip">使い捨てアイテム。なにも入っていない。</p>`;
+        if (!item) {
+          return gearPopShell(slotId, {
+            name: "空き枠",
+            body: "使い捨てアイテム。なにも入っていない。",
+            empty: true,
+          });
+        }
         const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
         const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
-        const button = item.quick ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>` : "";
-        const action = button ? " has-action" : "";
-        return `<p class="gear-effect${action}" role="tooltip">${esc(item.name)}。${esc(item.effect)}${hint ? "<br>" + esc(hint) : ""}${button}</p>`;
+        const button = item.quick
+          ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>`
+          : "";
+        return gearPopShell(slotId, {
+          name: item.name || "アイテム",
+          rarity: gearRarityText(item),
+          image: item.image || "",
+          body: esc(gearEffectPlain(item) || item.effect || ""),
+          hint,
+          button,
+          action: !!button,
+          stats: gearStatChips(item),
+        });
       }
       const item = gear[slotId];
-      if (!item) return `<p class="gear-effect" role="tooltip">なにも入っていない。</p>`;
-      const name = item.name || "";
-      const effect = item.effect || "";
-      const body = name && effect ? `${esc(name)}。${esc(effect)}` : esc(effect || name || "なにも入っていない。");
-      return `<p class="gear-effect" role="tooltip">${body}</p>`;
+      if (!item) {
+        return gearPopShell(slotId, {
+          name: "空き枠",
+          body: "なにも入っていない。",
+          empty: true,
+        });
+      }
+      return gearPopShell(slotId, {
+        name: item.name || gearSlotLabel(slotId),
+        rarity: gearRarityText(item),
+        image: item.image || "",
+        body: esc(gearEffectPlain(item) || item.effect || item.name || ""),
+        stats: gearStatChips(item),
+      });
     }
 
     function placeGearEffect(box, slotId) {
@@ -4933,12 +5180,12 @@
       const slot = root.querySelector(`.gear-slot[data-gear="${slotId}"]`);
       if (!slot) return;
       const r = slot.getBoundingClientRect();
-      const gap = 10;
+      const gap = 12;
       const pad = 8;
       box.style.left = "0px";
       box.style.top = "0px";
-      const w = box.offsetWidth || 220;
-      const h = box.offsetHeight || 80;
+      const w = box.offsetWidth || 288;
+      const h = box.offsetHeight || 120;
       let left = r.right + gap;
       let top = r.top;
       if (left + w > window.innerWidth - pad) left = Math.max(pad, r.left - gap - w);
