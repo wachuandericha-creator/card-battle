@@ -2027,22 +2027,24 @@
     .card.power .nameplate { background: linear-gradient(180deg, #e7ffe8 0%, #3f9a58 56%, #1e5430 100%); color: #f4fff6; }
     .card.instant .nameplate { background: linear-gradient(180deg, #fffaf0 0%, #e7d7b8 56%, #c4b59a 100%); color: #2a2118; }
     .card.foe .nameplate { background: linear-gradient(180deg, #f3e4fb 0%, #8d55b0 54%, #4c2870 100%); color: #fff8ff; }
+    /* コストは数字ではなく、マナと同じ黄色い玉。0は何も出さない */
     .card .cost {
       position: absolute;
       top: 50%;
       left: 2cqw;
       transform: translateY(-50%);
-      width: 17cqw;
-      height: 17cqw;
-      border-radius: 50%;
-      background: #fff;
-      color: #1a120e;
-      font-size: 10cqw;
-      font-weight: 800;
-      display: grid;
-      place-items: center;
-      border: 3px solid #1a120e;
+      display: flex;
+      flex-direction: column;
+      gap: 1.6cqw;
       z-index: 3;
+    }
+    .card .cost i {
+      width: 12cqw;
+      height: 12cqw;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 226, 120, 0.9);
+      background: radial-gradient(circle at 42% 38%, #fffbe0 0%, #ffe066 38%, #f0a81e 72%, #a86a08 100%);
+      box-shadow: 0 0 6px rgba(255, 210, 80, 0.55);
     }
     .card .name {
       position: static;
@@ -5446,7 +5448,7 @@
             </div>
             <h4>色ごとの空の枠</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
-            <p class="sheet-cap">絵柄の入っていない枠。カードは、この6色のどれかの枠に、横4:縦3の絵柄をはめて作る。上の名札にコストと名前、真ん中に絵柄、下の白地に効果、右下に★。枠の色は、攻撃が赤、防御が青、技が黄、パワーが緑、インスタントが白、敵のカードが紫。自分の手札に入った敵のカードは、その分類の色に変わる。</p>
+            <p class="sheet-cap">絵柄の入っていない枠。カードは、この6色のどれかの枠に、横4:縦3の絵柄をはめて作る。上の名札に、コストは黄色い玉（0は何も出さない）と名前、真ん中に絵柄、下の白地に効果、右下に★。枠の色は、攻撃が赤、防御が青、技が黄、パワーが緑、インスタントが白、敵のカードが紫。自分の手札に入った敵のカードは、その分類の色に変わる。</p>
             <h4>基本</h4>
             <div class="ref-grid">
               <figure><img class="card-ref" src="card-attack.jpg?v=3" alt=""><figcaption>アタック</figcaption></figure>
@@ -5758,6 +5760,12 @@
       }).join("");
     }
 
+    function costOrbs(cost) {
+      const n = Math.max(0, Math.floor(Number(cost) || 0));
+      if (!n) return "";
+      return `<span class="cost" aria-label="コスト ${n}">${Array.from({ length: n }, () => "<i></i>").join("")}</span>`;
+    }
+
     function cardFace(card, adjusted) {
       const atk = adjusted && player ? (player.atk || 0) : 0;
       const shown = card.damage ? (adjusted ? Math.max(0, card.damage + atk) : card.damage) : 0;
@@ -5777,7 +5785,7 @@
       const stars = card.stars || 1;
       const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
       const rank = stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
-      return `<div class="card-fit ${rank}"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      return `<div class="card-fit ${rank}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, adjusted, foe) {
