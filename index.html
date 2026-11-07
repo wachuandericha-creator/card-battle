@@ -2185,6 +2185,7 @@
       box-shadow: none;
     }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+    .pile[data-pile="discard"] { margin-left: auto; }
     .pile-card {
       position: relative;
       width: auto;
@@ -2192,6 +2193,20 @@
       max-height: 176px;
       aspect-ratio: var(--card-ratio);
       border-radius: 14px;
+    }
+    /* 山札は大きく。捨て札は右端の標準サイズ */
+    .pile[data-pile="deck"] .pile-card {
+      height: 94%;
+      max-height: 228px;
+      border-radius: 16px;
+      border-width: 3px;
+    }
+    .pile[data-pile="deck"] .pile-count {
+      font-size: calc(88px * var(--hand-scale));
+    }
+    .pile[data-pile="deck"] .pile-label {
+      font-size: 22px;
+      letter-spacing: 0.14em;
     }
     .pile-card.back {
       background: url("card-back.jpg?v=1") center / cover no-repeat;
@@ -8883,8 +8898,8 @@
           <div class="handbar">
               ${pips()}
               ${pileMarkup("deck", deck.length)}
-              ${pileMarkup("discard", discard.length)}
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
+              ${pileMarkup("discard", discard.length)}
             </div>
         </div>
         ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
