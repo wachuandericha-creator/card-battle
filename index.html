@@ -1358,6 +1358,20 @@
     }
     .battle-log p.turn-player { color: #7eb6ff; }
     .battle-log p.turn-enemy { color: #ff5c4a; }
+    .battle-log .who-me { color: #7eb6ff; }
+    .battle-log .who-foe { color: #ff5c4a; }
+    .battle-log p.turn-head {
+      margin: 4px 0 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(228, 177, 90, 0.55);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      color: var(--gold);
+      text-shadow: none;
+    }
+    .battle-log h2 + p.turn-head { border-top: 0; padding-top: 0; }
     .battle-log p[data-log] { cursor: pointer; }
     .foe-pile {
       position: absolute;
@@ -2517,8 +2531,25 @@
 
     function logTurn(kind) {
       const text = kind === "player" ? `-${heroName()}のターン-` : "-敵のターン-";
-      logLines.unshift({ kind, text });
+      logLines.unshift({ kind, text, turn: Math.max(1, turn) });
       trimLog();
+    }
+
+    function escapeRegex(text) {
+      return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    // ログ本文の名前に色を付ける。自分は青、敵は赤。長い名前から先に見る（「戦士」と「女の戦士」など）。
+    function colorNames(text) {
+      const me = heroName();
+      const foe = enemy && enemy.name ? enemy.name : "";
+      const names = [me, foe].filter(Boolean).sort((a, b) => b.length - a.length);
+      if (!names.length) return esc(text);
+      const pattern = new RegExp(`(${names.map(escapeRegex).join("|")})`, "g");
+      return String(text).split(pattern).map((part, index) => {
+        if (index % 2 === 0) return esc(part);
+        return `<span class="${part === me ? "who-me" : "who-foe"}">${esc(part)}</span>`;
+      }).join("");
     }
 
     function cardSnapshot(card) {
@@ -3530,8 +3561,8 @@
         finish("lose");
         return;
       }
-      logTurn("player");
       turn += 1;
+      logTurn("player");
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
       player.block = 0;
@@ -5346,13 +5377,21 @@
       fxDeal = false;
       const turnNow = turnCall;
       turnCall = "";
+      // ログは新しいものが上。ターン番号が変わる所に「Nターン目」の区切りを入れる。
+      let logTurnShown = 0;
       const logHtml = logLines.map((line, index) => {
         const text = typeof line === "string" ? line : line.text;
         const kind = line && line.kind;
         const cls = kind === "player" ? "turn-player" : kind === "enemy" ? "turn-enemy" : "";
         const hover = line && line.card ? ` data-log="${index}"` : "";
         const foe = line && line.foe ? ` data-foe="1"` : "";
-        return `<p class="${cls}"${hover}${foe}>${esc(text)}</p>`;
+        let head = "";
+        if (kind && line.turn && line.turn !== logTurnShown) {
+          logTurnShown = line.turn;
+          head = `<p class="turn-head"><span>${line.turn}ターン目</span></p>`;
+        }
+        const body = kind ? esc(text) : colorNames(text);
+        return `${head}<p class="${cls}"${hover}${foe}>${body}</p>`;
       }).join("");
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
