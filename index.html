@@ -1460,11 +1460,12 @@
       min-height: 0;
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: stretch;
       gap: 12px;
       padding: 0 8px;
     }
+    .play-row .end { align-self: center; margin: 0; }
     .play-dock {
       display: flex;
       align-items: flex-end;
@@ -5788,7 +5789,8 @@
       const foe = intentAt(0);
       const hot = phase === "resolve" ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => playFace(card, hot === i, true)).join("");
-      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label"><span>自分</span></span><div class="play-cards">${mine}</div></div><div class="play-side foe"><span class="play-label"><span>敵</span></span><div class="play-cards">${playFace(foe, hot === inPlay.length, false, true)}</div></div></div>`;
+      const end = `<button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>`;
+      return `<div class="play-row" aria-label="プレイエリア"><div class="play-side mine"><span class="play-label"><span>自分</span></span><div class="play-cards">${mine}</div></div>${end}<div class="play-side foe"><span class="play-label"><span>敵</span></span><div class="play-cards">${playFace(foe, hot === inPlay.length, false, true)}</div></div></div>`;
     }
 
     let heroImage = null;
@@ -6678,7 +6680,6 @@
               ${pileMarkup("deck", deck.length)}
               ${pileMarkup("discard", discard.length)}
               <div class="hand">${cards}</div>
-              <button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>
             </div>
           </div>
         </div>
