@@ -5377,7 +5377,9 @@
         const cut = Math.min(left, skip[name] || 0);
         left -= cut;
         skip[name] = (skip[name] || 0) - cut;
-        for (let i = 0; i < left; i++) cards.push(keepCard({ name, ...CARDS[name] }));
+        const def = cardDef(name);
+        if (!def) continue;
+        for (let i = 0; i < left; i++) cards.push(keepCard({ name, ...def }));
       }
       for (const extra of stolen) {
         if (skip[extra.name] > 0) {
@@ -6833,12 +6835,12 @@
     function fillHandForLook() {
       if (screen !== "settings" || returnScreen !== "battle") return;
       draw(HAND_CAP - hand.length);
-      const names = CARD_POOL.map(([name]) => name).filter((name) => CARDS[name]);
+      const names = CARD_POOL.map(([name]) => name).filter((name) => cardDef(name));
       let i = 0;
       while (hand.length < HAND_CAP && names.length) {
         const name = names[i % names.length];
         i += 1;
-        hand.push(keepCard({ name, ...CARDS[name] }));
+        hand.push(keepCard({ name, ...cardDef(name) }));
       }
       log(`手札を${hand.length}枚にした（見た目確認）。`);
       screen = "battle";
@@ -6862,8 +6864,8 @@
 
     function starterDeckMarkup() {
       return CARD_POOL.map(([name, count]) => {
-        const card = { name, ...CARDS[name] };
-        const label = `${card.cost} ${card.name} x${count} ${String(card.text).replace(/\n/g, " ")}`;
+        const card = { name, ...(cardDef(name) || {}) };
+        const label = `${card.cost || 0} ${card.name} x${count} ${String(card.text || "").replace(/\n/g, " ")}`;
         return `<div class="card preview ${cardKind(card)}" aria-label="${esc(label)}">${cardFace(card, false)}<b class="stack-count">x${count}</b></div>`;
       }).join("");
     }
@@ -7845,6 +7847,11 @@
       if (rank === "強敵") return 3;
       if (rank === "普通") return 2;
       return 1;
+    }
+
+    // 初期デッキは CARDS、報酬は WARRIOR／COMMON。名前だけで引くときはここを通す。
+    function cardDef(name) {
+      return CARDS[name] || WARRIOR[name] || COMMON[name] || null;
     }
 
     function keepCard(card) {
