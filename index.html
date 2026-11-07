@@ -39,8 +39,9 @@
         "gear arena log"
         "gear energy log"
         "gear hand log";
-      padding: 10px 0 14px;
+      padding: 10px 0 0;
       row-gap: 16px;
+      overflow: visible;
     }
     .battle-screen.no-log {
       grid-template-columns: auto minmax(0, 1fr);
@@ -68,8 +69,8 @@
     }
     .stage { min-width: 0; overflow: hidden; }
     .play-row { min-width: 0; overflow: hidden; }
-    .energy-band { grid-area: energy; min-width: 0; overflow: hidden; }
-    .handbar { grid-area: hand; min-width: 0; overflow: hidden; }
+    .energy-band { grid-area: energy; min-width: 0; overflow: visible; z-index: 1; }
+    .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 5; }
     .gear-rail { grid-area: gear; min-width: 0; overflow: hidden; }
     .battle-log { grid-area: log; min-width: 0; overflow: auto; }
     .hud-top {
@@ -1822,7 +1823,8 @@
     }
     .energy-band { display: flex; align-items: center; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 2px 56px; gap: 128px; margin-bottom: -6px; }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
-    .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow-x: auto; overflow-y: hidden; }
+    /* 扇の上はマナ列へ、下1/6はゲーム外へはみ出してよい */
+    .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow: visible; }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
@@ -1870,7 +1872,19 @@
       font-weight: 600;
     }
     .pile-label { font-size: 20px; letter-spacing: 0.12em; color: var(--cream); font-weight: 800; }
-    .hand { flex: 1 1 0; height: 100%; min-width: 0; display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 6px 8px 16px; }
+    .hand {
+      flex: 1 1 0;
+      height: 100%;
+      min-width: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 0;
+      padding: 6px 8px 0;
+      overflow: visible;
+      /* 手札の下1/6は帯の外（ゲーム外）へ。量は fitHand が --hand-hang で渡す */
+      margin-bottom: calc(var(--hand-hang, 28px) * -1);
+    }
     .battle-log {
       min-width: 0;
       min-height: 0;
@@ -2694,7 +2708,7 @@
       color: var(--cream);
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
-    #game { height: 100%; }
+    #game { height: 100%; overflow: visible; }
     .end-screen {
       height: 100%;
       min-height: 0;
@@ -7678,8 +7692,9 @@
         const mid = (hand.length - 1) / 2;
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
-        const fan = Math.round(t * 10 * 10) / 10;
-        const drop = Math.round((8 * Math.abs(t) + 4 * t * t) * 10) / 10;
+        // 完全な扇：端ほど大きく傾ける。中央はマナ列へ上がり、端は下へ垂らす
+        const fan = Math.round(t * 28 * 10) / 10;
+        const drop = Math.round((-30 + 78 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
@@ -7790,14 +7805,22 @@
       launchPendingDiscardFly();
     }
 
-    // 手札は大きいまま、枚数が多いときは重なりを深くして帯の幅に収める。
+    // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。上下のはみ出しは切らない。
     function fitHand() {
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
       const cards = handEl.querySelectorAll(".card");
       const base = 44 * 0.74;
       handEl.style.setProperty("--hand-card-h", "100%");
-      if (cards.length < 2) { handEl.style.setProperty("--overlap", `${base}px`); return; }
+      const setHang = () => {
+        const h = cards[0] ? cards[0].offsetHeight : 0;
+        handEl.style.setProperty("--hand-hang", `${Math.max(24, Math.round(h / 6))}px`);
+      };
+      if (cards.length < 2) {
+        handEl.style.setProperty("--overlap", `${base}px`);
+        setHang();
+        return;
+      }
       const n = cards.length;
       const first = cards[0];
       const ratio = first.offsetWidth / Math.max(1, first.offsetHeight);
@@ -7815,6 +7838,7 @@
       const need = (n * cw - avail) / (n - 1);
       const overlap = Math.min(Math.max(base, need), cw - minStep);
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
+      setHang();
     }
     window.addEventListener("resize", () => { if (screen === "battle") fitHand(); });
 
