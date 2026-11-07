@@ -100,10 +100,10 @@
     .gear-rail { grid-area: gear; min-width: 0; overflow: hidden; }
     .battle-log { grid-area: log; min-width: 0; overflow: auto; }
     .hud-top {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      column-gap: 12px;
       min-width: 0;
       padding: 10px 18px;
       border-radius: 14px;
@@ -111,7 +111,13 @@
       background: var(--panel-sheen), var(--panel-face);
       box-shadow: var(--panel-frame);
     }
-    .dungeon { display: flex; align-items: baseline; gap: 16px; }
+    .dungeon {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      min-width: 0;
+      justify-self: start;
+    }
     .dungeon-name {
       margin: 0;
       font-size: 40px;
@@ -132,33 +138,22 @@
       gap: 6px;
       width: max-content;
     }
-    .status-coins {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+    .status-stars {
+      justify-self: center;
       color: var(--gold);
-      font-size: 28px;
+      font-size: 36px;
       font-weight: 800;
       letter-spacing: 0.04em;
+      text-align: center;
       white-space: nowrap;
       line-height: 1;
     }
-    .status-coins b { font-variant-numeric: tabular-nums; }
-    .coin {
-      display: inline-block;
-      width: 0.92em;
-      height: 0.92em;
-      flex: none;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 32% 28%, #fff8d8 0%, #f0d078 28%, #d4a84a 58%, #8a6a22 86%, #5a4210 100%);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -2px 0 rgba(80, 50, 10, 0.35),
-        0 0 0 1px rgba(120, 85, 25, 0.7),
-        0 2px 6px rgba(0, 0, 0, 0.45);
+    .hud-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-self: end;
     }
-    .hud-actions { display: flex; gap: 8px; align-items: center; }
     h1 {
       margin: 0;
       font-size: 18px;
@@ -2986,17 +2981,10 @@
       position: absolute;
       left: 72%;
       top: 28%;
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 32% 28%, #fff8d8 0%, #f0d078 28%, #d4a84a 58%, #8a6a22 86%, #5a4210 100%);
-      box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -3px 0 rgba(80, 50, 10, 0.35),
-        0 0 0 2px rgba(120, 85, 25, 0.75),
-        0 0 18px rgba(228, 177, 90, 0.55),
-        0 8px 16px rgba(0, 0, 0, 0.45);
+      font-size: 88px;
+      line-height: 1;
+      color: #ffe28a;
+      text-shadow: 0 0 8px #fff6d0, 0 0 24px #e4b15a, 0 8px 16px rgba(0, 0, 0, 0.45);
       animation: star-fly 1.05s cubic-bezier(0.16, 0.84, 0.28, 1) both;
       animation-delay: calc(var(--i) * 0.16s);
     }
@@ -3013,21 +3001,15 @@
         transform: translate(calc(-22vw + (var(--i) - (var(--n) - 1) / 2) * 110px), -16vh) scale(1) rotate(0deg);
       }
     }
-    /* 報酬を選んだあと、コインが上の所持表示へ飛んで吸い込まれる */
+    /* 報酬を選んだあと、★が上中央の所持表示へ飛んで吸い込まれる */
     .star-home-layer { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
     .home-star {
       position: absolute;
       transform: translate(-50%, -50%);
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 32% 28%, #fff8d8 0%, #f0d078 28%, #d4a84a 58%, #8a6a22 86%, #5a4210 100%);
-      box-shadow:
-        inset 0 2px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -2px 0 rgba(80, 50, 10, 0.35),
-        0 0 0 2px rgba(120, 85, 25, 0.75),
-        0 0 18px rgba(255, 215, 120, 0.75);
+      font-size: 64px;
+      line-height: 1;
+      color: #ffe27a;
+      text-shadow: 0 0 6px #7a5410, 0 0 18px rgba(255, 215, 120, 0.95), 0 0 36px rgba(255, 190, 80, 0.6);
       will-change: transform, opacity;
     }
     [data-star-count].bump { animation: star-bump 0.42s cubic-bezier(0.2, 1.4, 0.4, 1); }
@@ -4215,14 +4197,14 @@
     let rewardReady = false;
     let rewardStars = 0;
     let starBurst = 0;
-    let pendingStars = 0; // もらったが、まだ上の所持コインに吸い込まれていない数
+    let pendingStars = 0; // もらったが、まだ上中央の所持★に吸い込まれていない数
 
     function shownStarCount() {
       return Math.max(0, (Number(meta.stars) || 0) - pendingStars);
     }
-    function coinCountHtml(n) {
+    function starCountHtml(n) {
       const count = Math.max(0, Number(n) || 0);
-      return `<span class="status-coins" data-star-count aria-label="コイン ${count}"><i class="coin" aria-hidden="true"></i><b>${count}</b></span>`;
+      return `<div class="status-stars" data-star-count aria-label="スター ${count}">★${count}</div>`;
     }
     let rewardPicks = [];
     let rewardPaths = [];
@@ -4706,11 +4688,11 @@
       const offer = gearOffer;
       if (!offer) return "";
       const shop = offer.source === "shop" && offer.price != null;
-      const yes = shop ? `付け替える（コイン${offer.price}）` : "付け替える";
+      const yes = shop ? `付け替える（★${offer.price}）` : "付け替える";
       return `<div class="overlay gear-offer"><div class="panel"><h2>武器を付け替える？</h2>
         <p class="gear-offer-lead">${weaponChangeText(offer.keep, offer.item)}</p>
         <div class="gear-compare">${gearSideMarkup(offer.keep, "いまの武器")}<div class="arrow" aria-hidden="true">→</div>${gearSideMarkup(offer.item, "新しい武器", "new")}</div>
-        <p>${shop ? `付け替えたときだけ コイン${offer.price} 払う。今のままなら払わない。` : "今の武器のままなら、新しい武器は手に入らない。"}</p>
+        <p>${shop ? `付け替えたときだけ ★${offer.price} 払う。今のままなら払わない。` : "今の武器のままなら、新しい武器は手に入らない。"}</p>
         <div class="gear-offer-actions">
           <button type="button" class="primary" data-action="gear-offer-yes">${esc(yes)}</button>
           <button type="button" data-action="gear-offer-no">今の武器のまま</button>
@@ -7133,7 +7115,7 @@
             <h4>色ごとの空の枠</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
-            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右に絵柄を拡大　コイン${meta.stars}</p>
+            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右に絵柄を拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
           </div>
           ${artZoomSide(albumZoom)}
@@ -7162,7 +7144,7 @@
             <div class="end-log battle-log"><h2>ログ</h2>${logHtml || `<p>記録は無い。</p>`}</div>
             <div class="end-deck">${deckHtml}</div>
           </div>
-          <p class="end-note">${esc(snap.dungeon || dungeonName)}　${esc(snap.floor || "")}　初期デッキに戻った。装備を失った。コイン${meta.stars}は残っている。使いこみ ${meta.uses}</p>
+          <p class="end-note">${esc(snap.dungeon || dungeonName)}　${esc(snap.floor || "")}　初期デッキに戻った。装備を失った。★${meta.stars}は残っている。使いこみ ${meta.uses}</p>
           ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
     }
@@ -7229,7 +7211,7 @@
       root.innerHTML = `
         <div class="menu">
           <h1>踏破</h1>
-          <p>${esc(dungeonName)}を抜けた。解放が進んだ。コイン${meta.stars}は残っている。</p>
+          <p>${esc(dungeonName)}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
           <p>次の攻略も、初期デッキから。</p>
           ${menuButton("カードリスト", "album")}
           ${menuButton("キャラクター選択へ", "character", true)}
@@ -7962,10 +7944,8 @@
     function bumpStarCount() {
       const n = shownStarCount();
       root.querySelectorAll("[data-star-count]").forEach((el) => {
-        el.setAttribute("aria-label", `コイン ${n}`);
-        const num = el.querySelector("b");
-        if (num) num.textContent = String(n);
-        else el.textContent = String(n);
+        el.setAttribute("aria-label", `スター ${n}`);
+        el.textContent = `★${n}`;
         el.classList.remove("bump");
         void el.offsetWidth;
         el.classList.add("bump");
@@ -7988,7 +7968,7 @@
         const dy = to.y - from.y;
         const el = document.createElement("span");
         el.className = "home-star";
-        el.setAttribute("aria-hidden", "true");
+        el.textContent = "★";
         el.style.left = `${from.x}px`;
         el.style.top = `${from.y}px`;
         layer.appendChild(el);
@@ -8035,7 +8015,7 @@
       const have = Number(meta.stars) || 0;
       const slots = (stock || []).map((slot, index) => {
         const price = slot.price == null ? shopPrice(slot) : slot.price;
-        const tag = price == null ? "値段は未定" : `コイン${price}`;
+        const tag = price == null ? "値段は未定" : `★${price}`;
         let action = "";
         if (slot.sold) action = `<span class="shop-sold">売り切れ</span>`;
         else if (price == null) action = `<button type="button" class="shop-buy" disabled>買えない</button>`;
@@ -8052,7 +8032,7 @@
         }
         return "";
       }).join("");
-      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ${coinCountHtml(have)}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティの★の数ぶんのコイン。</p><div class="shop-row">${slots}</div>`;
+      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
     }
 
     function takeBonus() {
@@ -8174,8 +8154,8 @@
       const count = starBurst;
       if (!count) return "";
       starBurst = 0;
-      const stars = Array.from({ length: count }, (_, i) => `<span class="fly-star" style="--i:${i};--n:${count}"></span>`).join("");
-      return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="コイン${count}">${stars}</div>`;
+      const stars = Array.from({ length: count }, (_, i) => `<span class="fly-star" style="--i:${i};--n:${count}">★</span>`).join("");
+      return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="星${count}">${stars}</div>`;
     }
 
     function victoryStage() {
@@ -8189,7 +8169,7 @@
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">コイン${rewardStars}もらった。所持 ${coinCountHtml(shownStarCount())}</p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
@@ -8201,7 +8181,7 @@
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
-        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">コイン${rewardStars}もらった。所持 ${coinCountHtml(shownStarCount())}</p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -8209,7 +8189,7 @@
           const picture = path.image ? `<img src="${path.image}" alt="">` : "";
           return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
         }).join("");
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ${coinCountHtml(shownStarCount())}</p><div class="path-list">${buttons}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 <span data-star-count>★${shownStarCount()}</span></p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
@@ -8323,8 +8303,8 @@
             <div class="dungeon">
               <h1 class="dungeon-name">${esc(dungeonName)}</h1>
               <div class="dungeon-progress">${floorLabel()}</div>
-              ${coinCountHtml(shownStarCount())}
             </div>
+            ${starCountHtml(shownStarCount())}
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
