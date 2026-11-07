@@ -2954,47 +2954,187 @@
       padding: 16px 28px;
       border-radius: 999px;
     }
-    .dungeon-pick { background: transparent; }
-    .dungeon-bg {
+    .dungeon-gate-lock {
+      position: absolute;
+      left: 50%;
+      bottom: 8vh;
+      z-index: 2;
+      transform: translateX(-50%);
+      margin: 0;
+      padding: 14px 28px;
+      border-radius: 999px;
+      border: 2px solid rgba(180, 190, 200, 0.55);
+      background: rgba(20, 22, 26, 0.82);
+      color: #d7dde6;
+      font-size: 20px;
+      letter-spacing: 0.14em;
+      text-shadow: 0 2px 0 #0a0c10;
+    }
+    .dungeon-pick {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      height: 100%;
+      min-height: 0;
+      gap: 10px;
+      padding: 14px 14px 88px;
+      box-sizing: border-box;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(90, 60, 20, 0.28), transparent 46%),
+        #0c0908;
+    }
+    .dungeon-pick .cast-title {
+      position: relative;
+      z-index: 2;
+      margin: 4px 0 0;
+      text-align: center;
+      font-size: clamp(24px, 3.4vw, 40px);
+      letter-spacing: 0.12em;
+      color: #f6d48a;
+      text-shadow: 0 2px 0 #1a120c;
+    }
+    .dungeon-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      min-height: 0;
+    }
+    .dungeon-col {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      border: 2px solid rgba(120, 90, 50, 0.45);
+      border-radius: 18px;
+      overflow: hidden;
+      padding: 0;
+      background: #120c0a;
+      cursor: pointer;
+      filter: brightness(0.38) saturate(0.7);
+      transition: filter 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+      font-family: inherit;
+      color: inherit;
+    }
+    .dungeon-col.active {
+      filter: brightness(1) saturate(1);
+      border-color: #f0c36a;
+      box-shadow: 0 0 0 2px rgba(36, 24, 12, 0.85), 0 0 28px rgba(240, 195, 106, 0.45);
+      transform: translateY(-2px);
+      z-index: 2;
+    }
+    .dungeon-col.sealed {
+      cursor: not-allowed;
+    }
+    .dungeon-col.sealed.active {
+      filter: brightness(0.72) saturate(0.85);
+    }
+    .dungeon-col img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 0;
       pointer-events: none;
     }
-    .dungeon-scrim {
+    .dungeon-col .col-scrim {
       position: absolute;
       inset: 0;
-      z-index: 1;
+      background: linear-gradient(180deg, rgba(10, 8, 6, 0.18), rgba(10, 8, 6, 0.15) 40%, rgba(8, 6, 4, 0.72));
       pointer-events: none;
-      background: linear-gradient(180deg, rgba(12, 9, 8, 0.62), rgba(12, 9, 8, 0.28) 36%, rgba(12, 9, 8, 0.55));
     }
-    .dungeon-pick .cast-title { position: relative; z-index: 2; }
-    .dungeon-roster {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      margin-top: 28px;
-    }
-    .dungeon-token {
-      min-width: 180px;
-      border-radius: 16px;
-      border: 2px solid rgba(228, 177, 90, 0.45);
-      background: rgba(18, 14, 12, 0.72);
-      color: #f6d48a;
-      font-size: 22px;
+    .dungeon-col .col-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 12%;
+      z-index: 3;
+      margin: 0;
+      text-align: center;
+      font-size: clamp(48px, 8vw, 96px);
       font-weight: 800;
       letter-spacing: 0.08em;
-      padding: 18px 22px;
-      cursor: pointer;
+      color: #fff6e0;
+      text-shadow: 0 4px 0 #1a120c, 0 0 22px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
     }
-    .dungeon-token.shown { border-color: #f0c36a; box-shadow: 0 0 16px rgba(240, 195, 106, 0.45); }
-    .dungeon-token.locked { background: rgba(228, 177, 90, 0.28); }
+    .dungeon-col .col-sub {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 5%;
+      z-index: 3;
+      margin: 0;
+      text-align: center;
+      font-size: clamp(14px, 1.6vw, 20px);
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: #f6d48a;
+      text-shadow: 0 2px 0 #1a120c;
+      pointer-events: none;
+    }
+    .dungeon-col .chain-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .dungeon-col .chain-band {
+      position: absolute;
+      left: -8%;
+      right: -8%;
+      height: 44px;
+      background:
+        radial-gradient(circle at 12px 50%, transparent 7px, #8a8f98 8px, #8a8f98 11px, transparent 12px) 0 0 / 28px 100%,
+        linear-gradient(180deg, transparent 0 14px, #6f757e 14px 30px, transparent 30px);
+      filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.65));
+      opacity: 0.92;
+    }
+    .dungeon-col .chain-band::before,
+    .dungeon-col .chain-band::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 26px;
+      height: 38px;
+      margin-top: -19px;
+      border: 4px solid #a8adb6;
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 2px #4d525a, 0 2px 4px rgba(0, 0, 0, 0.5);
+      background: rgba(30, 32, 36, 0.35);
+    }
+    .dungeon-col .chain-band::before { left: 10%; transform: rotate(-18deg); }
+    .dungeon-col .chain-band::after { right: 10%; transform: rotate(18deg); }
+    .dungeon-col .chain-band.b1 { top: 28%; transform: rotate(-8deg); }
+    .dungeon-col .chain-band.b2 { top: 58%; transform: rotate(7deg); }
+    .dungeon-col .chain-lock {
+      position: absolute;
+      left: 50%;
+      top: 44%;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      border: 3px solid #c5cad2;
+      background: linear-gradient(180deg, #9aa1ab, #5a6068);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .dungeon-col .chain-lock::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -18px;
+      width: 22px;
+      height: 26px;
+      margin-left: -11px;
+      border: 4px solid #c5cad2;
+      border-bottom: 0;
+      border-radius: 14px 14px 0 0;
+      box-sizing: border-box;
+    }
     .dungeon-pick .cast-actions { z-index: 6; }
+    @media (max-width: 760px) {
+      .dungeon-columns { grid-template-columns: 1fr; }
+      .dungeon-col { min-height: 28vh; }
+    }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
       25% { transform: translateX(-6px); }
@@ -3511,15 +3651,42 @@
     const HP_CAP = 100; // 最大HPの限界。体力が伸びる仕組みを足すときは、この数で止める
     const HAND_CAP = 10;
     const DUNGEON_LIST = [
-      { name: "はじまりの洞窟", floors: 20, art: "dungeon-cave.jpg?v=1" },
-      { name: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
-      { name: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
+      { name: "はじまりの洞窟", label: "20", floors: 20, art: "dungeon-cave.jpg?v=1" },
+      { name: "50", label: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
+      { name: "100", label: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
     ];
     let dungeonName = "はじまりの洞窟";
     let pendingDungeon = DUNGEON_LIST[0];
     let dungeonHover = "";
     let dungeonLock = "";
-    let meta = { uses: 0, clears: 0, stars: 0 };
+    let meta = { uses: 0, clears: 0, stars: 0, cleared: {} };
+
+    function dungeonClearedFloors(floors) {
+      return !!(meta.cleared && meta.cleared[String(floors)]);
+    }
+
+    /** 鎖の本数。0 なら挑戦可。100 は最大2本。 */
+    function dungeonChainCount(floors) {
+      const f = Number(floors) || 0;
+      if (f <= 20) return 0;
+      if (f === 50) return dungeonClearedFloors(20) ? 0 : 1;
+      if (f >= 100) {
+        let n = 2;
+        if (dungeonClearedFloors(20)) n -= 1;
+        if (dungeonClearedFloors(50)) n -= 1;
+        return Math.max(0, n);
+      }
+      return 1;
+    }
+
+    function dungeonOpen(floors) {
+      return dungeonChainCount(floors) === 0;
+    }
+
+    function markDungeonCleared(floors) {
+      if (!meta.cleared || typeof meta.cleared !== "object") meta.cleared = {};
+      meta.cleared[String(floors)] = true;
+    }
 
     function shuffle(list) {
       const a = list.slice();
@@ -5039,24 +5206,33 @@
     function loadMeta() {
       try {
         const saved = JSON.parse(localStorage.getItem(META_KEY) || "{}");
+        const cleared = (saved.cleared && typeof saved.cleared === "object") ? { ...saved.cleared } : {};
+        // 旧セーブ：クリア回数だけある場合は 20 クリア済みとみなす
+        if (!saved.cleared && (Number(saved.clears) || 0) > 0) cleared["20"] = true;
         meta = {
           uses: Number(saved.uses) || 0,
           clears: Number(saved.clears) || 0,
           stars: Number(saved.stars) || 0,
+          cleared,
         };
       } catch (error) {
-        meta = { uses: 0, clears: 0, stars: 0 };
+        meta = { uses: 0, clears: 0, stars: 0, cleared: {} };
       }
     }
 
     function endRun(clearedRun) {
+      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonName);
+      const floorsKey = item ? item.floors : 20;
       gear = emptyGear();
       gearOpen = null;
       stolen = [];
       localStorage.removeItem(SAVE_KEY);
       clearLive();
       meta.uses += 1;
-      if (clearedRun) meta.clears += 1;
+      if (clearedRun) {
+        meta.clears += 1;
+        markDungeonCleared(floorsKey);
+      }
       localStorage.setItem(META_KEY, JSON.stringify(meta));
     }
 
@@ -5815,12 +5991,15 @@
 
     function renderDungeonGate() {
       const item = pendingDungeon || DUNGEON_LIST[0];
+      const open = dungeonOpen(item.floors);
       root.innerHTML = `
         <div class="dungeon-gate">
           <button type="button" class="cast-back" data-action="dungeon-list">もどる</button>
           <img class="dungeon-cover" src="${item.art}" alt="${esc(item.name)}">
-          <h1 class="dungeon-gate-name">${esc(item.name)}</h1>
-          <button type="button" class="primary dungeon-enter" data-action="dungeon-enter">このダンジョンに入る</button>
+          <h1 class="dungeon-gate-name">${esc(item.label || item.name)}</h1>
+          ${open
+            ? `<button type="button" class="primary dungeon-enter" data-action="dungeon-enter">このダンジョンに入る</button>`
+            : `<p class="dungeon-gate-lock">鎖がかかっている</p>`}
         </div>`;
     }
 
@@ -5828,37 +6007,37 @@
       return dungeonHover || dungeonLock;
     }
 
+    function dungeonChainHtml(count) {
+      const n = Math.max(0, Math.min(2, Number(count) || 0));
+      if (n <= 0) return "";
+      const bands = Array.from({ length: n }, (_, i) => `<i class="chain-band b${i + 1}"></i>`).join("");
+      return `<div class="chain-wrap" aria-hidden="true">${bands}<span class="chain-lock"></span></div>`;
+    }
+
     function paintDungeon() {
       const name = shownDungeonName();
-      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
-      const bg = root.querySelector(".dungeon-bg");
-      if (bg) {
-        if (item) {
-          if (bg.getAttribute("src") !== item.art) bg.src = item.art;
-          bg.hidden = false;
-        } else {
-          bg.hidden = true;
-        }
-      }
       const fixed = Boolean(dungeonLock) && (!dungeonHover || dungeonHover === dungeonLock);
+      const lockedItem = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock);
+      const canStart = fixed && lockedItem && dungeonOpen(lockedItem.floors);
       const start = root.querySelector(".dungeon-pick .cast-start");
-      if (start) start.hidden = !fixed;
-      root.querySelectorAll(".dungeon-token").forEach((token) => {
-        token.classList.toggle("locked", token.dataset.dungeon === dungeonLock);
-        token.classList.toggle("shown", token.dataset.dungeon === name);
+      if (start) start.hidden = !canStart;
+      root.querySelectorAll(".dungeon-col").forEach((col) => {
+        const active = col.dataset.dungeon === name;
+        col.classList.toggle("active", active);
+        col.setAttribute("aria-pressed", active && col.dataset.dungeon === dungeonLock ? "true" : "false");
       });
     }
 
     function bindDungeonHover() {
-      root.querySelectorAll(".dungeon-token").forEach((token) => {
-        token.addEventListener("pointerenter", () => {
-          const next = token.dataset.dungeon || "";
+      root.querySelectorAll(".dungeon-col").forEach((col) => {
+        col.addEventListener("pointerenter", () => {
+          const next = col.dataset.dungeon || "";
           if (dungeonHover === next) return;
           dungeonHover = next;
           paintDungeon();
         });
-        token.addEventListener("pointerleave", () => {
-          if (dungeonHover !== token.dataset.dungeon) return;
+        col.addEventListener("pointerleave", () => {
+          if (dungeonHover !== col.dataset.dungeon) return;
           dungeonHover = "";
           paintDungeon();
         });
@@ -5866,15 +6045,22 @@
     }
 
     function renderDungeon() {
-      const tokens = DUNGEON_LIST.map((item) => `
-        <button type="button" class="dungeon-token" data-action="dungeon-token" data-dungeon="${esc(item.name)}">${esc(item.name)}</button>
-      `).join("");
+      const columns = DUNGEON_LIST.map((item) => {
+        const chains = dungeonChainCount(item.floors);
+        const sealed = chains > 0;
+        return `
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.label)} ${esc(item.name)}${sealed ? "（鎖）" : ""}">
+          <img src="${item.art}" alt="">
+          <span class="col-scrim"></span>
+          <span class="col-label">${esc(item.label)}</span>
+          <span class="col-sub">${esc(item.name)}</span>
+          ${dungeonChainHtml(chains)}
+        </button>`;
+      }).join("");
       root.innerHTML = `
         <div class="cast-screen dungeon-pick">
-          <img class="dungeon-bg" alt="" hidden>
-          <div class="dungeon-scrim"></div>
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
-          <div class="dungeon-roster">${tokens}</div>
+          <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
             <button type="button" class="primary cast-start" data-action="dungeon-enter" hidden>挑戦開始</button>
@@ -7408,7 +7594,8 @@
       if (name === "dungeon-token") {
         dungeonLock = action.dataset.dungeon || dungeonLock;
         const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
-        if (chosen) beginRun(chosen.floors, chosen.name);
+        if (chosen && dungeonOpen(chosen.floors)) beginRun(chosen.floors, chosen.name);
+        else paintDungeon();
       }
     });
 
@@ -7450,12 +7637,16 @@
         }
         if (name === "dungeon-start") {
           pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === action.dataset.dungeon) || DUNGEON_LIST[0];
+          if (!dungeonOpen(pendingDungeon.floors)) {
+            paintDungeon();
+            return;
+          }
           screen = "dungeon-gate";
           render();
         }
         if (name === "dungeon-enter") {
           const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || pendingDungeon;
-          if (chosen) beginRun(chosen.floors, chosen.name);
+          if (chosen && dungeonOpen(chosen.floors)) beginRun(chosen.floors, chosen.name);
         }
         if (name === "floor-next") advance(1);
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
