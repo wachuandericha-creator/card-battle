@@ -127,9 +127,10 @@
     }
     .dungeon-progress {
       color: var(--gold);
-      font-size: 44px;
+      font-size: 28px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
     }
     .status-row {
       display: flex;
@@ -4514,7 +4515,7 @@
     function floorStart() { return route[0] === "出来事:祝福" ? 1 : 0; }
     function floorNo() { return battleIndex + 1 - floorStart(); }
     function floorMax() { return battleTotal - floorStart(); }
-    function floorLabel() { return `${floorNo()}/${floorMax()}`; }
+    function floorLabel() { return `最大${floorMax()}Ｆ　現在　${floorNo()}Ｆ`; }
 
     function enemyNow() {
       const foe = enemyByName(route[battleIndex] || DUNGEON.boss);
