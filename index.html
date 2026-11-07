@@ -154,7 +154,7 @@
       z-index: 3;
       height: 100%;
       width: auto;
-      aspect-ratio: 864 / 1136;
+      aspect-ratio: 864 / 1140;
       max-width: min(36%, 340px);
       pointer-events: none;
     }
@@ -4049,19 +4049,19 @@
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
               <figure><img class="cut-ref" src="job-front.png?v=4" alt="戦士の正面"><figcaption>正面</figcaption></figure>
-              <figure><img class="cut-ref" src="hero-shoulder.png?v=20" alt="戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
-              <figure><img class="cut-ref" src="warrior-defeat.png?v=1" alt="戦士の敗北"><figcaption>敗北</figcaption></figure>
+              <figure><img class="cut-ref" src="hero-shoulder.png?v=21" alt="戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
+              <figure><img class="cut-ref" src="warrior-defeat.png?v=2" alt="戦士の敗北"><figcaption>敗北</figcaption></figure>
               <figure><img class="cut-ref" src="warrior-victory.png?v=1" alt="戦士の勝利"><figcaption>勝利</figcaption></figure>
             </div>
-            <p class="sheet-cap">向きごとに別の絵。正面は、ジョブの一枚絵を基準にした。</p>
+            <p class="sheet-cap">向きごとに別の絵。正面は、ジョブの一枚絵を基準にした。大剣の鞘は左肩から。戦闘では背中を向け、こちらを見ない。敗北は剣が折れて絶望。</p>
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
-              <figure><img class="cut-ref" src="girl-front.png?v=1" alt="女の戦士の正面"><figcaption>正面</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-battle.png?v=1" alt="女の戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-defeat.png?v=1" alt="女の戦士の敗北"><figcaption>敗北</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-victory.png?v=1" alt="女の戦士の勝利"><figcaption>勝利</figcaption></figure>
+              <figure><img class="cut-ref" src="girl-front.png?v=2" alt="女の戦士の正面"><figcaption>正面</figcaption></figure>
+              <figure><img class="cut-ref" src="girl-battle.png?v=2" alt="女の戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
+              <figure><img class="cut-ref" src="girl-defeat.png?v=2" alt="女の戦士の敗北"><figcaption>敗北</figcaption></figure>
+              <figure><img class="cut-ref" src="girl-victory.png?v=2" alt="女の戦士の勝利"><figcaption>勝利</figcaption></figure>
             </div>
-            <p class="sheet-cap">向きごとに別の絵。いま戦う戦士は、男のまま。</p>
+            <p class="sheet-cap">向きごとに別の絵。スタイルは良く、露出は増やさない。大剣の鞘は左肩から。戦闘では背中を向け、こちらを見ない。敗北は座り込んで泣き、服が破れる。いま戦う戦士は、男のまま。</p>
             <h3>魔法使い・女・白</h3>
             <img class="sheet-art" src="mage-f-sheet.jpg?v=2" alt="女の魔法使い。まだ古い絵。">
             <p class="sheet-cap">まだ古い絵。向きは六つのまま。</p>
@@ -4082,7 +4082,7 @@
             </div>
             <h3>戦闘の絵</h3>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="hero-shoulder.png?v=20" alt=""><figcaption>戦闘の戦士</figcaption></figure>
+              <figure><img class="cut-ref" src="hero-shoulder.png?v=21" alt=""><figcaption>戦闘の戦士</figcaption></figure>
             </div>
             <h3>タイトル</h3>
             <img class="sheet-art" src="title-party.jpg" alt="タイトル。四人がわいわいしている。">
@@ -4346,7 +4346,7 @@
           const img = new Image();
           img.onload = () => { heroImage = img; resolve(img); };
           img.onerror = () => reject(new Error("hero"));
-          img.src = "hero-shoulder.png?v=20";
+          img.src = "hero-shoulder.png?v=21";
         });
       }
       return heroImageTask;
@@ -4371,7 +4371,7 @@
         : guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=20" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}"><img class="hero-fig" src="hero-shoulder.png?v=21" alt="戦士">${hit}${guardHtml}${vitals}</div>`;
     }
 
     function startHeroIdle() {
