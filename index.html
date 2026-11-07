@@ -943,11 +943,14 @@
       background: transparent;
       cursor: zoom-in;
       border-radius: 10px;
+      overflow: hidden;
     }
+    /* サムネは ref-grid の比率に合わせる。height:auto だと全部が大きく見える */
     .sheet-zoom-btn img {
       display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
+      max-height: none;
     }
     .ref-grid figure.on .sheet-zoom-btn,
     .sheet-art-zoom.on {
@@ -956,8 +959,8 @@
     }
     .sheet-art-zoom {
       display: block;
-      width: 100%;
-      margin: 0 0 8px;
+      width: min(420px, 100%);
+      margin: 0 auto 8px;
       padding: 0;
       border: 0;
       background: transparent;
@@ -1141,9 +1144,13 @@
     }
     .sheet-art {
       width: 100%;
+      max-height: 200px;
       height: auto;
       display: block;
-      margin: 0 0 8px;
+      margin: 0;
+      object-fit: contain;
+      background: #120e0c;
+      border-radius: 12px;
     }
     .sheet-cap {
       margin: 0 0 16px;
@@ -1163,18 +1170,18 @@
     }
     .ref-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
       gap: 12px;
       margin: 0 0 18px;
     }
-    .ref-grid figure { margin: 0; }
+    .ref-grid figure { margin: 0; max-width: 160px; }
     .ref-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #1a1614; }
     .ref-grid img.enemy-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid img.card-ref { aspect-ratio: 4 / 3; }
     .ref-grid img.cut-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
-    .ref-grid figure.span-2 { grid-column: span 2; }
+    .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
     /* 色ごとの空の枠（設定資料）。名札・効果は薄く、絵柄の場所に点線の案内 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
@@ -1194,9 +1201,14 @@
       font-weight: 800;
       letter-spacing: 0.1em;
     }
-    .ref-grid.pose-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; object-position: center bottom; }
-    .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
+    .ref-grid.pose-grid {
+      grid-template-columns: repeat(4, minmax(0, 140px));
+      justify-content: start;
+      max-width: 620px;
+    }
+    .ref-grid.pose-grid figure { max-width: 140px; }
+    .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; max-height: 200px; object-position: center bottom; }
+    .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; font-size: 13px; }
     /* イベント見出しは画面上端に詰めず、だいたい1行ぶん空ける */
     .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: calc(10px + 1.2em) 28px 16px; overflow: hidden; }
     .cast-back {
