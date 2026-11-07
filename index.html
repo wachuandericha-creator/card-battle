@@ -1820,6 +1820,21 @@
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
     }
+    .bless-art.slim { max-height: min(30vh, 280px); }
+    .gift-row { display: flex; gap: 18px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
+    .menu .gift-btn { min-width: 0; width: 220px; padding: 12px 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 2px solid rgba(228, 177, 90, 0.75); border-radius: 18px; background: rgba(20, 14, 10, 0.6); color: var(--cream); cursor: pointer; }
+    .menu .gift-btn:hover { border-color: var(--gold); box-shadow: 0 0 18px rgba(240, 195, 106, 0.45); background: rgba(40, 28, 16, 0.8); }
+    .gift-label { font-size: 16px; font-weight: 800; color: var(--gold); letter-spacing: 0.06em; }
+    .gift-pick, .gift-show { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--cream); }
+    .gift-pick .card.preview { width: 150px; height: auto; }
+    .gift-pick .gift-img { width: 150px; height: 150px; object-fit: cover; border-radius: 14px; border: 2px solid rgba(228, 177, 90, 0.7); }
+    .gift-pick b { font-size: 18px; }
+    .gift-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; opacity: 0.9; }
+    .gift-show { padding: 10px 18px 12px; border-radius: 18px; background: rgba(20, 14, 10, 0.55); border: 2px solid rgba(228, 177, 90, 0.75); box-shadow: 0 0 22px rgba(240, 195, 106, 0.35); }
+    .gift-show .card.preview { width: 190px; height: auto; }
+    .gift-show .gift-img { width: 190px; height: 190px; object-fit: cover; border-radius: 16px; border: 2px solid rgba(228, 177, 90, 0.8); }
+    .gift-show b { font-size: 22px; color: #f6d48a; }
+    .gift-show small { font-size: 14px; line-height: 1.4; font-weight: 700; max-width: 320px; text-align: center; }
     .menu button, .title-actions button, .small-btn {
       min-width: 220px;
       border-radius: 14px;
@@ -2334,6 +2349,8 @@
     let floorKind = "";
     let floorNote = "";
     let floorPhase = "show";
+    let floorGift = null;
+    let blessPicks = [];
     let floorHp = 30;
     let ultimatePicks = [];
     let rewardReady = false;
@@ -2578,7 +2595,7 @@
       for (const key of ["sword", "shield", "braceletR", "braceletL", "medal", "itemL", "itemR"]) {
         if (key === "itemL" || key === "itemR") {
           const held = data[key];
-          if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。" };
+          if (held && held.name) next[key] = { id: held.id || "", name: held.name, effect: held.effect || "使い捨て。使ったら消える。", image: ITEM_IMAGE };
           continue;
         }
         const item = data[key] && gearItem(data[key].id);
@@ -3521,6 +3538,7 @@
         rewardPaths,
         rewardStep,
         bonusCard,
+        floorGift,
         bossPicks,
         shopStock,
       };
@@ -3638,6 +3656,7 @@
       if (rewardPaths.includes("skip")) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
       bonusCard = data.bonusCard || null;
+      floorGift = data.floorGift && data.floorGift.kind ? data.floorGift : null;
       bossPicks = Array.isArray(data.bossPicks) ? data.bossPicks : [];
       shopStock = Array.isArray(data.shopStock) ? data.shopStock : [];
       if (outcome === "win" && !rewardReady) prepareReward();
@@ -3679,25 +3698,55 @@
       startPlayerTurn();
     }
 
-    function grantBlessing() {
-      const roll = Math.floor(Math.random() * 3);
-      if (roll === 0) {
-        const gift = { id: "bless-item", name: "アイテム", effect: "使い捨て。効果はまだ無い。" };
-        if (!gear.itemL) gear.itemL = gift;
-        else if (!gear.itemR) gear.itemR = { ...gift };
-        else gear.itemL = gift;
-        return "あなたにアイテムを。アイテムを1つ受け取った。";
-      }
-      if (roll === 1) {
-        const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
-        gear[item.slot] = { ...item };
-        syncGearStats();
-        return `あなたに装備を。${item.name}を受け取った。`;
-      }
+    const ITEM_IMAGE = "gear-item.jpg?v=1";
+    function blessItem() {
+      return { id: "bless-item", name: "アイテム", effect: "使い捨て。効果はまだ無い。", image: ITEM_IMAGE };
+    }
+
+    function giveItem(gift) {
+      if (!gear.itemL) gear.itemL = { ...gift };
+      else if (!gear.itemR) gear.itemR = { ...gift };
+      else gear.itemL = { ...gift };
+    }
+
+    function rollBlessPicks() {
+      const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
       const names = Object.keys(CARDS);
       const name = names[Math.floor(Math.random() * names.length)];
-      stolen.push(keepCard({ name, ...CARDS[name] }));
-      return `あなたに技を。${name}を1枚受け取った。`;
+      return [
+        { kind: "item", item: blessItem(), label: "あなたにアイテムを" },
+        { kind: "gear", gear: { ...item }, label: "あなたに装備を" },
+        { kind: "card", card: keepCard({ name, ...CARDS[name] }), label: "あなたに技を" },
+      ];
+    }
+
+    function takeGift(pick) {
+      if (!pick) return "";
+      if (pick.kind === "item") {
+        giveItem(pick.item);
+        floorGift = { kind: "item", item: { ...pick.item } };
+        return "アイテムを1つ受け取った。";
+      }
+      if (pick.kind === "gear") {
+        if (!gear || !gear.sword) gear = starterGear();
+        gear[pick.gear.slot] = { ...pick.gear };
+        syncGearStats();
+        floorGift = { kind: "gear", gear: { ...pick.gear } };
+        return `${pick.gear.name}を受け取った。`;
+      }
+      stolen.push(keepCard(pick.card));
+      floorGift = { kind: "card", card: keepCard(pick.card) };
+      return `${pick.card.name}を1枚受け取った。`;
+    }
+
+    function takeBless(index) {
+      if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
+      const pick = blessPicks[index];
+      if (!pick) return;
+      floorNote = takeGift(pick);
+      blessPicks = [];
+      floorPhase = "show";
+      render();
     }
 
     function grantExplore() {
@@ -3705,18 +3754,25 @@
       if (kind === "カード") {
         const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name] })).concat(classCards());
         const pick = offers[Math.floor(Math.random() * offers.length)];
-        stolen.push(keepCard({ ...pick, stars: pick.stars || 1 }));
-        const name = pick.name;
-        return `${name}のカードをもらった。`;
+        return takeGift({ kind: "card", card: keepCard({ ...pick, stars: pick.stars || 1 }) });
       }
       if (kind === "装備") {
         const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
-        if (!gear || !gear.sword) gear = starterGear();
-        gear[item.slot] = { ...item };
-        syncGearStats();
-        return `${item.name}を装備した。`;
+        return takeGift({ kind: "gear", gear: { ...item } });
       }
-      return "アイテムを拾った。効果はまだ無い。";
+      return takeGift({ kind: "item", item: blessItem() });
+    }
+
+    function giftMarkup(gift, big) {
+      if (!gift) return "";
+      const cls = big ? "gift-show" : "gift-pick";
+      if (gift.kind === "card" && gift.card) {
+        return `<div class="${cls}"><div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div><b>${esc(gift.card.name)}</b></div>`;
+      }
+      const item = gift.kind === "gear" ? gift.gear : gift.item;
+      if (!item) return "";
+      const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
+      return `<div class="${cls}">${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small></div>`;
     }
 
     function jobCandidates() {
@@ -3747,11 +3803,15 @@
       floorKind = kind;
       floorNote = "";
       floorPhase = "show";
+      floorGift = null;
+      blessPicks = [];
       beggarCut = false;
       ultimatePicks = [];
       if (kind === "祝福") {
         floorKind = "挑戦者に祝福を";
-        floorNote = grantBlessing();
+        floorPhase = "bless";
+        blessPicks = rollBlessPicks();
+        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
       } else if (kind === "キャンプ") {
         floorHp = 30;
         if (player) player.hp = 30;
@@ -4235,6 +4295,7 @@
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連撃の腕輪</figcaption></figure>
               <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連守の腕輪</figcaption></figure>
               <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
+              <figure><img src="gear-item.jpg?v=1" alt=""><figcaption>アイテム（効果はまだ無い）</figcaption></figure>
             </div>
             <h3>道</h3>
             <div class="ref-grid">
@@ -4254,7 +4315,7 @@
             </div>
             <h3>祝福</h3>
             <img class="sheet-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">
-            <p class="sheet-cap">1層目。挑戦者に祝福を。荘厳な女神（豊かな胸、金の髪、光の翼）が、ひざまずく男の戦士に祝福を授ける。大きな目の気は使わない。</p>
+            <p class="sheet-cap">1層目。挑戦者に祝福を。荘厳な女神（豊かな胸、金の髪、光の翼）が、ひざまずく男の戦士に祝福を授ける。大きな目の気は使わない。祝福は、アイテム・装備・カードの三つを絵で並べ、社長たちが一つ選ぶ。受け取ったものは絵で大きく出す。</p>
             <h3>お店</h3>
             <img class="sheet-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている">
             <p class="sheet-cap">お店の挿絵。怪しげな商人がこちらを見て笑っている。</p>
@@ -4325,8 +4386,12 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div>`
         : "";
       const art = floorKind === "挑戦者に祝福を"
-        ? `<img class="bless-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">`
+        ? `<img class="bless-art slim" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">`
         : "";
+      const bless = floorPhase === "bless"
+        ? `<div class="gift-row">${blessPicks.map((pick, i) => `<button type="button" class="gift-btn" data-action="bless-pick" data-bless="${i}"><span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`).join("")}</div>`
+        : "";
+      const gift = floorPhase === "show" ? giftMarkup(floorGift, true) : "";
       if (floorKind === "お店" && floorPhase === "show") {
         root.innerHTML = `
           <div class="menu shop-floor">
@@ -4342,7 +4407,9 @@
           <h1>${esc(floorKind)}</h1>
           <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
           ${art}
+          ${gift}
           <p>${esc(floorNote)}</p>
+          ${bless}
           ${beggar}
           ${jobs}
           ${ultimates}
@@ -5015,7 +5082,7 @@
         return `<div class="overlay victory">${victoryStars()}<div class="panel wide"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
-        const medal = gear.medal ? `<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
+        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
         const picks = bossPicks.map((pick, i) => {
           if (pick.kind === "card" && pick.card) {
             return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
@@ -5038,7 +5105,7 @@
         return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
       }
       if (rewardStep === "event") {
-        return `<div class="overlay"><div class="panel"><h2>探索</h2><p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+        return `<div class="overlay"><div class="panel"><h2>探索</h2>${giftMarkup(floorGift, true)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const bonus = bonusCard
         ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
@@ -5238,6 +5305,7 @@
           if (chosen) beginRun(chosen.floors, chosen.name);
         }
         if (name === "floor-next") advance(1);
+        if (name === "bless-pick") takeBless(Number(action.dataset.bless));
         if (name === "beggar-drop") dropBeggar(Number(action.dataset.index));
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
