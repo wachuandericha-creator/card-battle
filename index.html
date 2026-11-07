@@ -6981,10 +6981,11 @@
           </div>`;
         return;
       }
+      const where = floorKind === "挑戦者に祝福を" ? "" : `<p>${esc(dungeonName)}　${floorLabel()}</p>`;
       root.innerHTML = `
         <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">
           <h1>${esc(floorKind)}</h1>
-          <p>${esc(dungeonName)}　${floorLabel()}</p>
+          ${where}
           ${art}
           ${gift}
           <p>${esc(floorNote)}</p>
