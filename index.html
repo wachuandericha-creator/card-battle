@@ -479,6 +479,34 @@
       color: var(--muted);
     }
     .album-screen .card.preview { width: 132px; height: auto; }
+    .sheet-screen { position: relative; }
+    .sheet-screen .panel { margin-left: 236px; width: min(1080px, calc(100vw - 48px - 236px)); }
+    .sheet-home {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 196px;
+      padding: 26px 10px;
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      background: var(--gold);
+      color: #2a2118;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: 0.08em;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    }
+    .sheet-home:hover { filter: brightness(1.08); }
+    @media (max-width: 900px) {
+      .sheet-screen .panel { margin-left: 0; width: min(1080px, calc(100vw - 48px)); margin-top: 72px; max-height: calc(100vh - 56px - 72px); }
+      .sheet-home { top: 12px; left: 50%; transform: translateX(-50%); width: auto; padding: 10px 28px; font-size: 22px; }
+      .sheet-home br { display: none; }
+    }
     .album-screen .panel > button[data-action] {
       align-self: center;
       margin-top: 8px;
@@ -4081,7 +4109,8 @@
 
     function renderSheet() {
       root.innerHTML = `
-        <div class="album-screen">
+        <div class="album-screen sheet-screen">
+          <button type="button" class="sheet-home" data-action="title">タイトルに<br>もどる</button>
           <div class="panel">
             <h2>設定資料</h2>
             <p class="album-meta">絵はここを正とする。ジョブが変わっても、性別は変えない。</p>
