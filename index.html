@@ -789,26 +789,6 @@
       flex-direction: column;
       container-type: inline-size;
     }
-    .card-fit.has-forecast .nameplate .name { padding: 0 18cqw; }
-    .card-fit .forecast {
-      position: absolute;
-      top: 2.2cqw;
-      right: 2.2cqw;
-      z-index: 8;
-      display: inline-flex;
-      align-items: center;
-      gap: 1.4cqw;
-      padding: 1cqw 2.2cqw 1.2cqw;
-      border-radius: 6px;
-      background: rgba(18, 8, 6, 0.88);
-      box-shadow: 0 0 0 1px rgba(255, 92, 74, 0.55), 0 4px 10px rgba(0, 0, 0, 0.45);
-      color: #ffd2c4;
-      font-weight: 800;
-      line-height: 1;
-      pointer-events: none;
-    }
-    .card-fit .forecast .ico { width: 8.6cqw; height: 8.6cqw; color: #ff6b4a; }
-    .card-fit .forecast b { font-size: 9.2cqw; color: #ff6b4a; }
     .reward-row { display: flex; gap: 28px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 22px; }
     /* 報酬のカード：うしろの黄色い地は無し。カードだけを大きく。乗せると少し浮く */
     .reward-pick {
@@ -4619,11 +4599,11 @@
       const key = name === "アタック+" ? "アタック" : name === "ブロック+" ? "ブロック" : name;
       if (key === "アタック") {
         const dmg = (CARDS.アタック.damage || 3) + hiddenAtk(foe);
-        return { name: "アタック", cost: 1, text: CARDS.アタック.text, damage: dmg };
+        return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
       }
       if (key === "ブロック") {
         const blk = (CARDS.ブロック.block || 3) + hiddenDef(foe);
-        return { name: "ブロック", cost: 1, text: CARDS.ブロック.text, block: blk };
+        return { name: "ブロック", cost: 1, text: `ブロック${blk}`, block: blk };
       }
       return null;
     }
@@ -7782,31 +7762,84 @@
       return hits.join("+");
     }
 
+    function expectedBlockValue(card, fromHand, foe) {
+      if (!card) return null;
+      const base = foe ? (Number(card.block) || 0) : printedBlock(card);
+      if (!base && !card.block && card.name !== "ブロック" && card.name !== "ブロック+") return null;
+      if (foe) return Math.max(0, base);
+      return Math.max(0, base + focusLeftFor(card, fromHand));
+    }
+
+    function liveCardText(card, fromHand, foe) {
+      let text = String(card.text || "");
+      const hits = expectedHits(card, fromHand, foe);
+      const dmg = expectedDamageLabel(card, fromHand, foe);
+      const blk = expectedBlockValue(card, fromHand, foe);
+      if (dmg) {
+        if (card.hits && hits && hits.length > 1) {
+          if (hits.every((n) => n === hits[0])) {
+            text = text.replace(/\d+ダメージを\d+回/u, `${hits[0]}ダメージを${hits.length}回`);
+          } else {
+            text = text.replace(/\d+ダメージを\d+回/u, `${hits.join("+")}ダメージ`);
+          }
+        } else if (card.press) {
+          text = text.replace(/ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
+        } else if (card.finisher) {
+          text = text.replace(/パリィをすべて消費\n消費した数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
+        } else if (card.redTimes) {
+          text = text.replace(/プレイエリアの赤いカードの数×\d+ダメージ/u, `${dmg}ダメージ`);
+        } else if (card.counter) {
+          text = text.replace(/プレイエリアにアタックがないとき、\d+ダメージ/u, `プレイエリアにアタックがないとき、${dmg}ダメージ`);
+          if (!/ダメージ/u.test(text)) text = `${dmg}ダメージ`;
+        } else {
+          text = text.replace(/\d+ダメージ/u, `${dmg}ダメージ`);
+        }
+      }
+      if (blk != null) text = text.replace(/ブロック\d+/u, `ブロック${blk}`);
+      return text;
+    }
+
     function cardFace(card, live, foe) {
-      const shown = printedDamage(card);
-      const shownBlock = printedBlock(card);
-      let noteText = esc(card.text).replaceAll("\n", "<br>");
+      const fromHand = !!(live && !foe && (!inPlay || !inPlay.includes(card)));
+      const dmgLabel = live ? expectedDamageLabel(card, fromHand, foe) : "";
+      const liveBlock = live ? expectedBlockValue(card, fromHand, foe) : null;
+      let shown = printedDamage(card);
+      let shownBlock = printedBlock(card);
+      let showAttack = !!card.damage;
+      let showBlock = !!card.block;
+      if (live) {
+        if (dmgLabel) {
+          showAttack = true;
+          shown = dmgLabel;
+        } else if (foe && card.damage) {
+          shown = Number(card.damage) || 0;
+        }
+        if (liveBlock != null) {
+          showBlock = true;
+          shownBlock = liveBlock;
+        } else if (foe && card.block) {
+          shownBlock = Number(card.block) || 0;
+        }
+      }
+      let noteText = esc(live ? liveCardText(card, fromHand, foe) : (card.text || "")).replaceAll("\n", "<br>");
       if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
       if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
       if (card.burn) noteText = noteText.replaceAll("炎上", `<span class="hint">炎上<i>${esc(BURN_NOTE)}</i></span>`);
       if (card.instant) noteText = noteText.replaceAll("インスタント", `<span class="hint">インスタント<i>${esc(INSTANT_NOTE)}</i></span>`);
       if (card.quick) noteText = noteText.replaceAll("クイック", `<span class="hint">クイック<i>${esc(QUICK_NOTE)}</i></span>`);
       const icons = [
-        card.damage ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
-        card.block ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
+        showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
+        showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || (card.parry && card.damage);
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
-      const fromHand = !!(live && !foe && (!inPlay || !inPlay.includes(card)));
-      const forecast = live ? expectedDamageLabel(card, fromHand, foe) : "";
-      const forecastHtml = forecast ? `<span class="forecast" aria-label="予想ダメージ ${forecast}">${swordIcon()}<b>${esc(forecast)}</b></span>` : "";
       const stars = card.stars || 1;
       const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
       const rank = stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
-      return `<div class="card-fit ${rank}${forecast ? " has-forecast" : ""}">${forecastHtml}<div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      return `<div class="card-fit ${rank}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex) {
