@@ -2677,18 +2677,25 @@
       margin-inline: calc(var(--overlap, 33px) * -0.5);
     }
     .hand .card.deal {
-      animation: deal-flow 0.7s cubic-bezier(0.16, 0.84, 0.28, 1) backwards;
-      animation-delay: calc(var(--deal, 0) * 0.14s);
+      /* transition と同時に動かすとカクつくので、ドロー中は切る */
+      transition: none;
+      animation: deal-flow 0.72s cubic-bezier(0.22, 0.82, 0.2, 1) both;
+      animation-delay: calc(var(--deal, 0) * 0.11s);
+      will-change: transform, opacity;
+    }
+    .hand:has(.card.deal) .card:hover:not(:disabled) {
+      /* ドロー中は浮き上がりを止め、扇アニメを優先する */
+      transform: translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
     }
     @keyframes deal-flow {
       0% {
         opacity: 0;
-        transform: translateX(calc(-180px - var(--deal, 0) * 36px)) translateY(calc(var(--drop, 0px) + 16px)) rotate(calc(var(--fan, 0deg) - 7deg));
+        transform: translateX(calc(-160px - var(--deal, 0) * 28px)) translateY(calc(var(--drop, 0px) + 10px)) rotate(calc(var(--fan, 0deg) - 6deg)) scale(0.92);
       }
-      28% { opacity: 1; }
+      22% { opacity: 1; }
       100% {
         opacity: 1;
-        transform: translateX(0) translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
+        transform: translateX(0) translateY(var(--drop, 0px)) rotate(var(--fan, 0deg)) scale(1);
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -8842,7 +8849,31 @@
       bindGearHover();
       paintGear();
       fitHand();
-      requestAnimationFrame(fitHand);
+      if (dealNow) {
+        // 先に手札サイズを確定してからドローアニメをやり直す（途中で overlap が変わるとカクつく）
+        requestAnimationFrame(() => {
+          fitHand();
+          const dealing = [...root.querySelectorAll(".hand .card.deal")];
+          dealing.forEach((el) => {
+            el.style.animation = "none";
+            void el.offsetWidth;
+            el.style.removeProperty("animation");
+          });
+          const wait = dealing.length ? 720 + (dealing.length - 1) * 110 + 40 : 0;
+          if (wait) {
+            setTimeout(() => {
+              dealing.forEach((el) => {
+                if (el.isConnected) {
+                  el.classList.remove("deal");
+                  el.style.removeProperty("will-change");
+                }
+              });
+            }, wait);
+          }
+        });
+      } else {
+        requestAnimationFrame(fitHand);
+      }
       launchPendingPlayClearFly();
     }
 
