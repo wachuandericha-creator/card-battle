@@ -584,10 +584,13 @@
     .shop-slot .shop-buy:disabled { background: rgba(60, 48, 36, 0.8); color: rgba(255, 246, 228, 0.45); border-color: rgba(228, 177, 90, 0.3); cursor: not-allowed; }
     .shop-slot .shop-sold { margin-top: 0; padding: 6px 18px; font-size: 15px; border-radius: 999px; border: 1px solid rgba(228, 177, 90, 0.4); color: rgba(255, 246, 228, 0.6); font-weight: 800; }
     .shop-slot.sold { opacity: 0.55; }
+    .shop-slot.limited { position: relative; border-color: rgba(255, 150, 80, 0.85); background: linear-gradient(rgba(70, 26, 12, 0.7), rgba(20, 14, 10, 0.6)); box-shadow: 0 0 14px rgba(255, 120, 50, 0.35); }
+    .shop-slot .shop-ribbon { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 2px 10px; border-radius: 999px; background: linear-gradient(#ff9a5c, #c8451d); color: #fff6e4; font-size: 11px; font-style: normal; font-weight: 800; letter-spacing: 0.08em; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
     .menu.shop-floor { justify-content: flex-start; padding-top: 18px; overflow-y: auto; }
-    .menu.shop-floor .shop-panel { width: min(100%, 760px); }
+    .menu.shop-floor .shop-panel { width: min(100%, 1060px); }
     .burn-mark { color: #ffb15c; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
+    .overlay .panel.wide.shop-panel { width: min(1060px, calc(100vw - 40px)); }
     .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
     .overlay.deck-view .panel {
       width: min(1480px, calc(100vw - 20px));
@@ -3373,8 +3376,14 @@
       return next;
     }
 
+    // お店でだけ売る強い武器。ランダムな装備にも、探索や祝福にも出ない。
+    const SHOP_GEAR = [
+      { id: "dragon-fang", name: "竜牙の大剣", slot: "sword", stars: 3, atk: 4, effect: "★★★　ATK+4", image: "gear-dragon-fang.jpg?v=1", shopOnly: true },
+      { id: "inferno-blade", name: "業火の剣", slot: "sword", stars: 3, atk: 3, burnHit: 1, effect: "★★★　ATK+3。攻撃が相手に当たるたび、相手を炎上+1", image: "gear-inferno-blade.jpg?v=1", shopOnly: true },
+    ];
+
     function gearItem(id) {
-      return GEAR_ITEMS.find((item) => item.id === id) || BOSS_GEAR.find((item) => item.id === id) || null;
+      return GEAR_ITEMS.find((item) => item.id === id) || BOSS_GEAR.find((item) => item.id === id) || SHOP_GEAR.find((item) => item.id === id) || null;
     }
 
     function normalizeGear(data) {
@@ -3859,6 +3868,12 @@
         noteHit("enemy", result.hpLoss, cut.dealt);
       }
       log(damageSentence(heroName(), card.name, cut.dealt, result), card);
+      // 業火の剣：攻撃が当たるたび、相手を炎上させる
+      const burnHit = gear && gear.sword && Number(gear.sword.burnHit) || 0;
+      if (burnHit > 0 && cut.dealt > 0 && enemy.hp > 0) {
+        addBurn(enemy, burnHit);
+        log(`${gear.sword.name}の炎。${enemy.name}は炎上+${enemy.burn}。`, card);
+      }
     }
 
     function rollCrit(card, base) {
@@ -5141,6 +5156,12 @@
               <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
               <figure><img src="gear-item.jpg?v=1" alt=""><figcaption>アイテム（効果はまだ無い）</figcaption></figure>
             </div>
+            <h4>ショップ限定の武器</h4>
+            <div class="ref-grid">
+              <figure><img src="gear-dragon-fang.jpg?v=1" alt=""><figcaption>竜牙の大剣</figcaption></figure>
+              <figure><img src="gear-inferno-blade.jpg?v=1" alt=""><figcaption>業火の剣</figcaption></figure>
+            </div>
+            <p class="sheet-cap">お店でだけ売る。ランダムな装備・探索・祝福には出ない。竜牙の大剣は★3でATK+4。業火の剣は★3でATK+3、攻撃が相手に当たるたび相手を炎上+1。どちらも剣の枠に付け、値段は★3。</p>
             <h3>道</h3>
             <div class="ref-grid">
               <figure><img src="path-fight.jpg?v=3" alt=""><figcaption>戦闘</figcaption></figure>
@@ -5801,7 +5822,8 @@
     function rollShopStock() {
       const cards = shuffle(classCards()).slice(0, 2).map((card) => ({ kind: "card", card }));
       const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item }));
-      return cards.concat(items).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
+      const limited = shuffle(SHOP_GEAR).slice(0, 2).map((item) => ({ kind: "gear", gear: item, limited: true }));
+      return cards.concat(items, limited).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
     }
 
     function buyShop(index) {
@@ -5957,16 +5979,18 @@
         else if (price == null) action = `<button type="button" class="shop-buy" disabled>買えない</button>`;
         else action = `<button type="button" class="shop-buy" data-action="shop-buy" data-slot="${index}" ${have < price ? "disabled" : ""}>買う</button>`;
         const sold = slot.sold ? " sold" : "";
+        const limited = slot.limited ? " limited" : "";
+        const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}"><div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
           const picture = slot.gear.image ? `<img class="shop-gear" src="${esc(slot.gear.image)}" alt="">` : "";
-          return `<div class="shop-slot${sold}">${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}">${ribbon}${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
-      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は4つ。カード2つと装備2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
+      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
     }
 
     function takeBonus() {
