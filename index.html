@@ -7589,12 +7589,17 @@
 
     function renderClear() {
       root.innerHTML = `
-        <div class="menu">
-          <h1>踏破</h1>
-          <p>${esc(dungeonName)}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
-          <p>次の攻略も、初期デッキから。</p>
-          ${menuButton("カードリスト", "album")}
-          ${menuButton("キャラクター選択へ", "character", true)}
+        <div class="overlay victory finale clear-finale">
+          ${victoryStage("踏破")}
+          <div class="panel wide reward-panel">
+            <h2>踏破</h2>
+            <p class="victory-count">${esc(dungeonName)}を抜けた。解放が進んだ。</p>
+            <p>所持 <span data-star-count>★${meta.stars}</span> は残っている。次の攻略も、初期デッキから。</p>
+            <div class="gear-offer-actions">
+              ${menuButton("カードリスト", "album")}
+              ${menuButton("キャラクター選択へ", "character", true)}
+            </div>
+          </div>
         </div>`;
     }
 
@@ -8452,7 +8457,7 @@
         clearReward();
         cleared = true;
         endRun(true);
-        screen = "title";
+        screen = "clear";
         render();
         return;
       }
@@ -8543,18 +8548,19 @@
       return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="星${count}">${stars}</div>`;
     }
 
-    function victoryStage() {
+    function victoryStage(bannerText) {
       const pose = heroItem().victory;
       const foe = enemy && enemy.image ? `<img class="win-foe" src="${esc(enemy.image)}" alt="">` : "";
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${1.5 + (i % 5) * 0.18}s"></i>`).join("");
-      return `<div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
+      const banner = bannerText || "勝利";
+      return `<div class="win-stage" aria-hidden="true"><p class="win-banner">${esc(banner)}</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
     }
 
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
@@ -8566,7 +8572,7 @@
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(gearTitle(item) || item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
-        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
