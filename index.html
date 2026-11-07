@@ -846,7 +846,7 @@
     .shop-slot.sold { opacity: 0.55; }
     .shop-slot.limited { position: relative; border-color: rgba(255, 150, 80, 0.85); background: linear-gradient(rgba(70, 26, 12, 0.7), rgba(20, 14, 10, 0.6)); box-shadow: 0 0 14px rgba(255, 120, 50, 0.35); }
     .shop-slot .shop-ribbon { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 2px 10px; border-radius: 999px; background: linear-gradient(#ff9a5c, #c8451d); color: #fff6e4; font-size: 11px; font-style: normal; font-weight: 800; letter-spacing: 0.08em; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
-    .menu.shop-floor { justify-content: flex-start; padding-top: 18px; overflow-y: auto; }
+    .menu.shop-floor { justify-content: flex-start; padding-top: calc(18px + 1.2em); overflow-y: auto; }
     .menu.shop-floor .shop-panel { width: min(100%, 1060px); }
     .burn-mark { color: #ffb15c; }
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
@@ -1197,7 +1197,8 @@
     .ref-grid.pose-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; object-position: center bottom; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; }
-    .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: 10px 28px 16px; overflow: hidden; }
+    /* イベント見出しは画面上端に詰めず、だいたい1行ぶん空ける */
+    .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; padding: calc(10px + 1.2em) 28px 16px; overflow: hidden; }
     .cast-back {
       position: absolute;
       top: 16px;
@@ -1232,6 +1233,7 @@
     .cast-blank { min-height: 1.4em; color: var(--muted); }
     .cast-title {
       margin: 0;
+      flex: 0 0 auto;
       text-align: center;
       color: #f6d48a;
       font-size: clamp(22px, 2.2vw, 32px);
@@ -1543,16 +1545,79 @@
       font-weight: 800;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
+    /* 挑戦開始：炎が揺れる金ボタン */
     .cast-start {
-      position: static;
+      --flame: #ff7a28;
+      position: relative;
+      z-index: 1;
       width: auto;
       margin: 0;
-      font-size: 22px;
-      padding: 14px 28px;
+      isolation: isolate;
+      overflow: visible;
+      border: 2px solid #ffd28a;
       border-radius: 999px;
-      letter-spacing: 0.12em;
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(255, 70, 10, 0.95) 0%, transparent 58%),
+        linear-gradient(180deg, #fff0b8 0%, #ffc45a 28%, #f07820 68%, #a02808 100%);
+      color: #2a1008;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      padding: 14px 34px;
+      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 4px rgba(255, 170, 70, 0.35),
+        0 0 28px rgba(255, 110, 30, 0.72),
+        0 12px 26px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+      animation: start-burn-pulse 1.7s ease-in-out infinite;
+    }
+    .cast-start::before,
+    .cast-start::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 72%;
+      width: 18px;
+      height: 34px;
+      border-radius: 50% 50% 20% 20%;
+      background:
+        radial-gradient(circle at 50% 78%, #fff6c8 0%, #ffb040 28%, #ff5a12 62%, rgba(255, 60, 0, 0) 78%);
+      filter: blur(0.2px);
+      transform: translateX(-50%) scale(0.9);
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+      animation: start-flame 0.85s ease-in-out infinite alternate;
+    }
+    .cast-start::before { margin-left: -22px; animation-delay: -0.2s; }
+    .cast-start::after { margin-left: 22px; width: 14px; height: 28px; animation-delay: -0.45s; }
+    .cast-start:hover {
+      filter: brightness(1.08);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 5px rgba(255, 190, 90, 0.5),
+        0 0 36px rgba(255, 120, 30, 0.9),
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
     }
     .cast-start[hidden] { display: none; }
+    @keyframes start-burn-pulse {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(40, 12, 6, 0.92), 0 0 0 4px rgba(255, 170, 70, 0.32), 0 0 22px rgba(255, 110, 30, 0.62), 0 12px 26px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -10px 18px rgba(160, 30, 0, 0.35); }
+      50% { box-shadow: 0 0 0 2px rgba(40, 12, 6, 0.92), 0 0 0 5px rgba(255, 190, 90, 0.48), 0 0 34px rgba(255, 130, 40, 0.88), 0 12px 26px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -10px 18px rgba(180, 40, 0, 0.42); }
+    }
+    @keyframes start-flame {
+      0% { transform: translateX(-50%) translateY(4px) scale(0.82) rotate(-6deg); opacity: 0.7; }
+      100% { transform: translateX(-50%) translateY(-6px) scale(1.08) rotate(7deg); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cast-start,
+      .cast-start::before,
+      .cast-start::after { animation: none; }
+    }
     /* もどる と 挑戦開始 は、画面右下にひとまとまり（もどるが左、挑戦開始が右） */
     .cast-actions {
       position: absolute;
@@ -1573,6 +1638,12 @@
       font-size: 22px;
       border-radius: 999px;
       letter-spacing: 0.12em;
+    }
+    .cast-actions > button.cast-start {
+      height: auto;
+      min-height: 60px;
+      padding: 14px 34px;
+      letter-spacing: 0.18em;
     }
     .cast-actions .cast-back {
       position: static;
@@ -3402,7 +3473,7 @@
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
     }
-    .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: 16px; gap: 10px; }
+    .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.bless h1 {
       font-size: 36px;
       letter-spacing: 0.22em;
@@ -3450,7 +3521,7 @@
     }
     .menu button:disabled, .title-actions button:disabled { opacity: 0.35; cursor: default; }
     .menu button { font-size: 22px; padding: 16px 22px; }
-    .menu.beggar { justify-content: flex-start; overflow: auto; }
+    .menu.beggar { justify-content: flex-start; overflow: auto; padding-top: calc(24px + 1.2em); }
     .menu .beggar-cards { width: min(980px, 100%); justify-content: center; }
     .menu button.beggar-card {
       min-width: 0;
@@ -3474,7 +3545,7 @@
     }
     .dungeon-gate-name {
       position: absolute;
-      top: 8vh;
+      top: calc(8vh + 1.2em);
       left: 0;
       right: 0;
       z-index: 2;
@@ -3518,7 +3589,7 @@
       height: 100%;
       min-height: 0;
       gap: 16px;
-      padding: 18px 24px 96px;
+      padding: calc(18px + 1.2em) 24px 96px;
       box-sizing: border-box;
       place-items: center;
       background:
@@ -3528,7 +3599,7 @@
     .dungeon-pick .cast-title {
       position: relative;
       z-index: 2;
-      margin: 4px 0 0;
+      margin: 0;
       text-align: center;
       font-size: clamp(22px, 2.8vw, 34px);
       letter-spacing: 0.12em;
