@@ -844,7 +844,8 @@
       flex: 0 1 auto;
     }
     .album-screen.has-zoom .panel {
-      width: min(760px, calc(100vw - 48px - 236px - min(420px, 38vw) - 18px));
+      width: min(760px, calc(100vw - 48px - 236px - min(460px, 40vw) - 24px));
+      margin-right: calc(min(460px, 40vw) + 24px);
       flex: 1 1 auto;
     }
     .album-screen h2 {
@@ -905,30 +906,37 @@
     }
     .album-screen .deck-cards { justify-content: center; gap: 14px; }
     .art-zoom-side {
-      flex: 0 0 min(420px, 38vw);
-      width: min(420px, 38vw);
-      max-height: calc(100vh - 56px);
+      position: fixed;
+      right: 24px;
+      top: 24px;
+      bottom: 24px;
+      z-index: 8;
+      width: min(460px, 40vw);
       overflow: auto;
-      padding: 20px 18px 18px;
+      padding: 22px 20px 20px;
       border-radius: 18px;
       border: 1px solid rgba(228, 177, 90, 0.7);
       background: linear-gradient(180deg, #2a2019, #140f0c);
       text-align: center;
-      align-self: stretch;
       box-sizing: border-box;
-      position: sticky;
-      top: 24px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .art-zoom-side h3 {
       margin: 0 0 14px;
-      font-size: 24px;
+      flex: 0 0 auto;
+      font-size: 26px;
       letter-spacing: 0.12em;
       color: var(--gold);
     }
     .art-zoom-side .art-zoom-img {
       display: block;
       width: 100%;
-      max-height: min(62vh, 560px);
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: calc(100vh - 220px);
       object-fit: contain;
       border-radius: 12px;
       background: #120e0c;
@@ -937,16 +945,22 @@
     .art-zoom-side .art-zoom-card {
       display: flex;
       justify-content: center;
+      align-items: center;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
       margin: 0 auto 8px;
     }
-    .art-zoom-side .art-zoom-card .card.preview { width: min(280px, 100%); }
+    .art-zoom-side .art-zoom-card .card.preview { width: min(360px, 100%); }
     .art-zoom-side .art-zoom-note {
       margin: 12px 0 0;
+      flex: 0 0 auto;
       color: var(--muted);
       font-size: 14px;
     }
     .art-zoom-side > button[data-action="close-art-zoom"] {
       margin-top: 16px;
+      flex: 0 0 auto;
       border: 0;
       background: var(--gold);
       color: #2a2118;
@@ -961,9 +975,9 @@
         flex-direction: column;
       }
       .album-screen .panel,
-      .album-screen.has-zoom .panel,
-      .art-zoom-side {
+      .album-screen.has-zoom .panel {
         margin-left: 0;
+        margin-right: 0;
         width: min(1080px, calc(100vw - 48px));
         flex: 0 0 auto;
       }
@@ -971,9 +985,21 @@
         margin-top: 72px;
         max-height: calc(100vh - 56px - 72px);
       }
+      .album-screen.has-zoom .panel {
+        max-height: calc(100vh - 56px - 72px - min(52vh, 420px) - 18px);
+      }
       .art-zoom-side {
-        position: static;
-        max-height: none;
+        position: fixed;
+        left: 24px;
+        right: 24px;
+        top: auto;
+        bottom: 16px;
+        width: auto;
+        height: min(52vh, 420px);
+        z-index: 8;
+      }
+      .art-zoom-side .art-zoom-img {
+        max-height: calc(min(52vh, 420px) - 140px);
       }
     }
     .sheet-screen { position: relative; }
