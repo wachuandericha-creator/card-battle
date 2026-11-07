@@ -75,8 +75,8 @@
       min-width: 0;
       min-height: 0;
       display: grid;
-      grid-template-rows: minmax(0, 1.4fr) minmax(0, 0.8fr);
-      row-gap: 16px;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
       border-radius: 16px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
@@ -93,8 +93,9 @@
         inset 0 0 90px rgba(0, 0, 0, 0.28);
       isolation: isolate;
     }
-    .stage { min-width: 0; overflow: visible; position: relative; z-index: 3; }
-    .play-row { min-width: 0; overflow: hidden; position: relative; z-index: 2; }
+    /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
+    .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
+    .play-row { grid-area: 1 / 1; min-width: 0; overflow: hidden; position: relative; z-index: 5; }
     .energy-band { grid-area: energy; min-width: 0; overflow: visible; z-index: 4; }
     .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 5; }
     .gear-rail { grid-area: gear; min-width: 0; overflow: hidden; }
@@ -199,7 +200,10 @@
       padding: 8px 10px 0;
       background: transparent;
       overflow: visible;
+      pointer-events: none;
     }
+    .stage .foe-pile,
+    .stage .foe-peek { pointer-events: auto; }
     /* 自分＝左、敵＝右。HP板は上端そろえ。キャラはその下 */
     .enemy-field {
       position: relative;
@@ -1830,17 +1834,22 @@
     .logline { color: var(--muted); font-size: 13px; line-height: 1.35; }
     .play-row {
       position: relative;
+      align-self: end;
       min-height: 0;
-      height: 100%;
+      height: min(42%, 300px);
+      width: 100%;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: stretch;
       gap: 12px;
       padding: 8px 10px 10px;
+      pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(8, 6, 5, 0.08) 0%, rgba(12, 9, 7, 0.55) 100%);
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2);
+        linear-gradient(180deg, rgba(8, 6, 5, 0.02) 0%, rgba(12, 9, 7, 0.42) 55%, rgba(12, 9, 7, 0.62) 100%);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.18);
     }
+    .play-row .play-side,
+    .play-row .end { pointer-events: auto; }
     .play-row .end { align-self: center; margin: 0; }
     .play-dock {
       display: flex;
@@ -6761,12 +6770,32 @@
         </div>`;
     }
 
+    function fillHandForLook() {
+      if (screen !== "settings" || returnScreen !== "battle") return;
+      draw(HAND_CAP - hand.length);
+      const names = CARD_POOL.map(([name]) => name).filter((name) => CARDS[name]);
+      let i = 0;
+      while (hand.length < HAND_CAP && names.length) {
+        const name = names[i % names.length];
+        i += 1;
+        hand.push(keepCard({ name, ...CARDS[name] }));
+      }
+      log(`手札を${hand.length}枚にした（見た目確認）。`);
+      screen = "battle";
+      render();
+    }
+
     function renderSettings() {
+      const inBattle = returnScreen === "battle";
+      const handBtn = inBattle
+        ? menuButton(`手札を${HAND_CAP}枚にする（見た目確認）`, "fill-hand-look", true)
+        : `<button type="button" disabled>手札を${HAND_CAP}枚にする（見た目確認・戦闘中のみ）</button>`;
       root.innerHTML = `
         <div class="menu">
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
+          ${handBtn}
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -8541,6 +8570,7 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
+        if (name === "fill-hand-look") { fillHandForLook(); return; }
         if (name === "album") { clearArtZoom(); screen = "album"; render(); }
         if (name === "close-art-zoom") { clearArtZoom(); render(); }
         if (name === "sheet") { clearArtZoom(); screen = "sheet"; render(); }
