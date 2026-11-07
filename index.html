@@ -2560,11 +2560,11 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack.jpg?v=1",
-      チャージアタック: "card-charge.jpg?v=1",
+      アタック: "card-attack.jpg?v=2",
+      チャージアタック: "card-charge.jpg?v=2",
       ブロック: "card-block.jpg?v=1",
-      集中: "card-focus.jpg?v=2",
-      パリィ: "card-parry.jpg?v=2",
+      集中: "card-focus.jpg?v=3",
+      パリィ: "card-parry.jpg?v=3",
       捨て身の一撃: "card-reckless.jpg?v=1",
       怒り: "card-rage.jpg?v=1",
       パリィスラッシュ: "card-parry-slash.jpg?v=1",
@@ -4710,12 +4710,13 @@
             </div>
             <h4>基本</h4>
             <div class="ref-grid">
-              <figure><img class="card-ref" src="card-attack.jpg?v=1" alt=""><figcaption>アタック</figcaption></figure>
-              <figure><img class="card-ref" src="card-charge.jpg?v=1" alt=""><figcaption>チャージアタック</figcaption></figure>
+              <figure><img class="card-ref" src="card-attack.jpg?v=2" alt=""><figcaption>アタック</figcaption></figure>
+              <figure><img class="card-ref" src="card-charge.jpg?v=2" alt=""><figcaption>チャージアタック</figcaption></figure>
               <figure><img class="card-ref" src="card-block.jpg?v=1" alt=""><figcaption>ブロック</figcaption></figure>
-              <figure><img class="card-ref" src="card-focus.jpg?v=2" alt=""><figcaption>集中</figcaption></figure>
-              <figure><img class="card-ref" src="card-parry.jpg?v=2" alt=""><figcaption>パリィ</figcaption></figure>
+              <figure><img class="card-ref" src="card-focus.jpg?v=3" alt=""><figcaption>集中</figcaption></figure>
+              <figure><img class="card-ref" src="card-parry.jpg?v=3" alt=""><figcaption>パリィ</figcaption></figure>
             </div>
+            <p class="sheet-cap">アタックとチャージアタックは剣だけで、振り抜いている途中（刃は斜めに流れ、大きな斬撃の軌跡・集中線・火花・砕ける石）。アタックは白青の軌跡、チャージアタックは金色の軌跡。集中は戦士が剣を構え、金色の気を立ちのぼらせる。パリィは戦士の背中とミノタウロスの斧が噛み合う瞬間で、ぶつかる所に白い閃光と火花。背景はどれも松明の洞窟。</p>
             <h4>戦士</h4>
             <div class="ref-grid">
               <figure><img class="card-ref" src="card-reckless.jpg?v=1" alt=""><figcaption>捨て身の一撃</figcaption></figure>
@@ -5629,7 +5630,8 @@
         if (kind === "instant") return 4;
         return 5;
       };
-      hand.sort((a, b) => rank(a) - rank(b) || a.cost - b.cost || String(a.name).localeCompare(b.name, "ja"));
+      // 手札の並び：コストの小さい順 → 色分け（攻撃・防御・技・パワー・インスタント）→ 名前
+      hand.sort((a, b) => a.cost - b.cost || rank(a) - rank(b) || String(a.name).localeCompare(b.name, "ja"));
     }
 
     function renderBattle() {
