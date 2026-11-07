@@ -1999,8 +1999,21 @@
     }
     .energy-band { display: flex; align-items: center; justify-content: flex-start; min-height: 0; overflow: visible; border-top: 2px solid rgba(228, 177, 90, 0.85); padding: 8px 0 2px 56px; gap: 128px; margin-bottom: -6px; }
     .mana-slot { min-width: 704px; display: flex; justify-content: flex-start; align-items: center; gap: 24px; }
-    /* 扇の上はマナ列へ、下1/6はゲーム外へはみ出してよい */
-    .handbar { width: 100%; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 10px; overflow: visible; }
+    /* 手札をマナ列に重なるほど上げる。下1/6はゲーム外へはみ出してよい */
+    .handbar {
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 10px;
+      overflow: visible;
+      margin-top: -88px;
+      position: relative;
+      z-index: 5;
+    }
     .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .pile-card {
       position: relative;
