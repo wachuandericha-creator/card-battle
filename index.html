@@ -2165,8 +2165,22 @@
       font-weight: 800;
       letter-spacing: 0;
     }
-    /* カード名は黒字（名札の色に関わらず） */
-    .card .nameplate .name { color: #1a120e; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4); }
+    /* カード名は白字＋黒の縁取り（名札の色に関わらず） */
+    .card .nameplate .name {
+      color: #ffffff;
+      -webkit-text-stroke: 0.9px #0a0806;
+      paint-order: stroke fill;
+      text-shadow:
+        0 0 1px #0a0806,
+        1px 0 0 #0a0806,
+        -1px 0 0 #0a0806,
+        0 1px 0 #0a0806,
+        0 -1px 0 #0a0806,
+        1px 1px 0 #0a0806,
+        -1px 1px 0 #0a0806,
+        1px -1px 0 #0a0806,
+        -1px -1px 0 #0a0806;
+    }
     /* レアリティの装飾枠：★ ふつう（細い黒線） / ★★ 銀 / ★★★ 金 */
     .card-fit .frame {
       position: absolute;
