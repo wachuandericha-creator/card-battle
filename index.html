@@ -69,7 +69,7 @@
     .battle-bands {
       grid-area: arena;
       position: relative;
-      z-index: 6;
+      z-index: 4;
       min-width: 0;
       min-height: 0;
       display: grid;
@@ -94,7 +94,8 @@
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
     .play-row { grid-area: 1 / 1; min-width: 0; overflow: hidden; position: relative; z-index: 5; }
-    .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 5; }
+    /* 手札は戦闘枠より手前。ホバーでプレイエリアへ重なってよい */
+    .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 8; }
     .gear-rail { grid-area: gear; min-width: 0; overflow: hidden; }
     .battle-log { grid-area: log; min-width: 0; overflow: auto; }
     .hud-top {
@@ -2163,7 +2164,6 @@
       line-height: 1;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
     }
-    /* 手札はプレイエリア（battle-bands）より上へは出さない */
     .handbar {
       width: 100%;
       min-width: 0;
@@ -2177,7 +2177,7 @@
       margin-top: 0;
       padding: 0 8px 14px;
       position: relative;
-      z-index: 5;
+      z-index: 8;
       border-radius: 0 0 16px 16px;
       background:
         linear-gradient(180deg, transparent 0%, rgba(12, 9, 7, 0.12) 40%, rgba(18, 12, 9, 0.55) 100%);
@@ -2726,6 +2726,12 @@
       width: auto;
       max-width: none;
       margin-inline: calc(var(--overlap, 33px) * -0.5);
+    }
+    /* 枚数が多いときは重ねる。ホバーで大きく浮かせて効果を読めるようにする（プレイエリアへ重なってよい） */
+    .hand .card:hover:not(:disabled) {
+      transform: translateY(calc(var(--drop, 0px) - 92px)) rotate(0deg) scale(1.14);
+      z-index: 40;
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 236, 200, 0.35);
     }
     /* 重なり確定まで一時停止。確定後に play して冒頭の詰まりを避ける */
     .hand.deal-pending {
@@ -8963,7 +8969,7 @@
       requestAnimationFrame(tick);
     }
 
-    // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。マナ列には重ねてよいが、戦闘画面の外へは出さない。
+    // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
     function fitHand() {
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
@@ -8980,12 +8986,13 @@
       const ratio = first.offsetWidth / Math.max(1, first.offsetHeight) || (204 / 300);
       const fullH = first.offsetHeight || handEl.clientHeight;
       const avail = handEl.clientWidth - 16;
-      const minStep = 40;
-      // 全枚数が最低 minStep ずつ見える幅に収まる最大のカード幅。足りなければ高さを 60% まで縮める。
+      // 見える幅は最低限に抑え、カード本体は大きく保つ（効果確認はホバー）
+      const minStep = 44;
       let cw = first.offsetWidth || Math.round(fullH * ratio);
       const fitW = avail - (n - 1) * minStep;
       if (fitW < cw) {
-        const h = Math.max(fullH * 0.6, fitW / ratio);
+        // 以前の 60% まで潰すのはやめて、だいたい元の大きさのまま重ねる
+        const h = Math.max(fullH * 0.9, fitW / ratio);
         handEl.style.setProperty("--hand-card-h", `${Math.round(h)}px`);
         cw = Math.round(h * ratio);
       }
