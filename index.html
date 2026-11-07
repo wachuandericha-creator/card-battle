@@ -482,9 +482,24 @@
       flex-direction: column;
       container-type: inline-size;
     }
-    .reward-row { display: flex; gap: 12px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
-    .reward-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .reward-pick .card.preview { width: 132px; height: auto; }
+    .reward-row { display: flex; gap: 28px; justify-content: center; align-items: flex-end; flex-wrap: wrap; margin-bottom: 22px; }
+    /* 報酬のカード：うしろの黄色い地は無し。カードだけを大きく。乗せると少し浮く */
+    .reward-pick {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent !important;
+      box-shadow: none;
+      transition: transform 0.18s ease;
+    }
+    .reward-pick:hover { transform: translateY(-10px); }
+    .reward-pick .card.preview { width: min(250px, 24vw); height: auto; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
+    .reward-pick:hover .card.preview { box-shadow: 0 0 0 3px rgba(255, 231, 168, 0.9), 0 0 28px rgba(228, 177, 90, 0.6), 0 24px 40px rgba(0, 0, 0, 0.6); }
+    .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100vw - 40px)); padding: 36px 48px 32px; }
+    .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
@@ -1947,6 +1962,56 @@
       font-weight: 800;
       letter-spacing: 0;
     }
+    /* カード名は黒字（名札の色に関わらず） */
+    .card .nameplate .name { color: #1a120e; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4); }
+    /* レアリティの装飾枠：★ ふつう（細い黒線） / ★★ 銀 / ★★★ 金 */
+    .card-fit .frame {
+      position: absolute;
+      inset: 1.1cqw;
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 5;
+      border: 1cqw solid rgba(24, 14, 8, 0.6);
+      /* 内側に細い明線＋暗線で二重線に見せる */
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32), inset 0 0 0 2px rgba(0, 0, 0, 0.22);
+    }
+    .card-fit .frame::before, .card-fit .frame::after { content: none; }
+    .card-fit.r2 .frame, .card-fit.r3 .frame {
+      border-width: 2.2cqw;
+      border-style: solid;
+      border-color: transparent;
+      border-image-slice: 1;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 0 2.5px rgba(255, 255, 255, 0.55), inset 0 0 0 3.5px rgba(0, 0, 0, 0.25);
+    }
+    .card-fit.r2 .frame {
+      border-image-source: linear-gradient(135deg, #ffffff 0%, #8f9aa9 18%, #eef2f7 36%, #6f7a89 52%, #f7f9fc 68%, #98a3b2 84%, #e3e8ef 100%);
+      filter: drop-shadow(0 0 4px rgba(220, 230, 245, 0.7));
+    }
+    .card-fit.r3 .frame {
+      border-image-source: linear-gradient(135deg, #fff8d0 0%, #c3911f 18%, #ffe98f 36%, #9c6b0e 52%, #fff3b8 68%, #d2a633 84%, #ffe9a0 100%);
+      filter: drop-shadow(0 0 6px rgba(255, 215, 120, 0.85));
+    }
+    /* 角の宝石飾り（銀・金のみ。右上と左下。コスト丸・★とは重ねない） */
+    .card-fit.r2 .frame::before, .card-fit.r2 .frame::after,
+    .card-fit.r3 .frame::before, .card-fit.r3 .frame::after {
+      content: "";
+      position: absolute;
+      width: 9cqw;
+      height: 9cqw;
+      transform: rotate(45deg);
+      border-radius: 1.2cqw;
+      border: 1px solid rgba(0, 0, 0, 0.45);
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.7), 0 2px 4px rgba(0, 0, 0, 0.45);
+    }
+    .card-fit.r2 .frame::before, .card-fit.r3 .frame::before { right: -1cqw; top: -1cqw; }
+    .card-fit.r2 .frame::after, .card-fit.r3 .frame::after { left: -1cqw; bottom: -1cqw; }
+    .card-fit.r2 .frame::before, .card-fit.r2 .frame::after { background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c9d2dd 30%, #76818f 70%, #4d5664 100%); }
+    .card-fit.r3 .frame::before, .card-fit.r3 .frame::after { background: radial-gradient(circle at 35% 30%, #fff9d8 0%, #ffd766 30%, #b8841a 70%, #6f4d0a 100%); }
+    .card-fit.r2 .rarity { color: #f3f6fa; text-shadow: 0 0 2px #4f5b6a, 0 1px 0 #2d3540, 0 0 8px rgba(220, 230, 245, 0.8); }
+    .card-fit.r3 .rarity { color: #ffe27a; text-shadow: 0 0 2px #7a5410, 0 1px 0 #4d3306, 0 0 10px rgba(255, 215, 120, 0.9); }
+    /* 銀・金カードは名札にも光を足す */
+    .card-fit.r2 .nameplate { box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.62), inset 0 -2px 0 rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(236, 241, 247, 0.85); }
+    .card-fit.r3 .nameplate { box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.62), inset 0 -2px 0 rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 224, 140, 0.95), 0 0 10px rgba(255, 215, 120, 0.5); }
     .card .text {
       flex: 1 1 auto;
       min-height: 0;
@@ -2125,6 +2190,24 @@
         transform: translate(calc(-22vw + (var(--i) - (var(--n) - 1) / 2) * 110px), -16vh) scale(1) rotate(0deg);
       }
     }
+    /* 報酬を選んだあと、★がステータスの★へ飛んで吸い込まれる */
+    .star-home-layer { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+    .home-star {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 64px;
+      line-height: 1;
+      color: #ffe27a;
+      text-shadow: 0 0 6px #7a5410, 0 0 18px rgba(255, 215, 120, 0.95), 0 0 36px rgba(255, 190, 80, 0.6);
+      will-change: transform, opacity;
+    }
+    [data-star-count].bump { animation: star-bump 0.42s cubic-bezier(0.2, 1.4, 0.4, 1); }
+    @keyframes star-bump {
+      0% { transform: scale(1); filter: brightness(1); }
+      35% { transform: scale(1.42); filter: brightness(1.9) drop-shadow(0 0 10px rgba(255, 220, 120, 0.95)); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+    .victory-count [data-star-count] { display: inline-block; }
     .overlay button {
       border: 0;
       background: var(--gold);
@@ -2777,6 +2860,11 @@
     let rewardReady = false;
     let rewardStars = 0;
     let starBurst = 0;
+    let pendingStars = 0; // もらったが、まだステータスの★に吸い込まれていない数
+
+    function shownStarCount() {
+      return Math.max(0, (Number(meta.stars) || 0) - pendingStars);
+    }
     let rewardPicks = [];
     let rewardPaths = [];
     let rewardStep = "cards";
@@ -5000,7 +5088,8 @@
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
-      return `<div class="card-fit"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div></div>`;
+      const rank = stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
+      return `<div class="card-fit ${rank}"><div class="nameplate"><span class="cost">${card.cost}</span><div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, adjusted, foe) {
@@ -5370,6 +5459,7 @@
     function clearReward() {
       rewardReady = false;
       rewardStars = 0;
+      pendingStars = 0;
       rewardPicks = [];
       rewardPaths = [];
       rewardStep = "cards";
@@ -5411,6 +5501,7 @@
       const medal = foe.medal ? gearItem(foe.medal) : null;
       rewardStars = medal ? 0 : (foe.tier || starsForRank(foe.rank));
       starBurst = rewardStars;
+      pendingStars = rewardStars;
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       localStorage.setItem(META_KEY, JSON.stringify(meta));
       rewardPaths = [];
@@ -5442,13 +5533,75 @@
       render();
     }
 
+    // 報酬を選んだあと、もらった★がステータスの★へ飛んで吸い込まれ、届くたびに数が増える
+    function starStartPoints() {
+      const burst = [...document.querySelectorAll(".fly-star")].map((el) => el.getBoundingClientRect());
+      if (burst.length) return burst.map((r) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 }));
+      const el = document.querySelector(".victory-count") || document.querySelector(".overlay .panel");
+      const r = el ? el.getBoundingClientRect() : { left: window.innerWidth / 2, top: window.innerHeight / 3, width: 0, height: 0 };
+      return [{ x: r.left + r.width / 2, y: r.top + r.height / 2 }];
+    }
+
+    function starHomePoint() {
+      const el = root.querySelector(".status-stars");
+      if (!el) return { x: 48, y: window.innerHeight - 150 };
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+
+    function bumpStarCount() {
+      root.querySelectorAll("[data-star-count]").forEach((el) => {
+        el.textContent = `★${shownStarCount()}`;
+        el.classList.remove("bump");
+        void el.offsetWidth;
+        el.classList.add("bump");
+      });
+    }
+
+    function flyStarsHome(points) {
+      const n = pendingStars;
+      if (!n) return;
+      if (!("animate" in Element.prototype)) { pendingStars = 0; bumpStarCount(); return; }
+      const layer = document.createElement("div");
+      layer.className = "star-home-layer";
+      layer.setAttribute("aria-hidden", "true");
+      document.body.appendChild(layer);
+      let left = n;
+      for (let i = 0; i < n; i++) {
+        const from = points[Math.min(i, points.length - 1)];
+        const to = starHomePoint();
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const el = document.createElement("span");
+        el.className = "home-star";
+        el.textContent = "★";
+        el.style.left = `${from.x}px`;
+        el.style.top = `${from.y}px`;
+        layer.appendChild(el);
+        const anim = el.animate([
+          { transform: "translate(-50%, -50%) scale(1) rotate(0deg)", opacity: 1, offset: 0 },
+          { transform: `translate(calc(-50% + ${dx * 0.45}px), calc(-50% + ${dy * 0.45 - 90}px)) scale(0.95) rotate(200deg)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3) rotate(420deg)`, opacity: 0.95, offset: 1 },
+        ], { duration: 860, delay: 180 + i * 150, easing: "cubic-bezier(0.32, 0.08, 0.2, 1)", fill: "forwards" });
+        anim.onfinish = () => {
+          el.remove();
+          pendingStars = Math.max(0, pendingStars - 1);
+          bumpStarCount();
+          left -= 1;
+          if (left <= 0) layer.remove();
+        };
+      }
+    }
+
     function skipReward() {
       if (rewardStep === "cards" || rewardStep === "boss") {
+        const from = starStartPoints();
         bossPicks = [];
         rewardPaths = rollPaths();
         rewardStep = "paths";
         persistSave(true);
         render();
+        flyStarsHome(from);
         return;
       }
       if (rewardStep === "detour") {
@@ -5490,11 +5643,13 @@
       if (rewardStep !== "cards") return;
       const card = rewardPicks[index];
       if (!card) return;
+      const from = starStartPoints();
       stolen.push(keepCard(card));
       rewardPaths = rollPaths();
       rewardStep = "paths";
       persistSave(true);
       render();
+      flyStarsHome(from);
     }
 
     function advance(step) {
@@ -5586,7 +5741,7 @@
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay victory">${victoryStars()}<div class="panel wide"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 ★${meta.stars}</p><p>ほしいカードを押す。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
@@ -5606,7 +5761,7 @@
           const picture = path.image ? `<img src="${path.image}" alt="">` : "";
           return `<button type="button" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
         }).join("");
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 ★${meta.stars}</p><div class="path-list">${buttons}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 <span data-star-count>★${shownStarCount()}</span></p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
@@ -5712,7 +5867,7 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" aria-label="スター ${meta.stars}">★${meta.stars}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}${gearEffectText()}<div class="party-stack"><div class="status-stars" data-star-count aria-label="スター ${shownStarCount()}">★${shownStarCount()}</div><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${hand.length}</b></div></div></div></aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
