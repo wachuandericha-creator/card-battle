@@ -3295,17 +3295,18 @@
 
     const JOB_CHANGE_FLOORS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
 
+    // 0層目は祝福（階層の数には入れない）。1層目は雑魚で固定。最後の層はボス。route の添え字＝層の番号
     function buildRoute(floors, name) {
-      const route = new Array(floors);
+      const route = new Array(floors + 1);
       const jobFloors = !name || name === "はじまりの洞窟"
         ? []
-        : JOB_CHANGE_FLOORS.filter((floor) => floor >= 1 && floor <= floors);
-      for (const floor of jobFloors) route[floor - 1] = "出来事:ジョブ";
-      if (route[floors - 1] !== "出来事:ジョブ") route[floors - 1] = DUNGEON.boss;
-      if (floors > 1) route[0] = "出来事:祝福";
-      if (floors > 2) route[1] = rollRank(1);
+        : JOB_CHANGE_FLOORS.filter((floor) => floor >= 2 && floor <= floors);
+      for (const floor of jobFloors) route[floor] = "出来事:ジョブ";
+      if (route[floors] !== "出来事:ジョブ") route[floors] = DUNGEON.boss;
+      route[0] = "出来事:祝福";
+      if (floors > 1) route[1] = rollRank(1);
       const open = [];
-      for (let i = 0; i < floors; i++) if (!route[i]) open.push(i);
+      for (let i = 0; i <= floors; i++) if (!route[i]) open.push(i);
       const combatTarget = Math.floor(floors / 2);
       const combatsPlaced = route.filter((node) => node && !isEventNode(node)).length;
       const combatLeft = Math.max(0, combatTarget - combatsPlaced);
@@ -3317,6 +3318,12 @@
       shuffle(filler).forEach((node, i) => { route[open[i]] = node; });
       return route;
     }
+
+    // 表示する層の番号。先頭が祝福なら、それを0層目として数える
+    function floorStart() { return route[0] === "出来事:祝福" ? 1 : 0; }
+    function floorNo() { return battleIndex + 1 - floorStart(); }
+    function floorMax() { return battleTotal - floorStart(); }
+    function floorLabel() { return `${floorNo()}/${floorMax()}`; }
 
     function enemyNow() {
       return enemyByName(route[battleIndex] || DUNGEON.boss);
@@ -4359,6 +4366,7 @@
         removed,
         battleTotal,
         route,
+        floorZero: true, // 祝福を0層目として数える新しい道（古いセーブの見分け用）
         retreatUsed,
         dungeonName,
         heroCast,
@@ -4474,6 +4482,10 @@
           if (bossAt >= 0) route.splice(bossAt, 0, rollRank(tier));
           else route.push(rollRank(tier));
         }
+      }
+      // 古いセーブ（祝福が1層目だった道）は、1層目に雑魚を1つ足して新しい数え方に合わせる
+      if (!data.floorZero && route[0] === "出来事:祝福" && route.length > 1) {
+        route.splice(battleIndex === 0 ? 1 : battleIndex + 1, 0, rollRank(1));
       }
       battleTotal = route.length;
       restoreEnemyLoop(data);
@@ -5196,7 +5208,7 @@
             </div>
             <h3>祝福</h3>
             <img class="sheet-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">
-            <p class="sheet-cap">1層目。挑戦者に祝福を。荘厳な女神（豊かな胸、金の髪、光の翼）が、ひざまずく男の戦士に祝福を授ける。大きな目の気は使わない。祝福は、アイテム・装備・カードの三つを絵で並べ、社長たちが一つ選ぶ。受け取ったものは絵で大きく出す。</p>
+            <p class="sheet-cap">0層目（階層の数には入れない）。挑戦者に祝福を。荘厳な女神（豊かな胸、金の髪、光の翼）が、ひざまずく男の戦士に祝福を授ける。大きな目の気は使わない。祝福は、アイテム・装備・カードの三つを絵で並べ、社長たちが一つ選ぶ。受け取ったものは絵で大きく出す。</p>
             <h3>お店</h3>
             <img class="sheet-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている">
             <p class="sheet-cap">お店の挿絵。怪しげな商人がこちらを見て笑っている。</p>
@@ -5278,7 +5290,7 @@
       if (floorKind === "お店" && floorPhase === "show") {
         root.innerHTML = `
           <div class="menu shop-floor">
-            <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
+            <p>${esc(dungeonName)}　${floorLabel()}</p>
             <div class="shop-panel">${shopMarkup(shopStock, "お店")}</div>
             <p>${esc(floorNote)}</p>
             ${next}
@@ -5288,7 +5300,7 @@
       root.innerHTML = `
         <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">
           <h1>${esc(floorKind)}</h1>
-          <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
+          <p>${esc(dungeonName)}　${floorLabel()}</p>
           ${art}
           ${gift}
           <p>${esc(floorNote)}</p>
@@ -6272,7 +6284,7 @@
           <header class="hud-top">
             <div class="dungeon">
               <h1 class="dungeon-name">${esc(dungeonName)}</h1>
-              <div class="dungeon-progress">${battleIndex + 1}/${battleTotal}</div>
+              <div class="dungeon-progress">${floorLabel()}</div>
             </div>
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
