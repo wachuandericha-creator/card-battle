@@ -819,16 +819,49 @@
       padding: 12px 40px;
     }
     .album-screen {
-      position: relative;
       height: 100%;
-      display: flex;
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
       align-items: stretch;
-      justify-content: flex-start;
-      gap: 18px;
+      gap: 16px;
       padding: 24px;
       box-sizing: border-box;
     }
-    .album-screen .panel {
+    .album-screen.has-zoom {
+      grid-template-columns: 220px minmax(0, 1fr) minmax(380px, 42vw);
+    }
+    .album-screen:not(.sheet-screen) > .sheet-home {
+      position: static;
+      left: auto;
+      top: auto;
+      transform: none;
+      width: 100%;
+      align-self: center;
+      justify-self: stretch;
+      box-sizing: border-box;
+    }
+    .album-screen:not(.sheet-screen) .panel {
+      margin-left: 0;
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+      max-height: calc(100vh - 48px);
+      overflow: auto;
+      align-items: stretch;
+      text-align: left;
+      background: #2a221c;
+      border: 1px solid rgba(244, 234, 215, 0.2);
+      border-radius: 18px;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet-screen.album-screen {
+      display: block;
+      position: relative;
+    }
+    .sheet-screen .panel {
       margin-left: 236px;
       width: min(1080px, calc(100vw - 48px - 236px));
       max-height: calc(100vh - 56px);
@@ -841,12 +874,6 @@
       padding: 28px 32px;
       display: flex;
       flex-direction: column;
-      flex: 0 1 auto;
-    }
-    .album-screen.has-zoom .panel {
-      width: min(760px, calc(100vw - 48px - 236px - min(460px, 40vw) - 24px));
-      margin-right: calc(min(460px, 40vw) + 24px);
-      flex: 1 1 auto;
     }
     .album-screen h2 {
       margin: 0 0 14px;
@@ -906,12 +933,8 @@
     }
     .album-screen .deck-cards { justify-content: center; gap: 14px; }
     .art-zoom-side {
-      position: fixed;
-      right: 24px;
-      top: 24px;
-      bottom: 24px;
-      z-index: 8;
-      width: min(460px, 40vw);
+      min-width: 0;
+      max-height: calc(100vh - 48px);
       overflow: auto;
       padding: 22px 20px 20px;
       border-radius: 18px;
@@ -919,7 +942,6 @@
       background: linear-gradient(180deg, #2a2019, #140f0c);
       text-align: center;
       box-sizing: border-box;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -934,9 +956,8 @@
     .art-zoom-side .art-zoom-img {
       display: block;
       width: 100%;
-      flex: 1 1 auto;
-      min-height: 0;
-      max-height: calc(100vh - 220px);
+      height: calc(100vh - 220px);
+      max-height: none;
       object-fit: contain;
       border-radius: 12px;
       background: #120e0c;
@@ -951,7 +972,7 @@
       width: 100%;
       margin: 0 auto 8px;
     }
-    .art-zoom-side .art-zoom-card .card.preview { width: min(360px, 100%); }
+    .art-zoom-side .art-zoom-card .card.preview { width: min(420px, 100%); }
     .art-zoom-side .art-zoom-note {
       margin: 12px 0 0;
       flex: 0 0 auto;
@@ -971,39 +992,28 @@
       cursor: pointer;
     }
     @media (max-width: 900px) {
-      .album-screen {
-        flex-direction: column;
+      .album-screen:not(.sheet-screen) {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
       }
-      .album-screen .panel,
-      .album-screen.has-zoom .panel {
-        margin-left: 0;
-        margin-right: 0;
-        width: min(1080px, calc(100vw - 48px));
-        flex: 0 0 auto;
+      .album-screen.has-zoom:not(.sheet-screen) {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr) minmax(280px, 46vh);
       }
-      .album-screen .panel {
-        margin-top: 72px;
-        max-height: calc(100vh - 56px - 72px);
-      }
-      .album-screen.has-zoom .panel {
-        max-height: calc(100vh - 56px - 72px - min(52vh, 420px) - 18px);
-      }
-      .art-zoom-side {
-        position: fixed;
-        left: 24px;
-        right: 24px;
-        top: auto;
-        bottom: 16px;
+      .album-screen:not(.sheet-screen) > .sheet-home {
         width: auto;
-        height: min(52vh, 420px);
-        z-index: 8;
+        justify-self: center;
+        padding: 10px 28px;
+        font-size: 22px;
+      }
+      .album-screen:not(.sheet-screen) > .sheet-home br { display: none; }
+      .album-screen:not(.sheet-screen) .panel {
+        max-height: none;
       }
       .art-zoom-side .art-zoom-img {
-        max-height: calc(min(52vh, 420px) - 140px);
+        height: calc(46vh - 140px);
       }
     }
-    .sheet-screen { position: relative; }
-    .sheet-screen .panel { margin-left: 236px; width: min(1080px, calc(100vw - 48px - 236px)); }
     .sheet-home {
       position: fixed;
       left: 24px;
