@@ -3008,7 +3008,7 @@
       ホテル: { cost: 3, text: "体力を18回復\nインスタント", heal: 18, instant: true, kind: "instant" },
       ダッシュ: { cost: 1, text: "2枚引く\nクイック", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵の隠しATK は ランク1（雑魚）+2、普通+5、強敵+8。アタックとブロックは基本3に隠しを足した合計を書く。隠しDEFは0。
+    // 敵の隠しATK は ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本3に隠しを足した合計を書く。隠しDEFは0。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
@@ -3289,8 +3289,15 @@
       timer = null;
     }
 
+    function stripFoePlus(name) {
+      const raw = String(name || "");
+      const cut = raw.match(/^(.*)\+(\d+)$/);
+      return cut ? cut[1] : raw;
+    }
+
     function enemyKey(name) {
-      return ENEMY_RENAME[name] || name;
+      const base = stripFoePlus(name);
+      return ENEMY_RENAME[base] || base;
     }
 
     function enemyByName(name) {
@@ -3298,9 +3305,35 @@
       return ENEMIES.find((item) => item.name === key) || ENEMIES[0];
     }
 
+    // この攻略で、今の敵と同じ相手に何回会ってきたか（いまの一回は含めない）
+    function foeRepeat(at, list) {
+      const path = list || route;
+      const index = at == null ? battleIndex : at;
+      const node = path[index];
+      if (!node || isEventNode(node)) return 0;
+      const base = enemyKey(node);
+      let n = 0;
+      for (let i = 0; i < index; i++) {
+        if (isEventNode(path[i])) continue;
+        if (enemyKey(path[i]) === base) n += 1;
+      }
+      return n;
+    }
+
+    function foeLabel(at, list) {
+      const path = list || route;
+      const index = at == null ? battleIndex : at;
+      const base = enemyByName(path[index] || DUNGEON.boss).name;
+      const n = foeRepeat(index, path);
+      return n > 0 ? `${base}+${n}` : base;
+    }
+
     function hiddenAtk(foe) {
-      if (foe && foe.atkHidden != null) return Number(foe.atkHidden) || 0;
-      return HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
+      const plus = foe && foe.plus != null ? Number(foe.plus) || 0 : foeRepeat();
+      const base = foe && foe.atkHidden != null
+        ? Number(foe.atkHidden) || 0
+        : HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
+      return base + plus * 2;
     }
 
     function hiddenDef(foe) {
@@ -3424,7 +3457,8 @@
     function floorLabel() { return `${floorNo()}/${floorMax()}`; }
 
     function enemyNow() {
-      return enemyByName(route[battleIndex] || DUNGEON.boss);
+      const foe = enemyByName(route[battleIndex] || DUNGEON.boss);
+      return { ...foe, plus: foeRepeat() };
     }
 
     function bossNow() {
@@ -4815,6 +4849,12 @@
         route.splice(battleIndex === 0 ? 1 : battleIndex + 1, 0, rollRank(1));
       }
       battleTotal = route.length;
+      if (enemy && route[battleIndex] && !isEventNode(route[battleIndex])) {
+        const foe = enemyNow();
+        enemy.name = foeLabel();
+        enemy.image = foe.image;
+        enemy.atk = hiddenAtk(foe);
+      }
       restoreEnemyLoop(data);
       retreatUsed = !!data.retreatUsed;
       if (data.dungeonName) dungeonName = data.dungeonName === "20" ? "はじまりの洞窟" : data.dungeonName;
@@ -4851,7 +4891,7 @@
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foe.name, image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: 0, atk: hiddenAtk(foe), rallied: false, hit: false };
+      enemy = { name: foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: 0, atk: hiddenAtk(foe), rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -5627,7 +5667,7 @@
               <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-beggar.jpg?v=1" alt=""><figcaption>物乞い</figcaption></figure>
             </div>
-            <p class="sheet-cap">ちびドラゴンは体力30。はじまりの洞窟の後半に出る。山札はファイアーボール、ファイアソード、ファイアパラダイス各1枚。アタックとブロックは、ランクが決まるまで入れない。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。物乞いは体力15、隠しATK+3。アタック1枚に、この戦闘であげたカードを足して使う。物乞いに遭遇したあとに出る。敵はみな左を向く。</p>
+            <p class="sheet-cap">ちびドラゴンは体力30。はじまりの洞窟の後半に出る。山札はファイアーボール、ファイアソード、ファイアパラダイス各1枚。アタックとブロックは、ランクが決まるまで入れない。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。物乞いは体力15、隠しATK+3。アタック1枚に、この戦闘であげたカードを足して使う。物乞いに遭遇したあとに出る。同じ攻略で同じ敵に会うたびに、二度目から名前がスライム+1、スライム+2となり、隠しATKが2ずつ増える。引き返す再戦は同じ遭遇なので増えない。敵はみな左を向く。</p>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
         </div>`;
