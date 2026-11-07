@@ -2552,15 +2552,18 @@
       text-shadow: 0 3px 0 #6a4a16, 0 0 16px rgba(240, 195, 106, 0.4);
     }
     .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
+    /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
     .bless-art {
-      width: min(980px, 92vw);
-      max-height: min(48vh, 460px);
-      object-fit: cover;
+      height: min(48vh, 600px);
+      width: auto;
+      max-width: 92vw;
+      object-fit: contain;
       border-radius: 18px;
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
     }
-    .bless-art.slim { max-height: min(30vh, 280px); }
+    .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: 16px; gap: 10px; }
+    .menu.bless h1 { font-size: 34px; }
     .gift-row { display: flex; gap: 18px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
     .menu .gift-btn { min-width: 0; width: 220px; padding: 12px 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 2px solid rgba(228, 177, 90, 0.75); border-radius: 18px; background: rgba(20, 14, 10, 0.6); color: var(--cream); cursor: pointer; }
     .menu .gift-btn:hover { border-color: var(--gold); box-shadow: 0 0 18px rgba(240, 195, 106, 0.45); background: rgba(40, 28, 16, 0.8); }
@@ -5250,7 +5253,7 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div>`
         : "";
       const art = floorKind === "挑戦者に祝福を"
-        ? `<img class="bless-art slim" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">`
+        ? `<img class="bless-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">`
         : "";
       const bless = floorPhase === "bless"
         ? `<div class="gift-row">${blessPicks.map((pick, i) => `<button type="button" class="gift-btn" data-action="bless-pick" data-bless="${i}"><span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`).join("")}</div>`
@@ -5267,7 +5270,7 @@
         return;
       }
       root.innerHTML = `
-        <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">
+        <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">
           <h1>${esc(floorKind)}</h1>
           <p>${esc(dungeonName)}　${battleIndex + 1}/${battleTotal}</p>
           ${art}
