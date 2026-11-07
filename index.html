@@ -2290,12 +2290,14 @@
     .log-peek[hidden] { display: none; }
     .log-peek .card { width: 148px; }
     .gear-rail {
+      position: relative;
+      z-index: 8;
       width: max-content;
       max-width: 100%;
       min-width: 0;
       min-height: 0;
       height: 100%;
-      overflow: hidden;
+      overflow: visible;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -2340,16 +2342,6 @@
       width: max-content;
       max-width: 100%;
       flex: none;
-    }
-    .gear-body {
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      gap: 10px;
-      min-width: 0;
-      min-height: 0;
-      flex: 1 1 auto;
-      overflow: hidden;
     }
     .gear-board {
       display: flex;
@@ -2426,30 +2418,34 @@
       max-width: 100%;
       line-height: 1.2;
     }
-    .gear-effect .item-use { display: block; margin: 10px 0 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; }
+    .gear-effect .item-use { display: block; margin: 10px 0 0; padding: 6px 18px; font-size: 15px; font-weight: 800; border-radius: 10px; border: 2px solid rgba(228, 177, 90, 0.85); background: linear-gradient(180deg, #e4b15a, #b8832c); color: #1a120c; cursor: pointer; pointer-events: auto; }
     .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; }
+    /* 装備説明はレイアウトを広げず、枠の右に重ねるポップ */
     .gear-effect {
+      position: fixed;
+      z-index: 55;
       margin: 0;
-      width: 148px;
-      min-width: 148px;
-      max-width: 148px;
-      flex: 0 0 148px;
-      align-self: stretch;
+      width: min(220px, calc(100vw - 24px));
+      max-width: 220px;
+      max-height: min(70vh, 360px);
       box-sizing: border-box;
-      padding: 10px 10px;
+      padding: 12px 12px;
       border: 0;
-      border-radius: 10px;
+      border-radius: 12px;
       color: var(--cream);
-      font-size: 13px;
-      line-height: 1.45;
+      font-size: 14px;
+      line-height: 1.5;
       overflow: auto;
+      pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(40, 28, 20, 0.92), rgba(18, 12, 10, 0.96));
+        linear-gradient(180deg, rgba(22, 16, 12, 0.97), rgba(8, 6, 5, 0.98));
       box-shadow:
-        0 0 0 1px rgba(18, 12, 9, 0.9),
-        0 0 0 2px rgba(228, 177, 90, 0.55),
-        inset 0 1px 0 rgba(255, 236, 200, 0.12);
+        0 0 0 1px rgba(8, 6, 5, 0.95),
+        0 0 0 2px rgba(212, 168, 74, 0.7),
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 236, 200, 0.14);
     }
+    .gear-effect.has-action { pointer-events: auto; }
     .card {
       width: auto;
       height: auto;
@@ -4838,32 +4834,49 @@
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const medal = slotButton({ id: "medal", label: "メダル", icon: medalIcon() });
       const items = `<div class="gear-pair">${slotButton({ id: "itemL", label: "アイテム", aria: "使い捨て 左", icon: itemIcon() })}${slotButton({ id: "itemR", label: "アイテム", aria: "使い捨て 右", icon: itemIcon() })}</div>`;
-      return `<div class="gear-body"><div class="gear-board">${weapons}${bracelets}${medal}${items}</div>${gearEffectText()}</div>`;
+      return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
 
     function gearEffectHtml(slotId) {
       if (!slotId) return "";
       if (slotId === "medal" && !gear.medal) {
-        return `<p class="gear-effect">メダル。ボスを倒すと確定でもらえる。</p>`;
+        return `<p class="gear-effect" role="tooltip">メダル。ボスを倒すと確定でもらえる。</p>`;
       }
       if (slotId === "itemL" || slotId === "itemR") {
         const item = gear[slotId];
-        if (!item) return `<p class="gear-effect">使い捨てアイテム。なにも入っていない。</p>`;
+        if (!item) return `<p class="gear-effect" role="tooltip">使い捨てアイテム。なにも入っていない。</p>`;
         const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
         const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
         const button = item.quick ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>` : "";
-        return `<p class="gear-effect">${esc(item.name)}。${esc(item.effect)}${hint ? "<br>" + esc(hint) : ""}${button}</p>`;
+        const action = button ? " has-action" : "";
+        return `<p class="gear-effect${action}" role="tooltip">${esc(item.name)}。${esc(item.effect)}${hint ? "<br>" + esc(hint) : ""}${button}</p>`;
       }
       const item = gear[slotId];
-      if (!item) return `<p class="gear-effect">なにも入っていない。</p>`;
+      if (!item) return `<p class="gear-effect" role="tooltip">なにも入っていない。</p>`;
       const name = item.name || "";
       const effect = item.effect || "";
       const body = name && effect ? `${esc(name)}。${esc(effect)}` : esc(effect || name || "なにも入っていない。");
-      return `<p class="gear-effect">${body}</p>`;
+      return `<p class="gear-effect" role="tooltip">${body}</p>`;
     }
 
-    function gearEffectText() {
-      return gearEffectHtml(shownGearSlot());
+    function placeGearEffect(box, slotId) {
+      if (!box || !slotId) return;
+      const slot = root.querySelector(`.gear-slot[data-gear="${slotId}"]`);
+      if (!slot) return;
+      const r = slot.getBoundingClientRect();
+      const gap = 10;
+      const pad = 8;
+      box.style.left = "0px";
+      box.style.top = "0px";
+      const w = box.offsetWidth || 220;
+      const h = box.offsetHeight || 80;
+      let left = r.right + gap;
+      let top = r.top;
+      if (left + w > window.innerWidth - pad) left = Math.max(pad, r.left - gap - w);
+      if (top + h > window.innerHeight - pad) top = Math.max(pad, window.innerHeight - pad - h);
+      if (top < pad) top = pad;
+      box.style.left = `${Math.round(left)}px`;
+      box.style.top = `${Math.round(top)}px`;
     }
 
     function paintGear() {
@@ -4874,26 +4887,39 @@
         btn.classList.toggle("open", on && gearOpen === id);
         btn.classList.toggle("hot", on && gearOpen !== id);
       });
-      const rail = root.querySelector(".gear-rail");
-      if (!rail) return;
-      const body = rail.querySelector(".gear-body");
-      if (!body) return;
-      let box = body.querySelector(".gear-effect");
+      let box = root.querySelector(".gear-effect");
       const html = gearEffectHtml(shown);
       if (!html) {
         if (box) box.remove();
         return;
       }
       if (!box) {
-        const board = body.querySelector(".gear-board");
-        if (!board) return;
-        board.insertAdjacentHTML("afterend", html);
-        return;
+        root.insertAdjacentHTML("beforeend", html);
+        box = root.querySelector(".gear-effect");
+      } else {
+        const next = document.createElement("div");
+        next.innerHTML = html;
+        const fresh = next.firstElementChild;
+        if (fresh) {
+          box.replaceWith(fresh);
+          box = fresh;
+        }
       }
-      const next = document.createElement("div");
-      next.innerHTML = html;
-      const fresh = next.firstElementChild;
-      if (fresh) box.replaceWith(fresh);
+      if (box) {
+        box.dataset.gearSlot = shown;
+        if (box.classList.contains("has-action") && box.dataset.popBound !== "1") {
+          box.dataset.popBound = "1";
+          box.addEventListener("pointerleave", (event) => {
+            const related = event.relatedTarget;
+            if (related instanceof Element && (related.closest(".gear-rail") || related.closest(".gear-effect"))) return;
+            if (gearOpen) return;
+            if (!gearHover) return;
+            gearHover = "";
+            paintGear();
+          });
+        }
+      }
+      placeGearEffect(box, shown);
     }
 
     function bindGearHover() {
@@ -4908,7 +4934,9 @@
         gearHover = id;
         paintGear();
       });
-      rail.addEventListener("pointerleave", () => {
+      rail.addEventListener("pointerleave", (event) => {
+        const related = event.relatedTarget;
+        if (related instanceof Element && related.closest(".gear-effect")) return;
         if (!gearHover) return;
         gearHover = "";
         paintGear();
@@ -8361,6 +8389,7 @@
       bindLogPeek();
       bindFoePeek();
       bindGearHover();
+      paintGear();
       fitHand();
       requestAnimationFrame(fitHand);
       launchPendingPlayClearFly();
