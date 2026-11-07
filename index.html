@@ -2967,6 +2967,9 @@
       スライム粘液: "card-slime-goo.jpg?v=1",
       ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
+      ファイアーボール: "card-fireball.jpg?v=1",
+      ファイアソード: "card-firesword.jpg?v=1",
+      ファイアパラダイス: "card-fireparadise.jpg?v=1",
     };
     const CARDS = {
       アタック: { cost: 1, text: "3ダメージ", damage: 3 },
@@ -3053,11 +3056,21 @@
           { name: "タウロスアタック", cost: 2, text: "12ダメージ\n体力が最大の半分以下のときだけ使える", damage: 12, kind: "attack", halfOnly: true },
         ],
       },
+      {
+        name: "ちびドラゴン",
+        image: "enemy-dragon.png?v=2",
+        hp: 30,
+        pattern: [
+          { name: "ファイアーボール", cost: 1, text: "2ダメージ\n相手を炎上+1", damage: 2, burn: 1, kind: "attack" },
+          { name: "ファイアソード", cost: 2, text: "先に炎上+1\n5ダメージ", damage: 5, burn: 1, burnFirst: true, kind: "attack" },
+          { name: "ファイアパラダイス", cost: 3, text: "相手を炎上+3", burn: 3, kind: "skill" },
+        ],
+      },
     ];
     const ENEMY_RENAME = { 荒くれ: "ゴブリン", 重騎士: "ミノタウロス", 仮の相手: "スライム" };
     const DUNGEON = {
       road: [1, 2],
-      pools: { 1: ["スライム"], 2: ["ゴブリン"] },
+      pools: { 1: ["スライム"], 2: ["ゴブリン", "ミノタウロス", "ちびドラゴン"] },
       boss: "ミノタウロス",
     };
     const CLASSIC_ROUTE = ["スライム", "ゴブリン", "ミノタウロス"];
@@ -3402,7 +3415,7 @@
     }
 
     function bossNow() {
-      return battleIndex === route.indexOf(DUNGEON.boss);
+      return battleIndex === route.lastIndexOf(DUNGEON.boss);
     }
 
     // 敵の絵の大きさ：雑魚＝小、普通＝中、強敵＝大、ボス＝小の2倍
@@ -4176,6 +4189,10 @@
       }
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
       if (added) player.focus = 0;
+      if (card.burnFirst && card.burn) {
+        addBurn(enemy, card.burn);
+        log(`${heroName()}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
+      }
       if (card.damage) {
         let bonus = 0;
         if (card.fullBonus && player.hp >= player.maxHp) bonus += card.fullBonus;
@@ -4184,7 +4201,7 @@
         const atk = player.atk || 0;
         strike(card, rollCrit(card, card.damage) + added + atk + bonus);
       }
-      if (card.burn) {
+      if (card.burn && !card.burnFirst) {
         addBurn(enemy, card.burn);
         log(`${heroName()}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
       }
@@ -4413,7 +4430,13 @@
         const amount = enemy.block || 0;
         if (amount > 0) takeEnemyHit(amount, card);
         else log(`${enemy.name}は${card.name}で0ダメージ。`, card, true);
-      } else if (card.damage) {
+        return;
+      }
+      if (card.burnFirst && card.burn) {
+        addBurn(player, card.burn);
+        log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
+      }
+      if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         takeEnemyHit(rollCrit(card, card.damage) + kick, card);
       } else if (card.block) {
@@ -4422,10 +4445,11 @@
       } else if (card.poison) {
         addPoison(player, card.poison);
         log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
-      } else if (card.burn) {
+      }
+      if (card.burn && !card.burnFirst) {
         addBurn(player, card.burn);
         log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
-      } else {
+      } else if (!card.damage && !card.block && !card.poison && !card.burnFirst) {
         log(`${enemy.name}は${card.name}。${card.text}`, card, true);
       }
     }
@@ -5519,15 +5543,11 @@
               <figure><img class="card-ref" src="card-slime-goo.jpg?v=1" alt=""><figcaption>スライム粘液</figcaption></figure>
               <figure><img class="card-ref" src="card-minos.jpg?v=1" alt=""><figcaption>ミノスの一撃</figcaption></figure>
               <figure><img class="card-ref" src="card-tauros.jpg?v=1" alt=""><figcaption>タウロスアタック</figcaption></figure>
-            </div>
-            <p class="sheet-cap">すべてのカードに絵がある。戦士のカードは戦士が出る。基本・共通・敵の絵にキャラは入れない（敵の技は、その敵だけ）。敵のアタックとブロックは、基本と同じ絵。数字は隠しステータスを足した合計。枠は紫。</p>
-            <h4>ちびドラゴンの技（準備中）</h4>
-            <div class="ref-grid">
               <figure><img class="card-ref" src="card-fireball.jpg?v=1" alt=""><figcaption>ファイアーボール</figcaption></figure>
               <figure><img class="card-ref" src="card-firesword.jpg?v=1" alt=""><figcaption>ファイアソード</figcaption></figure>
               <figure><img class="card-ref" src="card-fireparadise.jpg?v=1" alt=""><figcaption>ファイアパラダイス</figcaption></figure>
             </div>
-            <p class="sheet-cap">ファイアーボールはコスト1で2ダメージ、相手を炎上+1（この2ダメージに今足す炎上は含めない）。ファイアソードはコスト2で、先に炎上+1にしてから5ダメージ。ファイアパラダイスはコスト3で、相手を炎上+3。+は付けない。ちびドラゴンのランクと出る場所が決まるまで、山札と画面には出ない。</p>
+            <p class="sheet-cap">すべてのカードに絵がある。戦士のカードは戦士が出る。基本・共通・敵の絵にキャラは入れない（敵の技は、その敵だけ）。敵のアタックとブロックは、基本と同じ絵。数字は隠しステータスを足した合計。枠は紫。ファイアーボールはコスト1で2ダメージ、相手を炎上+1（この2ダメージに今足す炎上は含めない）。ファイアソードはコスト2で、先に炎上+1にしてから5ダメージ。ファイアパラダイスはコスト3で、相手を炎上+3。</p>
             <h3>装備</h3>
             <div class="ref-grid">
               <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
@@ -5581,9 +5601,9 @@
               <figure><img class="enemy-ref" src="enemy-slime.png?v=4" alt=""><figcaption>スライム（シールドアタック1、スライム粘液2、ハードブロック1）</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-goblin.png?v=3" alt=""><figcaption>ゴブリン</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-minotaur.png?v=4" alt=""><figcaption>ミノタウロス</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン（準備中）</figcaption></figure>
+              <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン</figcaption></figure>
             </div>
-            <p class="sheet-cap">ちびドラゴンは体力30。アタック1枚、ブロック1枚、ファイアーボール、ファイアソード、ファイアパラダイス各1枚。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。ランクと出る場所、アタックとブロックの数字が決まるまで、戦闘には出ない。敵はみな左を向く。</p>
+            <p class="sheet-cap">ちびドラゴンは体力30。はじまりの洞窟の後半に出る。山札はファイアーボール、ファイアソード、ファイアパラダイス各1枚。アタックとブロックは、ランクが決まるまで入れない。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。敵はみな左を向く。</p>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
         </div>`;
@@ -5793,6 +5813,7 @@
       let noteText = esc(card.text).replaceAll("\n", "<br>");
       if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
       if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
+      if (card.burn) noteText = noteText.replaceAll("炎上", `<span class="hint">炎上<i>${esc(BURN_NOTE)}</i></span>`);
       if (card.instant) noteText = noteText.replaceAll("インスタント", `<span class="hint">インスタント<i>${esc(INSTANT_NOTE)}</i></span>`);
       if (card.quick) noteText = noteText.replaceAll("クイック", `<span class="hint">クイック<i>${esc(QUICK_NOTE)}</i></span>`);
       const icons = [
@@ -5800,7 +5821,7 @@
         card.block ? `<span class="fx block">${shieldIcon()}<b>${card.block}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.hits || card.instant || card.quick || (card.parry && card.damage);
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.hits || card.instant || card.quick || card.burn || (card.parry && card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
@@ -6125,6 +6146,7 @@
       if (card.crit) { next.crit = card.crit; next.critChance = card.critChance; }
       if (card.halfOnly) next.halfOnly = true;
       if (card.burn) next.burn = card.burn;
+      if (card.burnFirst) next.burnFirst = true;
       next.stars = card.stars || 1;
       return next;
     }
@@ -6200,7 +6222,7 @@
     }
 
     function isBossFight() {
-      return !!enemyNow().medal;
+      return bossNow();
     }
 
     function bossChoices() {
@@ -6259,7 +6281,7 @@
       if (rewardReady) return;
       rewardReady = true;
       const foe = enemyNow();
-      const medal = foe.medal ? gearItem(foe.medal) : null;
+      const medal = bossNow() && foe.medal ? gearItem(foe.medal) : null;
       rewardStars = medal ? 0 : (foe.tier || starsForRank(foe.rank));
       starBurst = rewardStars;
       pendingStars = rewardStars;
