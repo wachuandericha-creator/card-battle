@@ -1305,11 +1305,12 @@
       transform: translateX(-50%) rotate(7deg);
       animation: crack-flash 1.25s ease-out forwards;
     }
+    /* 与えたダメージは敵の枠（.enemy-main＝絵と同じ大きさ）に置き、斬撃エフェクトの真上で敵の位置に追随させる。札（z6）より前 */
     .dmg-pop.foe-hit {
       position: absolute;
-      left: calc(61% + var(--shift, 0px));
-      top: 44%;
-      z-index: 2;
+      left: calc(50% + var(--shift, 0px));
+      top: 30%; /* 斬撃の交点（.cut は 46%）に数字の中心が重なる高さ。アニメは translate(-50%, 0) なので上端基準 */
+      z-index: 7;
       transform: translate(-50%, -50%);
       font-size: calc(54px + var(--pow, 0.35) * 30px);
       animation-delay: var(--delay, 0s);
@@ -5935,13 +5936,14 @@
               <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
               ${slashNow ? cutsHtml : ""}
             </div>
+            ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
             ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: `${poisonStacks(enemy) ? poisonBadge(poisonStacks(enemy)) : ""}${burnBadge(burnStacks(enemy))}` })}
             ${foePileMarkup()}
             </div>
             <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
             ${note ? `<p class="field-note">${esc(note)}</p>` : ""}
             ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, null), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow)}
-            ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}</div>` : ""}
+            ${encounter || turnNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
             </div>
           </div>
           ${playRow()}
