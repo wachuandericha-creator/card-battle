@@ -829,9 +829,9 @@
       box-sizing: border-box;
     }
     .album-screen.has-zoom {
-      grid-template-columns: 220px minmax(0, 1fr) minmax(380px, 42vw);
+      grid-template-columns: 220px minmax(0, 1fr) minmax(0, 1fr);
     }
-    .album-screen:not(.sheet-screen) > .sheet-home {
+    .album-screen > .sheet-home {
       position: static;
       left: auto;
       top: auto;
@@ -841,7 +841,7 @@
       justify-self: stretch;
       box-sizing: border-box;
     }
-    .album-screen:not(.sheet-screen) .panel {
+    .album-screen .panel {
       margin-left: 0;
       width: auto;
       max-width: 100%;
@@ -857,23 +857,37 @@
       display: flex;
       flex-direction: column;
     }
-    .sheet-screen.album-screen {
+    .sheet-zoom-btn {
       display: block;
-      position: relative;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+      border-radius: 10px;
     }
-    .sheet-screen .panel {
-      margin-left: 236px;
-      width: min(1080px, calc(100vw - 48px - 236px));
-      max-height: calc(100vh - 56px);
-      overflow: auto;
-      align-items: stretch;
-      text-align: left;
-      background: #2a221c;
-      border: 1px solid rgba(244, 234, 215, 0.2);
-      border-radius: 18px;
-      padding: 28px 32px;
-      display: flex;
-      flex-direction: column;
+    .sheet-zoom-btn img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .ref-grid figure.on .sheet-zoom-btn,
+    .sheet-art-zoom.on {
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+    }
+    .sheet-art-zoom {
+      display: block;
+      width: 100%;
+      margin: 0 0 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+      border-radius: 12px;
+    }
+    .sheet-art-zoom .sheet-art {
+      margin: 0;
     }
     .album-screen h2 {
       margin: 0 0 14px;
@@ -992,22 +1006,22 @@
       cursor: pointer;
     }
     @media (max-width: 900px) {
-      .album-screen:not(.sheet-screen) {
+      .album-screen {
         grid-template-columns: 1fr;
         grid-template-rows: auto minmax(0, 1fr);
       }
-      .album-screen.has-zoom:not(.sheet-screen) {
+      .album-screen.has-zoom {
         grid-template-columns: 1fr;
         grid-template-rows: auto minmax(0, 1fr) minmax(280px, 46vh);
       }
-      .album-screen:not(.sheet-screen) > .sheet-home {
+      .album-screen > .sheet-home {
         width: auto;
         justify-self: center;
         padding: 10px 28px;
         font-size: 22px;
       }
-      .album-screen:not(.sheet-screen) > .sheet-home br { display: none; }
-      .album-screen:not(.sheet-screen) .panel {
+      .album-screen > .sheet-home br { display: none; }
+      .album-screen .panel {
         max-height: none;
       }
       .art-zoom-side .art-zoom-img {
@@ -1035,11 +1049,6 @@
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
     }
     .sheet-home:hover { filter: brightness(1.08); }
-    @media (max-width: 900px) {
-      .sheet-screen .panel { margin-left: 0; width: min(1080px, calc(100vw - 48px)); margin-top: 72px; max-height: calc(100vh - 56px - 72px); }
-      .sheet-home { top: 12px; left: 50%; transform: translateX(-50%); width: auto; padding: 10px 28px; font-size: 22px; }
-      .sheet-home br { display: none; }
-    }
     .album-screen .panel > button[data-action] {
       align-self: center;
       margin-top: 8px;
@@ -3922,6 +3931,7 @@
     let showFoeDeck = false;
     let albumTab = "all";
     let albumZoom = "";
+    let sheetZoom = null;
     let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
@@ -6397,6 +6407,7 @@
       clearTimer();
       askLeave = false;
       clearLive();
+      clearArtZoom();
       screen = "title";
       saveNote = "";
       render();
@@ -6728,6 +6739,16 @@
       return list;
     }
 
+    function clearArtZoom() {
+      albumZoom = "";
+      sheetZoom = null;
+    }
+
+    function zoomSidePanel(title, body, note) {
+      if (!title || !body) return "";
+      return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<p class="art-zoom-note">${esc(note)}</p><button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
+    }
+
     function artZoomSide(name) {
       if (!name) return "";
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
@@ -6735,106 +6756,128 @@
       const body = src
         ? `<img class="art-zoom-img" src="${esc(src)}" alt="${esc(name)}の絵柄">`
         : `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
-      return `<aside class="art-zoom-side" aria-label="${esc(name)}の拡大"><h3>${esc(name)}</h3>${body}<p class="art-zoom-note">${src ? "絵柄" : "カード"}を拡大表示中</p><button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
+      return zoomSidePanel(name, body, src ? "絵柄を拡大表示中" : "カードを拡大表示中");
+    }
+
+    function sheetZoomSide() {
+      if (!sheetZoom || !sheetZoom.src) return "";
+      const title = sheetZoom.title || "画像";
+      const body = `<img class="art-zoom-img" src="${esc(sheetZoom.src)}" alt="${esc(title)}">`;
+      return zoomSidePanel(title, body, "画像を拡大表示中");
+    }
+
+    function sheetFig(src, caption, imgClass, figureClass) {
+      const on = sheetZoom && sheetZoom.src === src;
+      const title = caption || "画像";
+      const klass = imgClass ? ` class="${imgClass}"` : "";
+      const figClass = [figureClass || "", on ? "on" : ""].filter(Boolean).join(" ");
+      return `<figure class="${figClass}"><button type="button" class="sheet-zoom-btn" data-sheet-zoom="${esc(src)}" data-sheet-zoom-title="${esc(title)}" aria-label="${esc(title)}を拡大" aria-pressed="${on ? "true" : "false"}"><img${klass} src="${esc(src)}" alt="${esc(title)}"></button><figcaption>${esc(caption)}</figcaption></figure>`;
+    }
+
+    function sheetBanner(src, title, alt) {
+      const on = sheetZoom && sheetZoom.src === src;
+      const label = title || "画像";
+      return `<button type="button" class="sheet-art-zoom${on ? " on" : ""}" data-sheet-zoom="${esc(src)}" data-sheet-zoom-title="${esc(label)}" aria-label="${esc(label)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="sheet-art" src="${esc(src)}" alt="${esc(alt || label)}"></button>`;
     }
 
     function renderSheet() {
       root.innerHTML = `
-        <div class="album-screen sheet-screen">
+        <div class="album-screen sheet-screen${sheetZoom ? " has-zoom" : ""}">
           <button type="button" class="sheet-home" data-action="title">タイトルに<br>もどる</button>
           <div class="panel">
             <h2>設定資料</h2>
+            <p class="album-meta">画像を押すと右半分に拡大</p>
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
-              <figure><img class="cut-ref" src="job-front.png?v=5" alt="戦士の正面"><figcaption>正面</figcaption></figure>
-              <figure><img class="cut-ref" src="hero-shoulder.png?v=25" alt="戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
-              <figure><img class="cut-ref" src="warrior-defeat.png?v=3" alt="戦士の敗北"><figcaption>敗北</figcaption></figure>
-              <figure><img class="cut-ref" src="warrior-victory.png?v=3" alt="戦士の勝利"><figcaption>勝利</figcaption></figure>
+              ${sheetFig("job-front.png?v=5", "正面", "cut-ref")}
+              ${sheetFig("hero-shoulder.png?v=25", "戦闘（ポケモンの画角）", "cut-ref")}
+              ${sheetFig("warrior-defeat.png?v=3", "敗北", "cut-ref")}
+              ${sheetFig("warrior-victory.png?v=3", "勝利", "cut-ref")}
             </div>
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
-              <figure><img class="cut-ref" src="girl-front.png?v=7" alt="女の戦士の正面"><figcaption>正面</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-battle.png?v=8" alt="女の戦士の戦闘（ポケモンの画角）"><figcaption>戦闘（ポケモンの画角）</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-defeat.png?v=6" alt="女の戦士の敗北"><figcaption>敗北</figcaption></figure>
-              <figure><img class="cut-ref" src="girl-victory.png?v=7" alt="女の戦士の勝利"><figcaption>勝利</figcaption></figure>
+              ${sheetFig("girl-front.png?v=7", "正面", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=8", "戦闘（ポケモンの画角）", "cut-ref")}
+              ${sheetFig("girl-defeat.png?v=6", "敗北", "cut-ref")}
+              ${sheetFig("girl-victory.png?v=7", "勝利", "cut-ref")}
             </div>
-            <img class="sheet-art" src="girl-action.jpg?v=1" alt="女の戦士の一枚絵。草原でお茶をしている">
+            ${sheetBanner("girl-action.jpg?v=1", "女の戦士の一枚絵", "女の戦士の一枚絵。草原でお茶をしている")}
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="job-front.png?v=5" alt=""><figcaption>戦士の立ち絵</figcaption></figure>
-              <figure class="span-2"><img class="land-ref" src="job-action.jpg?v=3" alt=""><figcaption>戦士の一枚絵</figcaption></figure>
+              ${sheetFig("job-front.png?v=5", "戦士の立ち絵", "cut-ref")}
+              ${sheetFig("job-action.jpg?v=3", "戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="girl-front.png?v=7" alt=""><figcaption>女の戦士の立ち絵</figcaption></figure>
-              <figure class="span-2"><img class="land-ref" src="girl-action.jpg?v=1" alt=""><figcaption>女の戦士の一枚絵</figcaption></figure>
+              ${sheetFig("girl-front.png?v=7", "女の戦士の立ち絵", "cut-ref")}
+              ${sheetFig("girl-action.jpg?v=1", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              <figure><img class="cut-ref" src="job-warrior.png?v=9" alt=""><figcaption>戦士の選択コマ（正面デフォルメ）</figcaption></figure>
-              <figure><img class="cut-ref" src="job-girl.png?v=2" alt=""><figcaption>女の戦士の選択コマ（正面デフォルメ）</figcaption></figure>
+              ${sheetFig("job-warrior.png?v=9", "戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=2", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
-            <img class="sheet-art" src="title-key.jpg?v=1" alt="タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。">
+            ${sheetBanner("title-key.jpg?v=1", "タイトル", "タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。")}
             <h3>装備</h3>
             <div class="ref-grid">
-              <figure><img src="gear-short-sword.jpg?v=2" alt=""><figcaption>ショートソード</figcaption></figure>
-              <figure><img src="gear-long-sword.jpg?v=2" alt=""><figcaption>ロングソード</figcaption></figure>
-              <figure><img src="gear-poison-sword.svg?v=2" alt=""><figcaption>ポイズンソード</figcaption></figure>
-              <figure><img src="gear-flame-sword.svg?v=2" alt=""><figcaption>フレイムソード</figcaption></figure>
-              <figure><img src="gear-excalibur.svg?v=2" alt=""><figcaption>エクスカリバー</figcaption></figure>
-              <figure><img src="gear-buckler.jpg" alt=""><figcaption>バックラー</figcaption></figure>
-              <figure><img src="gear-leather-shield.jpg" alt=""><figcaption>皮の盾</figcaption></figure>
-              <figure><img src="gear-iron-shield.jpg" alt=""><figcaption>鉄の盾</figcaption></figure>
-              <figure><img src="gear-battle-counter.svg?v=2" alt=""><figcaption>バトルカウンター</figcaption></figure>
-              <figure><img src="gear-eagle-shield.svg?v=2" alt=""><figcaption>鷲の金盾</figcaption></figure>
-              <figure><img src="gear-lion-shield.svg?v=2" alt=""><figcaption>獅子の盾</figcaption></figure>
-              <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連撃の腕輪</figcaption></figure>
-              <figure><img src="gear-bracelet.jpg" alt=""><figcaption>連守の腕輪</figcaption></figure>
-              <figure><img src="gear-power-bracelet.svg?v=2" alt=""><figcaption>力の腕輪</figcaption></figure>
-              <figure><img src="gear-guard-bracelet.svg?v=2" alt=""><figcaption>守りの腕輪</figcaption></figure>
-              <figure><img src="gear-reuse-bracelet.svg?v=2" alt=""><figcaption>再利用の腕輪</figcaption></figure>
-              <figure><img src="gear-medal.jpg" alt=""><figcaption>メダル</figcaption></figure>
+              ${sheetFig("gear-short-sword.jpg?v=2", "ショートソード")}
+              ${sheetFig("gear-long-sword.jpg?v=2", "ロングソード")}
+              ${sheetFig("gear-poison-sword.svg?v=2", "ポイズンソード")}
+              ${sheetFig("gear-flame-sword.svg?v=2", "フレイムソード")}
+              ${sheetFig("gear-excalibur.svg?v=2", "エクスカリバー")}
+              ${sheetFig("gear-buckler.jpg", "バックラー")}
+              ${sheetFig("gear-leather-shield.jpg", "皮の盾")}
+              ${sheetFig("gear-iron-shield.jpg", "鉄の盾")}
+              ${sheetFig("gear-battle-counter.svg?v=2", "バトルカウンター")}
+              ${sheetFig("gear-eagle-shield.svg?v=2", "鷲の金盾")}
+              ${sheetFig("gear-lion-shield.svg?v=2", "獅子の盾")}
+              ${sheetFig("gear-bracelet.jpg", "連撃の腕輪")}
+              ${sheetFig("gear-bracelet.jpg", "連守の腕輪")}
+              ${sheetFig("gear-power-bracelet.svg?v=2", "力の腕輪")}
+              ${sheetFig("gear-guard-bracelet.svg?v=2", "守りの腕輪")}
+              ${sheetFig("gear-reuse-bracelet.svg?v=2", "再利用の腕輪")}
+              ${sheetFig("gear-medal.jpg", "メダル")}
             </div>
             <h4>使い捨てアイテム</h4>
             <div class="ref-grid">
-              <figure><img src="item-herb.jpg?v=1" alt=""><figcaption>薬草</figcaption></figure>
-              <figure><img src="item-angel-halo.jpg?v=1" alt=""><figcaption>天使の輪</figcaption></figure>
-              <figure><img src="item-angel-pendant.jpg?v=1" alt=""><figcaption>天使のペンダント</figcaption></figure>
-              <figure><img src="item-spike-ball.jpg?v=1" alt=""><figcaption>棘ボール</figcaption></figure>
-              <figure><img src="gear-item.jpg?v=1" alt=""><figcaption>アイテムの枠の絵（小瓶）</figcaption></figure>
+              ${sheetFig("item-herb.jpg?v=1", "薬草")}
+              ${sheetFig("item-angel-halo.jpg?v=1", "天使の輪")}
+              ${sheetFig("item-angel-pendant.jpg?v=1", "天使のペンダント")}
+              ${sheetFig("item-spike-ball.jpg?v=1", "棘ボール")}
+              ${sheetFig("gear-item.jpg?v=1", "アイテムの枠の絵（小瓶）")}
             </div>
             <h4>ショップ限定の武器</h4>
             <div class="ref-grid">
-              <figure><img src="gear-dragon-fang.jpg?v=1" alt=""><figcaption>竜牙の大剣</figcaption></figure>
-              <figure><img src="gear-inferno-blade.jpg?v=1" alt=""><figcaption>業火の剣</figcaption></figure>
+              ${sheetFig("gear-dragon-fang.jpg?v=1", "竜牙の大剣")}
+              ${sheetFig("gear-inferno-blade.jpg?v=1", "業火の剣")}
             </div>
             <h3>道</h3>
             <div class="ref-grid">
-              <figure><img src="path-fight.jpg?v=3" alt=""><figcaption>戦闘</figcaption></figure>
-              <figure><img src="path-shop.jpg?v=4" alt=""><figcaption>お店</figcaption></figure>
-              <figure><img src="path-dash.jpg?v=4" alt=""><figcaption>走り抜ける</figcaption></figure>
-              <figure><img src="path-search.jpg?v=4" alt=""><figcaption>探索</figcaption></figure>
-              <figure><img src="path-unknown.jpg?v=3" alt=""><figcaption>未知</figcaption></figure>
+              ${sheetFig("path-fight.jpg?v=3", "戦闘")}
+              ${sheetFig("path-shop.jpg?v=4", "お店")}
+              ${sheetFig("path-dash.jpg?v=4", "走り抜ける")}
+              ${sheetFig("path-search.jpg?v=4", "探索")}
+              ${sheetFig("path-unknown.jpg?v=3", "未知")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
-              <figure><img class="land-ref" src="dungeon-cave.jpg?v=1" alt=""><figcaption>骸洞窟</figcaption></figure>
-              <figure><img class="land-ref" src="dungeon-50.jpg?v=1" alt=""><figcaption>竜の遺骸城</figcaption></figure>
-              <figure><img class="land-ref" src="dungeon-100.jpg?v=1" alt=""><figcaption>深淵なる寝所</figcaption></figure>
+              ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟", "land-ref")}
+              ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城", "land-ref")}
+              ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所", "land-ref")}
             </div>
             <h3>祝福</h3>
-            <img class="sheet-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">
+            ${sheetBanner("blessing-goddess.jpg?v=1", "祝福", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
             <h3>お店</h3>
-            <img class="sheet-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている">
+            ${sheetBanner("shop-merchant.jpg?v=1", "お店の商人", "怪しげな商人がこちらを見て笑っている")}
             <h3>敵</h3>
             <div class="ref-grid">
-              <figure><img class="enemy-ref" src="enemy-slime.png?v=4" alt=""><figcaption>スライム</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-goblin.png?v=3" alt=""><figcaption>ゴブリン</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-minotaur.png?v=4" alt=""><figcaption>ミノタウロス</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン</figcaption></figure>
-              <figure><img class="enemy-ref" src="enemy-beggar.jpg?v=1" alt=""><figcaption>物乞い</figcaption></figure>
+              ${sheetFig("enemy-slime.png?v=4", "スライム", "enemy-ref")}
+              ${sheetFig("enemy-goblin.png?v=3", "ゴブリン", "enemy-ref")}
+              ${sheetFig("enemy-minotaur.png?v=4", "ミノタウロス", "enemy-ref")}
+              ${sheetFig("enemy-dragon.png?v=2", "ちびドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-beggar.jpg?v=1", "物乞い", "enemy-ref")}
             </div>
-            <button type="button" data-action="title">タイトルへ</button>
           </div>
+          ${sheetZoomSide()}
         </div>`;
     }
 
@@ -8234,9 +8277,9 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
-        if (name === "album") { albumZoom = ""; screen = "album"; render(); }
-        if (name === "close-art-zoom") { albumZoom = ""; render(); }
-        if (name === "sheet") { screen = "sheet"; render(); }
+        if (name === "album") { clearArtZoom(); screen = "album"; render(); }
+        if (name === "close-art-zoom") { clearArtZoom(); render(); }
+        if (name === "sheet") { clearArtZoom(); screen = "sheet"; render(); }
         if (name === "character") { castHover = ""; castLock = "戦士"; screen = "character"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
@@ -8318,6 +8361,14 @@
         render();
         return;
       }
+      const sheetZoomBtn = el.closest("[data-sheet-zoom]");
+      if (sheetZoomBtn && screen === "sheet") {
+        const src = sheetZoomBtn.dataset.sheetZoom || "";
+        const title = sheetZoomBtn.dataset.sheetZoomTitle || "画像";
+        sheetZoom = sheetZoom && sheetZoom.src === src ? null : { src, title };
+        render();
+        return;
+      }
       if (screen !== "battle") return;
       const useBtn = el.closest("[data-use-item]");
       if (useBtn) {
@@ -8343,8 +8394,8 @@
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && screen === "album" && albumZoom) {
-        albumZoom = "";
+      if (event.key === "Escape" && ((screen === "album" && albumZoom) || (screen === "sheet" && sheetZoom))) {
+        clearArtZoom();
         render();
         return;
       }
