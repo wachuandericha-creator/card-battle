@@ -921,15 +921,42 @@
     }
     .cast-start {
       position: static;
-      align-self: flex-end;
       width: auto;
-      margin: 8px 0 0 auto;
+      margin: 0;
       font-size: 22px;
       padding: 14px 28px;
       border-radius: 999px;
       letter-spacing: 0.12em;
     }
     .cast-start[hidden] { display: none; }
+    /* もどる と 挑戦開始 は、画面右下にひとまとまり（もどるが左、挑戦開始が右） */
+    .cast-actions {
+      position: absolute;
+      right: 24px;
+      bottom: 16px;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .cast-actions > button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 60px;
+      padding: 0 30px;
+      line-height: 1;
+      font-size: 22px;
+      border-radius: 999px;
+      letter-spacing: 0.12em;
+    }
+    .cast-actions .cast-back {
+      position: static;
+      letter-spacing: 0.12em;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+    }
+    .cast-actions .cast-back:hover { border-color: #f0c36a; background: rgba(40, 30, 24, 0.95); }
+    .cast-screen:has(.cast-actions) { padding-bottom: 86px; }
     .sprite {
       width: 100%;
       height: 100%;
@@ -2197,13 +2224,7 @@
     }
     .dungeon-token.shown { border-color: #f0c36a; box-shadow: 0 0 16px rgba(240, 195, 106, 0.45); }
     .dungeon-token.locked { background: rgba(228, 177, 90, 0.28); }
-    .dungeon-pick .cast-start {
-      position: absolute;
-      right: 24px;
-      bottom: 16px;
-      z-index: 6;
-      margin: 0;
-    }
+    .dungeon-pick .cast-actions { z-index: 6; }
     .small-btn { min-width: 0; font-size: 14px; padding: 8px 10px; }
     @keyframes shake {
       25% { transform: translateX(-6px); }
@@ -4330,7 +4351,6 @@
             <h2>初期デッキ</h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
-          <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
         </div>`;
     }
 
@@ -4381,11 +4401,14 @@
       castShown = "";
       root.innerHTML = `
         <div class="cast-screen">
-          <button type="button" class="cast-back" data-action="title">もどる</button>
           <h1 class="cast-title">初期ジョブを選択してください</h1>
           <div class="cast-roster ${many ? "many" : ""}">${tokens}</div>
           ${hero}
           <div class="cast-main"></div>
+          <div class="cast-actions">
+            <button type="button" class="cast-back" data-action="title">もどる</button>
+            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
+          </div>
         </div>`;
       paintCast();
       bindCastHover();
@@ -4456,10 +4479,12 @@
         <div class="cast-screen dungeon-pick">
           <img class="dungeon-bg" alt="" hidden>
           <div class="dungeon-scrim"></div>
-          <button type="button" class="cast-back" data-action="character">もどる</button>
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
           <div class="dungeon-roster">${tokens}</div>
-          <button type="button" class="primary cast-start" data-action="dungeon-enter" hidden>挑戦開始</button>
+          <div class="cast-actions">
+            <button type="button" class="cast-back" data-action="character">もどる</button>
+            <button type="button" class="primary cast-start" data-action="dungeon-enter" hidden>挑戦開始</button>
+          </div>
         </div>`;
       paintDungeon();
       bindDungeonHover();
