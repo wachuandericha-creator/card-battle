@@ -3005,8 +3005,9 @@
       ホテル: { cost: 3, text: "体力を18回復\nインスタント", heal: 18, instant: true, kind: "instant" },
       ダッシュ: { cost: 1, text: "2枚引く\nクイック", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵の隠しATK は ★+2、★★+5、★★★+8。アタック+ はアタック3にそれを足した合計を書く。隠しDEFは0。
+    // 敵の隠しATK は ランク1（雑魚）+2、普通+5、強敵+8。アタックとブロックは基本3に隠しを足した合計を書く。隠しDEFは0。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
+    const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
       {
         name: "スライム",
@@ -3028,9 +3029,9 @@
         rank: "雑魚",
         hp: 24,
         pattern: [
-          { name: "アタック+", cost: 1, text: "5ダメージ", damage: 5 },
-          { name: "アタック+", cost: 1, text: "5ダメージ", damage: 5 },
-          { name: "ブロック+", cost: 1, text: "ブロック7", block: 7 },
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "ブロック" },
           { name: "キック", cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
         ],
       },
@@ -3043,11 +3044,11 @@
         medal: "minotaur-medal",
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
         pattern: [
-          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
-          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
-          { name: "アタック+", cost: 1, text: "11ダメージ", damage: 11 },
-          { name: "ブロック", cost: 1, text: "ブロック3", block: 3 },
-          { name: "ブロック", cost: 1, text: "ブロック3", block: 3 },
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "ブロック" },
           { name: "ミノスの一撃", cost: 3, text: "12ダメージ\n20%で20ダメージ", damage: 12, kind: "attack", crit: 20, critChance: 0.2 },
           { name: "タウロスアタック", cost: 2, text: "12ダメージ\n体力が最大の半分以下のときだけ使える", damage: 12, kind: "attack", halfOnly: true },
         ],
@@ -3274,6 +3275,26 @@
 
     function hiddenAtk(foe) {
       return HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
+    }
+
+    function hiddenDef(foe) {
+      return HIDDEN_DEF[(foe && foe.rank) || "雑魚"] || 0;
+    }
+
+    function enemyBasic(foe, name) {
+      if (name === "アタック" || name === "アタック+") {
+        const dmg = (CARDS.アタック.damage || 3) + hiddenAtk(foe);
+        return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
+      }
+      if (name === "ブロック" || name === "ブロック+") {
+        const blk = (CARDS.ブロック.block || 3) + hiddenDef(foe);
+        return { name: "ブロック", cost: 1, text: `ブロック${blk}`, block: blk };
+      }
+      return null;
+    }
+
+    function applyEnemyHidden(card, foe) {
+      return enemyBasic(foe, card && card.name) || { ...card };
     }
 
     function burnStacks(target) {
@@ -3694,7 +3715,8 @@
     }
 
     function sourcePattern() {
-      return (enemyNow().pattern || []).map((card) => ({ ...card }));
+      const foe = enemyNow();
+      return (foe.pattern || []).map((card) => applyEnemyHidden(card, foe));
     }
 
     function deckKey(cards) {
@@ -5494,13 +5516,11 @@
             <p class="sheet-cap">ビッグアタック・ハードブロック・ビッグブロックは「基本」と同じ決まり（洞窟以外の無地の背景、腕のアップ）。ほかの共通カードは、いまの絵のまま。</p>
             <h4>敵</h4>
             <div class="ref-grid">
-              <figure><img class="card-ref" src="card-attack-plus.jpg?v=1" alt=""><figcaption>アタック+</figcaption></figure>
-              <figure><img class="card-ref" src="card-block-plus.jpg?v=1" alt=""><figcaption>ブロック+</figcaption></figure>
               <figure><img class="card-ref" src="card-slime-goo.jpg?v=1" alt=""><figcaption>スライム粘液</figcaption></figure>
               <figure><img class="card-ref" src="card-minos.jpg?v=1" alt=""><figcaption>ミノスの一撃</figcaption></figure>
               <figure><img class="card-ref" src="card-tauros.jpg?v=1" alt=""><figcaption>タウロスアタック</figcaption></figure>
             </div>
-            <p class="sheet-cap">すべてのカードに絵がある。戦士のカードは戦士が出る。基本・共通・敵の絵にキャラは入れない（敵の技は、その敵だけ）。敵のカードは紫の光。</p>
+            <p class="sheet-cap">すべてのカードに絵がある。戦士のカードは戦士が出る。基本・共通・敵の絵にキャラは入れない（敵の技は、その敵だけ）。敵のアタックとブロックは、基本と同じ絵。数字は隠しステータスを足した合計。枠は紫。</p>
             <h4>ちびドラゴンの技（準備中）</h4>
             <div class="ref-grid">
               <figure><img class="card-ref" src="card-fireball.jpg?v=1" alt=""><figcaption>ファイアーボール</figcaption></figure>
@@ -5563,7 +5583,7 @@
               <figure><img class="enemy-ref" src="enemy-minotaur.png?v=4" alt=""><figcaption>ミノタウロス</figcaption></figure>
               <figure><img class="enemy-ref" src="enemy-dragon.png?v=2" alt=""><figcaption>ちびドラゴン（準備中）</figcaption></figure>
             </div>
-            <p class="sheet-cap">ちびドラゴンは体力30。アタック+1枚、ブロック+1枚、ファイアーボール、ファイアソード、ファイアパラダイス各1枚。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。ランクと出る場所、アタック+とブロック+の数字が決まるまで、戦闘には出ない。敵はみな左を向く。</p>
+            <p class="sheet-cap">ちびドラゴンは体力30。アタック1枚、ブロック1枚、ファイアーボール、ファイアソード、ファイアパラダイス各1枚。絵は、赤ちゃんドラゴンだがかわいくはせず、かっこよく不気味（ホラー）に。黒ずんだ深紅の鱗、白く光る目、針のような歯、口から黒い煙と火の粉、頭と背に割れた卵の殻、破れた翼。ランクと出る場所、アタックとブロックの数字が決まるまで、戦闘には出ない。敵はみな左を向く。</p>
             <button type="button" data-action="title">タイトルへ</button>
           </div>
         </div>`;
@@ -6111,9 +6131,9 @@
 
     function playerCopy(card) {
       const name = String(card.name || "");
-      if (name.endsWith("+")) {
-        const base = name.slice(0, -1);
-        if (CARDS[base]) return { ...keepCard({ name: base, ...CARDS[base], stars: 1 }), source: "敵" };
+      const base = name.endsWith("+") ? name.slice(0, -1) : name;
+      if (CARDS[base] && (base === "アタック" || base === "ブロック" || name.endsWith("+"))) {
+        return { ...keepCard({ name: base, ...CARDS[base], stars: 1 }), source: "敵" };
       }
       return { ...keepCard({ ...card, stars: 1 }), source: "敵" };
     }
