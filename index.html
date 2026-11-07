@@ -2677,26 +2677,35 @@
       max-width: none;
       margin-inline: calc(var(--overlap, 33px) * -0.5);
     }
-    /* 重なり確定前は隠す。確定後に deal を付けてから動かす */
-    .hand.deal-pending .card {
-      opacity: 0;
+    /* 重なり確定まで一時停止。確定後に play して冒頭の詰まりを避ける */
+    .hand.deal-pending {
+      contain: layout style;
+    }
+    .hand.deal-pending .card.deal {
+      animation-play-state: paused;
       transition: none;
     }
     .hand .card.deal {
       /* transform の transition とぶつかると冒頭がつまる */
       transition: none;
-      animation: deal-flow 0.42s cubic-bezier(0.16, 0.84, 0.28, 1) both;
-      animation-delay: calc(var(--deal, 0) * 0.07s);
+      animation: deal-flow 0.46s cubic-bezier(0.22, 0.82, 0.2, 1) both;
+      /* 先頭にもわずかな間を入れ、解放フレームとの重なりを避ける */
+      animation-delay: calc(0.028s + var(--deal, 0) * 0.062s);
+      will-change: transform, opacity;
+    }
+    .hand:has(.card.deal) .card:hover:not(:disabled) {
+      transform: translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
     }
     @keyframes deal-flow {
       0% {
         opacity: 0;
-        transform: translateX(calc(-180px - var(--deal, 0) * 36px)) translateY(calc(var(--drop, 0px) + 16px)) rotate(calc(var(--fan, 0deg) - 7deg));
+        /* 飛びすぎると初速が鈍く見えるので、控えめで早めに見せる */
+        transform: translateX(calc(-96px - var(--deal, 0) * 18px)) translateY(calc(var(--drop, 0px) + 8px)) rotate(calc(var(--fan, 0deg) - 4deg)) scale(0.97);
       }
-      28% { opacity: 1; }
+      14% { opacity: 1; }
       100% {
         opacity: 1;
-        transform: translateX(0) translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
+        transform: translateX(0) translateY(var(--drop, 0px)) rotate(var(--fan, 0deg)) scale(1);
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -8742,7 +8751,7 @@
         const fan = Math.round(t * 8 * 10) / 10;
         const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
       const overlay = rewardOverlay();
       const leaveOverlay = askLeave
@@ -8857,22 +8866,50 @@
       paintGear();
       fitHand();
       if (dealNow) {
-        const handEl = root.querySelector(".hand");
-        requestAnimationFrame(() => {
-          fitHand();
-          requestAnimationFrame(() => {
-            fitHand();
-            if (!handEl || !handEl.isConnected) return;
-            handEl.classList.remove("deal-pending");
-            [...handEl.querySelectorAll(".card")].forEach((el) => {
-              el.classList.add("deal");
-            });
-          });
-        });
+        startHandDeal();
       } else {
         requestAnimationFrame(fitHand);
       }
       launchPendingPlayClearFly();
+    }
+
+    // 手札の重なりを固めてからドローを再生する（冒頭のつまり対策）
+    function startHandDeal() {
+      const handEl = root.querySelector(".hand");
+      if (!handEl) return;
+      const dealing = [...handEl.querySelectorAll(".card.deal")];
+      const n = dealing.length;
+      let prev = "";
+      let frames = 0;
+      const release = () => {
+        if (!handEl.isConnected) return;
+        fitHand();
+        void handEl.offsetWidth;
+        handEl.classList.remove("deal-pending");
+        const wait = n ? 28 + 460 + (n - 1) * 62 + 50 : 0;
+        if (!wait) return;
+        setTimeout(() => {
+          dealing.forEach((el) => {
+            if (el.isConnected) {
+              el.classList.remove("deal");
+              el.style.removeProperty("will-change");
+            }
+          });
+        }, wait);
+      };
+      const tick = () => {
+        if (!handEl.isConnected) return;
+        fitHand();
+        const sig = `${handEl.style.getPropertyValue("--overlap")}|${handEl.style.getPropertyValue("--hand-card-h")}|${handEl.clientWidth}`;
+        frames += 1;
+        if ((sig === prev && frames >= 2) || frames >= 5) {
+          release();
+          return;
+        }
+        prev = sig;
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重なりを深くする。マナ列には重ねてよいが、戦闘画面の外へは出さない。
@@ -8889,12 +8926,12 @@
       }
       const n = cards.length;
       const first = cards[0];
-      const ratio = first.offsetWidth / Math.max(1, first.offsetHeight);
-      const fullH = first.offsetHeight;
+      const ratio = first.offsetWidth / Math.max(1, first.offsetHeight) || (204 / 300);
+      const fullH = first.offsetHeight || handEl.clientHeight;
       const avail = handEl.clientWidth - 16;
       const minStep = 40;
       // 全枚数が最低 minStep ずつ見える幅に収まる最大のカード幅。足りなければ高さを 60% まで縮める。
-      let cw = first.offsetWidth;
+      let cw = first.offsetWidth || Math.round(fullH * ratio);
       const fitW = avail - (n - 1) * minStep;
       if (fitW < cw) {
         const h = Math.max(fullH * 0.6, fitW / ratio);
