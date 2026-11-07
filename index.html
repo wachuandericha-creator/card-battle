@@ -2254,6 +2254,15 @@
     }
     .overlay.paths .path-list button b { font-size: 34px; letter-spacing: 0.06em; }
     .overlay.paths .path-list button span { font-weight: 700; font-size: 20px; line-height: 1.45; }
+    /* 右端は常に「未知との遭遇」。紫の霧と細い銀縁で、ほかの2つと見分ける */
+    .overlay.paths .path-list button.path-unknown {
+      background: linear-gradient(180deg, #4a2d6e 0%, #2a1740 100%);
+      color: #f3e9ff;
+      box-shadow: inset 0 0 0 2px rgba(214, 190, 255, 0.55), 0 0 22px rgba(150, 100, 220, 0.45);
+    }
+    .overlay.paths .path-list button.path-unknown img { filter: saturate(0.8) brightness(0.9); }
+    .overlay.paths .path-list button.path-unknown b { color: #ffe6ff; text-shadow: 0 0 10px rgba(220, 180, 255, 0.8); }
+    .overlay.paths .path-list button.path-unknown:hover { box-shadow: inset 0 0 0 2px rgba(240, 225, 255, 0.9), 0 0 34px rgba(170, 120, 240, 0.7); }
     .overlay button.ghost {
       background: transparent;
       color: var(--cream);
@@ -2867,6 +2876,7 @@
     }
     let rewardPicks = [];
     let rewardPaths = [];
+    let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
     let bonusCard = null;
     let bossPicks = [];
@@ -4074,6 +4084,7 @@
         rewardPicks,
         rewardPaths,
         rewardStep,
+        pathEventTitle,
         bonusCard,
         floorGift,
         bossPicks,
@@ -4190,8 +4201,10 @@
       rewardStars = data.rewardStars || 0;
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
       rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
-      if (rewardPaths.includes("skip")) rewardPaths = rollPaths();
+      // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
+      if (rewardPaths.includes("skip") || (rewardPaths.length && rewardPaths[rewardPaths.length - 1] !== "unknown")) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
+      pathEventTitle = data.pathEventTitle || "探索";
       bonusCard = data.bonusCard || null;
       floorGift = data.floorGift && data.floorGift.kind ? data.floorGift : null;
       bossPicks = Array.isArray(data.bossPicks) ? data.bossPicks : [];
@@ -5366,8 +5379,12 @@
       retreat: { name: "引き返す", text: "いまの敵と再戦。この先は、もう引き返せない。", image: "path-retreat.jpg?v=4" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
       search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg?v=4" },
-      unknown: { name: "未知", text: "何があるかわからない。", image: "path-unknown.jpg?v=3" },
+      unknown: { name: "未知との遭遇", text: "左の2つ以外の出来事が起きる。戦闘もある。", image: "path-unknown.jpg?v=3" },
     };
+    // 道の候補。左の2つはここから引き、右は常に「未知との遭遇」
+    const PATH_POOL = ["straight", "shop", "search"];
+    // 未知との遭遇で起きうる出来事。見えている2つは除く
+    const UNKNOWN_POOL = ["straight", "shop", "search", "camp"];
 
     function starsForRank(rank) {
       if (rank === "強敵") return 3;
@@ -5467,9 +5484,15 @@
     }
 
     function rollPaths() {
-      const ids = ["shop", "search", "unknown"];
+      const ids = PATH_POOL.slice();
       if (!retreatUsed) ids.push("retreat");
-      return ["straight"].concat(shuffle(ids).slice(0, 2));
+      return shuffle(ids).slice(0, 2).concat(["unknown"]);
+    }
+
+    function unknownOutcomes() {
+      const seen = new Set(rewardPaths);
+      const rest = UNKNOWN_POOL.filter((id) => !seen.has(id));
+      return rest.length ? rest : UNKNOWN_POOL.slice();
     }
 
     function isBossFight() {
@@ -5686,24 +5709,47 @@
 
     function takePath(id) {
       if (rewardStep !== "paths" || !PATHS[id]) return;
-      if (id === "search" || id === "unknown") {
-        if (id === "unknown" && Math.random() < 0.5) {
-          const roll = Math.random();
-          if (roll < 0.34) {
-            applyPath("camp");
-            return;
-          }
-          if (roll < 0.67) {
-            openShop();
-            return;
-          }
-        }
+      if (id === "search") {
+        pathEventTitle = "探索";
         if (Math.random() < 0.5) {
           addDetourFight();
           applyPath("straight");
           return;
         }
         floorNote = grantExplore();
+        rewardStep = "event";
+        persistSave(true);
+        render();
+        return;
+      }
+      if (id === "unknown") {
+        // 見えている2つ以外の出来事から1つ。戦闘は襲撃（戦闘が1回増える）
+        const roll = shuffle(unknownOutcomes())[0];
+        pathEventTitle = "未知との遭遇";
+        if (roll === "straight") {
+          addDetourFight();
+          applyPath("straight");
+          return;
+        }
+        if (roll === "shop") {
+          openShop();
+          return;
+        }
+        if (roll === "camp") {
+          restoreHp(player.maxHp - player.hp);
+          floorGift = null;
+          floorNote = "未知は、キャンプだった。体力が全快した。";
+          rewardStep = "event";
+          persistSave(true);
+          render();
+          return;
+        }
+        if (Math.random() < 0.5) {
+          addDetourFight();
+          applyPath("straight");
+          return;
+        }
+        floorNote = `未知は、探索だった。${grantExplore()}`;
         rewardStep = "event";
         persistSave(true);
         render();
@@ -5759,7 +5805,7 @@
         const buttons = rewardPaths.map((id) => {
           const path = PATHS[id];
           const picture = path.image ? `<img src="${path.image}" alt="">` : "";
-          return `<button type="button" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
+          return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
         }).join("");
         return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 <span data-star-count>★${shownStarCount()}</span></p><div class="path-list">${buttons}</div></div></div>`;
       }
@@ -5767,7 +5813,7 @@
         return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
       }
       if (rewardStep === "event") {
-        return `<div class="overlay"><div class="panel"><h2>探索</h2>${giftMarkup(floorGift, true)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+        return `<div class="overlay"><div class="panel"><h2>${esc(pathEventTitle)}</h2>${giftMarkup(floorGift, true)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const bonus = bonusCard
         ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
