@@ -711,7 +711,7 @@
       flex-direction: column;
       container-type: inline-size;
     }
-    .card-fit.has-forecast .nameplate { padding-right: 20cqw; }
+    .card-fit.has-forecast .nameplate .name { padding: 0 18cqw; }
     .card-fit .forecast {
       position: absolute;
       top: 2.2cqw;
@@ -2269,9 +2269,10 @@
       flex: 0 0 auto;
       display: flex;
       align-items: center;
+      justify-content: center;
       min-height: 16cqw;
       margin: 2.4cqw 2.4cqw 0;
-      padding: 2cqw 3cqw 2cqw 22cqw;
+      padding: 2cqw 3cqw;
       border-radius: 8px;
       border: 1px solid rgba(24, 14, 8, 0.62);
       box-shadow:
@@ -2308,12 +2309,17 @@
       letter-spacing: 0;
       text-shadow: 0 1px 0 rgba(255, 248, 220, 0.55);
     }
+    /* カード名はコストの有無に関わらず名札の中央 */
     .card .name {
-      position: static;
-      flex: 1 1 auto;
-      min-width: 0;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
       margin: 0;
-      padding: 0;
+      padding: 0 16cqw;
+      box-sizing: border-box;
       font-size: 8.6cqw;
       font-weight: 800;
       letter-spacing: 0.04em;
@@ -2322,6 +2328,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      pointer-events: none;
     }
     .card .art {
       position: relative;
