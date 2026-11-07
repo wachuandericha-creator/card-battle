@@ -4227,6 +4227,7 @@
     let showFoeDeck = false;
     let albumTab = "all";
     let albumZoom = "";
+    let albumScrollTop = 0;
     let sheetZoom = null;
     let openingDeck = [];
     let gear = emptyGear();
@@ -7244,6 +7245,18 @@
           </div>
           ${sheetZoomSide()}
         </div>`;
+      restoreAlbumScroll();
+    }
+
+    function captureAlbumScroll() {
+      const panel = root.querySelector(".album-screen .panel");
+      if (panel) albumScrollTop = panel.scrollTop;
+    }
+
+    function restoreAlbumScroll() {
+      const panel = root.querySelector(".album-screen .panel");
+      if (!panel) return;
+      panel.scrollTop = albumScrollTop;
     }
 
     function renderAlbum() {
@@ -7275,6 +7288,7 @@
           </div>
           ${artZoomSide(albumZoom)}
         </div>`;
+      restoreAlbumScroll();
     }
 
     function renderDefeat() {
@@ -8668,9 +8682,14 @@
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
         if (name === "fill-hand-look") { fillHandForLook(); return; }
-        if (name === "album") { clearArtZoom(); screen = "album"; render(); }
-        if (name === "close-art-zoom") { clearArtZoom(); render(); }
-        if (name === "sheet") { clearArtZoom(); screen = "sheet"; render(); }
+        if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
+        if (name === "close-art-zoom") {
+          if (screen === "album" || screen === "sheet") captureAlbumScroll();
+          clearArtZoom();
+          render();
+          return;
+        }
+        if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
         if (name === "character") { castHover = ""; castLock = "戦士"; screen = "character"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
@@ -8742,12 +8761,14 @@
       if (albumBtn && screen === "album") {
         albumTab = albumBtn.dataset.album || "all";
         albumZoom = "";
+        albumScrollTop = 0;
         render();
         return;
       }
       const zoomCard = el.closest("[data-art-zoom]");
       if (zoomCard && screen === "album") {
         const name = zoomCard.dataset.artZoom || "";
+        captureAlbumScroll();
         albumZoom = albumZoom === name ? "" : name;
         render();
         return;
@@ -8756,6 +8777,7 @@
       if (sheetZoomBtn && screen === "sheet") {
         const src = sheetZoomBtn.dataset.sheetZoom || "";
         const title = sheetZoomBtn.dataset.sheetZoomTitle || "画像";
+        captureAlbumScroll();
         sheetZoom = sheetZoom && sheetZoom.src === src ? null : { src, title };
         render();
         return;
@@ -8786,6 +8808,7 @@
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && ((screen === "album" && albumZoom) || (screen === "sheet" && sheetZoom))) {
+        captureAlbumScroll();
         clearArtZoom();
         render();
         return;
