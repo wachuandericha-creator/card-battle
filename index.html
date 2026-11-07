@@ -971,8 +971,8 @@
       padding: 4px;
       background: rgba(18, 14, 12, 0.55);
     }
-    .cast-token.mini img { width: 88px; height: 104px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
-    .cast-token.mini span { font-size: 14px; letter-spacing: 0.08em; }
+    .cast-token.mini img { width: 112px; height: 132px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+    .cast-token.mini span { font-size: 16px; letter-spacing: 0.1em; }
     .cast-token.mini.shown { border-color: #e4b15a; }
     .cast-hero {
       height: min(22vh, 200px);
@@ -4893,8 +4893,6 @@
         const item = castByName(name);
         const main = root.querySelector(".cast-main");
         if (main) main.innerHTML = castMainMarkup(item);
-        const hero = root.querySelector(".cast-hero");
-        if (hero) hero.src = item.stand;
       }
       const start = root.querySelector(".cast-start");
       if (start) start.hidden = !fixed;
@@ -4921,20 +4919,17 @@
     }
 
     function renderCharacter() {
-      const many = CAST.length > 1;
-      const shown = castByName(shownCastName());
+      // コマは正面向きのデフォルメ絵だけ。4頭身の正面の立ち絵はこの画面には出さない（一枚絵と板で十分）。
       const tokens = CAST.map((item) => `
-        <button type="button" class="cast-token ${many ? "mini" : "stand"}" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
-          <img src="${many ? item.chibi : item.stand}" alt="">
+        <button type="button" class="cast-token mini" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
+          <img src="${item.chibi}" alt="">
           <span>${esc(item.name)}</span>
         </button>`).join("");
-      const hero = many ? `<img class="cast-hero" src="${shown.stand}" alt="${esc(shown.name)}の立ち絵">` : "";
       castShown = "";
       root.innerHTML = `
         <div class="cast-screen">
           <h1 class="cast-title">初期ジョブを選択してください</h1>
-          <div class="cast-roster ${many ? "many" : ""}">${tokens}</div>
-          ${hero}
+          <div class="cast-roster many">${tokens}</div>
           <div class="cast-main"></div>
         </div>`;
       paintCast();
@@ -5072,7 +5067,7 @@
               <figure><img class="cut-ref" src="job-warrior.png?v=9" alt=""><figcaption>戦士の選択コマ（正面デフォルメ）</figcaption></figure>
               <figure><img class="cut-ref" src="job-girl.png?v=2" alt=""><figcaption>女の戦士の選択コマ（正面デフォルメ）</figcaption></figure>
             </div>
-            <p class="sheet-cap">初期ジョブ選択は、戦士と女の戦士。コマは正面向きのデフォルメ絵（2頭身・かわいい顔）。選ぶと、立ち絵と一枚絵が切り替わり、戦闘の絵と名前もその戦士になる。</p>
+            <p class="sheet-cap">初期ジョブ選択は、戦士と女の戦士。コマは正面向きのデフォルメ絵（2頭身・かわいい顔）。選ぶと、一枚絵と板が切り替わり、戦闘の絵と名前もその戦士になる。4頭身の正面の立ち絵は、ジョブ選択の画面には出さない（この資料にだけ置く）。</p>
             <h3>戦闘の絵</h3>
             <div class="ref-grid">
               <figure><img class="cut-ref" src="hero-shoulder.png?v=25" alt=""><figcaption>戦闘の戦士</figcaption></figure>
