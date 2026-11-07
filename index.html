@@ -1986,7 +1986,8 @@
       border-radius: 8px;
       background: rgba(20, 14, 12, 0.5);
     }
-    .gear-slot.open .gear-frame { border-color: var(--gold); }
+    .gear-slot.open .gear-frame,
+    .gear-slot.hot .gear-frame { border-color: var(--gold); box-shadow: 0 0 10px rgba(240, 195, 106, 0.35); }
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
     .gear-mark .ico { width: 48cqw; height: 48cqw; }
@@ -3606,6 +3607,7 @@
     let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
+    let gearHover = "";
     let stolen = [];
     let removed = [];
     let beggarGift = [];
@@ -4264,14 +4266,20 @@
       return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" d="M9.2 3.2h5.6M10.2 3.2v3.6L7 14.2a4.6 4.6 0 0 0 4.2 6.6h1.6A4.6 4.6 0 0 0 17 14.2L13.8 6.8V3.2"/><path fill="currentColor" opacity="0.55" d="M8.4 14.6h7.2l-.8 1.8a3 3 0 0 1-2.8 1.8h-.8a3 3 0 0 1-2.8-1.8z"/></svg>`;
     }
 
+    function shownGearSlot() {
+      return gearHover || gearOpen || "";
+    }
+
     function gearMarkup() {
+      const shown = shownGearSlot();
       const slotButton = (slot) => {
         const item = gear[slot.id];
         const picture = item && item.image
           ? `<img src="${esc(item.image)}" alt="">`
           : `<span class="gear-mark">${slot.icon}</span>`;
         const title = item && item.name ? item.name + (item.stars > 0 ? " " + "★".repeat(item.stars) : "") : slot.label;
-        return `<button type="button" class="gear-slot${item ? " filled" : ""}${gearOpen === slot.id ? " open" : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
+        const active = shown === slot.id;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${active ? (gearOpen === slot.id ? " open" : " hot") : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
@@ -4282,22 +4290,76 @@
       return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
 
-    function gearEffectText() {
-      if (!gearOpen) return "";
-      if (gearOpen === "medal" && !gear.medal) {
+    function gearEffectHtml(slotId) {
+      if (!slotId) return "";
+      if (slotId === "medal" && !gear.medal) {
         return `<p class="gear-effect">メダル。ボスを倒すと確定でもらえる。</p>`;
       }
-      if (gearOpen === "itemL" || gearOpen === "itemR") {
-        const item = gear[gearOpen];
+      if (slotId === "itemL" || slotId === "itemR") {
+        const item = gear[slotId];
         if (!item) return `<p class="gear-effect">使い捨てアイテム。なにも入っていない。</p>`;
         const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
         const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
-        const button = item.quick ? `<button type="button" class="item-use" data-use-item="${gearOpen}" ${canUse ? "" : "disabled"}>使う</button>` : "";
+        const button = item.quick ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>` : "";
         return `<p class="gear-effect">${esc(item.name)}。${esc(item.effect)}${hint ? "<br>" + esc(hint) : ""}${button}</p>`;
       }
-      const item = gear[gearOpen];
-      const text = item && item.effect ? item.effect : "なにも入っていない";
-      return `<p class="gear-effect">${esc(text)}</p>`;
+      const item = gear[slotId];
+      if (!item) return `<p class="gear-effect">なにも入っていない。</p>`;
+      const name = item.name || "";
+      const effect = item.effect || "";
+      const body = name && effect ? `${esc(name)}。${esc(effect)}` : esc(effect || name || "なにも入っていない。");
+      return `<p class="gear-effect">${body}</p>`;
+    }
+
+    function gearEffectText() {
+      return gearEffectHtml(shownGearSlot());
+    }
+
+    function paintGear() {
+      const shown = shownGearSlot();
+      root.querySelectorAll(".gear-slot[data-gear]").forEach((btn) => {
+        const id = btn.dataset.gear;
+        const on = id === shown;
+        btn.classList.toggle("open", on && gearOpen === id);
+        btn.classList.toggle("hot", on && gearOpen !== id);
+      });
+      const rail = root.querySelector(".gear-rail");
+      if (!rail) return;
+      let box = rail.querySelector(".gear-effect");
+      const html = gearEffectHtml(shown);
+      if (!html) {
+        if (box) box.remove();
+        return;
+      }
+      if (!box) {
+        const board = rail.querySelector(".gear-board");
+        if (!board) return;
+        board.insertAdjacentHTML("afterend", html);
+        return;
+      }
+      const next = document.createElement("div");
+      next.innerHTML = html;
+      const fresh = next.firstElementChild;
+      if (fresh) box.replaceWith(fresh);
+    }
+
+    function bindGearHover() {
+      const rail = root.querySelector(".gear-rail");
+      if (!rail || rail.dataset.gearBound === "1") return;
+      rail.dataset.gearBound = "1";
+      rail.addEventListener("pointerover", (event) => {
+        const btn = event.target instanceof Element ? event.target.closest("[data-gear]") : null;
+        if (!btn || !rail.contains(btn)) return;
+        const id = btn.dataset.gear || "";
+        if (gearHover === id) return;
+        gearHover = id;
+        paintGear();
+      });
+      rail.addEventListener("pointerleave", () => {
+        if (!gearHover) return;
+        gearHover = "";
+        paintGear();
+      });
     }
 
     function swordIcon() {
@@ -7614,6 +7676,7 @@
       kickHp();
       bindLogPeek();
       bindFoePeek();
+      bindGearHover();
       fitHand();
       requestAnimationFrame(fitHand);
       launchPendingDiscardFly();
@@ -7846,7 +7909,8 @@
       if (gearBtn) {
         const id = gearBtn.dataset.gear;
         gearOpen = gearOpen === id ? null : id;
-        render();
+        gearHover = id;
+        paintGear();
         return;
       }
       const card = el.closest("[data-card]");
