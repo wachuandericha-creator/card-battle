@@ -7000,7 +7000,7 @@
       const cap = Math.max(1, maxHp);
       const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
-      const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div><div class="shield-line">シールド</div></div>` : "";
+      const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>` : "";
       return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}"><span data-bar="${who}" style="width:${hpPct}%"></span><i class="hp-ticks"></i></div></div>`;
     }
 
