@@ -7159,7 +7159,8 @@
       rewardReady = true;
       const foe = enemyNow();
       const medal = bossNow() && foe.medal ? gearItem(foe.medal) : null;
-      rewardStars = medal ? 0 : (foe.tier || starsForRank(foe.rank));
+      // ボスも道中と同じく★をもらう（メダルは追加でもらえる）
+      rewardStars = foe.tier || starsForRank(foe.rank);
       starBurst = rewardStars;
       pendingStars = rewardStars;
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
@@ -7455,7 +7456,7 @@
         return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "boss") {
-        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。★は出ない。</p>` : "";
+        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
         const picks = bossPicks.map((pick, i) => {
           if (pick.kind === "card" && pick.card) {
             return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
@@ -7464,7 +7465,7 @@
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
-        return `<div class="overlay victory finale">${victoryStage()}<div class="panel wide"><h2>勝利</h2>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        return `<div class="overlay victory finale">${victoryStars()}${victoryStage()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
