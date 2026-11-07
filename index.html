@@ -847,6 +847,75 @@
       color: var(--muted);
     }
     .album-screen .card.preview { width: 132px; height: auto; }
+    .album-screen .album-card {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+      transition: transform 0.14s ease;
+    }
+    .album-screen .album-card:hover { transform: translateY(-6px); }
+    .album-screen .deck-cards { justify-content: center; gap: 14px; }
+    .overlay.art-zoom { z-index: 40; }
+    .art-zoom-scrim {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .art-zoom-panel {
+      position: relative;
+      z-index: 1;
+      width: min(720px, calc(100vw - 40px));
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      padding: 22px 24px 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(228, 177, 90, 0.7);
+      background: linear-gradient(180deg, #2a2019, #140f0c);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65);
+      text-align: center;
+    }
+    .art-zoom-panel h3 {
+      margin: 0 0 14px;
+      font-size: 28px;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .art-zoom-panel .art-zoom-img {
+      display: block;
+      width: 100%;
+      max-height: min(58vh, 520px);
+      object-fit: contain;
+      border-radius: 12px;
+      background: #120e0c;
+      box-shadow: inset 0 0 0 1px rgba(255, 236, 200, 0.18);
+    }
+    .art-zoom-panel .art-zoom-card {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+    .art-zoom-panel .art-zoom-card .card.preview { width: min(280px, 70vw); }
+    .art-zoom-panel .art-zoom-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .art-zoom-panel > button[data-action="close-art-zoom"] {
+      margin-top: 16px;
+      border: 0;
+      background: var(--gold);
+      color: #2a2118;
+      border-radius: 999px;
+      padding: 10px 28px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
     .sheet-screen { position: relative; }
     .sheet-screen .panel { margin-left: 236px; width: min(1080px, calc(100vw - 48px - 236px)); }
     .sheet-home {
@@ -3726,6 +3795,7 @@
     let showDeck = false;
     let showFoeDeck = false;
     let albumTab = "all";
+    let albumZoom = "";
     let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
@@ -6190,7 +6260,7 @@
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
               ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
-              ${menuButton("アルバム", "album")}
+              ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
               ${menuButton("オプション", "settings")}
             </div>
@@ -6392,7 +6462,37 @@
     }
 
     function albumCatalog() {
-      return Object.keys(CARDS).map((name) => ({ name, klass: "戦士", ...CARDS[name] }));
+      const list = [];
+      const seen = new Set();
+      const push = (name, data, klass) => {
+        if (!name || seen.has(name)) return;
+        seen.add(name);
+        list.push({ name, klass, stars: data.stars || 1, ...data });
+      };
+      for (const [name, data] of Object.entries(CARDS)) push(name, data, "基本");
+      for (const [name, data] of Object.entries(WARRIOR)) push(name, data, "戦士");
+      for (const [name, data] of Object.entries(COMMON)) push(name, data, "共通");
+      for (const foe of ENEMIES) {
+        for (const card of foe.pattern || []) {
+          const name = card && card.name;
+          if (!name || seen.has(name)) continue;
+          if (name === "アタック" || name === "ブロック") continue;
+          if (CARDS[name] || WARRIOR[name] || COMMON[name]) continue;
+          const base = CARDS[name] || WARRIOR[name] || COMMON[name] || {};
+          push(name, { ...base, ...card }, "敵");
+        }
+      }
+      return list;
+    }
+
+    function artZoomOverlay(name) {
+      if (!name) return "";
+      const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
+      const src = CARD_ART[name] || "";
+      const body = src
+        ? `<img class="art-zoom-img" src="${esc(src)}" alt="${esc(name)}の絵柄">`
+        : `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
+      return `<div class="overlay art-zoom"><button type="button" class="art-zoom-scrim" data-action="close-art-zoom" aria-label="閉じる"></button><div class="art-zoom-panel"><h3>${esc(name)}</h3>${body}<p class="art-zoom-note">${src ? "絵柄" : "カード"}を拡大表示中</p><button type="button" data-action="close-art-zoom">閉じる</button></div></div>`;
     }
 
     function renderSheet() {
@@ -6588,21 +6688,26 @@
 
     function renderAlbum() {
       const catalog = albumCatalog();
-      const classes = [...new Set(catalog.map((card) => card.klass))];
+      const tabOrder = ["基本", "戦士", "共通", "敵"].filter((name) => catalog.some((card) => card.klass === name));
+      if (!tabOrder.includes(albumTab) && albumTab !== "all") albumTab = "all";
       const shown = albumTab === "all" ? catalog : catalog.filter((card) => card.klass === albumTab);
       const label = albumTab === "all" ? "すべて" : albumTab;
       const tabs = [`<button type="button" class="${albumTab === "all" ? "on" : ""}" data-album="all">すべて</button>`]
-        .concat(classes.map((name) => `<button type="button" class="${albumTab === name ? "on" : ""}" data-album="${esc(name)}">${esc(name)}</button>`))
+        .concat(tabOrder.map((name) => `<button type="button" class="${albumTab === name ? "on" : ""}" data-album="${esc(name)}">${esc(name)}</button>`))
         .join("");
+      const faces = sortedCards(shown).map((card) =>
+        `<button type="button" class="card preview ${cardKind(card)} album-card" data-art-zoom="${esc(card.name)}" aria-label="${esc(card.name)}の絵柄を拡大">${cardFace(card, false)}</button>`
+      ).join("");
       root.innerHTML = `
         <div class="album-screen">
           <div class="panel">
-            <h2>アルバム</h2>
+            <h2>カードリスト</h2>
             <div class="album-tabs" role="tablist">${tabs}</div>
-            <p class="album-meta">使いこみ ${meta.uses}　踏破 ${meta.clears}　★${meta.stars}</p>
-            ${deckGroup(label, shown)}
+            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと絵柄を拡大　★${meta.stars}</p>
+            <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
             <button type="button" data-action="title">もどる</button>
           </div>
+          ${artZoomOverlay(albumZoom)}
         </div>`;
     }
 
@@ -6696,7 +6801,7 @@
           <h1>踏破</h1>
           <p>${esc(dungeonName)}を抜けた。解放が進んだ。★${meta.stars}は残っている。</p>
           <p>次の攻略も、初期デッキから。</p>
-          ${menuButton("アルバム", "album")}
+          ${menuButton("カードリスト", "album")}
           ${menuButton("キャラクター選択へ", "character", true)}
         </div>`;
     }
@@ -7977,7 +8082,8 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
-        if (name === "album") { screen = "album"; render(); }
+        if (name === "album") { albumZoom = ""; screen = "album"; render(); }
+        if (name === "close-art-zoom") { albumZoom = ""; render(); }
         if (name === "sheet") { screen = "sheet"; render(); }
         if (name === "character") { castHover = ""; castLock = "戦士"; screen = "character"; render(); }
         if (name === "cast-token") {
@@ -8049,6 +8155,13 @@
       const albumBtn = el.closest("[data-album]");
       if (albumBtn && screen === "album") {
         albumTab = albumBtn.dataset.album || "all";
+        albumZoom = "";
+        render();
+        return;
+      }
+      const zoomCard = el.closest("[data-art-zoom]");
+      if (zoomCard && screen === "album") {
+        albumZoom = zoomCard.dataset.artZoom || "";
         render();
         return;
       }
@@ -8072,6 +8185,11 @@
     });
 
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && screen === "album" && albumZoom) {
+        albumZoom = "";
+        render();
+        return;
+      }
       if (screen !== "battle" || askLeave) return;
       if (showDeck || showFoeDeck) {
         if (event.key === "Escape") { showDeck = false; showFoeDeck = false; render(); }
