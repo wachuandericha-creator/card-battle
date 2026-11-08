@@ -2186,7 +2186,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：スレスパ風の大きな玉。マナ行は無し、山札の真上に置く */
+    /* マナ：手札の左に、数だけ金色の玉。手札がかぶってもよい */
     .deck-stack {
       position: relative;
       height: 100%;
@@ -2195,85 +2195,45 @@
       align-items: flex-end;
     }
     .deck-stack .pile { height: 100%; }
-    .deck-stack .mana-orb-wrap {
+    .hand { position: relative; }
+    .mana-row {
       position: absolute;
-      left: 50%;
-      top: 0;
-      transform: translate(-50%, calc(-100% - 6px));
+      left: 4px;
+      bottom: 10px;
+      z-index: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: 6px;
       margin: 0;
-      z-index: 9;
-    }
-    .mana-orb-wrap {
-      position: relative;
-      flex: 0 0 auto;
-      width: 84px;
-      height: 84px;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      z-index: 6;
+      pointer-events: none;
     }
     .mana-orb {
-      width: 84px;
-      height: 84px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      display: grid;
-      place-items: center;
-      border: 3px solid #fff8d0;
+      flex: 0 0 auto;
+      border: 2px solid #fff8d0;
       background:
-        radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 28%),
-        radial-gradient(circle at 50% 55%, #ffe566 0%, #f0a010 48%, #a86a08 78%, #5a3400 100%);
+        radial-gradient(circle at var(--hot-x) var(--hot-y), rgba(255, 255, 255, 0.95) 0 10%, rgba(255, 255, 255, 0) 34%),
+        radial-gradient(circle at 50% 58%, #ffe566 0%, #f0a010 46%, #a86a08 78%, #5a3400 100%);
       box-shadow:
-        0 0 0 3px rgba(40, 22, 4, 0.85),
-        0 0 22px rgba(255, 200, 60, 0.7),
-        0 10px 18px rgba(0, 0, 0, 0.45),
-        inset 0 -8px 14px rgba(80, 40, 0, 0.35),
-        inset 0 4px 8px rgba(255, 255, 255, 0.35);
-      color: #1a0c02;
-      font-size: 44px;
-      font-weight: 900;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-      text-shadow: 0 2px 0 rgba(255, 248, 220, 0.65), 0 2px 4px rgba(40, 16, 0, 0.35);
-    }
-    .mana-orb.empty {
-      border-color: #7a6a52;
-      background:
-        radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 28%),
-        radial-gradient(circle at 50% 55%, #4a4034 0%, #2a2218 70%);
-      box-shadow:
-        0 0 0 3px rgba(20, 14, 10, 0.9),
-        0 8px 14px rgba(0, 0, 0, 0.4),
-        inset 0 2px 6px rgba(255, 255, 255, 0.06);
-      color: #a89880;
-      text-shadow: none;
+        0 0 0 2px rgba(40, 22, 4, 0.85),
+        0 0 14px rgba(255, 200, 60, 0.65),
+        0 6px 10px rgba(0, 0, 0, 0.4),
+        inset 0 -5px 8px rgba(80, 40, 0, 0.35);
+      animation: mana-roil 2.6s ease-in-out infinite;
     }
     .mana-orb.has-temp {
       border-color: #ffd090;
       background:
-        radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 28%),
-        radial-gradient(circle at 50% 55%, #ffc070 0%, #ff8a28 42%, #e05010 78%, #7a2808 100%);
+        radial-gradient(circle at var(--hot-x) var(--hot-y), rgba(255, 255, 255, 0.9) 0 10%, rgba(255, 255, 255, 0) 34%),
+        radial-gradient(circle at 50% 58%, #ffc070 0%, #ff8a28 42%, #e05010 78%, #7a2808 100%);
       box-shadow:
-        0 0 0 3px rgba(50, 20, 4, 0.85),
-        0 0 24px rgba(255, 140, 40, 0.7),
-        0 10px 18px rgba(0, 0, 0, 0.45),
-        inset 0 -8px 14px rgba(90, 30, 0, 0.35),
-        inset 0 4px 8px rgba(255, 255, 255, 0.3);
-    }
-    .mana-orb-wrap .mana-temp {
-      position: absolute;
-      right: -4px;
-      bottom: 2px;
-      min-width: 28px;
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 2px solid #fff0d0;
-      background: linear-gradient(180deg, #ffc070, #e05010);
-      color: #2a1204;
-      font-size: 14px;
-      font-weight: 900;
-      line-height: 1;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+        0 0 0 2px rgba(50, 20, 4, 0.85),
+        0 0 14px rgba(255, 140, 40, 0.65),
+        0 6px 10px rgba(0, 0, 0, 0.4);
     }
     .handbar {
       width: 100%;
@@ -2907,7 +2867,7 @@
         transform: translate(calc(-50% + (var(--i) - (var(--n) - 1) / 2) * 110px), 0);
       }
       .sprite .eye, .sprite .eye::after { animation: none; }
-      .battle-screen.no-mana, .battle-screen.block { animation: none; }
+      .battle-screen.no-mana, .battle-screen.block, .mana-orb { animation: none; }
     }
     .card.attack, .card.block, .card.skill, .card.power, .card.foe {
       clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
@@ -4721,8 +4681,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb-wrap, .mana-orb { width: 68px; height: 68px; }
-      .mana-orb { font-size: 34px; }
+      .mana-orb { width: 32px; height: 32px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -7823,17 +7782,13 @@
     }
 
     function pips() {
-      const baseMax = Math.max(0, Number(player.baseMax) || Number(player.maxEnergy) || 0);
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
+      const orbs = [];
+      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
+      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
       const total = baseOn + temp;
-      const tempChip = temp > 0
-        ? `<span class="mana-temp" title="持ち越しの一時マナ">+${temp}</span>`
-        : "";
-      const cls = `${total ? "" : " empty"}${temp ? " has-temp" : ""}`;
-      return `<div class="mana-orb-wrap" aria-label="マナ ${total}${baseMax ? ` / ${baseMax}` : ""}${temp ? ` 持ち越し+${temp}` : ""}">
-        <span class="mana-orb${cls}">${total}</span>${tempChip}
-      </div>`;
+      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
@@ -9803,12 +9758,11 @@
           <div class="handbar">
               <div class="pile-pair">
                 <div class="deck-stack">
-                  ${pips()}
                   ${pileMarkup("deck", deck.length)}
                 </div>
                 ${pileMarkup("discard", discard.length)}
               </div>
-              <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
+              <div class="hand${dealNow ? " deal-pending" : ""}">${pips()}${cards}</div>
               ${endButtonMarkup()}
             </div>
         </div>
