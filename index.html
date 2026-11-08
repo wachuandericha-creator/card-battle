@@ -1809,35 +1809,39 @@
         inset 0 -10px 18px rgba(160, 30, 0, 0.4);
     }
     .cast-start[hidden] { display: none; }
-    /* もどる と 挑戦開始 は、画面の中央にひとまとまり（もどるが左、挑戦開始が右） */
+    /* もどる と 挑戦開始 は、外枠の一番下（もどるが左、挑戦開始が右） */
     .cast-actions {
       position: fixed;
       left: 50%;
-      top: 50%;
+      top: auto;
       right: auto;
-      bottom: auto;
+      bottom: 0;
       z-index: 40;
+      height: var(--edge-clear);
       display: flex;
       align-items: center;
       gap: 14px;
-      transform: translate(-50%, -50%);
+      transform: translateX(-50%);
     }
     .cast-actions > button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 60px;
-      padding: 0 30px;
+      height: calc(var(--edge-clear) - 16px);
+      min-height: 36px;
+      max-height: 64px;
+      padding: 0 28px;
       line-height: 1;
-      font-size: 22px;
+      font-size: 20px;
       border-radius: 999px;
       letter-spacing: 0.12em;
     }
     .cast-actions > button.cast-start {
-      height: auto;
-      min-height: 60px;
-      padding: 14px 34px;
-      letter-spacing: 0.18em;
+      height: calc(var(--edge-clear) - 16px);
+      min-height: 36px;
+      max-height: 64px;
+      padding: 0 32px;
+      letter-spacing: 0.16em;
     }
     .cast-actions .cast-back {
       position: static;
@@ -3216,29 +3220,29 @@
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), inset 0 0 0 2.5px rgba(255, 255, 255, 0.55), inset 0 0 0 3.5px rgba(0, 0, 0, 0.25);
     }
     .card-fit.r2 .frame {
-      border-image-source: linear-gradient(135deg, #ffffff 0%, #8f9aa9 18%, #eef2f7 36%, #6f7a89 52%, #f7f9fc 68%, #98a3b2 84%, #e3e8ef 100%);
-      filter: drop-shadow(0 0 4px rgba(220, 230, 245, 0.7));
+      border-image-source: linear-gradient(135deg, #ffffff 0%, #d5dee8 16%, #8b98a8 34%, #f4f7fb 50%, #6e7c8c 66%, #eef3f8 82%, #b7c3d0 100%);
+      filter: drop-shadow(0 0 6px rgba(230, 238, 248, 0.9));
     }
     .card-fit.r3 .frame {
-      border-image-source: linear-gradient(135deg, #fff8d0 0%, #c3911f 18%, #ffe98f 36%, #9c6b0e 52%, #fff3b8 68%, #d2a633 84%, #ffe9a0 100%);
-      filter: drop-shadow(0 0 6px rgba(255, 215, 120, 0.85));
+      border-image-source: linear-gradient(135deg, #fff6c4 0%, #e6b84a 16%, #8a5e0c 34%, #ffe28a 50%, #a87412 66%, #fff1b4 82%, #d7a63a 100%);
+      filter: drop-shadow(0 0 8px rgba(255, 206, 90, 0.95));
     }
-    /* 角の宝石飾り（銀・金のみ。右上と左下。コスト丸・★とは重ねない） */
-    .card-fit.r2 .frame::before, .card-fit.r2 .frame::after,
-    .card-fit.r3 .frame::before, .card-fit.r3 .frame::after {
+    /* 四隅の唐草。宝石は付けない。★★銀、★★★金。ジャンル色のカードも同じ枠 */
+    .card-fit.r2 .frame::before, .card-fit.r3 .frame::before {
       content: "";
       position: absolute;
-      width: 9cqw;
-      height: 9cqw;
-      transform: rotate(45deg);
-      border-radius: 1.2cqw;
-      border: 1px solid rgba(0, 0, 0, 0.45);
-      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.7), 0 2px 4px rgba(0, 0, 0, 0.45);
+      inset: -1.4cqw;
+      width: auto;
+      height: auto;
+      transform: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: center / 100% 100% no-repeat;
     }
-    .card-fit.r2 .frame::before, .card-fit.r3 .frame::before { right: -1cqw; top: -1cqw; }
-    .card-fit.r2 .frame::after, .card-fit.r3 .frame::after { left: -1cqw; bottom: -1cqw; }
-    .card-fit.r2 .frame::before, .card-fit.r2 .frame::after { background: radial-gradient(circle at 35% 30%, #ffffff 0%, #c9d2dd 30%, #76818f 70%, #4d5664 100%); }
-    .card-fit.r3 .frame::before, .card-fit.r3 .frame::after { background: radial-gradient(circle at 35% 30%, #fff9d8 0%, #ffd766 30%, #b8841a 70%, #6f4d0a 100%); }
+    .card-fit.r2 .frame::after, .card-fit.r3 .frame::after { content: none; }
+    .card-fit.r2 .frame::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 204 300'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M8 58C12 24 28 10 64 8' stroke='%235c6774' stroke-width='5'/%3E%3Cpath d='M8 58C12 24 28 10 64 8' stroke='%23f4f7fb' stroke-width='2.2'/%3E%3Cpath d='M12 78C16 30 36 14 86 12' stroke='%23c5d0dc' stroke-width='3'/%3E%3Cpath d='M196 58C192 24 176 10 140 8' stroke='%235c6774' stroke-width='5'/%3E%3Cpath d='M196 58C192 24 176 10 140 8' stroke='%23f4f7fb' stroke-width='2.2'/%3E%3Cpath d='M192 78C188 30 168 14 118 12' stroke='%23c5d0dc' stroke-width='3'/%3E%3Cpath d='M8 242C12 276 28 290 64 292' stroke='%235c6774' stroke-width='5'/%3E%3Cpath d='M8 242C12 276 28 290 64 292' stroke='%23f4f7fb' stroke-width='2.2'/%3E%3Cpath d='M12 222C16 270 36 286 86 288' stroke='%23c5d0dc' stroke-width='3'/%3E%3Cpath d='M196 242C192 276 176 290 140 292' stroke='%235c6774' stroke-width='5'/%3E%3Cpath d='M196 242C192 276 176 290 140 292' stroke='%23f4f7fb' stroke-width='2.2'/%3E%3Cpath d='M192 222C188 270 168 286 118 288' stroke='%23c5d0dc' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E"); }
+    .card-fit.r3 .frame::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 204 300'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M8 58C12 24 28 10 64 8' stroke='%236f4d0a' stroke-width='5'/%3E%3Cpath d='M8 58C12 24 28 10 64 8' stroke='%23ffe7a0' stroke-width='2.2'/%3E%3Cpath d='M12 78C16 30 36 14 86 12' stroke='%23e0b44a' stroke-width='3'/%3E%3Cpath d='M196 58C192 24 176 10 140 8' stroke='%236f4d0a' stroke-width='5'/%3E%3Cpath d='M196 58C192 24 176 10 140 8' stroke='%23ffe7a0' stroke-width='2.2'/%3E%3Cpath d='M192 78C188 30 168 14 118 12' stroke='%23e0b44a' stroke-width='3'/%3E%3Cpath d='M8 242C12 276 28 290 64 292' stroke='%236f4d0a' stroke-width='5'/%3E%3Cpath d='M8 242C12 276 28 290 64 292' stroke='%23ffe7a0' stroke-width='2.2'/%3E%3Cpath d='M12 222C16 270 36 286 86 288' stroke='%23e0b44a' stroke-width='3'/%3E%3Cpath d='M196 242C192 276 176 290 140 292' stroke='%236f4d0a' stroke-width='5'/%3E%3Cpath d='M196 242C192 276 176 290 140 292' stroke='%23ffe7a0' stroke-width='2.2'/%3E%3Cpath d='M192 222C188 270 168 286 118 288' stroke='%23e0b44a' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E"); }
     .card-fit.r2 .rarity { color: #f3f6fa; text-shadow: 0 0 2px #4f5b6a, 0 1px 0 #2d3540, 0 0 8px rgba(220, 230, 245, 0.8); }
     .card-fit.r3 .rarity { color: #ffe27a; text-shadow: 0 0 2px #7a5410, 0 1px 0 #4d3306, 0 0 10px rgba(255, 215, 120, 0.9); }
     /* 銀・金カードは名札にも光を足す */
@@ -3690,7 +3694,7 @@
     body.edge-clear .overlay.victory.finale {
       padding: calc(12px + var(--edge-clear)) calc(18px + var(--edge-clear)) calc(18px + var(--edge-clear));
     }
-    /* 挑戦内容は、外枠まで同じ一枚のグラデーション。ボタンは画面中央 */
+    /* 挑戦内容は、外枠まで同じ一枚のグラデーション。ボタンは外枠の一番下 */
     #game.edge-clear-screen:has(.challenge-pick) {
       background:
         radial-gradient(ellipse at 50% 12%, rgba(140, 92, 36, 0.46), transparent 46%),
@@ -3699,13 +3703,8 @@
     }
     #game.edge-clear-screen .challenge-pick { background: transparent; }
     body.edge-clear .challenge-pick .cast-actions {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      right: auto;
-      bottom: auto;
-      transform: translate(-50%, -50%);
-      z-index: 40;
+      bottom: 0;
+      height: var(--edge-clear);
     }
     #game.edge-clear-screen .challenge-pick {
       padding-bottom: 12px;
