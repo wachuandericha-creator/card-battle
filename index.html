@@ -3656,7 +3656,9 @@
       min-height: 44px;
       padding: 12px 22px;
       font-size: 16px;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.08em;
+      white-space: normal;
+      line-height: 1.35;
       border-radius: 999px;
       border: 1px solid rgba(240, 195, 106, 0.55);
       background: rgba(14, 9, 6, 0.72);
@@ -3674,6 +3676,20 @@
       text-shadow: 0 3px 0 #6a4a16, 0 0 16px rgba(240, 195, 106, 0.4);
     }
     .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
+    .pass-box { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(440px, 100%); }
+    .pass-box input {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 195, 106, 0.85);
+      background: rgba(14, 9, 6, 0.88);
+      color: #fff6e4;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 14px 18px;
+      text-align: center;
+    }
+    .pass-box .pass-error { color: #ffb4a8; font-size: 16px; }
     /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
     .bless-art {
       height: min(48vh, 600px);
@@ -4420,6 +4436,10 @@
     let showLog = true;
     let autoEndTurn = true;
     let cleared = false;
+    let runEnded = null;
+    let loginWord = "";
+    let passError = "";
+    let passFrom = "new";
     let saveNote = "";
     let returnScreen = "title";
     let askLeave = false;
@@ -4459,6 +4479,7 @@
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const META_KEY = "card-battle-meta-v1";
+    const ACCOUNT_KEY = "card-battle-account-v1";
     const BATTLE_TOTAL = 3;
     let battleTotal = BATTLE_TOTAL;
     let route = CLASSIC_ROUTE.slice();
@@ -5018,7 +5039,7 @@
         const have = Number(meta.stars) || 0;
         if (have < price) return;
         meta.stars = have - price;
-        localStorage.setItem(META_KEY, JSON.stringify(meta));
+        persistMeta();
         const slot = shopStock && shopStock[offer.shopIndex];
         if (slot) slot.sold = true;
       }
@@ -6461,21 +6482,101 @@
       }).join("");
     }
 
-    function loadMeta() {
+    function emptyMeta() {
+      return { uses: 0, clears: 0, stars: 0, cleared: {} };
+    }
+
+    function metaFrom(saved) {
+      const source = saved && typeof saved === "object" ? saved : {};
+      const clearedMap = (source.cleared && typeof source.cleared === "object") ? { ...source.cleared } : {};
+      if (!source.cleared && (Number(source.clears) || 0) > 0) clearedMap["20"] = true;
+      return {
+        uses: Number(source.uses) || 0,
+        clears: Number(source.clears) || 0,
+        stars: Number(source.stars) || 0,
+        cleared: clearedMap,
+      };
+    }
+
+    function readAccount() {
       try {
-        const saved = JSON.parse(localStorage.getItem(META_KEY) || "{}");
-        const cleared = (saved.cleared && typeof saved.cleared === "object") ? { ...saved.cleared } : {};
-        // 旧セーブ：クリア回数だけある場合は 20 クリア済みとみなす
-        if (!saved.cleared && (Number(saved.clears) || 0) > 0) cleared["20"] = true;
-        meta = {
-          uses: Number(saved.uses) || 0,
-          clears: Number(saved.clears) || 0,
-          stars: Number(saved.stars) || 0,
-          cleared,
-        };
+        const data = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || "{}");
+        if (!data || typeof data !== "object") return { login: "", slots: {} };
+        if (!data.slots || typeof data.slots !== "object") data.slots = {};
+        return data;
       } catch (error) {
-        meta = { uses: 0, clears: 0, stars: 0, cleared: {} };
+        return { login: "", slots: {} };
       }
+    }
+
+    function writeAccount(data) {
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(data));
+    }
+
+    function accountSlot(account, word) {
+      if (!account.slots[word]) account.slots[word] = {};
+      return account.slots[word];
+    }
+
+    function claimLegacy(slot) {
+      if (!slot.save) {
+        try {
+          const old = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+          if (old) slot.save = old;
+        } catch (error) { /* 古いセーブが壊れていても、新しい言葉は空で始める */ }
+      }
+      if (!slot.meta) {
+        try {
+          const old = JSON.parse(localStorage.getItem(META_KEY) || "null");
+          if (old && typeof old === "object") slot.meta = old;
+        } catch (error) { /* 同上 */ }
+      }
+      if (!slot.live) {
+        try {
+          const old = JSON.parse(localStorage.getItem(LIVE_KEY) || "null");
+          if (old) slot.live = old;
+        } catch (error) { /* 同上 */ }
+      }
+      if (slot.save || slot.meta || slot.live) {
+        localStorage.removeItem(SAVE_KEY);
+        localStorage.removeItem(META_KEY);
+        localStorage.removeItem(LIVE_KEY);
+      }
+    }
+
+    function loadMeta() {
+      if (!loginWord) {
+        meta = emptyMeta();
+        return;
+      }
+      const slot = readAccount().slots[loginWord];
+      meta = metaFrom(slot && slot.meta);
+    }
+
+    function persistMeta() {
+      if (!loginWord) return;
+      const account = readAccount();
+      const slot = accountSlot(account, loginWord);
+      slot.meta = meta;
+      account.login = loginWord;
+      writeAccount(account);
+    }
+
+    function setLogin(word) {
+      const account = readAccount();
+      const slot = accountSlot(account, word);
+      if (!slot.save && !slot.meta && !slot.live) claimLegacy(slot);
+      account.login = word;
+      writeAccount(account);
+      loginWord = word;
+      loadMeta();
+    }
+
+    function loadAccount() {
+      const account = readAccount();
+      loginWord = typeof account.login === "string" ? account.login : "";
+      if (loginWord && !/^[ぁ-んー]+$/.test(loginWord)) loginWord = "";
+      loadMeta();
     }
 
     function endRun(clearedRun) {
@@ -6484,14 +6585,16 @@
       gear = emptyGear();
       gearOpen = null;
       stolen = [];
-      localStorage.removeItem(SAVE_KEY);
+      runEnded = clearedRun ? "win" : "lose";
+      if (clearedRun) cleared = true;
       clearLive();
       meta.uses += 1;
       if (clearedRun) {
         meta.clears += 1;
         markDungeonCleared(floorsKey);
       }
-      localStorage.setItem(META_KEY, JSON.stringify(meta));
+      persistMeta();
+      persistSave(true);
     }
 
     function loadSettings() {
@@ -6510,17 +6613,17 @@
     }
 
     function readSave() {
-      try {
-        return JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
-      } catch (error) {
-        return null;
-      }
+      if (!loginWord) return null;
+      const slot = readAccount().slots[loginWord];
+      return slot && slot.save ? slot.save : null;
     }
 
     function battleSnapshot() {
       return {
         v: 1,
         cleared,
+        runEnded,
+        defeatSnap,
         battleIndex,
         turn,
         intentIndex,
@@ -6566,7 +6669,12 @@
     }
 
     function persistSave(silent) {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(battleSnapshot()));
+      if (!loginWord) return;
+      const account = readAccount();
+      const slot = accountSlot(account, loginWord);
+      slot.save = battleSnapshot();
+      account.login = loginWord;
+      writeAccount(account);
       if (!silent) {
         saveNote = "セーブした";
         render();
@@ -6574,24 +6682,31 @@
     }
 
     function readLive() {
-      try {
-        return JSON.parse(localStorage.getItem(LIVE_KEY) || "null");
-      } catch (error) {
-        return null;
-      }
+      if (!loginWord) return null;
+      const slot = readAccount().slots[loginWord];
+      return slot && slot.live ? slot.live : null;
     }
 
     function persistLive() {
-      if (!player || !enemy) return;
-      localStorage.setItem(LIVE_KEY, JSON.stringify(battleSnapshot()));
+      if (!loginWord || !player || !enemy) return;
+      const account = readAccount();
+      const slot = accountSlot(account, loginWord);
+      slot.live = battleSnapshot();
+      account.login = loginWord;
+      writeAccount(account);
     }
 
     function clearLive() {
-      localStorage.removeItem(LIVE_KEY);
+      if (!loginWord) return;
+      const account = readAccount();
+      if (account.slots[loginWord]) account.slots[loginWord].live = null;
+      writeAccount(account);
     }
 
     function applySave(data) {
       cleared = !!data.cleared;
+      runEnded = data.runEnded || (data.cleared ? "win" : null);
+      defeatSnap = data.defeatSnap || null;
       battleIndex = data.battleIndex || 0;
       battleStartHp = Number(data.battleStartHp) || (data.player && Number(data.player.hp)) || 30;
       turn = data.turn || 0;
@@ -6715,6 +6830,7 @@
       fatalHold = false;
       screen = "battle";
       cleared = false;
+      runEnded = null;
       const hp = keepHp == null ? 30 : Math.min(30, keepHp);
       battleStartHp = hp;
       player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
@@ -7014,17 +7130,23 @@
       job = "戦士";
       jobsHad = ["戦士"];
       ultimate = "";
+      runEnded = null;
       enterNode(30);
+      persistSave(true);
     }
 
     function continueGame() {
       const data = readSave();
-      if (!data) return;
+      if (!loginWord || !data) return;
       clearTimer();
       applySave(data);
-      if (data.cleared) {
-        localStorage.removeItem(SAVE_KEY);
-        screen = "title";
+      if (runEnded === "lose") {
+        screen = "defeat";
+        render();
+        return;
+      }
+      if (runEnded === "win") {
+        screen = "clear";
         render();
         return;
       }
@@ -7141,7 +7263,8 @@
           <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
-              ${menuButton("つづきから(あいことば)", "continue", false, !readSave())}
+              ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "continue", false, !loginWord || !readSave())}
+              ${loginWord ? menuButton("あいことばを入れ直す", "pass-switch") : ""}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
               ${menuButton("オプション", "settings")}
@@ -7602,6 +7725,31 @@
         </div>`;
     }
 
+    function renderPass() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>あいことば</h1>
+          <p>自分の名前のあとに、自分だけの短い言葉を足す。</p>
+          <p>ひらがなだけ。空白は入れない。次も、同じ言葉。</p>
+          <div class="pass-box">
+            <input id="pass-word" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+            ${passError ? `<p class="pass-error">${esc(passError)}</p>` : ""}
+            ${menuButton(passFrom === "switch" ? "この言葉にする" : "これで始める", "pass-ok", true)}
+            ${menuButton("もどる", "title")}
+          </div>
+        </div>`;
+      const input = root.querySelector("#pass-word");
+      if (input) {
+        input.focus();
+        input.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          const button = root.querySelector('[data-action="pass-ok"]');
+          if (button) button.click();
+        });
+      }
+    }
+
     function renderConfirm() {
       root.innerHTML = `
         <div class="menu">
@@ -7713,6 +7861,7 @@
     function render() {
       hideLogPeek();
       if (screen === "title") return renderTitle();
+      if (screen === "pass") return renderPass();
       if (screen === "character") return renderCharacter();
       if (screen === "dungeon") return renderDungeon();
       if (screen === "dungeon-gate") return renderDungeonGate();
@@ -8375,7 +8524,7 @@
       const have = Number(meta.stars) || 0;
       if (have < price) return;
       meta.stars = have - price;
-      localStorage.setItem(META_KEY, JSON.stringify(meta));
+      persistMeta();
       if (slot.kind === "card") {
         stolen.push(keepCard(slot.card));
       } else if (slot.kind === "gear") {
@@ -8402,7 +8551,7 @@
       starBurst = rewardStars;
       pendingStars = rewardStars;
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
-      localStorage.setItem(META_KEY, JSON.stringify(meta));
+      persistMeta();
       rewardPaths = [];
       bonusCard = null;
       bossPicks = [];
@@ -9190,10 +9339,23 @@
           render();
         }
         if (name === "new") {
-          if (readSave()) { screen = "confirm"; render(); }
+          if (!loginWord) { passFrom = "new"; passError = ""; screen = "pass"; render(); }
           else { castPicked = false; screen = "character"; render(); }
         }
-        if (name === "new-force") { localStorage.removeItem(SAVE_KEY); clearLive(); castPicked = false; screen = "character"; render(); }
+        if (name === "pass-switch") { passFrom = "switch"; passError = ""; screen = "pass"; render(); }
+        if (name === "pass-ok") {
+          const input = root.querySelector("#pass-word");
+          const word = input ? input.value : "";
+          if (!word) { passError = "入れてください。"; render(); return; }
+          if (!/^[ぁ-んー]+$/.test(word)) { passError = "ひらがなだけで、空白は入れない。"; render(); return; }
+          setLogin(word);
+          passError = "";
+          if (passFrom === "switch") { screen = "title"; render(); return; }
+          castPicked = false;
+          screen = "character";
+          render();
+          return;
+        }
         if (name === "continue") continueGame();
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
         if (name === "reward-boss") takeBossPick(Number(action.dataset.reward));
@@ -9274,7 +9436,7 @@
     });
 
     loadSettings();
-    loadMeta();
+    loadAccount();
     if (!resumeLive()) render();
   </script>
 </body>
