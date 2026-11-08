@@ -9116,12 +9116,10 @@
     }
 
     function renderAccount() {
-      const hasSave = Boolean(readSave());
       root.innerHTML = `
         <div class="menu">
           <h1>ログイン済</h1>
           <p>${esc(loginWord)}</p>
-          ${hasSave ? menuButton("つづきから", "continue", true) : ""}
           ${menuButton("ログアウト", "logout")}
           ${menuButton("データを消す", "wipe-ask", false)}
           ${menuButton("もどる", "title")}
@@ -10984,7 +10982,6 @@
           render();
           return;
         }
-        if (name === "continue") continueGame();
         if (name === "reward-card") takeReward(Number(action.dataset.reward));
         if (name === "reward-boss") takeBossPick(Number(action.dataset.reward));
         if (name === "reward-bonus") takeBonus();
