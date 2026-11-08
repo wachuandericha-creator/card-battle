@@ -2367,44 +2367,20 @@
     }
     .mana-orb {
       position: relative;
-      width: 28px;
-      height: 46px;
+      width: 36px;
+      height: 48px;
       flex: 0 0 auto;
       border: 0;
-      background: none;
+      background: url("mana-flame.png?v=1") center bottom / contain no-repeat;
       box-shadow: none;
+      filter: drop-shadow(0 0 8px rgba(255, 90, 20, 0.55));
       animation: flame-sway 0.72s ease-in-out infinite alternate;
     }
     .mana-orb::before,
-    .mana-orb::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      pointer-events: none;
-    }
-    .mana-orb::before {
-      width: 24px;
-      height: 38px;
-      border-radius: 50% 50% 46% 46% / 64% 64% 36% 36%;
-      background:
-        radial-gradient(ellipse at 50% 78%, #fff4c4 0 10%, #ffc24a 26%, #ff6a12 52%, #d41e08 74%, transparent 76%);
-      box-shadow: 0 0 12px 3px rgba(255, 80, 16, 0.72);
-      animation: flame-body 0.36s ease-in-out infinite alternate;
-    }
-    .mana-orb::after {
-      bottom: 6px;
-      width: 11px;
-      height: 20px;
-      border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
-      background: radial-gradient(ellipse at 50% 72%, #fff 0 18%, #ffe7a0 48%, transparent 74%);
-      animation: flame-core 0.26s ease-in-out infinite alternate;
-    }
-    .mana-orb.has-temp::before {
-      background:
-        radial-gradient(ellipse at 50% 78%, #fff 0 16%, #fff0b0 32%, #ffb03a 58%, #ff6a10 78%, transparent 80%);
-      box-shadow: 0 0 14px 4px rgba(255, 210, 120, 0.85);
+    .mana-orb::after { content: none; }
+    .mana-orb.has-temp {
+      background-image: url("mana-flame-temp.png?v=1");
+      filter: drop-shadow(0 0 10px rgba(255, 230, 180, 0.8));
     }
     .handbar {
       width: 100%;
@@ -5089,7 +5065,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 32px; height: 32px; }
+      .mana-orb { width: 30px; height: 40px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
