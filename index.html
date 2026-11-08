@@ -8710,10 +8710,10 @@
       if (!name) return "";
       const masterZoom = {
         "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=5", alt: "攻撃（赤）の正本。カード名はアタック" },
-        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=1", alt: "防御（青）の正本。絵柄は空" },
-        "card-style-master-skill": { label: "技（黄）", src: "card-style-master-skill.png?v=1", alt: "技（黄）の正本。絵柄は空" },
-        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=1", alt: "パワー（緑）の正本。絵柄は空" },
-        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=1", alt: "敵のカード（紫）の正本。絵柄は空" },
+        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=2", alt: "防御（青）の正本。仮のカード" },
+        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=2", alt: "スキル（黄）の正本。仮のカード" },
+        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=2", alt: "パワー（緑）の正本。仮のカード" },
+        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=2", alt: "敵のカード（紫）の正本。仮のカード" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9186,19 +9186,19 @@
       return ({
         attack: "攻撃",
         block: "防御",
-        skill: "技",
+        skill: "スキル",
         power: "パワー",
         foe: "敵",
-      })[kind] || "技";
+      })[kind] || "スキル";
     }
 
-    // 設定資料用：色ごとの正本。攻撃は見本入り。ほかは絵柄空。押すと右半分に拡大
+    // 設定資料用：色ごとの正本。攻撃は見本入り。ほかは仮のカード。押すと右半分に拡大
     const BLANK_FRAMES = [
       { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=5", alt: "攻撃（赤）の正本。カード名はアタック" },
-      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=1", alt: "防御（青）の正本。絵柄は空" },
-      { kind: "skill", label: "技（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=1", alt: "技（黄）の正本。絵柄は空" },
-      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=1", alt: "パワー（緑）の正本。絵柄は空" },
-      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=1", alt: "敵のカード（紫）の正本。絵柄は空" },
+      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=2", alt: "防御（青）の正本。仮のカード" },
+      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=2", alt: "スキル（黄）の正本。仮のカード" },
+      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=2", alt: "パワー（緑）の正本。仮のカード" },
+      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=2", alt: "敵のカード（紫）の正本。仮のカード" },
     ];
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
@@ -10334,7 +10334,7 @@
 
     // hand-sort-v2
     function sortHand() {
-      // 色：黄（技）→緑（パワー）→赤（攻撃）→青（防御）
+      // 色：黄（スキル）→緑（パワー）→赤（攻撃）→青（防御）
       const colorRank = (card) => {
         const kind = cardKind(card);
         if (kind === "skill") return 0;
