@@ -5117,11 +5117,11 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack.jpg?v=3",
-      チャージアタック: "card-charge.jpg?v=3",
-      ブロック: "card-block.jpg?v=2",
-      集中: "card-focus.jpg?v=3",
-      パリィ: "card-parry.jpg?v=5",
+      アタック: "card-attack-m.jpg?v=1",
+      チャージアタック: "card-charge-m.jpg?v=1",
+      ブロック: "card-block-m.jpg?v=1",
+      集中: "card-focus.jpg?v=4",
+      パリィ: "card-parry.jpg?v=6",
       捨て身の一撃: "card-reckless.jpg?v=1",
       怒り: "card-rage.jpg?v=1",
       パリィスラッシュ: "card-parry-slash.jpg?v=1",
@@ -5130,15 +5130,15 @@
       ジャストミート: "card-just-meet.jpg?v=1",
       余裕の構え: "card-poise.jpg?v=2",
       ガードブレイク: "card-guard-break.jpg?v=1",
-      致命の一撃: "card-fatal.jpg?v=1",
+      致命の一撃: "card-fatal.jpg?v=2",
       シールドアタック: "card-shield-bash.jpg?v=2",
       頭突き: "card-headbutt.jpg?v=1",
       キック: "card-kick.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
-      ビッグアタック: "card-big-attack.jpg?v=2",
+      ビッグアタック: "card-big-attack-m.jpg?v=1",
       瞑想: "card-meditate.jpg?v=1",
-      ハードブロック: "card-hard-block.jpg?v=2",
-      ビッグブロック: "card-big-block.jpg?v=2",
+      ハードブロック: "card-hard-block-m.jpg?v=1",
+      ビッグブロック: "card-big-block-m.jpg?v=1",
       アタックアタック: "card-attack-attack.jpg?v=1",
       反撃の一手: "card-counter.jpg?v=1",
       応急手当: "card-first-aid.jpg?v=1",
@@ -5152,6 +5152,19 @@
       ファイアソード: "card-firesword.jpg?v=1",
       ファイアパラダイス: "card-fireparadise.jpg?v=1",
     };
+    const CARD_ART_CAST = {
+      アタック: ["card-attack-m.jpg?v=1", "card-attack-f.jpg?v=1"],
+      チャージアタック: ["card-charge-m.jpg?v=1", "card-charge-f.jpg?v=1"],
+      ビッグアタック: ["card-big-attack-m.jpg?v=1", "card-big-attack-f.jpg?v=1"],
+      ブロック: ["card-block-m.jpg?v=1", "card-block-f.jpg?v=1"],
+      ハードブロック: ["card-hard-block-m.jpg?v=1", "card-hard-block-f.jpg?v=1"],
+      ビッグブロック: ["card-big-block-m.jpg?v=1", "card-big-block-f.jpg?v=1"],
+    };
+    function cardArtSrc(name) {
+      const pair = CARD_ART_CAST[name];
+      if (pair) return heroCast === "女の戦士" ? pair[1] : pair[0];
+      return CARD_ART[name] || "";
+    }
     const CARDS = {
       アタック: { cost: 1, text: "3ダメージ", damage: 3 },
       チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
@@ -8706,8 +8719,29 @@
       return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
     }
 
+    const MADE_CARD_ARTS = [
+      ["made-attack-m", "アタック（男）", "card-attack-m.jpg?v=1"],
+      ["made-attack-f", "アタック（女）", "card-attack-f.jpg?v=1"],
+      ["made-charge-m", "チャージアタック（男）", "card-charge-m.jpg?v=1"],
+      ["made-charge-f", "チャージアタック（女）", "card-charge-f.jpg?v=1"],
+      ["made-big-attack-m", "ビッグアタック（男）", "card-big-attack-m.jpg?v=1"],
+      ["made-big-attack-f", "ビッグアタック（女）", "card-big-attack-f.jpg?v=1"],
+      ["made-block-m", "ブロック（男）", "card-block-m.jpg?v=1"],
+      ["made-block-f", "ブロック（女）", "card-block-f.jpg?v=1"],
+      ["made-hard-block-m", "ハードブロック（男）", "card-hard-block-m.jpg?v=1"],
+      ["made-hard-block-f", "ハードブロック（女）", "card-hard-block-f.jpg?v=1"],
+      ["made-big-block-m", "ビッグブロック（男）", "card-big-block-m.jpg?v=1"],
+      ["made-big-block-f", "ビッグブロック（女）", "card-big-block-f.jpg?v=1"],
+      ["made-fatal", "致命の一撃", "card-fatal.jpg?v=2"],
+      ["made-focus", "集中", "card-focus.jpg?v=4"],
+      ["made-parry", "パリィ", "card-parry.jpg?v=6"],
+    ];
     function artZoomSide(name) {
       if (!name) return "";
+      const made = MADE_CARD_ARTS.find((item) => item[0] === name);
+      if (made) {
+        return zoomSidePanel(made[1], `<img class="art-zoom-img" src="${made[2]}" alt="${esc(made[1])}">`);
+      }
       const masterZoom = {
         "card-rarity-sample-plain": { label: "見本 ★ 装飾なし", src: "card-style-master.png?v=6", alt: "見本 ★。装飾なしの仮のカード。攻撃（赤）" },
         "card-rarity-sample-silver": { label: "見本 ★★ 銀の枠", src: "card-rarity-sample-silver.png?v=1", alt: "見本 ★★。カードを囲む銀の枠と、四隅の銀の唐草。仮のカード" },
@@ -8735,7 +8769,7 @@
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
-      const src = CARD_ART[name] || "";
+      const src = cardArtSrc(name);
       const body = src
         ? `<img class="art-zoom-img" src="${esc(src)}" alt="${esc(name)}の絵柄">`
         : `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
@@ -8926,6 +8960,8 @@
             </div>
             <h4>色ごとの空の枠</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
+            <h4>できたカード絵</h4>
+            <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右に絵柄を拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9232,6 +9268,12 @@
       { kind: "foe", label: "敵のカード（紫）★★", zoom: "card-style-master-foe-silver", src: "card-style-master-foe-silver.png?v=7", alt: "敵のカード（紫）★★。銀の唐草。仮のカード" },
       { kind: "foe", label: "敵のカード（紫）★★★", zoom: "card-style-master-foe-gold", src: "card-style-master-foe-gold.png?v=7", alt: "敵のカード（紫）★★★。金の唐草。仮のカード" },
     ];
+    function madeCardSheet() {
+      return MADE_CARD_ARTS.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
         const on = albumZoom === frame.zoom;
@@ -9385,7 +9427,7 @@
       const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
-      const picture = CARD_ART[card.name] ? `<img src="${CARD_ART[card.name]}" alt="">` : "";
+      const picture = cardArtSrc(card.name) ? `<img src="${cardArtSrc(card.name)}" alt="">` : "";
       const rank = stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
