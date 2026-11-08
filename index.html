@@ -384,10 +384,10 @@
       right: 8px;
       left: auto;
     }
-    .foe-plate .shield-badge { right: auto; left: -20px; }
+    .foe-plate .shield-badge { right: -8px; left: auto; }
     .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: none; }
     .hero-body .hero-guard { inset: -12% -18% 8%; }
-    .foe-plate[data-rank="雑魚"] { width: min(232px, 42%); }
+    .foe-plate[data-rank="雑魚"] { width: min(280px, 48%); }
     .foe-plate[data-rank="普通"] { width: min(278px, 46%); }
     .foe-plate[data-rank="強敵"] { width: min(324px, 48%); }
     .battle-plate h2 {
@@ -406,7 +406,7 @@
       text-shadow: 0 1px 0 #000, 0 0 12px rgba(228, 177, 90, 0.25);
       border-bottom: 1px solid rgba(228, 177, 90, 0.35);
     }
-    .battle-plate h2 .who { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .battle-plate h2 .who { min-width: 0; max-width: 100%; overflow: visible; white-space: normal; }
     .battle-plate h2 .plate-rank {
       flex: 0 0 auto;
       padding: 1px 8px 2px;
@@ -678,6 +678,8 @@
     .status-chip.parry b { color: #f0e0b8; }
     .status-chip.focus { border-color: rgba(212, 168, 74, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
     .status-chip.focus b { color: #f0e0b8; }
+    .status-chip.anger { border-color: rgba(220, 70, 40, 0.75); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.anger b { color: #ffb0a0; }
     .battle-plate .poison-mark { display: inline-block; margin-top: 0; }
     @keyframes hp-low {
       0%, 100% { filter: brightness(1); }
@@ -5462,11 +5464,11 @@
       // 旧セーブの「アタック+」「ブロック+」は、いまのアタック／ブロックと同じ扱い
       const key = name === "アタック+" ? "アタック" : name === "ブロック+" ? "ブロック" : name;
       if (key === "アタック") {
-        const dmg = (CARDS.アタック.damage || 3) + hiddenAtk(foe);
+        const dmg = (CARDS.アタック.damage || 3) + foeLiveAtk(foe);
         return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
       }
       if (key === "ブロック") {
-        const blk = (CARDS.ブロック.block || 3) + hiddenDef(foe);
+        const blk = Math.max(0, (CARDS.ブロック.block || 3) + foeLiveDef(foe));
         return { name: "ブロック", cost: 1, text: `ブロック${blk}`, block: blk };
       }
       return null;
@@ -5474,6 +5476,16 @@
 
     function applyEnemyHidden(card, foe) {
       return enemyBasic(foe, card && card.name) || { ...card };
+    }
+
+    function foeLiveAtk(foe) {
+      if (enemy && foe && enemyKey(enemy.name) === foe.name) return Number(enemy.atk) || 0;
+      return hiddenAtk(foe);
+    }
+
+    function foeLiveDef(foe) {
+      if (enemy && foe && enemyKey(enemy.name) === foe.name) return Number(enemy.def) || 0;
+      return hiddenDef(foe);
     }
 
     function burnStacks(target) {
@@ -5516,6 +5528,9 @@
       if (kind === "focus") {
         return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="#fff3c4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="#ffd67a" stroke-width="2" stroke-linecap="round"/></svg>`;
       }
+      if (kind === "anger") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l1.7 5.4 5.6.4-4.3 3.6 1.4 5.5L12 14.2 7.6 17.1l1.4-5.5L4.7 8l5.6-.4z" fill="#ff5a3c"/><path d="M12 6.2l.8 2.4 2.5.2-1.9 1.6.6 2.4L12 11.4l-2 .4.6-2.4-1.9-1.6 2.5-.2z" fill="#ffd0a0"/></svg>`;
+      }
       return "";
     }
     function statusChip(kind, word, count, note) {
@@ -5532,6 +5547,8 @@
       const parry = parryCount(target);
       if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
       if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
+      const anger = Math.max(0, Number(target.anger) || 0);
+      if (anger) parts.push(statusChip("anger", "怒り", anger, "山札を使い切ると得る。重なるたびにATK+1、DEF-1。"));
       return parts.join("");
     }
 
@@ -6160,10 +6177,22 @@
       return (cards || []).map((card) => card.name).sort().join("|");
     }
 
+    function chooseNextIntent() {
+      const from = intentIndex;
+      const left = enemyLoop.length - from;
+      if (left <= 1) return;
+      const pick = from + Math.floor(Math.random() * left);
+      if (pick === from) return;
+      const held = enemyLoop[from];
+      enemyLoop[from] = enemyLoop[pick];
+      enemyLoop[pick] = held;
+    }
+
     function startEnemyLoop() {
       enemyLoop = shuffle(sourcePattern());
       intentIndex = 0;
       foeDiscard = [];
+      chooseNextIntent();
     }
 
     function foeDeckRemain() {
@@ -6172,10 +6201,33 @@
       return Math.max(0, enemyLoop.length - intentIndex - drawn);
     }
 
+    function gainEnemyAnger() {
+      if (!enemy) return;
+      const foe = enemyNow();
+      enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
+      enemy.atk = hiddenAtk(foe) + enemy.anger;
+      enemy.def = hiddenDef(foe) - enemy.anger;
+      log(`${enemy.name}は怒り。ATK+1、DEF-1。`);
+    }
+
+    function recycleEnemyDeck() {
+      const foe = enemyNow();
+      const recycled = foeDiscard.map((card) => applyEnemyHidden(card, foe));
+      enemyLoop = shuffle(recycled.length ? recycled : sourcePattern());
+      foeDiscard = [];
+      intentIndex = 0;
+      chooseNextIntent();
+    }
+
     function advanceEnemyLoop() {
       if (enemyLoop.length && intentIndex < enemyLoop.length) foeDiscard.push({ ...enemyLoop[intentIndex] });
       intentIndex += 1;
-      if (enemyLoop.length && intentIndex >= enemyLoop.length) startEnemyLoop();
+      if (enemyLoop.length && intentIndex >= enemyLoop.length) {
+        gainEnemyAnger();
+        recycleEnemyDeck();
+        return;
+      }
+      chooseNextIntent();
     }
 
     function restoreEnemyLoop(data) {
@@ -7574,11 +7626,12 @@
         enemy.hit = false;
         enemy.poison = poisonStacks(enemy);
         enemy.burn = burnStacks(enemy);
-        enemy.def = Number(enemy.def) || 0;
         enemy.rallied = !!enemy.rallied;
+        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
         enemy.name = enemyKey(enemy.name);
         const foe = enemyByName(enemy.name);
-        enemy.atk = hiddenAtk(foe);
+        enemy.atk = hiddenAtk(foe) + enemy.anger;
+        enemy.def = hiddenDef(foe) - enemy.anger;
         if (enemy.maxHp !== foe.hp) {
           enemy.maxHp = foe.hp;
           if (enemy.hp > foe.hp) enemy.hp = foe.hp;
@@ -7612,7 +7665,9 @@
         const foe = enemyNow();
         enemy.name = foeLabel();
         enemy.image = foe.image;
-        enemy.atk = hiddenAtk(foe);
+        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
+        enemy.atk = hiddenAtk(foe) + enemy.anger;
+        enemy.def = hiddenDef(foe) - enemy.anger;
       }
       restoreEnemyLoop(data);
       if (data.dungeonName) {
@@ -7656,7 +7711,7 @@
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: 0, atk: hiddenAtk(foe), rallied: false, hit: false };
+      enemy = { name: foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -9432,7 +9487,7 @@
 
     function foeDeckOverlay() {
       if (!showFoeDeck || outcome || askLeave) return "";
-      return `<div class="overlay deck-view"><div class="panel"><h2>${esc(enemy.name)}の山札</h2><p class="album-meta">敵は毎ターン、この中から1枚ずつ使う。順番は切り混ぜ。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div><button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
+      return `<div class="overlay deck-view"><div class="panel"><h2>${esc(enemy.name)}の山札</h2><p class="album-meta">毎ターン、残りの中から無作為に1枚使う。使い切ると怒り（ATK+1、DEF-1）を得て、捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div><button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
     }
 
     function bindFoePeek() {
