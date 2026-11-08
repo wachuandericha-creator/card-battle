@@ -1338,7 +1338,7 @@
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
     .ref-grid figure.wide-land { grid-column: 1 / -1; max-width: 720px; }
-    /* カードリスト＝元の色枠の上に金の四隅。名札・効果は薄く、絵柄の場所に点線 */
+    /* カードスタイル＝元の色枠の上に金の四隅。名札・効果は薄く、絵柄の場所に点線 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
     .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
@@ -8938,11 +8938,11 @@
         <div class="album-screen${albumZoom ? " has-zoom" : ""}">
           <div class="panel">
             <h2>カードリスト</h2>
-            <h3>裏面</h3>
+            <h3>カードスタイル　裏</h3>
             <div class="ref-grid">
-              <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>裏面</figcaption></figure>
+              <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>カードスタイル　裏</figcaption></figure>
             </div>
-            <h4>カードリスト</h4>
+            <h4>カードスタイル</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
             <h4>できたカード絵</h4>
             <div class="ref-grid blank-grid">${madeCardSheet()}</div>
@@ -9228,7 +9228,7 @@
       })[kind] || "スキル";
     }
 
-    // カードリスト＝元の色枠の上に金の四隅。枠自体は変えない。
+    // カードスタイル＝元の色枠の上に金の四隅。枠自体は変えない。
     const BLANK_FRAMES = [
       { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-gold-attack.png?v=1", alt: "攻撃（赤）。元の枠の上に金の四隅" },
       { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-gold-block.png?v=1", alt: "防御（青）。元の枠の上に金の四隅" },
