@@ -5048,7 +5048,7 @@
       ホテル: { cost: 3, text: "体力を18回復\nインスタント", heal: 18, instant: true, kind: "skill" },
       ダッシュ: { cost: 1, text: "2枚引く\nクイック", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵の隠しATK は ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本3に隠しを足した合計を書く。隠しDEFは0。
+    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本3にこのATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
@@ -8128,14 +8128,18 @@
       const badges = extra && extra.badges
         ? `<span class="plate-badges">${extra.badges}</span>`
         : "";
-      const rankLine = extra && extra.rank
-        ? `<span class="plate-rank">${esc(extra.rank)}</span><span class="plate-stars" aria-label="ランク">${esc(extra.stars || "")}</span>`
+      const stars = extra && extra.stars
+        ? `<span class="plate-stars" aria-label="ランク">${esc(extra.stars)}</span>`
         : "";
+      const statLine = (icon, label, value) => `<div class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></div>`;
+      const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk) : "";
+      const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def) : "";
+      const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd) : "";
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
-        <h2><span class="who">${esc(name)}</span>${rankLine}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
+        <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
-        ${extra && extra.spd != null ? `<div class="hp-line"><span class="lbl">${bootIcon()}SPD</span><span class="num"><b>${extra.spd}</b></span></div>` : ""}
+        ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
       </section>`;
     }
 
@@ -10105,7 +10109,7 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}<div class="party-stack"><div class="party-attrs" aria-label="ステータス"><div class="attr hp"><span class="mark">${heartIcon()}</span><span>HP</span><b>${player.maxHp}</b></div><div class="attr atk"><span class="mark">${swordIcon()}</span><span>ATK</span><b>${signed(player.atk)}</b></div><div class="attr def"><span class="mark">${shieldIcon()}</span><span>DEF</span><b>${signed(player.def)}</b></div>${player.expose ? `<div class="attr"><span class="mark">+</span><span>被ダメ</span><b>+${player.expose}</b></div>` : ""}${player.guardThrough ? `<div class="attr"><span class="mark"></span><span>構え</span><b>盾可</b></div>` : ""}<div class="attr spd"><span class="mark">${bootIcon()}</span><span>SPD</span><b>${DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0)}</b></div></div></div></aside>
+        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}</aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -10123,8 +10127,8 @@
           <div class="stage">
             <div class="enemy-field">
             ${traitNote()}
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) })}
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), rank: foeRankName(), stars: foeStarText(), spd: 1 })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: signed(player.atk), def: signed(player.def), spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>+${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: signed(enemy.atk), def: signed(enemy.def), spd: 1 })}
             <div class="duel-side ally">
               ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
             </div>
