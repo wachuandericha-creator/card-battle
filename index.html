@@ -8741,6 +8741,10 @@
     ];
     function artZoomSide(name) {
       if (!name) return "";
+      const deco = RARITY_DECOS.find((item) => item[0] === name);
+      if (deco) {
+        return zoomSidePanel(deco[1], `<img class="art-zoom-img" src="${deco[2]}" alt="${esc(deco[1])}">`);
+      }
       const made = MADE_CARD_ARTS.find((item) => item[0] === name);
       if (made) {
         return zoomSidePanel(made[1], `<img class="art-zoom-img" src="${made[2]}" alt="${esc(made[1])}">`);
@@ -8947,6 +8951,8 @@
             </div>
             <h4>カードリスト</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
+            <h4>レアリティ装飾の案</h4>
+            <div class="ref-grid blank-grid">${rarityDecoSheet()}</div>
             <h4>できたカード絵</h4>
             <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
@@ -9239,6 +9245,17 @@
       { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=6", alt: "パワー（緑）。装飾なし。仮のカード" },
       { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=6", alt: "敵のカード（紫）。装飾なし。仮のカード" },
     ];
+    const RARITY_DECOS = [
+      ["rarity-deco-a", "案A 直線の銀", "card-rarity-deco-a.jpg?v=1"],
+      ["rarity-deco-b", "案B 麻の葉", "card-rarity-deco-b.jpg?v=1"],
+      ["rarity-deco-c", "案C 星の線", "card-rarity-deco-c.jpg?v=1"],
+    ];
+    function rarityDecoSheet() {
+      return RARITY_DECOS.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
     function madeCardSheet() {
       return MADE_CARD_ARTS.map((item) => {
         const on = albumZoom === item[0];
