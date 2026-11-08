@@ -379,18 +379,21 @@
     .enemy-field > .hero-plate {
       left: 8px;
       right: auto;
-      width: min(256px, 42%);
+      width: min(280px, 46%);
     }
     .enemy-field > .foe-plate {
       right: 8px;
       left: auto;
     }
     .foe-plate .shield-badge { right: -8px; left: auto; }
-    .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: none; }
+    .battle-plate .hp-line .lbl .ico.heart { color: #ff6b5a; filter: drop-shadow(0 0 4px rgba(255, 90, 60, 0.6)); }
+    .battle-plate .hp-line .lbl .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
+    .battle-plate .hp-line .lbl .ico.shield { color: #5aa8ff; filter: drop-shadow(0 0 5px rgba(80, 160, 255, 0.75)); }
+    .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
     .hero-body .hero-guard { inset: -12% -18% 8%; }
-    .foe-plate[data-rank="雑魚"] { width: min(280px, 48%); }
-    .foe-plate[data-rank="普通"] { width: min(278px, 46%); }
-    .foe-plate[data-rank="強敵"] { width: min(324px, 48%); }
+    .foe-plate[data-rank="雑魚"] { width: min(300px, 50%); }
+    .foe-plate[data-rank="普通"] { width: min(300px, 48%); }
+    .foe-plate[data-rank="強敵"] { width: min(340px, 50%); }
     .battle-plate h2 {
       position: relative;
       margin: 0 0 4px;
@@ -434,15 +437,38 @@
       color: #ffd9d2;
       text-shadow: none;
     }
-    .battle-plate .meters { width: 100%; }
+    .battle-plate .meters { width: 100%; min-width: 0; }
     .battle-plate .meter.hp {
       position: relative;
-      height: 24px;
-      border-radius: 6px;
+      height: 34px;
+      border-radius: 8px;
       background: linear-gradient(180deg, #24120f, #3a2220);
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(228, 177, 90, 0.35), 0 1px 0 rgba(255, 236, 200, 0.08);
       overflow: hidden;
     }
+    .battle-plate .meter.hp .hp-now {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      color: #fff8f0;
+      font-variant-numeric: tabular-nums;
+      text-shadow:
+        0 0 2px #3a0c08,
+        0 1px 0 #3a0c08,
+        0 -1px 0 #3a0c08,
+        1px 0 0 #3a0c08,
+        -1px 0 0 #3a0c08,
+        0 0 10px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+    }
+    .battle-plate.low .meter.hp .hp-now { color: #ffe8e0; }
     .battle-plate .meter.hp > span {
       position: relative;
       z-index: 1;
@@ -480,8 +506,8 @@
       right: 2px;
       top: 2px;
       z-index: 2;
-      height: 42%;
-      border-radius: 4px 4px 2px 2px;
+      height: 40%;
+      border-radius: 6px 6px 2px 2px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04));
       pointer-events: none;
     }
@@ -599,18 +625,26 @@
     .battle-plate .hp-line {
       position: static;
       height: auto;
-      margin: 4px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
+      margin: 5px 0 0;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) 72px;
+      align-items: center;
       font-size: 12px;
       letter-spacing: 0.14em;
       color: #d9c39a;
       text-shadow: 0 1px 0 #000;
     }
-    .battle-plate .hp-line .lbl { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; }
-    .battle-plate .hp-line .lbl .ico { width: 13px; height: 13px; color: #ff6b5a; filter: drop-shadow(0 0 4px rgba(255, 90, 60, 0.6)); }
-    .battle-plate .hp-line .num { display: inline-flex; align-items: baseline; gap: 4px; letter-spacing: 0.02em; }
+    .battle-plate .hp-line .lbl { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; grid-column: 1; }
+    .battle-plate .hp-line .lbl .ico { width: 14px; height: 14px; flex: none; }
+    .battle-plate .hp-line .num {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
     .battle-plate .hp-line b {
       font-size: 28px;
       line-height: 1;
@@ -619,7 +653,7 @@
       text-shadow: 0 1px 0 #000, 0 0 10px rgba(255, 150, 120, 0.25);
       font-variant-numeric: tabular-nums;
     }
-    .battle-plate.low .hp-line b { color: #ffb0a0; }
+    .battle-plate.low .hp-line.stat-hp b { color: #ffb0a0; }
     .battle-plate .hp-line small { font-size: 12px; color: #c9b38c; letter-spacing: 0.02em; }
     /* 状態異常は名前の右に横並び */
     .battle-plate h2 .plate-badges {
@@ -6236,7 +6270,7 @@
     }
 
     function shieldIcon() {
-      return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
+      return `<svg class="ico shield" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
     }
 
     function ironShield(suffix) {
@@ -8289,7 +8323,7 @@
       const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>` : "";
-      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}"><span data-bar="${who}" style="width:${hpPct}%"></span><i class="hp-ticks"></i></div></div>`;
+      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now" data-hp="${who}">${Math.round(hp)}</b><i class="hp-ticks"></i></div></div>`;
     }
 
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
@@ -8308,14 +8342,15 @@
       const stars = extra && extra.stars
         ? `<span class="plate-stars" aria-label="ランク">${esc(extra.stars)}</span>`
         : "";
-      const statLine = (icon, label, value) => `<div class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></div>`;
-      const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk) : "";
-      const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def) : "";
-      const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd) : "";
+      // 板の数値は＋を付けない。値は中央ぞろえ。HP行は最大HPだけ。いまのHPはバーの上に出す。
+      const statLine = (icon, label, value, kind) => `<div class="hp-line${kind ? ` ${kind}` : ""}"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></div>`;
+      const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk, "stat-atk") : "";
+      const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def, "stat-def") : "";
+      const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
-        <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
+        ${statLine(heartIcon(), "HP", maxHp, "stat-hp")}
         ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
       </section>`;
     }
@@ -10403,8 +10438,8 @@
           <div class="stage">
             <div class="enemy-field">
             ${traitNote()}
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: signed(player.atk), def: signed(player.def), spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>+${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: signed(enemy.atk), def: signed(enemy.def), spd: 1 })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
               ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
             </div>
