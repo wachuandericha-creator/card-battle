@@ -8742,32 +8742,6 @@
       if (made) {
         return zoomSidePanel(made[1], `<img class="art-zoom-img" src="${made[2]}" alt="${esc(made[1])}">`);
       }
-      const masterZoom = {
-        "card-rarity-sample-plain": { label: "見本 ★ 装飾なし", src: "card-style-master.png?v=6", alt: "見本 ★。装飾なしの仮のカード。攻撃（赤）" },
-        "card-rarity-sample-silver": { label: "見本 ★★ 銀の枠", src: "card-rarity-sample-silver.png?v=1", alt: "見本 ★★。カードを囲む銀の枠と、四隅の銀の唐草。仮のカード" },
-        "card-rarity-sample-gold": { label: "見本 ★★★ 金の枠", src: "card-rarity-sample-gold.png?v=1", alt: "見本 ★★★。銀より太い金の枠が三重で、四隅の金の唐草が大きい。仮のカード" },
-        "card-gold-pattern-1": { label: "金の案1", src: "card-gold-pattern-1.png?v=2", alt: "金の案1。見せた唐草を金にした。上と下で形が違う" },
-        "card-gold-pattern-2": { label: "金の案2", src: "card-gold-pattern-2.png?v=2", alt: "金の案2。下の唐草を四隅に回した" },
-        "card-gold-pattern-3": { label: "金の案3", src: "card-gold-pattern-3.png?v=2", alt: "金の案3。案1に、もう一段小さい唐草を重ねた" },
-        "card-style-master": { label: "攻撃（赤）★", src: "card-style-master.png?v=6", alt: "攻撃（赤）★。装飾なし。仮のカード" },
-        "card-style-master-silver": { label: "攻撃（赤）★★", src: "card-style-master-silver.png?v=7", alt: "攻撃（赤）★★。銀の唐草。仮のカード" },
-        "card-style-master-gold": { label: "攻撃（赤）★★★", src: "card-style-master-gold.png?v=7", alt: "攻撃（赤）★★★。金の唐草。仮のカード" },
-        "card-style-master-block": { label: "防御（青）★", src: "card-style-master-block.png?v=6", alt: "防御（青）★。装飾なし。仮のカード" },
-        "card-style-master-block-silver": { label: "防御（青）★★", src: "card-style-master-block-silver.png?v=7", alt: "防御（青）★★。銀の唐草。仮のカード" },
-        "card-style-master-block-gold": { label: "防御（青）★★★", src: "card-style-master-block-gold.png?v=7", alt: "防御（青）★★★。金の唐草。仮のカード" },
-        "card-style-master-skill": { label: "スキル（黄）★", src: "card-style-master-skill.png?v=6", alt: "スキル（黄）★。装飾なし。仮のカード" },
-        "card-style-master-skill-silver": { label: "スキル（黄）★★", src: "card-style-master-skill-silver.png?v=7", alt: "スキル（黄）★★。銀の唐草。仮のカード" },
-        "card-style-master-skill-gold": { label: "スキル（黄）★★★", src: "card-style-master-skill-gold.png?v=7", alt: "スキル（黄）★★★。金の唐草。仮のカード" },
-        "card-style-master-power": { label: "パワー（緑）★", src: "card-style-master-power.png?v=6", alt: "パワー（緑）★。装飾なし。仮のカード" },
-        "card-style-master-power-silver": { label: "パワー（緑）★★", src: "card-style-master-power-silver.png?v=7", alt: "パワー（緑）★★。銀の唐草。仮のカード" },
-        "card-style-master-power-gold": { label: "パワー（緑）★★★", src: "card-style-master-power-gold.png?v=7", alt: "パワー（緑）★★★。金の唐草。仮のカード" },
-        "card-style-master-foe": { label: "敵のカード（紫）★", src: "card-style-master-foe.png?v=6", alt: "敵のカード（紫）★。装飾なし。仮のカード" },
-        "card-style-master-foe-silver": { label: "敵のカード（紫）★★", src: "card-style-master-foe-silver.png?v=7", alt: "敵のカード（紫）★★。銀の唐草。仮のカード" },
-        "card-style-master-foe-gold": { label: "敵のカード（紫）★★★", src: "card-style-master-foe-gold.png?v=7", alt: "敵のカード（紫）★★★。金の唐草。仮のカード" },
-      }[name];
-      if (masterZoom) {
-        return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
-      }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const src = cardArtSrc(name);
       const body = src
@@ -8954,12 +8928,10 @@
         <div class="album-screen${albumZoom ? " has-zoom" : ""}">
           <div class="panel">
             <h2>カードリスト</h2>
-            <h3>裏面・枠</h3>
+            <h3>裏面</h3>
             <div class="ref-grid">
               <figure><img class="back-ref" src="card-back.jpg?v=2" alt=""><figcaption>裏面</figcaption></figure>
             </div>
-            <h4>色ごとの空の枠</h4>
-            <div class="ref-grid blank-grid">${blankCardSheet()}</div>
             <h4>できたカード絵</h4>
             <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
@@ -9244,40 +9216,10 @@
       })[kind] || "スキル";
     }
 
-    // カードリスト先頭はレアの見本。土台は装飾なしの仮のカード。★★は銀の枠、★★★はそれより太い金の枠。押すと右半分に拡大
-    const BLANK_FRAMES = [
-      { kind: "attack", label: "見本 ★ 装飾なし", zoom: "card-rarity-sample-plain", src: "card-style-master.png?v=6", alt: "見本 ★。装飾なしの仮のカード。攻撃（赤）" },
-      { kind: "attack", label: "見本 ★★ 銀の枠", zoom: "card-rarity-sample-silver", src: "card-rarity-sample-silver.png?v=1", alt: "見本 ★★。カードを囲む銀の枠と、四隅の銀の唐草。仮のカード" },
-      { kind: "attack", label: "見本 ★★★ 金の枠", zoom: "card-rarity-sample-gold", src: "card-rarity-sample-gold.png?v=1", alt: "見本 ★★★。銀より太い金の枠が三重で、四隅の金の唐草が大きい。仮のカード" },
-      { kind: "attack", label: "金の案1", zoom: "card-gold-pattern-1", src: "card-gold-pattern-1.png?v=2", alt: "金の案1。見せた唐草を金にした。上と下で形が違う" },
-      { kind: "attack", label: "金の案2", zoom: "card-gold-pattern-2", src: "card-gold-pattern-2.png?v=2", alt: "金の案2。下の唐草を四隅に回した" },
-      { kind: "attack", label: "金の案3", zoom: "card-gold-pattern-3", src: "card-gold-pattern-3.png?v=2", alt: "金の案3。案1に、もう一段小さい唐草を重ねた" },
-      { kind: "attack", label: "攻撃（赤）★", zoom: "card-style-master", src: "card-style-master.png?v=6", alt: "攻撃（赤）★。装飾なし。仮のカード" },
-      { kind: "attack", label: "攻撃（赤）★★", zoom: "card-style-master-silver", src: "card-style-master-silver.png?v=7", alt: "攻撃（赤）★★。銀の唐草。仮のカード" },
-      { kind: "attack", label: "攻撃（赤）★★★", zoom: "card-style-master-gold", src: "card-style-master-gold.png?v=7", alt: "攻撃（赤）★★★。金の唐草。仮のカード" },
-      { kind: "block", label: "防御（青）★", zoom: "card-style-master-block", src: "card-style-master-block.png?v=6", alt: "防御（青）★。装飾なし。仮のカード" },
-      { kind: "block", label: "防御（青）★★", zoom: "card-style-master-block-silver", src: "card-style-master-block-silver.png?v=7", alt: "防御（青）★★。銀の唐草。仮のカード" },
-      { kind: "block", label: "防御（青）★★★", zoom: "card-style-master-block-gold", src: "card-style-master-block-gold.png?v=7", alt: "防御（青）★★★。金の唐草。仮のカード" },
-      { kind: "skill", label: "スキル（黄）★", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=6", alt: "スキル（黄）★。装飾なし。仮のカード" },
-      { kind: "skill", label: "スキル（黄）★★", zoom: "card-style-master-skill-silver", src: "card-style-master-skill-silver.png?v=7", alt: "スキル（黄）★★。銀の唐草。仮のカード" },
-      { kind: "skill", label: "スキル（黄）★★★", zoom: "card-style-master-skill-gold", src: "card-style-master-skill-gold.png?v=7", alt: "スキル（黄）★★★。金の唐草。仮のカード" },
-      { kind: "power", label: "パワー（緑）★", zoom: "card-style-master-power", src: "card-style-master-power.png?v=6", alt: "パワー（緑）★。装飾なし。仮のカード" },
-      { kind: "power", label: "パワー（緑）★★", zoom: "card-style-master-power-silver", src: "card-style-master-power-silver.png?v=7", alt: "パワー（緑）★★。銀の唐草。仮のカード" },
-      { kind: "power", label: "パワー（緑）★★★", zoom: "card-style-master-power-gold", src: "card-style-master-power-gold.png?v=7", alt: "パワー（緑）★★★。金の唐草。仮のカード" },
-      { kind: "foe", label: "敵のカード（紫）★", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=6", alt: "敵のカード（紫）★。装飾なし。仮のカード" },
-      { kind: "foe", label: "敵のカード（紫）★★", zoom: "card-style-master-foe-silver", src: "card-style-master-foe-silver.png?v=7", alt: "敵のカード（紫）★★。銀の唐草。仮のカード" },
-      { kind: "foe", label: "敵のカード（紫）★★★", zoom: "card-style-master-foe-gold", src: "card-style-master-foe-gold.png?v=7", alt: "敵のカード（紫）★★★。金の唐草。仮のカード" },
-    ];
     function madeCardSheet() {
       return MADE_CARD_ARTS.map((item) => {
         const on = albumZoom === item[0];
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
-    function blankCardSheet() {
-      return BLANK_FRAMES.map((frame) => {
-        const on = albumZoom === frame.zoom;
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${frame.zoom}" aria-label="${esc(frame.label)}の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${frame.src}" alt="${esc(frame.alt)}"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
       }).join("");
     }
 
