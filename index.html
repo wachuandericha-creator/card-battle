@@ -1383,7 +1383,14 @@
       pointer-events: none;
     }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
-    .cast-roster { display: flex; justify-content: center; width: min(1100px, 100%); min-height: 0; }
+    .cast-roster {
+      display: flex;
+      justify-content: center;
+      width: min(1100px, 100%);
+      min-height: 0;
+      flex: 0 0 auto;
+      padding: 4px 0 8px;
+    }
     .cast-token {
       border: 0;
       background: transparent;
@@ -4080,7 +4087,7 @@
     }
     .dungeon-pick {
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
       height: 100%;
       min-height: 0;
       gap: 12px;
@@ -7726,8 +7733,8 @@
       root.innerHTML = `
         <div class="cast-screen">
           <h1 class="cast-title">初期ジョブを選択してください</h1>
-          <div class="cast-roster many">${tokens}</div>
           <div class="cast-main"></div>
+          <div class="cast-roster many">${tokens}</div>
         </div>`;
       paintCast();
       bindCastHover();
@@ -7822,10 +7829,10 @@
       root.innerHTML = `
         <div class="cast-screen dungeon-pick">
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
-          <div class="dungeon-columns">${columns}</div>
           <div class="dungeon-preview">
             <img alt="" hidden>
           </div>
+          <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
             <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
