@@ -4146,74 +4146,92 @@
     .challenge-pick {
       height: 100%;
       min-height: 0;
-      padding: 12px max(24px, 3vw) 96px;
+      align-items: stretch;
+      padding: 8px 28px 88px;
       box-sizing: border-box;
       background:
         radial-gradient(ellipse at 50% 0%, rgba(90, 60, 20, 0.28), transparent 46%),
         #0c0908;
     }
     .challenge-pick .cast-title {
-      width: min(1200px, 100%);
+      width: 100%;
       font-size: clamp(22px, 2.6vw, 34px);
       letter-spacing: 0.12em;
     }
     .challenge-split {
       flex: 1 1 auto;
       min-height: 0;
-      width: min(1280px, 100%);
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: clamp(14px, 2vw, 28px);
+      gap: 18px;
       align-items: stretch;
     }
     .challenge-job,
     .challenge-dungeon {
       min-width: 0;
       min-height: 0;
+      height: 100%;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      align-items: center;
+      align-items: stretch;
     }
     .challenge-job .cast-main {
+      flex: 1 1 auto;
       width: 100%;
+      height: auto;
+      min-height: 0;
       margin: 0;
-      grid-template-columns: minmax(140px, 42%) minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: minmax(200px, 46%) minmax(0, 1fr);
+      gap: 14px;
       align-items: stretch;
     }
     .challenge-job .cast-action {
       width: 100%;
       max-width: none;
-      height: auto;
-      max-height: min(52vh, 420px);
-      aspect-ratio: 4 / 5;
+      height: 100%;
+      max-height: none;
+      aspect-ratio: auto;
       justify-self: stretch;
-      align-self: center;
+      align-self: stretch;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .challenge-job .cast-side {
+      height: 100%;
+      justify-content: stretch;
+    }
+    .challenge-job .cast-side .cast-plaque {
+      height: 100%;
+      max-height: 100%;
+      box-sizing: border-box;
+      overflow: auto;
     }
     .challenge-job .cast-side .cast-plaque {
       padding: 12px 12px 14px;
     }
-    .challenge-job .cast-side .cast-plaque h1 { font-size: 26px; margin-bottom: 8px; gap: 8px; }
-    .challenge-job .cast-side .cast-blurb { font-size: 12px; padding: 8px 10px; margin-bottom: 8px; }
-    .challenge-job .stat-chips { gap: 6px; margin-bottom: 4px; }
-    .challenge-job .stat-chips .chip { padding: 8px 8px; }
-    .challenge-job .stat-chips .chip b { font-size: 20px; }
+    .challenge-job .cast-side .cast-plaque h1 { font-size: 32px; margin-bottom: 8px; gap: 8px; }
+    .challenge-job .cast-side .cast-blurb { font-size: 15px; padding: 10px 12px; margin-bottom: 10px; }
+    .challenge-job .stat-chips { gap: 8px; margin-bottom: 4px; }
+    .challenge-job .stat-chips .chip { padding: 10px 10px; }
+    .challenge-job .stat-chips .chip b { font-size: 26px; }
     .challenge-job .stat-chips .chip .ico { width: 18px; height: 18px; }
     .challenge-job .cast-side .cast-plaque h2 { margin: 8px 0 6px; font-size: 13px; }
     .challenge-job .cast-side .cast-gear { gap: 10px; }
     .challenge-job .cast-side .cast-gear figure { width: 64px; }
     .challenge-job .cast-side .cast-gear img { width: 56px; height: 56px; }
     .challenge-job .cast-side .cast-gear figcaption { font-size: 11px; }
-    .challenge-job .cast-side .cast-deck .card.preview { width: 72px; }
+    .challenge-job .cast-side .cast-deck .card.preview { width: 92px; }
     .challenge-job .cast-roster {
       width: 100%;
       padding: 0;
-      gap: 10px;
+      gap: 16px;
+      justify-content: space-evenly;
     }
-    .challenge-job .cast-token.mini img { width: 88px; height: 104px; }
-    .challenge-job .cast-token.mini span { font-size: 14px; }
+    .challenge-job .cast-token.mini img { width: min(160px, 16vw); height: min(190px, 22vh); }
+    .challenge-job .cast-token.mini span { font-size: 16px; }
     .challenge-dungeon .dungeon-preview {
       flex: 1 1 auto;
       width: 100%;
@@ -4222,7 +4240,8 @@
     }
     .challenge-dungeon .dungeon-columns {
       width: 100%;
-      height: min(120px, 14vh);
+      height: min(26vh, 240px);
+      align-self: stretch;
     }
     .dungeon-preview {
       position: relative;
