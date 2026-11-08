@@ -2840,6 +2840,19 @@
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
     }
+    /* 報酬・贈り物のカードは乗せても動かさない（下線の説明は吹き出しのまま） */
+    .reward-pick .card,
+    .reward-pick .card:hover,
+    .reward-pick:hover .card,
+    .gift-pick .card,
+    .gift-pick .card:hover,
+    .gift-show .card,
+    .gift-show .card:hover,
+    .gift-btn .card,
+    .gift-btn .card:hover,
+    .gift-btn:hover .card {
+      transform: none;
+    }
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
     .card .nameplate {
