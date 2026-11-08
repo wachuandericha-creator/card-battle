@@ -1543,6 +1543,21 @@
     .stat-chips .chip.hp { --chip: #ff5c4a; }
     .stat-chips .chip.atk { --chip: #ffb14a; }
     .stat-chips .chip.def { --chip: #7eb6ff; }
+    .cast-side .cast-blurb {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(228, 177, 90, 0.35);
+      background: rgba(8, 6, 4, 0.35);
+      color: #fff1d8;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.55;
+      letter-spacing: 0.04em;
+      text-align: left;
+    }
     .cast-side .cast-plaque h2 {
       margin: 12px 0 8px;
       display: flex;
@@ -1665,13 +1680,6 @@
     }
     .cast-actions .cast-back:hover { border-color: #f0c36a; background: rgba(40, 30, 24, 0.95); }
     .cast-screen:has(> .cast-actions) { padding-bottom: 86px; }
-    /* ジョブ選択では、板のすぐ下に並べる（板と同じ右端に揃う） */
-    .cast-side .cast-actions {
-      position: static;
-      flex: 0 0 auto;
-      justify-content: flex-end;
-      margin-top: 14px;
-    }
     .sprite {
       width: 100%;
       height: 100%;
@@ -4778,8 +4786,30 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3", bless: "blessing-goddess.jpg?v=1" },
-      { name: "女の戦士", stand: "girl-front.png?v=10", chibi: "job-girl.png?v=5", action: "girl-action.jpg?v=3", battle: "girl-battle.png?v=19", battleRatio: "3 / 4", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9", bless: "blessing-goddess-f.jpg?v=1" },
+      {
+        name: "戦士",
+        blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。初期の数値と装備は女の戦士と同じ。",
+        stand: "job-front.png?v=5",
+        chibi: "job-warrior.png?v=9",
+        action: "job-action.jpg?v=3",
+        battle: "hero-shoulder.png?v=25",
+        battleRatio: "864 / 1152",
+        defeat: "warrior-defeat.png?v=3",
+        victory: "warrior-victory.png?v=3",
+        bless: "blessing-goddess.jpg?v=1",
+      },
+      {
+        name: "女の戦士",
+        blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。初期の数値と装備は戦士と同じ。",
+        stand: "girl-front.png?v=10",
+        chibi: "job-girl.png?v=5",
+        action: "girl-action.jpg?v=3",
+        battle: "girl-battle.png?v=19",
+        battleRatio: "3 / 4",
+        defeat: "girl-defeat.png?v=8",
+        victory: "girl-victory.png?v=9",
+        bless: "blessing-goddess-f.jpg?v=1",
+      },
     ];
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
@@ -7692,11 +7722,15 @@
     }
 
     function castMainMarkup(item) {
+      const blurb = item.blurb
+        ? `<p class="cast-blurb">${esc(item.blurb)}</p>`
+        : "";
       return `
         <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
+            ${blurb}
             <ul class="stat-chips" aria-label="初期ステータス">
               <li class="chip hp">${heartIcon()}<span class="k">HP</span><b>30</b></li>
               <li class="chip atk">${swordIcon()}<span class="k">ATK</span><b>+1</b></li>
@@ -7709,10 +7743,6 @@
             </div>
             <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
-          </div>
-          <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="title">もどる</button>
-            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
           </div>
         </div>`;
     }
@@ -7763,6 +7793,10 @@
           <h1 class="cast-title">初期ジョブを選択してください</h1>
           <div class="cast-main"></div>
           <div class="cast-roster many">${tokens}</div>
+          <div class="cast-actions">
+            <button type="button" class="cast-back" data-action="title">もどる</button>
+            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
+          </div>
         </div>`;
       paintCast();
       bindCastHover();
