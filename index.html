@@ -2336,7 +2336,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札と戦闘画面のあいだ。燃える炎を数だけ */
+    /* マナ：山札と戦闘画面のあいだ。黄色い宝珠を燃やしたものを数だけ */
     .deck-column {
       position: relative;
       height: 100%;
@@ -2371,11 +2371,11 @@
     }
     .mana-orb {
       position: relative;
-      width: 36px;
-      height: 48px;
+      width: 46px;
+      height: 62px;
       flex: 0 0 auto;
       border: 0;
-      background: url("mana-flame.png?v=1") center bottom / contain no-repeat;
+      background: url("mana-jewel.png?v=1") center bottom / contain no-repeat;
       box-shadow: none;
       filter: drop-shadow(0 0 8px rgba(255, 90, 20, 0.55));
       animation: flame-sway 0.72s ease-in-out infinite alternate;
@@ -2383,7 +2383,7 @@
     .mana-orb::before,
     .mana-orb::after { content: none; }
     .mana-orb.has-temp {
-      background-image: url("mana-flame-temp.png?v=1");
+      background-image: url("mana-jewel-temp.png?v=1");
       filter: drop-shadow(0 0 10px rgba(255, 230, 180, 0.8));
     }
     .handbar {
@@ -5064,7 +5064,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 30px; height: 40px; }
+      .mana-orb { width: 38px; height: 52px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -8759,6 +8759,11 @@
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=1", "タイトル", "タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。")}
+            <h3>マナ</h3>
+            <div class="ref-grid">
+              ${sheetFig("mana-jewel.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
+              ${sheetFig("mana-jewel-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
+            </div>
             <h3>装備</h3>
             <div class="ref-grid">
               ${sheetFig("gear-short-sword.jpg?v=2", "ショートソード")}
