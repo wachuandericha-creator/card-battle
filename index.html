@@ -8707,6 +8707,9 @@
 
     function artZoomSide(name) {
       if (!name) return "";
+      if (name === "card-style-red") {
+        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空">`);
+      }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const src = CARD_ART[name] || "";
       const body = src
@@ -9192,7 +9195,8 @@
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
         if (frame.kind === "attack") {
-          return `<figure><img class="back-ref" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空"><figcaption>${esc(frame.label)}</figcaption></figure>`;
+          const on = albumZoom === "card-style-red";
+          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-red" aria-label="攻撃（赤）の仮カードを拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
         }
         const face = cardFace(
           { name: "カード名", cost: "0", text: "効果", stars: 3, kind: frame.kind === "foe" ? "skill" : frame.kind },
