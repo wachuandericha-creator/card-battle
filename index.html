@@ -2234,7 +2234,16 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：手札の左に、数だけ金色の玉。手札がかぶってもよい */
+    /* マナ：山札と戦闘画面のあいだ。燃える炎を数だけ */
+    .deck-column {
+      position: relative;
+      height: 100%;
+      flex: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
     .deck-stack {
       position: relative;
       height: 100%;
@@ -2246,42 +2255,58 @@
     .hand { position: relative; }
     .mana-row {
       position: absolute;
-      left: 4px;
-      bottom: 10px;
-      z-index: 0;
+      left: 50%;
+      bottom: calc(100% - 10px);
+      z-index: 9;
       display: flex;
       flex-direction: row;
       align-items: flex-end;
-      justify-content: flex-start;
-      gap: 6px;
+      justify-content: center;
+      gap: 0;
       margin: 0;
+      transform: translateX(-50%);
       pointer-events: none;
     }
     .mana-orb {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      position: relative;
+      width: 28px;
+      height: 46px;
       flex: 0 0 auto;
-      border: 2px solid #fff8d0;
-      background:
-        radial-gradient(circle at var(--hot-x) var(--hot-y), rgba(255, 255, 255, 0.95) 0 10%, rgba(255, 255, 255, 0) 34%),
-        radial-gradient(circle at 50% 58%, #ffe566 0%, #f0a010 46%, #a86a08 78%, #5a3400 100%);
-      box-shadow:
-        0 0 0 2px rgba(40, 22, 4, 0.85),
-        0 0 14px rgba(255, 200, 60, 0.65),
-        0 6px 10px rgba(0, 0, 0, 0.4),
-        inset 0 -5px 8px rgba(80, 40, 0, 0.35);
-      animation: mana-roil 2.6s ease-in-out infinite;
+      border: 0;
+      background: none;
+      box-shadow: none;
+      animation: flame-sway 0.72s ease-in-out infinite alternate;
     }
-    .mana-orb.has-temp {
-      border-color: #ffd090;
+    .mana-orb::before,
+    .mana-orb::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .mana-orb::before {
+      width: 24px;
+      height: 38px;
+      border-radius: 50% 50% 46% 46% / 64% 64% 36% 36%;
       background:
-        radial-gradient(circle at var(--hot-x) var(--hot-y), rgba(255, 255, 255, 0.9) 0 10%, rgba(255, 255, 255, 0) 34%),
-        radial-gradient(circle at 50% 58%, #ffc070 0%, #ff8a28 42%, #e05010 78%, #7a2808 100%);
-      box-shadow:
-        0 0 0 2px rgba(50, 20, 4, 0.85),
-        0 0 14px rgba(255, 140, 40, 0.65),
-        0 6px 10px rgba(0, 0, 0, 0.4);
+        radial-gradient(ellipse at 50% 78%, #fff4c4 0 10%, #ffc24a 26%, #ff6a12 52%, #d41e08 74%, transparent 76%);
+      box-shadow: 0 0 12px 3px rgba(255, 80, 16, 0.72);
+      animation: flame-body 0.36s ease-in-out infinite alternate;
+    }
+    .mana-orb::after {
+      bottom: 6px;
+      width: 11px;
+      height: 20px;
+      border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+      background: radial-gradient(ellipse at 50% 72%, #fff 0 18%, #ffe7a0 48%, transparent 74%);
+      animation: flame-core 0.26s ease-in-out infinite alternate;
+    }
+    .mana-orb.has-temp::before {
+      background:
+        radial-gradient(ellipse at 50% 78%, #fff 0 16%, #fff0b0 32%, #ffb03a 58%, #ff6a10 78%, transparent 80%);
+      box-shadow: 0 0 14px 4px rgba(255, 210, 120, 0.85);
     }
     .handbar {
       width: 100%;
@@ -2928,7 +2953,7 @@
         transform: none;
       }
       .sprite .eye, .sprite .eye::after { animation: none; }
-      .battle-screen.no-mana, .battle-screen.block, .mana-orb { animation: none; }
+      .battle-screen.no-mana, .battle-screen.block, .mana-orb, .mana-orb::before, .mana-orb::after { animation: none; }
     }
     .card.attack, .card.block, .card.skill, .card.power, .card.foe {
       clip-path: polygon(2% 0, 98% 1%, 100% 4%, 99% 97%, 96% 100%, 3% 99%, 0 96%, 1% 3%);
@@ -4936,12 +4961,17 @@
       inherits: false;
       initial-value: 42%;
     }
-    @keyframes mana-roil {
-      0% { --hot-x: 36%; --hot-y: 58%; filter: brightness(0.86); }
-      27% { --hot-x: 66%; --hot-y: 32%; filter: brightness(1.3); }
-      51% { --hot-x: 42%; --hot-y: 72%; filter: brightness(0.78); }
-      76% { --hot-x: 24%; --hot-y: 40%; filter: brightness(1.16); }
-      100% { --hot-x: 36%; --hot-y: 58%; filter: brightness(0.86); }
+    @keyframes flame-sway {
+      from { transform: rotate(-6deg); }
+      to { transform: rotate(6deg); }
+    }
+    @keyframes flame-body {
+      from { transform: translateX(-50%) scaleX(1) scaleY(0.92); }
+      to { transform: translateX(-50%) scaleX(0.78) scaleY(1.14); }
+    }
+    @keyframes flame-core {
+      from { transform: translateX(-50%) scaleY(0.86); opacity: 0.8; }
+      to { transform: translateX(-50%) scaleY(1.16); opacity: 1; }
     }
     @media (max-width: 720px) {
       .hand .card { height: 100%; }
@@ -10210,12 +10240,15 @@
           </div>
           <div class="handbar">
               <div class="pile-pair">
-                <div class="deck-stack">
-                  ${pileMarkup("deck", deck.length)}
+                <div class="deck-column">
+                  ${pips()}
+                  <div class="deck-stack">
+                    ${pileMarkup("deck", deck.length)}
+                  </div>
                 </div>
                 ${pileMarkup("discard", discard.length)}
               </div>
-              <div class="hand${dealNow ? " deal-pending" : ""}">${pips()}${cards}</div>
+              <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
               ${endButtonMarkup()}
             </div>
         </div>
