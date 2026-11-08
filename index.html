@@ -8,6 +8,7 @@
     :root {
       --hand-scale: 0.74;
       --card-ratio: 204 / 300;
+      --edge-clear: clamp(32px, 6vmin, 80px);
       --bg: #0a0908;
       --ink: #1a1612;
       --cream: #f0e4cc;
@@ -3508,6 +3509,48 @@
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
     #game { height: 100%; overflow: visible; }
+    /* 戦闘以外：画面の外枠には操作・文字・絵を置かない（オプションでオン／オフ） */
+    #game.edge-clear-screen {
+      box-sizing: border-box;
+      padding: var(--edge-clear);
+      background: #050403;
+    }
+    #game.edge-clear-screen > *:not(.nav-title):not(.overlay) {
+      height: 100%;
+      max-height: 100%;
+      min-height: 0;
+    }
+    body.edge-clear .nav-title {
+      left: calc(14px + var(--edge-clear));
+      top: calc(12px + var(--edge-clear));
+    }
+    body.edge-clear .overlay {
+      inset: var(--edge-clear);
+      width: auto;
+      height: auto;
+    }
+    body.edge-clear .overlay .panel.wide,
+    body.edge-clear .overlay.victory .panel.wide.reward-panel,
+    body.edge-clear .overlay .panel.wide.shop-panel {
+      width: min(1240px, calc(100% - 24px));
+      max-height: calc(100% - 24px);
+    }
+    #game.edge-clear-screen .dungeon-cover {
+      top: 4%;
+      left: 3%;
+      width: 94%;
+      height: 92%;
+    }
+    #game.edge-clear-screen .dungeon-gate-name { top: calc(8% + 1.2em); }
+    #game.edge-clear-screen .dungeon-enter { bottom: 8%; }
+    #game.edge-clear-screen .challenge-pick,
+    #game.edge-clear-screen .cast-screen,
+    #game.edge-clear-screen .menu,
+    #game.edge-clear-screen .end-screen,
+    #game.edge-clear-screen .title-screen,
+    #game.edge-clear-screen .album-screen {
+      box-sizing: border-box;
+    }
     .end-screen {
       height: 100%;
       min-height: 0;
@@ -4893,6 +4936,7 @@
     let battleIndex = 0;
     let showLog = true;
     let autoEndTurn = true;
+    let edgeClear = true;
     let cleared = false;
     let runEnded = null;
     let loginWord = "";
@@ -7129,14 +7173,23 @@
         const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
         if (typeof saved.showLog === "boolean") showLog = saved.showLog;
         if (typeof saved.autoEndTurn === "boolean") autoEndTurn = saved.autoEndTurn;
+        if (typeof saved.edgeClear === "boolean") edgeClear = saved.edgeClear;
       } catch (error) {
         showLog = true;
         autoEndTurn = true;
+        edgeClear = true;
       }
+      paintEdgeClear();
     }
 
     function persistSettings() {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog, autoEndTurn }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog, autoEndTurn, edgeClear }));
+    }
+
+    function paintEdgeClear() {
+      document.body.classList.toggle("edge-clear", !!edgeClear);
+      const battleNow = screen === "battle";
+      root.classList.toggle("edge-clear-screen", !!edgeClear && !battleNow);
     }
 
     function readSave() {
@@ -7871,6 +7924,7 @@
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
+          ${menuButton(edgeClear ? "画面の端をあける：オン" : "画面の端をあける：オフ", "toggle-edge-clear", true)}
           ${handBtn}
           ${menuButton("もどる", "back")}
         </div>`;
@@ -8554,6 +8608,7 @@
         renderBattle();
         paintGearOffer();
       }
+      paintEdgeClear();
       paintTitleNav();
     }
 
@@ -9973,6 +10028,7 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
+        if (name === "toggle-edge-clear") { edgeClear = !edgeClear; persistSettings(); paintEdgeClear(); render(); }
         if (name === "fill-hand-look") { fillHandForLook(); return; }
         if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
         if (name === "close-art-zoom") {
