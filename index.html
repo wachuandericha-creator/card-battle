@@ -8,7 +8,7 @@
     :root {
       --hand-scale: 0.64;
       --card-ratio: 204 / 300;
-      --edge-clear: clamp(32px, 6vmin, 80px);
+      --edge-clear: clamp(44px, 7.5vmin, 100px);
       --bg: #0a0908;
       --ink: #1a1612;
       --cream: #f0e4cc;
@@ -3460,26 +3460,45 @@
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
     #game { height: 100%; overflow: visible; }
-    /* 戦闘以外：画面の外枠には操作・文字・絵を置かない（オプションでオン／オフ） */
+    /* 戦闘以外：外枠は各画面の背景だけ。黒く塗り分けない。操作・文字・絵は置かない */
     #game.edge-clear-screen {
       box-sizing: border-box;
-      padding: var(--edge-clear);
-      background: #050403;
+      padding: 0;
+      background: transparent;
     }
     #game.edge-clear-screen > *:not(.nav-title):not(.overlay) {
       height: 100%;
       max-height: 100%;
       min-height: 0;
+      box-sizing: border-box;
+      border: var(--edge-clear) solid transparent;
     }
     body.edge-clear .nav-title {
       left: calc(14px + var(--edge-clear));
       top: calc(12px + var(--edge-clear));
     }
     body.edge-clear .overlay {
-      inset: var(--edge-clear);
+      inset: 0;
       width: auto;
       height: auto;
+      box-sizing: border-box;
+      padding: var(--edge-clear);
     }
+    body.edge-clear .overlay.victory.finale {
+      padding: calc(12px + var(--edge-clear)) calc(18px + var(--edge-clear)) calc(18px + var(--edge-clear));
+    }
+    /* 挑戦内容だけ、もどると挑戦開始を下の外枠へ出す */
+    body.edge-clear .challenge-pick .cast-actions {
+      position: fixed;
+      right: 28px;
+      bottom: max(10px, calc((var(--edge-clear) - 60px) / 2));
+      z-index: 40;
+    }
+    #game.edge-clear-screen .challenge-pick {
+      padding-bottom: 12px;
+    }
+    #game.edge-clear-screen .title-screen { overflow: visible; }
+    #game.edge-clear-screen .title-vignette { inset: calc(var(--edge-clear) * -1); }
     body.edge-clear .overlay .panel.wide,
     body.edge-clear .overlay.victory .panel.wide.reward-panel,
     body.edge-clear .overlay .panel.wide.shop-panel {
