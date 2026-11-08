@@ -194,7 +194,7 @@
     }
     .stage .foe-pile,
     .stage .foe-peek { pointer-events: auto; }
-    /* 自分＝左、敵＝右。HP板は上端そろえ。キャラはその下 */
+    /* 自分のステータスは戦闘画面の左上、敵は右上 */
     .enemy-field {
       position: relative;
       display: grid;
@@ -367,24 +367,28 @@
     .battle-plate.hero-plate { --plate-accent: var(--gold); }
     .battle-plate.foe-plate { --plate-accent: #c89848; }
     .battle-plate .hint { pointer-events: auto; }
-    .hero-shoulder .hero-plate,
-    .enemy-main .foe-plate {
-      position: relative;
-      left: auto;
-      right: auto;
-      top: auto;
-      bottom: auto;
-      transform: none;
-      flex: 0 0 auto;
-      /* 上の空白は、右上の盾札が枠で欠けない分だけ */
-      margin: 42px 0 10px;
-      z-index: 6;
+    .enemy-field > .hero-plate,
+    .enemy-field > .foe-plate {
+      position: absolute;
+      top: 40px;
+      margin: 0;
+      z-index: 8;
     }
-    .hero-shoulder .hero-plate { width: min(256px, 100%); }
+    .enemy-field > .hero-plate {
+      left: 8px;
+      right: auto;
+      width: min(256px, 42%);
+    }
+    .enemy-field > .foe-plate {
+      right: 8px;
+      left: auto;
+    }
+    .foe-plate .shield-badge { right: auto; left: -20px; }
+    .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: none; }
     .hero-body .hero-guard { inset: -12% -18% 8%; }
-    .foe-plate[data-rank="雑魚"] { width: min(232px, 100%); }
-    .foe-plate[data-rank="普通"] { width: min(278px, 100%); }
-    .foe-plate[data-rank="強敵"] { width: min(324px, 100%); }
+    .foe-plate[data-rank="雑魚"] { width: min(232px, 42%); }
+    .foe-plate[data-rank="普通"] { width: min(278px, 46%); }
+    .foe-plate[data-rank="強敵"] { width: min(324px, 48%); }
     .battle-plate h2 {
       position: relative;
       margin: 0 0 4px;
@@ -854,7 +858,7 @@
     .trait-note {
       position: absolute;
       right: 10px;
-      top: 14px;
+      top: 230px;
       left: auto;
       flex: none;
       width: max-content;
@@ -7978,6 +7982,7 @@
         <h2><span class="who">${esc(name)}</span>${rankLine}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
+        ${extra && extra.spd != null ? `<div class="hp-line"><span class="lbl">${bootIcon()}SPD</span><span class="num"><b>${extra.spd}</b></span></div>` : ""}
       </section>`;
     }
 
@@ -9952,8 +9957,10 @@
           <div class="stage">
             <div class="enemy-field">
             ${traitNote()}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), rank: foeRankName(), stars: foeStarText(), spd: 1 })}
             <div class="duel-side ally">
-              ${heroShoulder(plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player) }), Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -9961,7 +9968,6 @@
             </div>
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
-              ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), rank: foeRankName(), stars: foeStarText() })}
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
