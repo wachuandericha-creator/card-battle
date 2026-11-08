@@ -8709,6 +8709,9 @@
     function artZoomSide(name) {
       if (!name) return "";
       const masterZoom = {
+        "card-rarity-sample-plain": { label: "見本 ★ 装飾なし", src: "card-style-master.png?v=6", alt: "見本 ★。装飾なしの仮のカード。攻撃（赤）" },
+        "card-rarity-sample-silver": { label: "見本 ★★ 銀の枠", src: "card-rarity-sample-silver.png?v=1", alt: "見本 ★★。カードを囲む銀の枠と、四隅の銀の唐草。仮のカード" },
+        "card-rarity-sample-gold": { label: "見本 ★★★ 金の枠", src: "card-rarity-sample-gold.png?v=1", alt: "見本 ★★★。銀より太い金の枠が三重で、四隅の金の唐草が大きい。仮のカード" },
         "card-gold-pattern-1": { label: "金の案1", src: "card-gold-pattern-1.png?v=2", alt: "金の案1。見せた唐草を金にした。上と下で形が違う" },
         "card-gold-pattern-2": { label: "金の案2", src: "card-gold-pattern-2.png?v=2", alt: "金の案2。下の唐草を四隅に回した" },
         "card-gold-pattern-3": { label: "金の案3", src: "card-gold-pattern-3.png?v=2", alt: "金の案3。案1に、もう一段小さい唐草を重ねた" },
@@ -9205,8 +9208,11 @@
       })[kind] || "スキル";
     }
 
-    // 設定資料用：色ごとの正本。★は装飾なし。★★は銀の唐草。★★★は同じ唐草を金。押すと右半分に拡大
+    // カードリスト先頭はレアの見本。土台は装飾なしの仮のカード。★★は銀の枠、★★★はそれより太い金の枠。押すと右半分に拡大
     const BLANK_FRAMES = [
+      { kind: "attack", label: "見本 ★ 装飾なし", zoom: "card-rarity-sample-plain", src: "card-style-master.png?v=6", alt: "見本 ★。装飾なしの仮のカード。攻撃（赤）" },
+      { kind: "attack", label: "見本 ★★ 銀の枠", zoom: "card-rarity-sample-silver", src: "card-rarity-sample-silver.png?v=1", alt: "見本 ★★。カードを囲む銀の枠と、四隅の銀の唐草。仮のカード" },
+      { kind: "attack", label: "見本 ★★★ 金の枠", zoom: "card-rarity-sample-gold", src: "card-rarity-sample-gold.png?v=1", alt: "見本 ★★★。銀より太い金の枠が三重で、四隅の金の唐草が大きい。仮のカード" },
       { kind: "attack", label: "金の案1", zoom: "card-gold-pattern-1", src: "card-gold-pattern-1.png?v=2", alt: "金の案1。見せた唐草を金にした。上と下で形が違う" },
       { kind: "attack", label: "金の案2", zoom: "card-gold-pattern-2", src: "card-gold-pattern-2.png?v=2", alt: "金の案2。下の唐草を四隅に回した" },
       { kind: "attack", label: "金の案3", zoom: "card-gold-pattern-3", src: "card-gold-pattern-3.png?v=2", alt: "金の案3。案1に、もう一段小さい唐草を重ねた" },
