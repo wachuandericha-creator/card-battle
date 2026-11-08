@@ -273,11 +273,16 @@
       gap: 6px;
     }
     .duel-mid .play-card {
-      height: 78%;
-      max-height: 220px;
+      height: 72%;
+      max-height: 190px;
       max-width: 42%;
       flex: 0 1 auto;
       align-items: center;
+    }
+    .duel-mid .play-side.foe .play-card {
+      height: 100%;
+      max-height: 300px;
+      max-width: 78%;
     }
     .duel-mid .card.preview {
       width: auto;
@@ -397,6 +402,21 @@
       border-bottom: 1px solid rgba(228, 177, 90, 0.35);
     }
     .battle-plate h2 .who { min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .battle-plate h2 .plate-rank {
+      flex: 0 0 auto;
+      padding: 1px 8px 2px;
+      border-radius: 4px;
+      border: 1px solid rgba(228, 177, 90, 0.75);
+      color: #ffe7a8;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+    }
+    .battle-plate h2 .plate-stars {
+      flex: 0 0 auto;
+      color: #f0c36a;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+    }
     .battle-plate h2 .tag {
       flex: 0 0 auto;
       padding: 1px 7px 2px;
@@ -2048,8 +2068,28 @@
       max-height: 100%;
       pointer-events: none;
     }
-    .play-card.on .card.preview { transform: translateY(-12px); box-shadow: 0 0 0 2px var(--gold), 0 12px 20px rgba(0, 0, 0, 0.35); }
-    .play-side.foe .play-card.on .card.preview { box-shadow: 0 0 0 2px #ff5c4a, 0 12px 20px rgba(0, 0, 0, 0.35); }
+    .play-card.held .card.preview,
+    .play-card.on .card.preview {
+      transform: translateY(-36px) scale(1.04);
+    }
+    .play-card.on .card.preview {
+      box-shadow: 0 0 0 4px #f0c36a, 0 16px 22px rgba(0, 0, 0, 0.45);
+    }
+    .play-side.foe .play-card.on .card.preview {
+      box-shadow: 0 0 0 4px #e24b3a, 0 16px 22px rgba(0, 0, 0, 0.45);
+      animation: foe-card-shake 0.18s linear infinite;
+    }
+    .play-card.arriving .card.preview {
+      animation: intent-place 0.55s cubic-bezier(0.16, 0.9, 0.28, 1) both;
+    }
+    @keyframes foe-card-shake {
+      0%, 100% { transform: translateY(-36px) scale(1.04) rotate(-1.4deg); }
+      50% { transform: translateY(-36px) scale(1.04) rotate(1.4deg); }
+    }
+    @keyframes intent-place {
+      0% { opacity: 0; transform: translateY(-48px) scale(0.86); }
+      100% { opacity: 1; transform: none; }
+    }
     .party {
       flex: 0 0 auto;
       min-height: 0;
@@ -2852,7 +2892,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview { animation: none; transition: none; }
       .victory-flash { display: none; }
       .hero-hit.fatal .flash, .hero-hit.fatal .cut, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
@@ -4688,8 +4728,35 @@
     }
     .turn-call.player b { color: #f0c36a; }
     .turn-call.enemy b { color: #e24b3a; }
-    .encounter-call, .encounter-call b { animation-duration: 1.6s; }
+    .encounter-call, .encounter-call b, .encounter-stars { animation-duration: 1.6s; }
+    .encounter-call {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
     .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
+    .encounter-stars {
+      font-size: min(6vw, 48px);
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      color: #f0c36a;
+      text-shadow: 0 4px 0 rgba(24, 12, 8, 0.82);
+      animation: turn-word 1.6s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
+    .turn-call.start {
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255, 220, 140, 0.55), transparent 46%),
+        rgba(70, 40, 8, 0.4);
+    }
+    .turn-call.start b { color: #ffe7a8; font-size: min(10vw, 88px); }
+    .turn-call.resolve {
+      background:
+        radial-gradient(circle at 50% 50%, rgba(255, 244, 210, 0.42), transparent 46%),
+        rgba(40, 28, 12, 0.45);
+    }
+    .turn-call.resolve b { color: #fff6d8; letter-spacing: 0.22em; }
     .enemy-main.arrive { animation: foe-arrive 1.05s cubic-bezier(0.16, 0.84, 0.32, 1) both; }
     @keyframes foe-arrive {
       0% { transform: translate(36%, 10%) scale(0.58); opacity: 0; }
@@ -4957,6 +5024,8 @@
     const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
     let phase = "player";
     let encounter = false;
+    let intentShown = true;
+    let intentArrive = false;
     let note = "";
     let banner = "";
     let outcome = null;
@@ -6905,7 +6974,7 @@
       while (hand.length) discard.push(hand.pop());
       note = "";
       const poisoned = tickPoison("player");
-      turnCall = "enemy";
+      turnCall = "resolve";
       if (poisoned) {
         const saved = cheatDeath();
         if (saved === "retry") return;
@@ -6918,7 +6987,7 @@
       timer = setTimeout(stepResolve, 1100);
     }
 
-    function startPlayerTurn() {
+    function startPlayerTurn(quiet) {
       if (player.hp <= 0) {
         const saved = cheatDeath();
         if (saved === "retry") return;
@@ -6950,7 +7019,7 @@
       pullFromBracelets();
       fxDeal = true;
       slashSeq = 0;
-      turnCall = "player";
+      if (!quiet) turnCall = "player";
       phase = "player";
       if (finishIfStuck()) return;
       render();
@@ -7455,6 +7524,8 @@
       startEnemyLoop(true);
       phase = "intro";
       encounter = true;
+      intentShown = false;
+      intentArrive = false;
       note = "";
       banner = "";
       outcome = null;
@@ -7466,11 +7537,38 @@
       timer = setTimeout(beginEncounter, 1700);
     }
 
+    function foeRankName() {
+      if (bossNow()) return "ボス";
+      return (enemyNow() && enemyNow().rank) || "普通";
+    }
+
+    function foeStarText() {
+      const rank = (enemyNow() && enemyNow().rank) || "普通";
+      return "★".repeat(starsForRank(rank));
+    }
+
+    function appearLine() {
+      if (bossNow()) return "ボスが現れた!!!";
+      const rank = (enemyNow() && enemyNow().rank) || "普通";
+      if (rank === "強敵") return "強敵が現れた!!";
+      return "敵が現れた!";
+    }
+
     function beginEncounter() {
       timer = null;
       if (phase !== "intro" || outcome) return;
       encounter = false;
-      startPlayerTurn();
+      turnCall = "start";
+      render();
+      timer = setTimeout(openFight, 1200);
+    }
+
+    function openFight() {
+      timer = null;
+      if (phase !== "intro" || outcome) return;
+      intentShown = true;
+      intentArrive = true;
+      startPlayerTurn(true);
     }
 
     const ITEM_IMAGE = "gear-item.jpg?v=1";
@@ -7844,8 +7942,10 @@
         render();
         timer = setTimeout(startPlayerTurn, 650);
       } else if (screen === "battle" && phase === "intro" && !outcome) {
-        encounter = false;
-        startPlayerTurn();
+        encounter = true;
+        intentShown = false;
+        render();
+        timer = setTimeout(beginEncounter, 1700);
       } else {
         render();
       }
@@ -7871,8 +7971,11 @@
       const badges = extra && extra.badges
         ? `<span class="plate-badges">${extra.badges}</span>`
         : "";
+      const rankLine = extra && extra.rank
+        ? `<span class="plate-rank">${esc(extra.rank)}</span><span class="plate-stars" aria-label="ランク">${esc(extra.stars || "")}</span>`
+        : "";
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
-        <h2><span class="who">${esc(name)}</span>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
+        <h2><span class="who">${esc(name)}</span>${rankLine}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
       </section>`;
@@ -8864,10 +8967,15 @@
       return `<div class="card-fit ${rank}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
-    function playFace(card, on, live, foe, recallIndex) {
+    function playFace(card, on, live, foe, recallIndex, extra) {
       const tone = foe ? "foe" : cardKind(card);
       const recall = recallIndex != null && phase === "player" && !outcome;
-      const attrs = recall ? ` data-unplay="${recallIndex}" class="play-card can-recall${on ? " on" : ""}"` : ` class="play-card${on ? " on" : ""}"`;
+      const bits = ["play-card"];
+      if (recall) bits.push("can-recall");
+      if (on) bits.push("on");
+      if (extra && extra.held) bits.push("held");
+      if (extra && extra.arrive) bits.push("arriving");
+      const attrs = recall ? ` data-unplay="${recallIndex}" class="${bits.join(" ")}"` : ` class="${bits.join(" ")}"`;
       const label = recall
         ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す`
         : `${card.cost} ${esc(card.name)}`;
@@ -8875,19 +8983,36 @@
     }
 
     function useZoneMarkup() {
+      const resolving = phase === "resolve";
+      const active = resolving ? resolveAt - 1 : -1;
       const mine = inPlay.map((card, i) => {
-        const on = phase === "resolve" && resolveAt - 1 === i;
-        return playFace(card, on, true, false, i);
+        const on = active === i;
+        const held = resolving && i < active;
+        return playFace(card, on, true, false, i, { held });
       }).join("");
-      const foe = intentAt(0);
-      const foeHot = phase === "resolve" && resolveAt - 1 === inPlay.length;
-      const foeCard = foe ? playFace(foe, foeHot, true, true) : "";
+      const foe = intentShown ? intentAt(0) : null;
+      const foeHot = resolving && active === inPlay.length;
+      const arrive = intentArrive && !foeHot;
+      intentArrive = false;
+      const foeCard = foe ? playFace(foe, foeHot, true, true, null, { arrive }) : "";
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
           <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
           <div class="play-side foe use-half"><div class="play-cards">${foeCard}</div></div>
         </div>
       </div>`;
+    }
+
+    function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow) {
+      const calls = [];
+      if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars">${esc(foeStarText())}</span></div>`);
+      if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
+      else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
+      else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
+      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
+      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
+      if (!calls.length) return "";
+      return `<div class="stage-fx">${calls.join("")}</div>`;
     }
 
     function endButtonMarkup() {
@@ -9836,7 +9961,7 @@
             </div>
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
-              ${plateMarkup("foe-plate", "enemy", enemy.name, bossNow() ? "ボス" : "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy) })}
+              ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), rank: foeRankName(), stars: foeStarText() })}
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
@@ -9848,7 +9973,7 @@
               ${foePileMarkup()}
               <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
             </div>
-            ${encounter || turnNow || fatalNow || (hitNow && (hitNow.side === "enemy" || hurtNow)) ? `<div class="stage-fx">${encounter ? `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた</b></div>` : ""}${turnNow ? `<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>` : ""}${fatalNow ? `<div class="fatal-call" aria-hidden="true">止め</div>` : ""}${hurtNow && hitNow && hitNow.side === "player" ? `<b class="dmg-pop me${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>` : ""}</div>` : ""}
+            ${stageFxMarkup(encounter, turnNow, fatalNow, hurtNow, hitNow, hitPow)}
             </div>
           </div>
           </div>
