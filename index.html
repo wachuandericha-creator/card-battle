@@ -8858,19 +8858,8 @@
       return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
     }
 
-    const MADE_CARD_ARTS = [
-      ["made-attack-m", "アタック（男）", "card-attack-m.jpg?v=2"],
-      ["made-attack-f", "アタック（女）", "card-attack-f-card.png?v=5"],
-      ["made-charge-f", "チャージアタック（女）", "card-charge-f-card.png?v=6"],
-      ["made-fatal", "致命の一撃", "card-fatal.jpg?v=2"],
-      ["made-parry", "パリィ", "card-parry.jpg?v=6"],
-    ];
     function artZoomSide(name) {
       if (!name) return "";
-      const made = MADE_CARD_ARTS.find((item) => item[0] === name);
-      if (made) {
-        return zoomSidePanel(made[1], `<img class="art-zoom-img" src="${made[2]}" alt="${esc(made[1])}">`);
-      }
       const masterZoom = {
         "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
         "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
@@ -9084,8 +9073,6 @@
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
             <h4>レアリティ</h4>
             <div class="ref-grid blank-grid">${rarityStyleSheet()}</div>
-            <h4>未採用絵柄</h4>
-            <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9385,12 +9372,6 @@
       return RARITY_STYLES.map((item) => {
         const on = albumZoom === item[0];
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
-    function madeCardSheet() {
-      return MADE_CARD_ARTS.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
     }
     function blankCardSheet() {
