@@ -1219,6 +1219,12 @@
       font-weight: 800;
       letter-spacing: 0.12em;
     }
+    .ref-grid .ref-slot-box.land { aspect-ratio: 16 / 9; }
+    .ref-grid figure.ref-slot.span-2 { grid-column: span 2; max-width: 320px; }
+    .ref-grid figure.ref-slot.path-series .ref-slot-box {
+      border-color: rgba(220, 70, 50, 0.75);
+      color: #e8a090;
+    }
     .ref-grid figure.path-series {
       outline: 2px solid rgba(220, 70, 50, 0.85);
       outline-offset: 2px;
@@ -7771,9 +7777,11 @@
       return `<figure class="${figClass}"><button type="button" class="sheet-zoom-btn" data-sheet-zoom="${esc(src)}" data-sheet-zoom-title="${esc(title)}" aria-label="${esc(title)}を拡大" aria-pressed="${on ? "true" : "false"}"><img${klass} src="${esc(src)}" alt="${esc(title)}"></button><figcaption>${esc(caption)}</figcaption></figure>`;
     }
 
-    function sheetSlot(caption, note) {
+    function sheetSlot(caption, note, figureClass, boxClass) {
       const hint = note ? `<p class="ref-slot-note">${esc(note)}</p>` : "";
-      return `<figure class="ref-slot"><div class="ref-slot-box" aria-label="${esc(caption)}の画像置き場"><span>画像待ち</span></div><figcaption>${esc(caption)}</figcaption>${hint}</figure>`;
+      const figClass = ["ref-slot", figureClass || ""].filter(Boolean).join(" ");
+      const box = boxClass ? ` ref-slot-box ${boxClass}` : " ref-slot-box";
+      return `<figure class="${figClass}"><div class="${box.trim()}" aria-label="${esc(caption)}の画像置き場"><span>画像待ち</span></div><figcaption>${esc(caption)}</figcaption>${hint}</figure>`;
     }
 
     function sheetBanner(src, title, alt) {
@@ -7854,7 +7862,7 @@
               ${sheetFig("gear-inferno-blade.jpg?v=1", "業火の剣")}
             </div>
             <h3>道（三択の画像置き場）</h3>
-            <p class="album-meta">未作成は点線の枠。連戦は赤枠。道システムの画面実装はこれから</p>
+            <p class="album-meta">道を選ぶときの候補アイコン。未作成は点線の枠。連戦は赤枠。道システムの画面実装はこれから</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=4", "探索")}
               ${sheetFig("path-fight.jpg?v=3", "連戦", "", "path-series")}
@@ -7863,6 +7871,18 @@
               ${sheetSlot("休憩", "最大HPの30%回復")}
               ${sheetSlot("再戦", "同じ敵・Fは進まない")}
               ${sheetFig("path-unknown.jpg?v=3", "遭遇")}
+            </div>
+            <h3>道のあとのイベント（画像置き場）</h3>
+            <p class="album-meta">道を選んだあとに出る出来事の絵。未作成は点線の枠。お店は既存の商人絵</p>
+            <div class="ref-grid">
+              ${sheetSlot("探索", "イベント画面", "span-2", "land")}
+              ${sheetSlot("連戦", "つづきの戦闘へ", "span-2 path-series", "land")}
+              ${sheetSlot("物乞い", "カード廃棄", "span-2", "land")}
+              ${sheetFig("shop-merchant.jpg?v=1", "お店", "land-ref", "span-2")}
+              ${sheetSlot("休憩", "最大HPの30%回復", "span-2", "land")}
+              ${sheetSlot("再戦", "同じ敵・Fは進まない", "span-2", "land")}
+              ${sheetSlot("遭遇", "だれかと会う", "span-2", "land")}
+              ${sheetSlot("ジョブ", "階層イベント", "span-2", "land")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -7875,8 +7895,6 @@
             <h3>祝福</h3>
             ${sheetBanner("blessing-goddess.jpg?v=1", "祝福（戦士）", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
             ${sheetBanner("blessing-goddess-f.jpg?v=1", "祝福（女の戦士）", "荘厳な女神が、ひざまずく女の戦士に祝福を授けている")}
-            <h3>お店</h3>
-            ${sheetBanner("shop-merchant.jpg?v=1", "お店の商人", "怪しげな商人がこちらを見て笑っている")}
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=4", "スライム", "enemy-ref")}
