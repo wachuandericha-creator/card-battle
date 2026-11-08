@@ -1341,6 +1341,7 @@
     /* 色ごとの空の枠。正本と同じ黒鉄。見本は金の唐草。名札・効果は薄く、絵柄の場所に点線 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
+    .blank-grid img.style-red { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
     .blank-grid .card.preview:hover { transform: none; }
     .card.blank .nameplate .name, .card.blank .text .note, .card.blank .cost, .card.blank .rarity { opacity: 0.4; }
     .card.blank .art { display: grid; place-items: center; }
@@ -8708,7 +8709,7 @@
     function artZoomSide(name) {
       if (!name) return "";
       if (name === "card-style-red") {
-        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空">`);
+        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-red.png?v=2" alt="攻撃（赤）の仮カード。絵柄は空">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const src = CARD_ART[name] || "";
@@ -9196,7 +9197,7 @@
       return BLANK_FRAMES.map((frame) => {
         if (frame.kind === "attack") {
           const on = albumZoom === "card-style-red";
-          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-red" aria-label="攻撃（赤）の仮カードを拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
+          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-red" aria-label="攻撃（赤）の仮カードを拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-red" src="card-style-red.png?v=2" alt="攻撃（赤）の仮カード。絵柄は空"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
         }
         const face = cardFace(
           { name: "カード名", cost: "0", text: "効果", stars: 3, kind: frame.kind === "foe" ? "skill" : frame.kind },
