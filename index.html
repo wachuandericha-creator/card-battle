@@ -7536,7 +7536,7 @@
         floorNote = "体力が全快した。";
       } else if (kind === "お店") {
         shopStock = rollShopStock();
-        floorNote = "怪しげな商人が笑っている。";
+        floorNote = "おしゃれな骸骨が商いをしている。";
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
           route[battleIndex] = rollRank(battleIndex < route.length / 2 ? 1 : 2);
@@ -7560,7 +7560,7 @@
         } else {
           floorKind = "お店";
           shopStock = rollShopStock();
-          floorNote = "未知は、お店だった。怪しげな商人が笑っている。";
+          floorNote = "未知は、お店だった。おしゃれな骸骨が商いをしている。";
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
@@ -8195,12 +8195,12 @@
               ${sheetFig("path-unknown.jpg?v=4", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
-            <p class="album-meta">道を選んだあとに出る出来事の絵。未作成は点線の枠。お店は既存の商人絵</p>
+            <p class="album-meta">道を選んだあとに出る出来事の絵。未作成は点線の枠。お店は女の戦士とおしゃれな骸骨</p>
             <div class="ref-grid">
               ${sheetSlot("探索", "イベント画面", "span-2", "land")}
               ${sheetSlot("連戦", "つづきの戦闘へ", "span-2 path-series", "land")}
               ${sheetSlot("物乞い", "カード廃棄", "span-2", "land")}
-              ${sheetFig("shop-merchant.jpg?v=1", "お店", "land-ref", "span-2")}
+              ${sheetFig("shop-merchant.jpg?v=2", "お店", "land-ref", "span-2")}
               ${sheetSlot("休憩", "最大HPの30%回復", "span-2", "land")}
               ${sheetSlot("迷子", "効果は未定", "span-2", "land")}
               ${sheetSlot("遭遇", "だれかと会う", "span-2", "land")}
@@ -9322,7 +9322,7 @@
         }
         return "";
       }).join("");
-      return `<img class="shop-art" src="shop-merchant.jpg?v=1" alt="怪しげな商人がこちらを見て笑っている"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
+      return `<img class="shop-art" src="shop-merchant.jpg?v=2" alt="女の戦士と、おしゃれな骸骨の商い"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
     }
 
     function flyRewardCardToDeck(made) {
