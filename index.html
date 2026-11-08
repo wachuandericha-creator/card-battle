@@ -893,6 +893,84 @@
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
+    /* 報酬のレア演出。★は小さく、★★は銀、★★★以上は金で星が多いほど派手 */
+    .rare-show { position: relative; --rare: rgba(255, 244, 210, 0.92); }
+    .rare-2 { --rare: rgba(214, 226, 242, 0.96); }
+    .rare-3 { --rare: rgba(255, 206, 90, 0.98); }
+    .rare-4 { --rare: rgba(255, 176, 48, 1); }
+    .rare-5 { --rare: rgba(255, 228, 140, 1); }
+    .rare-boss { --rare: rgba(255, 96, 80, 0.96); }
+    .rare-fx { position: absolute; inset: -36px -28px; pointer-events: none; z-index: 6; }
+    .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-stamp { position: absolute; pointer-events: none; }
+    .rare-rays {
+      left: 50%; top: 46%; width: 280px; height: 280px; margin: -140px 0 0 -140px;
+      background: repeating-conic-gradient(from 0deg, transparent 0 14deg, var(--rare) 16deg 20deg, transparent 22deg 36deg);
+      opacity: 0; mix-blend-mode: screen;
+      animation: rare-rays 1.15s ease-out var(--d, 0s) both;
+    }
+    .rare-4 .rare-rays { width: 360px; height: 360px; margin: -180px 0 0 -180px; }
+    .rare-5 .rare-rays { width: 460px; height: 460px; margin: -230px 0 0 -230px; }
+    .rare-ring {
+      left: 50%; top: 46%; width: 110px; height: 110px; margin: -55px 0 0 -55px;
+      border-radius: 50%; border: 3px solid var(--rare); opacity: 0;
+      animation: rare-ring 0.85s ease-out var(--d, 0s) both;
+    }
+    .rare-5 .rare-ring { border-width: 5px; }
+    .rare-flash {
+      inset: 8% 6%;
+      background: radial-gradient(circle, #fff 0%, var(--rare) 36%, transparent 70%);
+      opacity: 0;
+      animation: rare-flash 0.55s ease-out var(--d, 0s) both;
+    }
+    .rare-spark {
+      left: 50%; top: 42%; width: 8px; height: 8px; margin: -4px 0 0 -4px;
+      border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--rare);
+      --ang: calc(var(--k) * 30deg);
+      opacity: 0;
+      animation: rare-spark 0.95s ease-out var(--d, 0s) both;
+    }
+    .rare-stamp {
+      left: 50%; top: 42%; z-index: 2;
+      transform: translate(-50%, -50%);
+      font-size: 40px; font-weight: 900; letter-spacing: 0.08em; white-space: nowrap;
+      color: #fff8dc;
+      text-shadow: 0 3px 0 #5a3a08, 0 0 18px var(--rare);
+      animation: rare-stamp 1.45s ease-out var(--d, 0s) both;
+    }
+    .rare-5 .rare-stamp { font-size: 52px; }
+    .rare-boss .rare-stamp { color: #ffe4dc; text-shadow: 0 3px 0 #6a1410, 0 0 18px var(--rare); }
+    .rare-show .card,
+    .rare-show .gift-img,
+    .rare-show .shop-gear,
+    .rare-show > img {
+      animation: rare-card 0.62s cubic-bezier(0.16, 0.84, 0.28, 1.28) var(--d, 0s) both;
+    }
+    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.4s; }
+    .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img,
+    .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
+    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img,
+    .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img {
+      animation: rare-card 0.72s cubic-bezier(0.16, 0.84, 0.28, 1.28) var(--d, 0s) both, rare-aura 1.15s ease-in-out calc(var(--d, 0s) + 0.72s) infinite;
+    }
+    .rare-screen {
+      position: fixed; inset: 0; z-index: 40; pointer-events: none;
+      background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.55), transparent 58%);
+      animation: rare-screen 0.7s ease-out both;
+    }
+    .rare-screen.s2 { background: radial-gradient(circle at 50% 42%, rgba(230, 240, 255, 0.55), transparent 58%); }
+    .rare-screen.s3, .rare-screen.s4 { background: radial-gradient(circle at 50% 42%, rgba(255, 236, 170, 0.72), rgba(255, 190, 60, 0.18) 42%, transparent 68%); }
+    .rare-screen.s5 { background: radial-gradient(circle at 50% 42%, rgba(255, 252, 230, 0.95), rgba(255, 196, 60, 0.4) 36%, transparent 70%); animation-duration: 0.95s; }
+    .rare-screen.sboss { background: radial-gradient(circle at 50% 42%, rgba(255, 220, 200, 0.75), rgba(150, 24, 18, 0.28) 42%, transparent 70%); }
+    .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: rare-shake 0.42s linear 2; }
+    @keyframes rare-rays { 0% { opacity: 0; transform: scale(0.25) rotate(0deg); } 22% { opacity: 0.95; } 100% { opacity: 0; transform: scale(1.12) rotate(70deg); } }
+    @keyframes rare-ring { 0% { opacity: 0.95; transform: scale(0.15); } 100% { opacity: 0; transform: scale(2.6); } }
+    @keyframes rare-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes rare-spark { 0% { opacity: 1; transform: rotate(var(--ang)) translateY(0) scale(0.4); } 100% { opacity: 0; transform: rotate(var(--ang)) translateY(-132px) scale(1); } }
+    @keyframes rare-stamp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(1.7); } 16% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 58% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -78%) scale(1.12); } }
+    @keyframes rare-card { 0% { transform: scale(0.12) rotate(-7deg); filter: brightness(2.6); } 58% { transform: scale(1.1) rotate(1.5deg); filter: brightness(1.25); } 100% { transform: none; filter: none; } }
+    @keyframes rare-aura { 0%, 100% { filter: drop-shadow(0 0 6px var(--rare)); } 50% { filter: drop-shadow(0 0 20px var(--rare)); } }
+    @keyframes rare-screen { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes rare-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
     .shop-gear { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(228, 177, 90, 0.7); }
     .shop-panel { text-align: center; }
     .shop-art { width: min(100%, 420px); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; margin: 0 auto 6px; display: block; }
@@ -2923,7 +3001,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-stamp, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: none; transition: none; }
       .victory-flash { display: none; }
       .hero-hit.fatal .flash, .hero-hit.fatal .cut, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
@@ -5303,6 +5381,7 @@
     let rewardPaths = [];
     let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
+    let rareArmed = "";
     let bonusCard = null;
     let bossPicks = [];
     let shopStock = [];
@@ -5796,25 +5875,28 @@
     function offerWeapon(item, extra) {
       if (!item || !needsWeaponReplace(item)) return false;
       gearOffer = { item: { ...item }, keep: { ...gear.sword }, source: (extra && extra.source) || "gift", shopIndex: extra && extra.shopIndex, price: extra && extra.price };
+      armRare("gear");
       return true;
     }
 
-    function gearSideMarkup(item, label, cls) {
+    function gearSideMarkup(item, label, cls, level) {
       const picture = item && item.image ? `<img src="${esc(item.image)}" alt="">` : "";
       const extra = weaponExtra(item);
       const rarity = gearRarityText(item);
       const mark = rarity ? "　" + rarity : "";
-      return `<div class="side${cls ? " " + cls : ""}"><span>${esc(label)}</span>${picture}<b>${esc(item.name || "")}</b><small>ATK ${signed(weaponAtk(item))}${mark}${extra ? "<br>" + esc(extra) : ""}</small></div>`;
+      return `<div class="side${cls ? " " + cls : ""}${rareClass(level || 0)}"${rareStyle(level || 0, 0)}>${rareFx(level || 0)}<span>${esc(label)}</span>${picture}<b>${esc(item.name || "")}</b><small>ATK ${signed(weaponAtk(item))}${mark}${extra ? "<br>" + esc(extra) : ""}</small></div>`;
     }
 
     function gearOfferMarkup() {
       const offer = gearOffer;
       if (!offer) return "";
+      const live = takeRare("gear");
+      const lv = live ? rareLevel(offer.item) : 0;
       const shop = offer.source === "shop" && offer.price != null;
       const yes = shop ? `付け替える（★${offer.price}）` : "付け替える";
-      return `<div class="overlay gear-offer"><div class="panel"><h2>武器を付け替える？</h2>
+      return `<div class="overlay gear-offer">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>武器を付け替える？</h2>
         <p class="gear-offer-lead">${weaponChangeText(offer.keep, offer.item)}</p>
-        <div class="gear-compare">${gearSideMarkup(offer.keep, "いまの武器")}<div class="arrow" aria-hidden="true">→</div>${gearSideMarkup(offer.item, "新しい武器", "new")}</div>
+        <div class="gear-compare${rareJack(lv ? [lv] : [])}">${gearSideMarkup(offer.keep, "いまの武器")}<div class="arrow" aria-hidden="true">→</div>${gearSideMarkup(offer.item, "新しい武器", "new", lv)}</div>
         <p>${shop ? `付け替えたときだけ ★${offer.price} 払う。今のままなら払わない。` : "今の武器のままなら、新しい武器は手に入らない。"}</p>
         <div class="gear-offer-actions">
           <button type="button" class="primary" data-action="gear-offer-yes">${esc(yes)}</button>
@@ -7902,6 +7984,7 @@
       if (pick.kind === "item") {
         giveItem(pick.item);
         floorGift = { kind: "item", item: { ...pick.item } };
+        armRare("gift");
         return "アイテムを1つ受け取った。";
       }
       if (pick.kind === "gear") {
@@ -7909,10 +7992,12 @@
         if (offerWeapon(pick.gear, { source: "gift" })) return "";
         giveGear(pick.gear);
         floorGift = { kind: "gear", gear: { ...pick.gear } };
+        armRare("gift");
         return `${pick.gear.name}を受け取った。`;
       }
       stolen.push(keepCard(pick.card));
       floorGift = { kind: "card", card: keepCard(pick.card) };
+      armRare("gift");
       return `${pick.card.name}を1枚受け取った。`;
     }
 
@@ -7940,16 +8025,19 @@
       return takeGift({ kind: "item", item: rollItem(0) });
     }
 
-    function giftMarkup(gift, big) {
+    function giftMarkup(gift, big, hot, index) {
       if (!gift) return "";
       const cls = big ? "gift-show" : "gift-pick";
+      const lv = hot ? rareLevel(giftEntity(gift)) : 0;
+      const fx = rareFx(lv);
+      const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}"><div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div><b>${esc(gift.card.name)}</b></div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div><b>${esc(gift.card.name)}</b></div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
-      return `<div class="${cls}">${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small></div>`;
+      return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small></div>`;
     }
 
     function jobCandidates() {
@@ -7989,6 +8077,7 @@
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
         floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
+        armRare("bless");
       } else if (kind === "キャンプ") {
         floorHp = 30;
         if (player) player.hp = 30;
@@ -7996,6 +8085,7 @@
       } else if (kind === "お店") {
         shopStock = rollShopStock();
         floorNote = "おしゃれな骸骨が商いをしている。";
+        armRare("shop");
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
           route[battleIndex] = rollRank(battleIndex < route.length / 2 ? 1 : 2);
@@ -8020,6 +8110,7 @@
           floorKind = "お店";
           shopStock = rollShopStock();
           floorNote = "未知は、お店だった。おしゃれな骸骨が商いをしている。";
+          armRare("shop");
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
@@ -8889,15 +8980,27 @@
       const art = floorKind === "挑戦者に祝福を"
         ? `<img class="bless-art" src="${esc(heroItem().bless || "blessing-goddess.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
         : "";
-      const bless = floorPhase === "bless"
-        ? `<div class="gift-row">${blessPicks.map((pick, i) => `<button type="button" class="gift-btn" data-action="bless-pick" data-bless="${i}"><span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`).join("")}</div>`
-        : "";
-      const gift = floorPhase === "show" ? giftMarkup(floorGift, true) : "";
+      const blessLive = floorPhase === "bless" ? takeRare("bless") : false;
+      const giftLive = floorPhase === "show" ? takeRare("gift") : false;
+      const blessDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.55 : 2.4;
+      const blessLevels = [];
+      const blessButtons = floorPhase === "bless"
+        ? blessPicks.map((pick, i) => {
+          const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
+          if (lv) blessLevels.push(lv);
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i, blessDelay)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
+        })
+        : [];
+      const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
+      const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
+      const gift = floorPhase === "show" ? giftMarkup(floorGift, true, giftLive, 0) : "";
+      const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       if (floorKind === "お店" && floorPhase === "show") {
+        const shopLive = takeRare("shop");
         root.innerHTML = `
           <div class="menu shop-floor">
             <p>${esc(dungeonName)}　${floorLabel()}</p>
-            <div class="shop-panel">${shopMarkup(shopStock, "お店")}</div>
+            <div class="shop-panel">${shopMarkup(shopStock, "お店", shopLive)}</div>
             <p>${esc(floorNote)}</p>
             ${next}
           </div>`;
@@ -8906,6 +9009,7 @@
       const where = floorKind === "挑戦者に祝福を" ? "" : `<p>${esc(dungeonName)}　${floorLabel()}</p>`;
       root.innerHTML = `
         <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">
+          ${rareFlash}
           <h1>${esc(floorKind)}</h1>
           ${where}
           ${art}
@@ -9734,10 +9838,12 @@
         rewardPicks = [];
         bossPicks = bossChoices();
         rewardStep = "boss";
+        armRare("reward");
         return;
       }
       rewardPicks = rewardTrio();
       rewardStep = "cards";
+      armRare("reward");
     }
 
     function takeBossPick(index) {
@@ -9848,15 +9954,20 @@
     function openShop() {
       shopStock = rollShopStock();
       rewardStep = "shop";
+      armRare("shop");
       persistSave(true);
       render();
     }
 
-    function shopMarkup(stock, heading) {
+    function shopMarkup(stock, heading, hot) {
       const have = Number(meta.stars) || 0;
+      const levels = [];
       const slots = (stock || []).map((slot, index) => {
         const price = slot.price == null ? shopPrice(slot) : slot.price;
         const tag = price == null ? "値段は未定" : `★${price}`;
+        const entity = slot.kind === "card" ? slot.card : slot.gear;
+        const lv = hot ? rareLevel(entity) : 0;
+        if (lv) levels.push(lv);
         let action = "";
         if (slot.sold) action = `<span class="shop-sold">売り切れ</span>`;
         else if (price == null) action = `<button type="button" class="shop-buy" disabled>買えない</button>`;
@@ -9864,16 +9975,17 @@
         const sold = slot.sold ? " sold" : "";
         const limited = slot.limited ? " limited" : "";
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
+        const fx = rareFx(lv);
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}${limited}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
           const picture = slot.gear.image ? `<img class="shop-gear" src="${esc(slot.gear.image)}" alt="">` : "";
-          return `<div class="shop-slot${sold}${limited}">${ribbon}${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
-      return `<img class="shop-art" src="shop-merchant.jpg?v=2" alt="女の戦士と、おしゃれな骸骨の商い"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row">${slots}</div>`;
+      return `${hot ? rareScreen(levels) : ""}<img class="shop-art" src="shop-merchant.jpg?v=2" alt="女の戦士と、おしゃれな骸骨の商い"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row${rareJack(levels)}">${slots}</div>`;
     }
 
     function flyRewardCardToDeck(made) {
@@ -10029,6 +10141,7 @@
         const extra = drawDistinct(1)[0] || null;
         bonusCard = extra;
         rewardStep = "detour";
+        armRare("reward");
         persistSave(true);
         render();
         return;
@@ -10038,6 +10151,65 @@
 
     function offerTone(card) {
       return card && card.source === "敵" ? "foe" : cardKind(card);
+    }
+
+    function armRare(id) { rareArmed = id; }
+
+    function takeRare(id) {
+      if (rareArmed !== id) return false;
+      rareArmed = "";
+      return true;
+    }
+
+    function rareLevel(entity) {
+      if (!entity) return 0;
+      if (entity.boss) return "boss";
+      const n = Number(entity.stars) || 0;
+      if (n <= 0) return 0;
+      return Math.min(5, n);
+    }
+
+    function rareClass(level) {
+      if (!level) return "";
+      return level === "boss" ? " rare-show rare-boss" : ` rare-show rare-${level}`;
+    }
+
+    function rareStyle(level, index, extra) {
+      if (!level) return "";
+      const t = ((extra || 0) + index * 0.28).toFixed(2);
+      return ` style="--d:${t}s"`;
+    }
+
+    function rareFx(level) {
+      if (!level) return "";
+      const count = level === "boss" ? 8 : level === 1 ? 0 : Math.min(12, level * 2 + 2);
+      const sparks = Array.from({ length: count }, (_, i) => `<i class="rare-spark" style="--k:${i}"></i>`).join("");
+      const stamp = level === 1 ? "" : `<b class="rare-stamp">${level === "boss" ? "ボス" : "★".repeat(level)}</b>`;
+      const rays = level === 1 ? "" : `<i class="rare-rays"></i><i class="rare-ring"></i>`;
+      return `<span class="rare-fx" aria-hidden="true">${rays}<i class="rare-flash"></i>${sparks}${stamp}</span>`;
+    }
+
+    function rareScreen(levels) {
+      const nums = levels.filter((n) => typeof n === "number");
+      const top = nums.length ? Math.max(...nums) : 0;
+      const boss = levels.includes("boss");
+      if (top >= 5) return `<div class="rare-screen s5" aria-hidden="true"></div>`;
+      if (top >= 4) return `<div class="rare-screen s4" aria-hidden="true"></div>`;
+      if (top >= 3) return `<div class="rare-screen s3" aria-hidden="true"></div>`;
+      if (boss) return `<div class="rare-screen sboss" aria-hidden="true"></div>`;
+      if (top >= 2) return `<div class="rare-screen s2" aria-hidden="true"></div>`;
+      return "";
+    }
+
+    function rareJack(levels) {
+      return levels.some((n) => n === 5) ? " rare-jackpot" : "";
+    }
+
+    function giftEntity(gift) {
+      if (!gift) return null;
+      if (gift.kind === "card") return gift.card;
+      if (gift.kind === "gear") return gift.gear;
+      return gift.item;
     }
 
     function victoryStars() {
@@ -10062,22 +10234,35 @@
     function rewardOverlay() {
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
-        const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
+        const live = takeRare("reward");
+        const levels = [];
+        const picks = rewardPicks.map((card, i) => {
+          const lv = live ? rareLevel(card) : 0;
+          if (lv) levels.push(lv);
+          return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`;
+        }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "boss") {
-        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
+        const live = takeRare("reward");
+        const levels = [];
+        if (live && gear.medal) levels.push(rareLevel(gear.medal));
+        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true, live, 0)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
         const picks = bossPicks.map((pick, i) => {
+          const entity = pick.kind === "card" ? pick.card : pick.gear;
+          const lv = live ? rareLevel(entity) : 0;
+          if (lv) levels.push(lv);
+          const at = gear.medal ? i + 1 : i;
           if (pick.kind === "card" && pick.card) {
-            return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
+            return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
           }
           const item = pick.gear || {};
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
-          return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(gearTitle(item) || item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
+          return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${picture}<b>${esc(gearTitle(item) || item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -10088,15 +10273,20 @@
         return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 <span data-star-count>★${shownStarCount()}</span></p><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
-        return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
+        const live = takeRare("shop");
+        return `<div class="overlay"><div class="panel wide shop-panel">${shopMarkup(shopStock, null, live)}<button type="button" data-action="reward-go">出ていく</button></div></div>`;
       }
       if (rewardStep === "event") {
-        return `<div class="overlay"><div class="panel"><h2>${esc(pathEventTitle)}</h2>${giftMarkup(floorGift, true)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+        const live = takeRare("gift");
+        const lv = live ? rareLevel(giftEntity(floorGift)) : 0;
+        return `<div class="overlay">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>${esc(pathEventTitle)}</h2>${giftMarkup(floorGift, true, live, 0)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
+      const live = rewardStep === "detour" ? takeRare("reward") : false;
+      const lv = live && bonusCard ? rareLevel(bonusCard) : 0;
       const bonus = bonusCard
-        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button>`
+        ? `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, 0)} data-action="reward-bonus">${rareFx(lv)}<div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button>`
         : "";
-      return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+      return `<div class="overlay">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
 
     // hand-sort-v2
