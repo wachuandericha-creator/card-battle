@@ -7296,8 +7296,25 @@
     function itemDef(id) {
       return ITEMS.find((item) => item.id === id) || null;
     }
+    function rollItem(minStars = 0) {
+      const pool = ITEMS.filter((item) => (Number(item.stars) || 0) >= minStars);
+      const list = pool.length ? pool : ITEMS;
+      return { ...list[Math.floor(Math.random() * list.length)] };
+    }
     function blessItem() {
-      return { ...ITEMS[Math.floor(Math.random() * ITEMS.length)] };
+      return rollItem(2);
+    }
+    function rollBlessGear() {
+      const pool = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
+      const list = pool.length ? pool : GEAR_ITEMS;
+      return { ...list[Math.floor(Math.random() * list.length)] };
+    }
+    function rollBlessCard() {
+      const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }))
+        .concat(classCards())
+        .filter((card) => (Number(card.stars) || 1) >= 2);
+      const pick = offers[Math.floor(Math.random() * offers.length)] || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
+      return keepCard(pick);
     }
     function itemSlotWith(flag) {
       return ["itemL", "itemR"].find((key) => gear && gear[key] && gear[key][flag]) || "";
@@ -7365,13 +7382,10 @@
     }
 
     function rollBlessPicks() {
-      const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
-      const names = Object.keys(CARDS);
-      const name = names[Math.floor(Math.random() * names.length)];
       return [
         { kind: "item", item: blessItem(), label: "アイテム" },
-        { kind: "gear", gear: { ...item }, label: "装備" },
-        { kind: "card", card: keepCard({ name, ...CARDS[name] }), label: "カード" },
+        { kind: "gear", gear: rollBlessGear(), label: "装備" },
+        { kind: "card", card: rollBlessCard(), label: "カード" },
       ];
     }
 
@@ -7415,7 +7429,7 @@
         const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
         return takeGift({ kind: "gear", gear: { ...item } });
       }
-      return takeGift({ kind: "item", item: blessItem() });
+      return takeGift({ kind: "item", item: rollItem(0) });
     }
 
     function giftMarkup(gift, big) {
