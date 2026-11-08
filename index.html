@@ -3840,14 +3840,14 @@
     }
     .dungeon-preview {
       position: relative;
-      width: min(920px, 84vw);
-      height: min(38vh, 360px);
+      width: min(1100px, 92vw);
+      height: min(52vh, 560px);
       max-width: 100%;
-      border-radius: 16px;
+      border-radius: 0;
       overflow: hidden;
-      border: 2px solid rgba(228, 177, 90, 0.7);
-      background: #120c0a;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+      border: 0;
+      background: #0c0908;
+      box-shadow: none;
     }
     .dungeon-preview img {
       display: block;
@@ -3870,9 +3870,9 @@
     .dungeon-columns {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      width: min(860px, 78vw);
-      height: min(220px, 28vh);
+      gap: 14px;
+      width: min(640px, 72vw);
+      height: min(132px, 16vh);
       max-width: 100%;
       min-height: 0;
       align-self: center;
@@ -3925,28 +3925,28 @@
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 12%;
+      bottom: 28%;
       z-index: 3;
       margin: 0;
       text-align: center;
-      font-size: clamp(32px, 4.6vw, 56px);
+      font-size: clamp(22px, 3.2vw, 36px);
       font-weight: 800;
       letter-spacing: 0.08em;
       color: #fff6e0;
-      text-shadow: 0 4px 0 #1a120c, 0 0 22px rgba(0, 0, 0, 0.85);
+      text-shadow: 0 3px 0 #1a120c, 0 0 16px rgba(0, 0, 0, 0.85);
       pointer-events: none;
     }
     .dungeon-col .col-sub {
       position: absolute;
       left: 0;
       right: 0;
-      bottom: 5%;
+      bottom: 8%;
       z-index: 3;
       margin: 0;
       text-align: center;
-      font-size: clamp(13px, 1.4vw, 18px);
+      font-size: clamp(11px, 1.2vw, 14px);
       font-weight: 800;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.1em;
       color: #f6d48a;
       text-shadow: 0 2px 0 #1a120c;
       pointer-events: none;
@@ -3976,15 +3976,14 @@
       box-shadow: none;
     }
     @media (max-width: 760px) {
-      .dungeon-preview { height: 22vh; }
+      .dungeon-preview { height: 36vh; }
       .dungeon-columns {
-        grid-template-columns: 1fr;
-        width: min(360px, 86vw);
-        height: auto;
-        max-height: none;
-        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: min(420px, 92vw);
+        height: 88px;
+        gap: 8px;
       }
-      .dungeon-col { min-height: 22vh; height: 22vh; }
+      .dungeon-col { min-height: 0; height: 100%; }
     }
     .small-btn {
       min-width: 0;
@@ -7446,7 +7445,7 @@
     function dungeonChainHtml(count) {
       const n = Math.max(0, Math.min(2, Number(count) || 0));
       if (n <= 0) return "";
-      const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=1";
+      const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=2";
       return `<div class="chain-wrap" aria-hidden="true"><img class="chain-art" src="${src}" alt=""></div>`;
     }
 
@@ -7511,11 +7510,11 @@
       root.innerHTML = `
         <div class="cast-screen dungeon-pick">
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
+          <div class="dungeon-columns">${columns}</div>
           <div class="dungeon-preview">
             <p class="preview-empty">ダンジョンにマウスを乗せる</p>
             <img alt="" hidden>
           </div>
-          <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
             <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
@@ -7675,7 +7674,7 @@
               ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟", "land-ref")}
               ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城", "land-ref")}
               ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所", "land-ref")}
-              ${sheetFig("chain-one.png?v=1", "錆びた鎖（錠前1）", "cut-ref")}
+              ${sheetFig("chain-one.png?v=2", "錆びた鎖（錠前1）", "cut-ref")}
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
