@@ -3951,7 +3951,7 @@
       border-radius: 0;
       overflow: hidden;
       border: 0;
-      background: #0c0908;
+      background: transparent;
       box-shadow: none;
       justify-self: center;
     }
@@ -3962,17 +3962,6 @@
       object-fit: cover;
     }
     .dungeon-preview img[hidden] { display: none; }
-    .dungeon-preview .preview-empty {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      margin: 0;
-      color: #c8b48a;
-      font-size: 16px;
-      letter-spacing: 0.12em;
-    }
-    .dungeon-preview.has-art .preview-empty { display: none; }
     .dungeon-columns {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7614,10 +7603,8 @@
       const start = root.querySelector(".dungeon-pick .cast-start");
       if (start) start.disabled = !canStart;
       const shown = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
-      const preview = root.querySelector(".dungeon-preview");
       const previewImg = root.querySelector(".dungeon-preview img");
-      if (preview && previewImg) {
-        preview.classList.toggle("has-art", Boolean(shown));
+      if (previewImg) {
         if (shown) {
           previewImg.hidden = false;
           previewImg.src = shown.art;
@@ -7669,7 +7656,6 @@
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
           <div class="dungeon-columns">${columns}</div>
           <div class="dungeon-preview">
-            <p class="preview-empty">ダンジョンにマウスを乗せる</p>
             <img alt="" hidden>
           </div>
           <div class="cast-actions">
