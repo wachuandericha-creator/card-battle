@@ -7282,7 +7282,6 @@
           <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
-              ${loginWord && readSave() ? menuButton("つづきから", "continue") : ""}
               ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
@@ -7767,10 +7766,12 @@
     }
 
     function renderAccount() {
+      const hasSave = Boolean(readSave());
       root.innerHTML = `
         <div class="menu">
           <h1>ログイン済</h1>
           <p>${esc(loginWord)}</p>
+          ${hasSave ? menuButton("つづきから", "continue", true) : ""}
           ${menuButton("ログアウト", "logout")}
           ${menuButton("データを消す", "wipe-ask", false)}
           ${menuButton("もどる", "title")}
