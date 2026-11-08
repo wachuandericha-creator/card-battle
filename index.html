@@ -4482,8 +4482,8 @@
     let castLock = "戦士";
     let castShown = "";
     const CAST = [
-      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3" },
-      { name: "女の戦士", stand: "girl-front.png?v=10", chibi: "job-girl.png?v=5", action: "girl-action.jpg?v=3", battle: "girl-battle.png?v=19", battleRatio: "3 / 4", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9" },
+      { name: "戦士", stand: "job-front.png?v=5", chibi: "job-warrior.png?v=9", action: "job-action.jpg?v=3", battle: "hero-shoulder.png?v=25", battleRatio: "864 / 1152", defeat: "warrior-defeat.png?v=3", victory: "warrior-victory.png?v=3", bless: "blessing-goddess.jpg?v=1" },
+      { name: "女の戦士", stand: "girl-front.png?v=10", chibi: "job-girl.png?v=5", action: "girl-action.jpg?v=3", battle: "girl-battle.png?v=19", battleRatio: "3 / 4", defeat: "girl-defeat.png?v=8", victory: "girl-victory.png?v=9", bless: "blessing-goddess-f.jpg?v=1" },
     ];
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
@@ -7652,7 +7652,8 @@
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
-            ${sheetBanner("blessing-goddess.jpg?v=1", "祝福", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
+            ${sheetBanner("blessing-goddess.jpg?v=1", "祝福（戦士）", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
+            ${sheetBanner("blessing-goddess-f.jpg?v=1", "祝福（女の戦士）", "荘厳な女神が、ひざまずく女の戦士に祝福を授けている")}
             <h3>お店</h3>
             ${sheetBanner("shop-merchant.jpg?v=1", "お店の商人", "怪しげな商人がこちらを見て笑っている")}
             <h3>敵</h3>
@@ -7790,7 +7791,7 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div>`
         : "";
       const art = floorKind === "挑戦者に祝福を"
-        ? `<img class="bless-art" src="blessing-goddess.jpg?v=1" alt="荘厳な女神が、ひざまずく戦士に祝福を授けている">`
+        ? `<img class="bless-art" src="${esc(heroItem().bless || "blessing-goddess.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
         : "";
       const bless = floorPhase === "bless"
         ? `<div class="gift-row">${blessPicks.map((pick, i) => `<button type="button" class="gift-btn" data-action="bless-pick" data-bless="${i}"><span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`).join("")}</div>`
