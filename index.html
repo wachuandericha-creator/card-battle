@@ -1233,7 +1233,10 @@
       width: 100%;
       margin: 0 auto 8px;
     }
-    .art-zoom-side .art-zoom-card .card.preview { width: min(420px, 100%); }
+    .art-zoom-side .art-zoom-card .card.preview {
+      width: min(420px, 100%);
+      max-height: calc(100vh - 220px);
+    }
     .art-zoom-side .art-zoom-note {
       margin: 12px 0 0;
       flex: 0 0 auto;
@@ -8889,10 +8892,7 @@
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
-      const src = cardArtSrc(name);
-      const body = src
-        ? `<img class="art-zoom-img" src="${esc(src)}" alt="${esc(name)}の絵柄">`
-        : `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
+      const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
       return zoomSidePanel(name, body);
     }
 
@@ -9068,7 +9068,7 @@
         .concat(tabOrder.map((name) => `<button type="button" class="${albumTab === name ? "on" : ""}" data-album="${esc(name)}">${esc(name)}</button>`))
         .join("");
       const faces = sortedCards(shown).map((card) =>
-        `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}" aria-label="${esc(card.name)}の絵柄を拡大" aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`
+        `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}" aria-label="${esc(card.name)}のカードを拡大" aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`
       ).join("");
       root.innerHTML = `
         <div class="album-screen${albumZoom ? " has-zoom" : ""}">
@@ -9085,7 +9085,7 @@
             <h4>未採用絵柄</h4>
             <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
-            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右に絵柄を拡大　★${meta.stars}</p>
+            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
           </div>
           ${artZoomSide(albumZoom)}
