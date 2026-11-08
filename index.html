@@ -2919,6 +2919,12 @@
         opacity: 1;
         transform: translate(calc(-50% + (var(--i) - (var(--n) - 1) / 2) * 110px), 0);
       }
+      .win-star-dock .fly-star {
+        left: auto;
+        top: auto;
+        opacity: 1;
+        transform: none;
+      }
       .sprite .eye, .sprite .eye::after { animation: none; }
       .battle-screen.no-mana, .battle-screen.block, .mana-orb { animation: none; }
     }
@@ -3400,11 +3406,43 @@
       max-height: 46vh;
       overflow: auto;
     }
-    .overlay.victory h2 {
+    .reward-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .overlay.victory h2.win-head {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
+      margin: 0;
       font-size: 64px;
-      letter-spacing: 0.32em;
+      letter-spacing: 0;
       color: #ffe7a8;
       text-shadow: 0 2px 0 #6a4a16, 0 0 18px rgba(255, 220, 140, 0.85);
+    }
+    .win-word { letter-spacing: 0.32em; }
+    .win-star-dock {
+      display: inline-flex;
+      align-items: center;
+      min-height: 72px;
+    }
+    .win-star-dock .fly-star {
+      position: relative;
+      left: auto;
+      top: auto;
+      font-size: 64px;
+      margin: 0 2px;
+      animation-name: star-settle;
+    }
+    @keyframes star-settle {
+      0% { opacity: 0; transform: translate(16vw, 10vh) scale(0.2) rotate(-28deg); }
+      22% { opacity: 1; }
+      100% { opacity: 1; transform: none; }
     }
     .victory-count { color: #ffe7a8; font-size: 28px; font-weight: 800; }
     .victory-flash {
@@ -3468,7 +3506,12 @@
       padding: 10px 22px;
       cursor: pointer;
     }
-    .overlay button + button { margin-top: 10px; }
+    .overlay button.reward-skip {
+      font-size: 28px;
+      padding: 18px 48px;
+      min-width: 240px;
+      min-height: 72px;
+    }
     .overlay.paths .panel.wide {
       width: min(1360px, calc(100vw - 24px));
       max-height: calc(100vh - 16px);
@@ -9911,10 +9954,13 @@
 
     function victoryStars() {
       const count = starBurst;
-      if (!count) return "";
+      if (!count) return { flash: "", stars: "" };
       starBurst = 0;
       const stars = Array.from({ length: count }, (_, i) => `<span class="fly-star" style="--i:${i};--n:${count}">★</span>`).join("");
-      return `<div class="victory-flash" aria-hidden="true"></div><div class="star-burst" aria-label="星${count}">${stars}</div>`;
+      return {
+        flash: `<div class="victory-flash" aria-hidden="true"></div>`,
+        stars
+      };
     }
 
     function victoryStage(bannerText) {
@@ -9929,7 +9975,8 @@
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const picks = rewardPicks.map((card, i) => `<button type="button" class="reward-pick" data-action="reward-card" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`).join("");
-        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        const burst = victoryStars();
+        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row">${picks}</div></div></div>`;
       }
       if (rewardStep === "boss") {
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
@@ -9941,7 +9988,8 @@
           const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${picture}<b>${esc(gearTitle(item) || item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
         }).join("");
-        return `<div class="overlay victory">${victoryStars()}<div class="panel wide reward-panel"><h2>勝利</h2><p class="victory-count">★${rewardStars}もらった。所持 <span data-star-count>★${shownStarCount()}</span></p>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div><button type="button" data-action="reward-skip">スキップ</button></div></div>`;
+        const burst = victoryStars();
+        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
         const buttons = rewardPaths.map((id) => {
@@ -9958,7 +10006,7 @@
         return `<div class="overlay"><div class="panel"><h2>${esc(pathEventTitle)}</h2>${giftMarkup(floorGift, true)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const bonus = bonusCard
-        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" data-action="reward-skip">スキップ</button>`
+        ? `<button type="button" class="reward-pick" data-action="reward-bonus"><div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button>`
         : "";
       return `<div class="overlay"><div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
