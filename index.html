@@ -4199,6 +4199,51 @@
       object-fit: cover;
     }
     .dungeon-preview img[hidden] { display: none; }
+    .dungeon-caption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 16px 18px 36px;
+      background: linear-gradient(180deg, rgba(8, 6, 4, 0.78), rgba(8, 6, 4, 0.28) 72%, transparent);
+      pointer-events: none;
+      text-align: center;
+    }
+    .dungeon-caption[hidden] { display: none; }
+    .dungeon-caption .preview-name {
+      margin: 0;
+      font-size: clamp(28px, 3.4vw, 46px);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      color: #fff6e0;
+      text-shadow: 0 3px 0 #1a120c, 0 0 16px rgba(0, 0, 0, 0.85);
+    }
+    .dungeon-caption .preview-meta {
+      margin: 0;
+      display: flex;
+      gap: 22px;
+      align-items: baseline;
+      justify-content: center;
+    }
+    .dungeon-caption .preview-rank {
+      font-size: clamp(20px, 2.2vw, 28px);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #ffe9ae;
+      text-shadow: 0 2px 0 #1a120c, 0 0 14px rgba(255, 200, 80, 0.55);
+    }
+    .dungeon-caption .preview-floor {
+      font-size: clamp(16px, 1.8vw, 22px);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #f6d48a;
+      text-shadow: 0 2px 0 #1a120c;
+    }
     .dungeon-columns {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4245,57 +4290,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      pointer-events: none;
-    }
-    .dungeon-col .col-scrim {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(10, 8, 6, 0.18), rgba(10, 8, 6, 0.15) 40%, rgba(8, 6, 4, 0.72));
-      pointer-events: none;
-    }
-    .dungeon-col .col-rank {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 10%;
-      z-index: 3;
-      margin: 0;
-      text-align: center;
-      font-size: clamp(16px, 2vw, 22px);
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      color: #ffe9ae;
-      text-shadow: 0 2px 0 #1a120c, 0 0 14px rgba(255, 200, 80, 0.55);
-      pointer-events: none;
-    }
-    .dungeon-col .col-label {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 28%;
-      z-index: 3;
-      margin: 0;
-      text-align: center;
-      font-size: clamp(22px, 3.2vw, 36px);
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: #fff6e0;
-      text-shadow: 0 3px 0 #1a120c, 0 0 16px rgba(0, 0, 0, 0.85);
-      pointer-events: none;
-    }
-    .dungeon-col .col-sub {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 8%;
-      z-index: 3;
-      margin: 0;
-      text-align: center;
-      font-size: clamp(11px, 1.2vw, 14px);
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      color: #f6d48a;
-      text-shadow: 0 2px 0 #1a120c;
       pointer-events: none;
     }
     .dungeon-col .chain-wrap {
@@ -7904,6 +7898,7 @@
       if (start) start.disabled = !canStart;
       const shown = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
       const previewImg = root.querySelector(".dungeon-preview img");
+      const caption = root.querySelector(".dungeon-caption");
       if (previewImg) {
         if (shown) {
           previewImg.hidden = false;
@@ -7913,6 +7908,17 @@
           previewImg.hidden = true;
           previewImg.removeAttribute("src");
           previewImg.alt = "";
+        }
+      }
+      if (caption) {
+        caption.hidden = !shown;
+        const nameEl = caption.querySelector(".preview-name");
+        const rankEl = caption.querySelector(".preview-rank");
+        const floorEl = caption.querySelector(".preview-floor");
+        if (shown) {
+          if (nameEl) nameEl.textContent = shown.name;
+          if (rankEl) rankEl.textContent = shown.rank || "";
+          if (floorEl) floorEl.textContent = `到達 ${shown.label}階`;
         }
       }
       root.querySelectorAll(".dungeon-col").forEach((col) => {
@@ -7943,12 +7949,8 @@
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
         return `
-        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.rank || "")} ${esc(item.label)} ${esc(item.name)}${sealed ? "（鎖）" : ""}">
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.name)}${sealed ? "（鎖）" : ""}">
           <img src="${item.art}" alt="">
-          <span class="col-scrim"></span>
-          <span class="col-rank">${esc(item.rank || "")}</span>
-          <span class="col-label">${esc(item.label)}</span>
-          <span class="col-sub">${esc(item.name)}</span>
           ${dungeonChainHtml(chains)}
         </button>`;
       }).join("");
@@ -7957,6 +7959,10 @@
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
           <div class="dungeon-preview">
             <img alt="" hidden>
+            <div class="dungeon-caption" hidden>
+              <p class="preview-name"></p>
+              <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
+            </div>
           </div>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
