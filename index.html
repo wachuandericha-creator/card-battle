@@ -8709,7 +8709,7 @@
     function artZoomSide(name) {
       if (!name) return "";
       if (name === "card-style-master") {
-        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-master.png?v=1" alt="攻撃（赤）の正本。カード名はアタック">`);
+        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-master.png?v=2" alt="攻撃（赤）の正本。カード名はアタック">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const src = CARD_ART[name] || "";
@@ -9197,7 +9197,7 @@
       return BLANK_FRAMES.map((frame) => {
         if (frame.kind === "attack") {
           const on = albumZoom === "card-style-master";
-          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-master" aria-label="攻撃（赤）の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-red" src="card-style-master.png?v=1" alt="攻撃（赤）の正本。カード名はアタック"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
+          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-master" aria-label="攻撃（赤）の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-red" src="card-style-master.png?v=2" alt="攻撃（赤）の正本。カード名はアタック"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
         }
         const face = cardFace(
           { name: "カード名", cost: "0", text: "効果", stars: 3, kind: frame.kind === "foe" ? "skill" : frame.kind },
