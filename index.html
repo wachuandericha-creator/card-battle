@@ -3737,90 +3737,199 @@
       z-index: 5;
       top: 7vh;
       right: max(24px, 3vw);
-      width: min(380px, 34vw);
+      width: min(400px, 36vw);
       max-height: calc(100% - 12vh);
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding: 22px 22px 18px;
+      gap: 16px;
+      padding: 22px 22px 16px;
       overflow: auto;
       border-radius: 18px;
-      border: 2px solid rgba(240, 195, 106, 0.85);
+      border: 1px solid rgba(228, 177, 90, 0.9);
       background:
-        linear-gradient(180deg, rgba(42, 30, 18, 0.94), rgba(12, 8, 6, 0.94));
-      box-shadow: 0 0 0 1px rgba(20, 12, 6, 0.9), 0 18px 40px rgba(0, 0, 0, 0.55);
+        radial-gradient(120% 55% at 50% 0%, rgba(228, 177, 90, 0.2), transparent 58%),
+        linear-gradient(180deg, #2c2118 0%, #1a1310 42%, #100c0a 100%);
+      box-shadow:
+        0 0 0 3px #15100d,
+        0 0 0 4px rgba(228, 177, 90, 0.55),
+        0 22px 44px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 236, 190, 0.22),
+        inset 0 0 48px rgba(0, 0, 0, 0.45);
       color: #fff6e4;
     }
+    .title-board::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(228, 177, 90, 0.28);
+      border-radius: 12px;
+      pointer-events: none;
+    }
     .title-board h2 {
+      position: relative;
+      z-index: 1;
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       text-align: center;
-      color: #f6d48a;
-      font-size: clamp(26px, 2.4vw, 34px);
+      font-size: clamp(22px, 2.2vw, 30px);
+      letter-spacing: 0.22em;
+      font-weight: 900;
+    }
+    .title-board h2::before,
+    .title-board h2::after {
+      content: "";
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9));
+    }
+    .title-board h2::after { background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent); }
+    .title-board h2 span {
+      background: linear-gradient(180deg, #fff1c8 0%, #f6d48a 45%, #d9a04a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 0 #5a3d12);
+    }
+    .title-board .board-stars {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      background:
+        linear-gradient(180deg, rgba(255, 236, 190, 0.1), rgba(0, 0, 0, 0.28));
+      box-shadow: inset 0 1px 0 rgba(255, 236, 190, 0.16), 0 8px 16px rgba(0, 0, 0, 0.28);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+    .title-board .board-stars .k {
+      font-size: 13px;
+      color: #e4b15a;
       letter-spacing: 0.16em;
     }
-    .title-board .board-who,
-    .title-board .board-stars {
-      margin: 0;
-      text-align: center;
-      font-weight: 800;
+    .title-board .board-stars b {
+      font-size: clamp(28px, 2.6vw, 36px);
+      color: #ffe9ae;
+      text-shadow: 0 0 18px rgba(255, 200, 80, 0.45), 0 2px 0 #5a3d12;
+      font-variant-numeric: tabular-nums;
     }
-    .title-board .board-who { font-size: 18px; letter-spacing: 0.06em; }
-    .title-board .board-stars { font-size: 28px; color: #ffe9ae; }
-    .title-board h3 {
-      margin: 4px 0 0;
-      color: #f0c36a;
-      font-size: 16px;
-      letter-spacing: 0.12em;
-    }
-    .title-board ul,
-    .title-board ol {
+    .title-board .board-goals {
+      position: relative;
+      z-index: 1;
       list-style: none;
       margin: 0;
       padding: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      flex: 1 1 auto;
+      min-height: 0;
     }
-    .title-board li {
+    .title-board .board-goals li {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 18px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(120, 90, 50, 0.4);
+      background: rgba(10, 8, 6, 0.45);
+      font-size: 16px;
       font-weight: 800;
+      letter-spacing: 0.04em;
+      color: #d8c6a4;
+    }
+    .title-board .board-goals li.done {
+      border-color: rgba(228, 177, 90, 0.7);
+      background: linear-gradient(90deg, rgba(228, 177, 90, 0.16), rgba(10, 8, 6, 0.35));
+      color: #fff6e4;
+      box-shadow: inset 0 0 0 1px rgba(255, 236, 190, 0.08);
     }
     .title-board .box {
       flex: none;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       display: grid;
       place-items: center;
-      border-radius: 6px;
-      border: 2px solid rgba(240, 195, 106, 0.8);
-      background: rgba(8, 6, 4, 0.65);
-      color: #ffe9ae;
-      font-size: 18px;
+      border-radius: 7px;
+      border: 2px solid rgba(240, 195, 106, 0.7);
+      background: rgba(8, 6, 4, 0.75);
+      color: #2a1c0c;
+      font-size: 16px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .title-board li.done .box {
-      background: linear-gradient(180deg, #ffe9ae, #c9953a);
-      color: #2a1c0c;
-      border-color: #fff1c8;
+      background: linear-gradient(180deg, #fff1c8, #e0a84a);
+      border-color: #fff6e4;
+      box-shadow: 0 0 10px rgba(255, 200, 90, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.55);
     }
-    .title-board .board-log li { font-size: 16px; font-weight: 700; color: #f3e2c0; }
-    .title-board .board-log li.latest { color: #fff6e4; font-size: 18px; }
-    .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 15px; }
+    .title-board .board-foot {
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(228, 177, 90, 0.35);
+    }
+    .title-board .board-who,
+    .title-board .board-log-wrap {
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(120, 90, 50, 0.45);
+      background: rgba(8, 6, 4, 0.5);
+    }
+    .title-board .board-foot .lbl {
+      display: block;
+      margin: 0 0 6px;
+      color: #e4b15a;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+    }
+    .title-board .board-who .name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      word-break: break-all;
+      color: #fff6e4;
+    }
+    .title-board .board-who.off .name { color: #c8b48a; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; }
+    .title-board .board-log {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .title-board .board-log li { font-size: 13px; font-weight: 700; color: #d8c6a4; line-height: 1.35; }
+    .title-board .board-log li.latest { color: #fff6e4; font-size: 14px; }
+    .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
       .title-board {
         top: auto;
         right: 16px;
         bottom: 16px;
-        width: min(280px, 46vw);
-        max-height: 42vh;
+        width: min(300px, 48vw);
+        max-height: 44vh;
         padding: 14px;
-        gap: 8px;
+        gap: 10px;
       }
-      .title-board h2 { font-size: 18px; }
-      .title-board .board-stars { font-size: 20px; }
-      .title-board li { font-size: 14px; }
+      .title-board h2 { font-size: 16px; letter-spacing: 0.14em; }
+      .title-board .board-stars b { font-size: 22px; }
+      .title-board .board-goals li { font-size: 13px; padding: 8px 10px; }
+      .title-board .board-foot { grid-template-columns: 1fr; }
     }
     .menu h1 {
       margin: 0;
@@ -7452,14 +7561,22 @@
       const history = logins.length
         ? `<ol class="board-log">${logins.slice(0, 6).map((ts, i) => `<li class="${i === 0 ? "latest" : ""}">${esc(formatLogin(ts))}</li>`).join("")}</ol>`
         : `<p class="board-empty">${logged ? "まだありません" : "ログインすると残ります"}</p>`;
+      const stars = logged ? Number(meta.stars) || 0 : "—";
       return `
         <aside class="title-board" aria-label="達成状況">
-          <h2>達成状況</h2>
-          <p class="board-who">${logged ? esc(loginWord) : "ログインしていません"}</p>
-          <p class="board-stars">所持 ★${logged ? Number(meta.stars) || 0 : "—"}</p>
-          <ul>${rows}</ul>
-          <h3>最終ログイン</h3>
-          ${history}
+          <h2><span>達成状況</span></h2>
+          <p class="board-stars"><span class="k">所持</span><b>★${stars}</b></p>
+          <ul class="board-goals">${rows}</ul>
+          <div class="board-foot">
+            <div class="board-who${logged ? "" : " off"}">
+              <span class="lbl">ログイン名</span>
+              <p class="name">${logged ? esc(loginWord) : "ログインしていません"}</p>
+            </div>
+            <div class="board-log-wrap">
+              <span class="lbl">最終ログイン</span>
+              ${history}
+            </div>
+          </div>
         </aside>`;
     }
 
