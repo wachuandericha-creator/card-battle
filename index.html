@@ -3690,6 +3690,11 @@
       text-align: center;
     }
     .pass-box .pass-error { color: #ffb4a8; font-size: 16px; }
+    .menu button.danger {
+      border-color: rgba(255, 140, 110, 0.85);
+      background: linear-gradient(180deg, #6a2218, #3a100c);
+      color: #ffe8dc;
+    }
     /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
     .bless-art {
       height: min(48vh, 600px);
@@ -6565,6 +6570,28 @@
       loadMeta();
     }
 
+    function logout() {
+      const account = readAccount();
+      account.login = "";
+      writeAccount(account);
+      loginWord = "";
+      meta = emptyMeta();
+      screen = "title";
+      render();
+    }
+
+    function wipeLogin() {
+      if (!loginWord) return;
+      const account = readAccount();
+      delete account.slots[loginWord];
+      account.login = "";
+      writeAccount(account);
+      loginWord = "";
+      meta = emptyMeta();
+      screen = "title";
+      render();
+    }
+
     function loadAccount() {
       const account = readAccount();
       loginWord = typeof account.login === "string" ? account.login : "";
@@ -7256,8 +7283,8 @@
           <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
-              ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "continue", false, !loginWord || !readSave())}
-              ${loginWord ? menuButton("あいことばを入れ直す", "pass-switch") : ""}
+              ${loginWord && readSave() ? menuButton("つづきから", "continue") : ""}
+              ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
               ${menuButton("オプション", "settings")}
@@ -7740,6 +7767,32 @@
         </div>`;
     }
 
+    function renderAccount() {
+      root.innerHTML = `
+        <div class="menu">
+          <h1>ログイン済</h1>
+          <p>${esc(loginWord)}</p>
+          ${menuButton("ログアウト", "logout")}
+          ${menuButton("データを消す", "wipe-ask", false)}
+          ${menuButton("もどる", "title")}
+        </div>`;
+      const wipe = root.querySelector('[data-action="wipe-ask"]');
+      if (wipe) wipe.classList.add("danger");
+    }
+
+    function renderWipe(step) {
+      const first = step === 1;
+      root.innerHTML = `
+        <div class="menu">
+          <h1>データを消す</h1>
+          <p>${first ? "このあいことばのデータを消します。元には戻せません。" : "本当に消しますか。"}</p>
+          ${menuButton(first ? "消す" : "本当に消す", first ? "wipe-again" : "wipe-yes")}
+          ${menuButton("もどる", first ? "account" : "wipe-ask")}
+        </div>`;
+      const go = root.querySelector('[data-action="wipe-again"], [data-action="wipe-yes"]');
+      if (go) go.classList.add("danger");
+    }
+
     function renderPass() {
       root.innerHTML = `
         <div class="menu">
@@ -7876,6 +7929,9 @@
     function render() {
       hideLogPeek();
       if (screen === "title") return renderTitle();
+      if (screen === "account") return renderAccount();
+      if (screen === "wipe") return renderWipe(1);
+      if (screen === "wipe2") return renderWipe(2);
       if (screen === "pass") return renderPass();
       if (screen === "character") return renderCharacter();
       if (screen === "dungeon") return renderDungeon();
@@ -9357,6 +9413,11 @@
           if (!loginWord) { passFrom = "new"; passError = ""; screen = "pass"; render(); }
           else { castPicked = false; screen = "character"; render(); }
         }
+        if (name === "account") { if (!loginWord) return; screen = "account"; render(); }
+        if (name === "logout") logout();
+        if (name === "wipe-ask") { screen = "wipe"; render(); }
+        if (name === "wipe-again") { screen = "wipe2"; render(); }
+        if (name === "wipe-yes") wipeLogin();
         if (name === "pass-switch") { passFrom = "switch"; passError = ""; screen = "pass"; render(); }
         if (name === "pass-ok") {
           const input = root.querySelector("#pass-word");
