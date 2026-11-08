@@ -7,7 +7,7 @@
   <style>
     :root {
       --hand-scale: 0.64;
-      --card-ratio: 204 / 300;
+      --card-ratio: 2 / 3;
       --edge-clear: clamp(44px, 7.5vmin, 100px);
       --bg: #0a0908;
       --ink: #1a1612;
@@ -3335,6 +3335,139 @@
     .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
+    /* 最新のカードスタイル：枠画像（768×1152）を一番上に重ね、絵は窓の下、文字は枠の位置へ置く。
+       位置は枠画像の画素÷7.68＝cqw。★は装飾なし、★★銀・★★★金・ボス赤の四隅 */
+    .card.attack, .card.block, .card.skill, .card.power, .card.foe {
+      border-width: 0;
+      border-radius: 0;
+      background: #0c0a08;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    }
+    .card .card-fit { display: block; }
+    .card .card-fit .frame {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      filter: none;
+      pointer-events: none;
+      background: var(--frame-img) center / 100% 100% no-repeat;
+    }
+    .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
+    .card .card-fit.k-attack { --frame-img: url("frame-attack-r1.png?v=1"); }
+    .card .card-fit.k-block { --frame-img: url("frame-block-r1.png?v=1"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-skill-r1.png?v=1"); }
+    .card .card-fit.k-power { --frame-img: url("frame-power-r1.png?v=1"); }
+    .card .card-fit.k-foe { --frame-img: url("frame-foe-r1.png?v=1"); }
+    .card .card-fit.k-attack.r2 { --frame-img: url("frame-attack-r2.png?v=1"); }
+    .card .card-fit.k-block.r2 { --frame-img: url("frame-block-r2.png?v=1"); }
+    .card .card-fit.k-skill.r2 { --frame-img: url("frame-skill-r2.png?v=1"); }
+    .card .card-fit.k-power.r2 { --frame-img: url("frame-power-r2.png?v=1"); }
+    .card .card-fit.k-foe.r2 { --frame-img: url("frame-foe-r2.png?v=1"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-attack-r3.png?v=1"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-block-r3.png?v=1"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-skill-r3.png?v=1"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-power-r3.png?v=1"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-foe-r3.png?v=1"); }
+    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=1"); }
+    .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=1"); }
+    .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=1"); }
+    .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=1"); }
+    .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=1"); }
+    .card .card-fit .art {
+      position: absolute;
+      left: 7.68cqw;
+      top: 18.75cqw;
+      width: 84.375cqw;
+      height: 63.28cqw;
+      margin: 0;
+      z-index: 1;
+      border-radius: 0;
+      background: #1a1410;
+      box-shadow: none;
+    }
+    .card .card-fit .genre {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      padding: 0;
+      min-width: 0;
+    }
+    .card .card-fit .nameplate {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      margin: 0;
+      padding: 0;
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      pointer-events: none;
+    }
+    .card .card-fit .cost {
+      left: 10.94cqw;
+      top: 11.07cqw;
+      transform: translate(-50%, -50%);
+      width: 7.3cqw;
+      height: 7.3cqw;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      color: #f1efed;
+      font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
+      font-size: 8.4cqw;
+      font-weight: 700;
+      -webkit-text-stroke: 0;
+      text-shadow: none;
+    }
+    .card .card-fit .nameplate .name {
+      left: 21.6cqw;
+      right: 7cqw;
+      top: 11.39cqw;
+      padding: 0;
+      font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
+      font-size: 6.6cqw;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: left;
+      color: #f1efed;
+      -webkit-text-stroke: 0;
+      text-shadow: none;
+    }
+    .card .card-fit .text {
+      position: absolute;
+      left: 9.4cqw;
+      top: 88.5cqw;
+      width: 81.2cqw;
+      height: 51cqw;
+      margin: 0;
+      z-index: 3;
+      padding: 2cqw;
+      box-sizing: border-box;
+      border-radius: 0;
+      background: none;
+      color: #1c1816;
+      font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
+    }
+    .card .card-fit .fx.note { font-size: 6.6cqw; font-weight: 700; }
+    .card .card-fit .rarity {
+      right: 10.4cqw;
+      bottom: 9.6cqw;
+      z-index: 4;
+      font-size: 5cqw;
+      color: #1c1816;
+      text-shadow: none;
+    }
+    .card .card-fit.r2 .rarity { color: #5f6b78; }
+    .card .card-fit.r3 .rarity { color: #9a6a12; }
+    .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
       width: auto;
       height: 86%;
@@ -9412,10 +9545,10 @@
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = cardArtSrc(card.name) ? `<img src="${cardArtSrc(card.name)}" alt="">` : "";
-      const rank = stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
+      const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
-      return `<div class="card-fit ${rank}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
