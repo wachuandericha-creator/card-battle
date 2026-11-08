@@ -2852,9 +2852,16 @@
       max-width: none;
       margin-inline: calc(var(--overlap, 33px) * -0.5);
     }
-    /* 枚数が多いときは重ねる。ホバーで大きく浮かせて効果を読めるようにする（プレイエリアへ重なってよい） */
+    /* 枚数が多いときは重ねる。ホバーは扇の中心から外側へ（端は斜めに出る。傾きは保つ） */
     .hand .card:hover:not(:disabled) {
-      transform: translateY(calc(var(--drop, 0px) - 92px)) rotate(0deg) scale(1.14);
+      --hand-lift: 96px;
+      transform:
+        translate(
+          calc(sin(var(--fan, 0deg)) * var(--hand-lift) * 2.6),
+          calc(var(--drop, 0px) - cos(var(--fan, 0deg)) * var(--hand-lift))
+        )
+        rotate(var(--fan, 0deg))
+        scale(1.14);
       z-index: 40;
       box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55), 0 0 0 2px rgba(255, 236, 200, 0.35);
     }
