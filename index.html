@@ -4205,6 +4205,66 @@
       letter-spacing: 0.14em;
       text-shadow: 0 2px 0 #0a0c10;
     }
+    /* 挑戦開始のあと、選んだダンジョンへ入ってから始める */
+    .depart {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #070605;
+      pointer-events: auto;
+    }
+    .depart-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.02);
+      filter: brightness(0.72);
+      animation: depart-zoom 2.6s ease forwards;
+    }
+    .depart-name {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      color: #f6d48a;
+      font-size: clamp(40px, 6vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-shadow: 0 3px 0 #1a120c, 0 0 22px rgba(0, 0, 0, 0.9);
+      opacity: 0;
+      animation: depart-name 2.6s ease forwards;
+    }
+    .depart::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: #050403;
+      opacity: 0;
+      animation: depart-fade 2.6s ease forwards;
+    }
+    .depart.depart-fast .depart-art,
+    .depart.depart-fast .depart-name,
+    .depart.depart-fast::after { animation-duration: 0.7s; }
+    @keyframes depart-zoom {
+      0% { transform: scale(1.02); filter: brightness(0.55); }
+      16% { filter: brightness(1); }
+      70% { transform: scale(1.16); filter: brightness(1); }
+      100% { transform: scale(1.22); filter: brightness(0.15); }
+    }
+    @keyframes depart-name {
+      0%, 18% { opacity: 0; transform: translateY(14px); }
+      36%, 68% { opacity: 1; transform: none; }
+      100% { opacity: 0; transform: none; }
+    }
+    @keyframes depart-fade {
+      0%, 64% { opacity: 0; }
+      100% { opacity: 1; }
+    }
     .challenge-pick {
       height: 100%;
       min-height: 0;
@@ -4901,6 +4961,8 @@
     let outcome = null;
     let logLines = [];
     let timer = null;
+    let departing = false;
+    let departTimer = null;
     let screen = "title";
     let battleIndex = 0;
     let showLog = true;
@@ -7673,6 +7735,27 @@
       startBattle(keepHp);
     }
 
+    function departRun(floors, name) {
+      if (departing) return;
+      const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === name) || pendingDungeon || DUNGEON_LIST[0];
+      if (!chosen || !dungeonOpen(chosen.floors)) return;
+      departing = true;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const ms = reduce ? 700 : 2600;
+      const veil = document.createElement("div");
+      veil.className = reduce ? "depart depart-fast" : "depart";
+      veil.setAttribute("role", "status");
+      veil.innerHTML = `<img class="depart-art" src="${chosen.art}" alt=""><h1 class="depart-name">${esc(chosen.name)}</h1>`;
+      document.body.appendChild(veil);
+      if (departTimer) clearTimeout(departTimer);
+      departTimer = setTimeout(() => {
+        departTimer = null;
+        if (veil.parentNode) veil.remove();
+        departing = false;
+        beginRun(chosen.floors, chosen.name);
+      }, ms);
+    }
+
     function beginRun(floors, name) {
       defeatSnap = null;
       lastFoeBlow = null;
@@ -9970,7 +10053,7 @@
         dungeonHover = "";
         pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
         paintDungeon();
-        if (challengeReady()) beginRun(pendingDungeon.floors, pendingDungeon.name);
+        if (challengeReady()) departRun(pendingDungeon.floors, pendingDungeon.name);
       }
     });
 
@@ -10018,7 +10101,7 @@
         if (name === "character-next") {
           if (challengeReady()) {
             const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || pendingDungeon;
-            if (chosen) beginRun(chosen.floors, chosen.name);
+            if (chosen) departRun(chosen.floors, chosen.name);
           } else paintChallengeStart();
         }
         if (name === "cast-stay") { screen = "character"; render(); }
@@ -10040,7 +10123,7 @@
         }
         if (name === "dungeon-enter") {
           const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || pendingDungeon;
-          if (chosen && dungeonOpen(chosen.floors)) beginRun(chosen.floors, chosen.name);
+          if (chosen && dungeonOpen(chosen.floors)) departRun(chosen.floors, chosen.name);
         }
         if (name === "floor-next") advance(1);
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
