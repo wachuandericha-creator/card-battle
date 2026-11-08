@@ -4155,34 +4155,90 @@
       letter-spacing: 0.14em;
       text-shadow: 0 2px 0 #0a0c10;
     }
-    .dungeon-pick {
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
+    .challenge-pick {
       height: 100%;
       min-height: 0;
-      gap: 12px;
-      padding: 18px max(56px, 12vw) 96px;
+      padding: 12px max(24px, 3vw) 96px;
       box-sizing: border-box;
-      place-items: center;
-      justify-items: center;
       background:
         radial-gradient(ellipse at 50% 0%, rgba(90, 60, 20, 0.28), transparent 46%),
         #0c0908;
     }
-    .dungeon-pick .cast-title {
-      position: relative;
-      z-index: 2;
-      margin: 4px 0 0;
-      width: min(1100px, 100%);
-      text-align: center;
-      font-size: clamp(22px, 2.8vw, 34px);
+    .challenge-pick .cast-title {
+      width: min(1200px, 100%);
+      font-size: clamp(22px, 2.6vw, 34px);
       letter-spacing: 0.12em;
-      color: #f6d48a;
-      text-shadow: 0 2px 0 #1a120c;
+    }
+    .challenge-split {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(14px, 2vw, 28px);
+      align-items: stretch;
+    }
+    .challenge-job,
+    .challenge-dungeon {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    .challenge-job .cast-main {
+      width: 100%;
+      margin: 0;
+      grid-template-columns: minmax(140px, 42%) minmax(0, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .challenge-job .cast-action {
+      width: 100%;
+      max-width: none;
+      height: auto;
+      max-height: min(52vh, 420px);
+      aspect-ratio: 4 / 5;
+      justify-self: stretch;
+      align-self: center;
+    }
+    .challenge-job .cast-side .cast-plaque {
+      padding: 12px 12px 14px;
+    }
+    .challenge-job .cast-side .cast-plaque h1 { font-size: 26px; margin-bottom: 8px; gap: 8px; }
+    .challenge-job .cast-side .cast-blurb { font-size: 12px; padding: 8px 10px; margin-bottom: 8px; }
+    .challenge-job .stat-chips { gap: 6px; margin-bottom: 4px; }
+    .challenge-job .stat-chips .chip { padding: 8px 8px; }
+    .challenge-job .stat-chips .chip b { font-size: 20px; }
+    .challenge-job .stat-chips .chip .ico { width: 18px; height: 18px; }
+    .challenge-job .cast-side .cast-plaque h2 { margin: 8px 0 6px; font-size: 13px; }
+    .challenge-job .cast-side .cast-gear { gap: 10px; }
+    .challenge-job .cast-side .cast-gear figure { width: 64px; }
+    .challenge-job .cast-side .cast-gear img { width: 56px; height: 56px; }
+    .challenge-job .cast-side .cast-gear figcaption { font-size: 11px; }
+    .challenge-job .cast-side .cast-deck .card.preview { width: 72px; }
+    .challenge-job .cast-roster {
+      width: 100%;
+      padding: 0;
+      gap: 10px;
+    }
+    .challenge-job .cast-token.mini img { width: 88px; height: 104px; }
+    .challenge-job .cast-token.mini span { font-size: 14px; }
+    .challenge-dungeon .dungeon-preview {
+      flex: 1 1 auto;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+    }
+    .challenge-dungeon .dungeon-columns {
+      width: 100%;
+      height: min(120px, 14vh);
     }
     .dungeon-preview {
       position: relative;
-      width: min(1100px, 100%);
+      width: 100%;
       height: min(52vh, 560px);
       max-width: 100%;
       border-radius: 0;
@@ -4316,6 +4372,11 @@
       filter: grayscale(0.25);
       box-shadow: none;
     }
+    @media (max-width: 980px) {
+      .challenge-split { grid-template-columns: 1fr; overflow: auto; }
+      .challenge-job .cast-main { grid-template-columns: minmax(120px, 36%) minmax(0, 1fr); }
+      .challenge-dungeon .dungeon-preview { min-height: 220px; }
+    }
     @media (max-width: 760px) {
       .cast-screen { padding-left: max(20px, 6vw); padding-right: max(20px, 6vw); }
       .dungeon-preview { height: 36vh; }
@@ -4327,6 +4388,7 @@
       }
       .dungeon-col { min-height: 0; height: 100%; }
       .cast-main { grid-template-columns: minmax(0, 1fr); }
+      .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
     }
     .small-btn {
       min-width: 0;
@@ -7804,21 +7866,31 @@
         </div>`;
     }
 
+    function challengeReady() {
+      const lockedItem = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock);
+      return Boolean(castLock) && lockedItem && dungeonOpen(lockedItem.floors);
+    }
+
+    function paintChallengeStart() {
+      const start = root.querySelector(".challenge-pick .cast-start");
+      if (!start) return;
+      start.hidden = false;
+      start.disabled = !challengeReady();
+    }
+
     function paintCast() {
       const name = shownCastName();
-      const fixed = Boolean(castLock) && (!castHover || castHover === castLock);
       if (name !== castShown) {
         castShown = name;
         const item = castByName(name);
         const main = root.querySelector(".cast-main");
         if (main) main.innerHTML = castMainMarkup(item);
       }
-      const start = root.querySelector(".cast-start");
-      if (start) start.hidden = !fixed;
       root.querySelectorAll("[data-cast]").forEach((token) => {
         token.classList.toggle("locked", token.dataset.cast === castLock);
         token.classList.toggle("shown", token.dataset.cast === name);
       });
+      paintChallengeStart();
     }
 
     function bindCastHover() {
@@ -7835,28 +7907,6 @@
           paintCast();
         });
       });
-    }
-
-    function renderCharacter() {
-      // コマは正面向きのおよそ2.5頭身デフォルメだけ。道の絵に合わせる。4頭身の正面の立ち絵はこの画面には出さない（一枚絵と板で十分）。
-      const tokens = CAST.map((item) => `
-        <button type="button" class="cast-token mini" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
-          <img src="${item.chibi}" alt="">
-          <span>${esc(item.name)}</span>
-        </button>`).join("");
-      castShown = "";
-      root.innerHTML = `
-        <div class="cast-screen">
-          <h1 class="cast-title">初期ジョブを選択してください</h1>
-          <div class="cast-main"></div>
-          <div class="cast-roster many">${tokens}</div>
-          <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="title">もどる</button>
-            <button type="button" class="primary cast-start" data-action="character-next" hidden>挑戦開始</button>
-          </div>
-        </div>`;
-      paintCast();
-      bindCastHover();
     }
 
     function dungeonArt(name) {
@@ -7891,11 +7941,6 @@
 
     function paintDungeon() {
       const name = shownDungeonName();
-      const fixed = Boolean(dungeonLock) && (!dungeonHover || dungeonHover === dungeonLock);
-      const lockedItem = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock);
-      const canStart = fixed && lockedItem && dungeonOpen(lockedItem.floors);
-      const start = root.querySelector(".dungeon-pick .cast-start");
-      if (start) start.disabled = !canStart;
       const shown = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
       const previewImg = root.querySelector(".dungeon-preview img");
       const caption = root.querySelector(".dungeon-caption");
@@ -7926,6 +7971,7 @@
         col.classList.toggle("active", active);
         col.setAttribute("aria-pressed", active && col.dataset.dungeon === dungeonLock ? "true" : "false");
       });
+      paintChallengeStart();
     }
 
     function bindDungeonHover() {
@@ -7944,7 +7990,13 @@
       });
     }
 
-    function renderDungeon() {
+    function renderCharacter() {
+      // ジョブ（左）とダンジョン（右）を同時に決める。見出しは挑戦内容で統一。
+      const tokens = CAST.map((item) => `
+        <button type="button" class="cast-token mini" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
+          <img src="${item.chibi}" alt="">
+          <span>${esc(item.name)}</span>
+        </button>`).join("");
       const columns = DUNGEON_LIST.map((item) => {
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
@@ -7954,24 +8006,39 @@
           ${dungeonChainHtml(chains)}
         </button>`;
       }).join("");
+      castShown = "";
       root.innerHTML = `
-        <div class="cast-screen dungeon-pick">
-          <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
-          <div class="dungeon-preview">
-            <img alt="" hidden>
-            <div class="dungeon-caption" hidden>
-              <p class="preview-name"></p>
-              <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
-            </div>
+        <div class="cast-screen challenge-pick">
+          <h1 class="cast-title">挑戦内容を選択してください</h1>
+          <div class="challenge-split">
+            <section class="challenge-job" aria-label="ジョブ">
+              <div class="cast-main"></div>
+              <div class="cast-roster many">${tokens}</div>
+            </section>
+            <section class="challenge-dungeon" aria-label="ダンジョン">
+              <div class="dungeon-preview">
+                <img alt="" hidden>
+                <div class="dungeon-caption" hidden>
+                  <p class="preview-name"></p>
+                  <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
+                </div>
+              </div>
+              <div class="dungeon-columns">${columns}</div>
+            </section>
           </div>
-          <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="character">もどる</button>
+            <button type="button" class="cast-back" data-action="title">もどる</button>
             <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
           </div>
         </div>`;
+      paintCast();
       paintDungeon();
+      bindCastHover();
       bindDungeonHover();
+    }
+
+    function renderDungeon() {
+      renderCharacter();
     }
 
     function albumCatalog() {
@@ -9805,16 +9872,15 @@
       const name = action.dataset.action;
       if (name === "cast-token") {
         castLock = action.dataset.cast || castLock;
-        dungeonHover = "";
-        dungeonLock = "";
-        screen = "dungeon";
-        render();
+        castHover = "";
+        paintCast();
       }
       if (name === "dungeon-token") {
         dungeonLock = action.dataset.dungeon || dungeonLock;
-        const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
-        if (chosen && dungeonOpen(chosen.floors)) beginRun(chosen.floors, chosen.name);
-        else paintDungeon();
+        dungeonHover = "";
+        pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
+        paintDungeon();
+        if (challengeReady()) beginRun(pendingDungeon.floors, pendingDungeon.name);
       }
     });
 
@@ -9844,7 +9910,13 @@
           return;
         }
         if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
-        if (name === "character") { castHover = ""; castLock = "戦士"; screen = "character"; render(); }
+        if (name === "character") {
+          castHover = "";
+          castLock = castLock || "戦士";
+          dungeonHover = "";
+          screen = "character";
+          render();
+        }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
           castHover = "";
@@ -9852,9 +9924,14 @@
         }
         if (name === "cast-pick") { castPicked = true; render(); }
         if (name === "cast-back") { castPicked = false; render(); }
-        if (name === "character-next") { dungeonHover = ""; dungeonLock = ""; screen = "dungeon"; render(); }
+        if (name === "character-next") {
+          if (challengeReady()) {
+            const chosen = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || pendingDungeon;
+            if (chosen) beginRun(chosen.floors, chosen.name);
+          } else paintChallengeStart();
+        }
         if (name === "cast-stay") { screen = "character"; render(); }
-        if (name === "dungeon-list") { screen = "dungeon"; render(); }
+        if (name === "dungeon-list") { screen = "character"; render(); }
         if (name === "dungeon-token") {
           dungeonLock = action.dataset.dungeon || "";
           dungeonHover = "";
