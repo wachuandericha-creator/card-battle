@@ -518,37 +518,6 @@
     .battle-plate.parried.shielded {
       box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(232, 200, 120, 0.85), 0 0 0 6px rgba(212, 168, 74, 0.35), 0 0 20px rgba(212, 168, 74, 0.45), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 236, 200, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
     }
-    .battle-plate.parried .meter.hp {
-      background: linear-gradient(180deg, #2a2214, #3a3020);
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(232, 200, 120, 0.7), 0 0 12px rgba(212, 168, 74, 0.4);
-    }
-    .battle-plate.parried .meter.hp .hp-max {
-      background: rgba(60, 48, 28, 0.55);
-    }
-    .battle-plate.parried .meter.hp > span {
-      background: linear-gradient(180deg, #fff8e8 0%, #e8d090 28%, #c8a050 58%, #8a6a28 100%);
-      box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 0 10px rgba(212, 168, 74, 0.55);
-      animation: parry-invuln 1.35s ease-in-out infinite;
-    }
-    .battle-plate.parried.low .meter.hp > span {
-      background: linear-gradient(180deg, #fff8e8 0%, #e8d090 28%, #c8a050 58%, #8a6a28 100%);
-      animation: parry-invuln 1.35s ease-in-out infinite;
-    }
-    .battle-plate.parried .meter.hp::before {
-      content: "パリィ";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      z-index: 4;
-      transform: translate(-50%, -50%);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.28em;
-      color: #fff8e8;
-      text-shadow: 0 0 6px rgba(212, 168, 74, 0.85), 0 1px 0 #3a2810, 0 0 10px rgba(232, 200, 120, 0.7);
-      pointer-events: none;
-      white-space: nowrap;
-    }
     .battle-plate.parried .hp-line .lbl .ico {
       color: #e8d090;
       filter: drop-shadow(0 0 4px rgba(212, 168, 74, 0.55));
@@ -592,6 +561,20 @@
     }
     .battle-plate .shield-badge .plate-shield::after {
       content: none;
+    }
+    .battle-plate .parry-badge {
+      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 12px rgba(232, 190, 70, 0.75));
+    }
+    .battle-plate.shielded .parry-badge { right: 52px; }
+    .battle-plate .parry-badge .plate-shield {
+      background:
+        linear-gradient(115deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0) 34%),
+        linear-gradient(180deg, #fff6d0 0%, #f0c45a 34%, #c48a22 68%, #6a4a10 100%);
+      box-shadow: inset 0 0 0 2px rgba(255, 236, 180, 0.75);
+    }
+    .battle-plate .parry-badge .plate-shield::before {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(90, 60, 12, 0.16) 42%, rgba(0, 0, 0, 0.22) 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 220, 140, 0.35);
     }
     .battle-plate .shield-badge b {
       position: relative;
@@ -8219,9 +8202,11 @@
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
     function plateMarkup(cls, who, name, tag, shownHp, maxHp, block, extra) {
       const low = maxHp > 0 && shownHp / maxHp <= 0.3 ? " low" : "";
-      const parried = who === "player" && typeof player !== "undefined" && player && parryCount(player) > 0;
-      // シールドがあるときは、板の右上に大きな盾の札で数を出す（自分も敵も同じ）
+      const parryN = who === "player" && typeof player !== "undefined" && player ? parryCount(player) : 0;
+      const parried = parryN > 0;
+      // シールドは板の右上の青鋼の盾。パリィは同じ位置の金の盾。両方あるときはパリィをシールドのとなりへ
       const shieldBadge = block > 0 ? `<div class="shield-badge" aria-label="シールド ${block}"><i class="plate-shield" aria-hidden="true"></i><b>${block}</b></div>` : "";
+      const parryBadge = parried ? `<div class="shield-badge parry-badge" aria-label="パリィ ${parryN}"><i class="plate-shield" aria-hidden="true"></i>${parryN > 1 ? `<b>${parryN}</b>` : ""}</div>` : "";
       const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
       const badges = extra && extra.badges
@@ -8234,7 +8219,7 @@
       const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk) : "";
       const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def) : "";
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd) : "";
-      return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}
+      return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
         <div class="hp-line"><span class="lbl">${heartIcon()}HP</span><span class="num"><b data-hp="${who}">${Math.round(shownHp)}</b><small>/ ${maxHp}</small></span></div>
