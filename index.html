@@ -192,15 +192,16 @@
       overflow: visible;
       pointer-events: none;
     }
+    .stage .foe-piles,
     .stage .foe-pile,
     .stage .foe-peek { pointer-events: auto; }
     /* 自分のステータスは戦闘画面の左上、敵は右上 */
     .enemy-field {
       position: relative;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 36%) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(200px, 26%) minmax(0, 1fr);
       align-items: stretch;
-      column-gap: 10px;
+      column-gap: 0;
       width: 100%;
       flex: 1 1 auto;
       min-height: 0;
@@ -217,8 +218,8 @@
       justify-content: center;
       gap: 8px;
     }
-    .duel-side.ally { z-index: 4; }
-    .duel-side.foe { z-index: 4; }
+    .duel-side.ally { z-index: 4; justify-content: flex-end; }
+    .duel-side.foe { z-index: 4; justify-content: flex-start; }
     .duel-mid {
       position: relative;
       min-width: 0;
@@ -297,7 +298,7 @@
       z-index: 4;
       height: 100%;
       width: auto;
-      max-width: min(88%, 420px);
+      max-width: min(100%, 490px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2446,15 +2447,25 @@
     }
     .battle-log h2 + p.turn-head { border-top: 0; padding-top: 0; }
     .battle-log p[data-log] { cursor: pointer; }
-    .foe-pile {
+    .foe-piles {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      z-index: 7;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .foe-pile,
+    .foe-discard {
       position: relative;
       right: auto;
       bottom: auto;
       z-index: 7;
-      width: 76px;
+      width: 128px;
       flex: 0 0 auto;
-      align-self: flex-end;
-      margin-bottom: 8px;
+      margin: 0;
       padding: 0;
       border: 0;
       background: transparent;
@@ -2463,13 +2474,16 @@
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      cursor: pointer;
       pointer-events: auto;
       font-family: inherit;
     }
-    .foe-pile .pile-card { width: 64px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
-    .foe-pile .pile-count { font-size: 30px; }
-    .foe-pile .pile-label { font-size: 13px; letter-spacing: 0.08em; white-space: nowrap; }
+    .foe-pile { cursor: pointer; }
+    .foe-pile .pile-card,
+    .foe-discard .pile-card { width: 118px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
+    .foe-pile .pile-count,
+    .foe-discard .pile-count { font-size: 44px; }
+    .foe-pile .pile-label,
+    .foe-discard .pile-label { font-size: 16px; letter-spacing: 0.08em; white-space: nowrap; }
     .foe-pile:hover .pile-card { box-shadow: 0 0 14px rgba(200, 150, 62, 0.75), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(90, 81, 72, 0.75); }
     .foe-peek {
       position: absolute;
@@ -5022,6 +5036,7 @@
     let turn = 0;
     let intentIndex = 0;
     let enemyLoop = [];
+    let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "パリィは次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。パリィがあるあいだは、シールドを得られない。奥義「パリィが重複する」のときは重なる。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
@@ -6036,14 +6051,22 @@
       return (cards || []).map((card) => card.name).sort().join("|");
     }
 
-    function startEnemyLoop(first) {
+    function startEnemyLoop() {
       enemyLoop = shuffle(sourcePattern());
-      intentIndex = first && enemyLoop.length ? Math.floor(Math.random() * enemyLoop.length) : 0;
+      intentIndex = 0;
+      foeDiscard = [];
+    }
+
+    function foeDeckRemain() {
+      if (!enemyLoop.length) return 0;
+      const drawn = intentShown ? 1 : 0;
+      return Math.max(0, enemyLoop.length - intentIndex - drawn);
     }
 
     function advanceEnemyLoop() {
+      if (enemyLoop.length && intentIndex < enemyLoop.length) foeDiscard.push({ ...enemyLoop[intentIndex] });
       intentIndex += 1;
-      if (enemyLoop.length && intentIndex >= enemyLoop.length) startEnemyLoop(false);
+      if (enemyLoop.length && intentIndex >= enemyLoop.length) startEnemyLoop();
     }
 
     function restoreEnemyLoop(data) {
@@ -6051,10 +6074,11 @@
       if (saved.length && deckKey(saved) === deckKey(sourcePattern())) {
         enemyLoop = saved.map((card) => ({ ...card }));
         intentIndex = Number.isInteger(data.intentIndex) ? data.intentIndex : 0;
-        if (intentIndex < 0 || intentIndex >= enemyLoop.length) startEnemyLoop(false);
+        if (intentIndex < 0 || intentIndex >= enemyLoop.length) startEnemyLoop();
+        else foeDiscard = Array.isArray(data.foeDiscard) ? data.foeDiscard.map((card) => ({ ...card })) : [];
         return;
       }
-      startEnemyLoop(true);
+      startEnemyLoop();
     }
 
     function intentAt(offset) {
@@ -7313,6 +7337,7 @@
         turn,
         intentIndex,
         enemyLoop,
+        foeDiscard,
         phase,
         note,
         banner,
@@ -9260,9 +9285,17 @@
       return `<div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div>`;
     }
 
+    function foePileFace(count, discard) {
+      const empty = count === 0;
+      const look = empty ? "empty" : discard ? "back discard" : "back";
+      const stack = count > 1 ? " stack" : "";
+      return `<div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div>`;
+    }
+
     function foePileMarkup() {
-      const count = sourcePattern().length;
-      return `<button type="button" class="foe-pile" data-action="foe-deck" aria-label="${esc(enemy.name)}の山札 ${count}枚"><div class="pile-card back discard${count > 1 ? " stack" : ""}"><span class="pile-count">${count}</span></div><div class="pile-label">敵の山札</div></button>`;
+      const left = foeDeckRemain();
+      const dumped = foeDiscard.length;
+      return `<div class="foe-piles"><button type="button" class="foe-pile" data-action="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></button><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div></div>`;
     }
 
     function foeDeckOverlay() {
