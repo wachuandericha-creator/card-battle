@@ -3812,10 +3812,10 @@
     }
     .dungeon-pick {
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
       height: 100%;
       min-height: 0;
-      gap: 16px;
+      gap: 12px;
       padding: 18px 24px 96px;
       box-sizing: border-box;
       place-items: center;
@@ -3833,12 +3833,41 @@
       color: #f6d48a;
       text-shadow: 0 2px 0 #1a120c;
     }
+    .dungeon-preview {
+      position: relative;
+      width: min(920px, 84vw);
+      height: min(38vh, 360px);
+      max-width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(228, 177, 90, 0.7);
+      background: #120c0a;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+    .dungeon-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .dungeon-preview img[hidden] { display: none; }
+    .dungeon-preview .preview-empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      color: #c8b48a;
+      font-size: 16px;
+      letter-spacing: 0.12em;
+    }
+    .dungeon-preview.has-art .preview-empty { display: none; }
     .dungeon-columns {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
       width: min(860px, 78vw);
-      height: min(460px, 52vh);
+      height: min(220px, 28vh);
       max-width: 100%;
       min-height: 0;
       align-self: center;
@@ -3923,62 +3952,26 @@
       z-index: 4;
       pointer-events: none;
     }
-    .dungeon-col .chain-band {
+    .dungeon-col .chain-art {
       position: absolute;
-      left: -8%;
-      right: -8%;
-      height: 44px;
-      background:
-        radial-gradient(circle at 12px 50%, transparent 7px, #8a8f98 8px, #8a8f98 11px, transparent 12px) 0 0 / 28px 100%,
-        linear-gradient(180deg, transparent 0 14px, #6f757e 14px 30px, transparent 30px);
-      filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.65));
-      opacity: 0.92;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
     }
-    .dungeon-col .chain-band::before,
-    .dungeon-col .chain-band::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      width: 26px;
-      height: 38px;
-      margin-top: -19px;
-      border: 4px solid #a8adb6;
-      border-radius: 14px;
-      box-shadow: inset 0 0 0 2px #4d525a, 0 2px 4px rgba(0, 0, 0, 0.5);
-      background: rgba(30, 32, 36, 0.35);
+    .dungeon-pick .cast-actions {
+      z-index: 6;
+      gap: 8px;
     }
-    .dungeon-col .chain-band::before { left: 10%; transform: rotate(-18deg); }
-    .dungeon-col .chain-band::after { right: 10%; transform: rotate(18deg); }
-    .dungeon-col .chain-band.b1 { top: 28%; transform: rotate(-8deg); }
-    .dungeon-col .chain-band.b2 { top: 58%; transform: rotate(7deg); }
-    .dungeon-col .chain-lock {
-      position: absolute;
-      left: 50%;
-      top: 44%;
-      z-index: 5;
-      transform: translate(-50%, -50%);
-      width: 54px;
-      height: 54px;
-      border-radius: 12px;
-      border: 3px solid #c5cad2;
-      background: linear-gradient(180deg, #9aa1ab, #5a6068);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    .dungeon-pick .cast-actions > button:disabled {
+      opacity: 0.38;
+      cursor: default;
+      filter: grayscale(0.25);
+      box-shadow: none;
     }
-    .dungeon-col .chain-lock::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: -18px;
-      width: 22px;
-      height: 26px;
-      margin-left: -11px;
-      border: 4px solid #c5cad2;
-      border-bottom: 0;
-      border-radius: 14px 14px 0 0;
-      box-sizing: border-box;
-    }
-    .dungeon-pick .cast-actions { z-index: 6; }
     @media (max-width: 760px) {
+      .dungeon-preview { height: 22vh; }
       .dungeon-columns {
         grid-template-columns: 1fr;
         width: min(360px, 86vw);
@@ -7426,8 +7419,8 @@
     function dungeonChainHtml(count) {
       const n = Math.max(0, Math.min(2, Number(count) || 0));
       if (n <= 0) return "";
-      const bands = Array.from({ length: n }, (_, i) => `<i class="chain-band b${i + 1}"></i>`).join("");
-      return `<div class="chain-wrap" aria-hidden="true">${bands}<span class="chain-lock"></span></div>`;
+      const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=1";
+      return `<div class="chain-wrap" aria-hidden="true"><img class="chain-art" src="${src}" alt=""></div>`;
     }
 
     function paintDungeon() {
@@ -7436,7 +7429,22 @@
       const lockedItem = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock);
       const canStart = fixed && lockedItem && dungeonOpen(lockedItem.floors);
       const start = root.querySelector(".dungeon-pick .cast-start");
-      if (start) start.hidden = !canStart;
+      if (start) start.disabled = !canStart;
+      const shown = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
+      const preview = root.querySelector(".dungeon-preview");
+      const previewImg = root.querySelector(".dungeon-preview img");
+      if (preview && previewImg) {
+        preview.classList.toggle("has-art", Boolean(shown));
+        if (shown) {
+          previewImg.hidden = false;
+          previewImg.src = shown.art;
+          previewImg.alt = shown.name;
+        } else {
+          previewImg.hidden = true;
+          previewImg.removeAttribute("src");
+          previewImg.alt = "";
+        }
+      }
       root.querySelectorAll(".dungeon-col").forEach((col) => {
         const active = col.dataset.dungeon === name;
         col.classList.toggle("active", active);
@@ -7476,10 +7484,14 @@
       root.innerHTML = `
         <div class="cast-screen dungeon-pick">
           <h1 class="cast-title">挑戦するダンジョンを決めてください</h1>
+          <div class="dungeon-preview">
+            <p class="preview-empty">ダンジョンにマウスを乗せる</p>
+            <img alt="" hidden>
+          </div>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
-            <button type="button" class="primary cast-start" data-action="dungeon-enter" hidden>挑戦開始</button>
+            <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
           </div>
         </div>`;
       paintDungeon();
@@ -7636,6 +7648,8 @@
               ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟", "land-ref")}
               ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城", "land-ref")}
               ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所", "land-ref")}
+              ${sheetFig("chain-one.png?v=1", "錆びた鎖（錠前1）", "cut-ref")}
+              ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
             ${sheetBanner("blessing-goddess.jpg?v=1", "祝福", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
