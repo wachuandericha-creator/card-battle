@@ -10770,8 +10770,12 @@
     kwTip.hidden = true;
     document.body.appendChild(kwTip);
     let kwTipAnchor = null;
+    // 手札は乗ると持ち上がる。動きが終わるまで待ってから出す（そのあいだに別のカードへ移ったら出さない）
+    const KW_TIP_DELAY = 300;
+    let kwTipTimer = 0;
 
     function hideKwTip() {
+      clearTimeout(kwTipTimer);
       kwTipAnchor = null;
       kwTip.hidden = true;
     }
@@ -10806,14 +10810,15 @@
         return note && note.textContent ? `<p><b>${esc(word)}</b><span>${esc(note.textContent)}</span></p>` : "";
       }).filter(Boolean);
       if (!items.length) { hideKwTip(); return; }
+      clearTimeout(kwTipTimer);
       kwTipAnchor = anchor;
-      kwTip.innerHTML = items.join("");
-      kwTip.hidden = false;
-      placeKwTip(anchor);
-      // 手札は乗ると少し持ち上がるので、動き終わりに合わせて置き直す
-      [120, 280].forEach((ms) => setTimeout(() => {
-        if (kwTipAnchor === anchor && anchor.isConnected && !kwTip.hidden) placeKwTip(anchor);
-      }, ms));
+      kwTip.hidden = true;
+      kwTipTimer = setTimeout(() => {
+        if (kwTipAnchor !== anchor || !anchor.isConnected) return;
+        kwTip.innerHTML = items.join("");
+        kwTip.hidden = false;
+        placeKwTip(anchor);
+      }, KW_TIP_DELAY);
     }
 
     function kwAnchorOf(target) {
@@ -10827,7 +10832,8 @@
     root.addEventListener("pointerover", (event) => {
       const anchor = kwAnchorOf(event.target);
       if (!anchor) { if (kwTipAnchor) hideKwTip(); return; }
-      if (anchor !== kwTipAnchor) showKwTip(anchor);
+      // まだ出ていないあいだに別のカードへ移ったら、待ちをやり直す
+      if (anchor !== kwTipAnchor || kwTip.hidden) showKwTip(anchor);
     });
     root.addEventListener("pointerout", (event) => {
       if (!kwTipAnchor) return;
