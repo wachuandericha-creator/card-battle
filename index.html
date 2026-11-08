@@ -1338,7 +1338,7 @@
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
     .ref-grid figure.wide-land { grid-column: 1 / -1; max-width: 720px; }
-    /* カードスタイル＝元の色枠の上に金の四隅。名札・効果は薄く、絵柄の場所に点線 */
+    /* カードスタイル＝装飾なし。名札・効果は薄く、絵柄の場所に点線 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
     .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
@@ -8721,7 +8721,7 @@
 
     const MADE_CARD_ARTS = [
       ["made-attack-m", "アタック（男）", "card-attack-m.jpg?v=2"],
-      ["made-attack-f", "アタック（女）", "card-attack-f-card.png?v=1"],
+      ["made-attack-f", "アタック（女）", "card-attack-f-card.png?v=2"],
       ["made-charge-m", "チャージアタック（男）", "card-charge-m.jpg?v=1"],
       ["made-charge-f", "チャージアタック（女）", "card-charge-f.jpg?v=1"],
       ["made-big-attack-m", "ビッグアタック（男）", "card-big-attack-m.jpg?v=1"],
@@ -8743,11 +8743,14 @@
         return zoomSidePanel(made[1], `<img class="art-zoom-img" src="${made[2]}" alt="${esc(made[1])}">`);
       }
       const masterZoom = {
-        "card-style-master": { label: "攻撃（赤）", src: "card-style-gold-attack.png?v=1", alt: "攻撃（赤）。元の枠の上に金の四隅" },
-        "card-style-master-block": { label: "防御（青）", src: "card-style-gold-block.png?v=1", alt: "防御（青）。元の枠の上に金の四隅" },
-        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-gold-skill.png?v=1", alt: "スキル（黄）。元の枠の上に金の四隅" },
-        "card-style-master-power": { label: "パワー（緑）", src: "card-style-gold-power.png?v=1", alt: "パワー（緑）。元の枠の上に金の四隅" },
-        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-gold-foe.png?v=1", alt: "敵のカード（紫）。元の枠の上に金の四隅" },
+        "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
+        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
+        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=7", alt: "スキル（黄）。装飾なし。★" },
+        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
+        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
+        "rarity-silver": { label: "★★ 銀", src: "card-style-silver-attack.png?v=1", alt: "同じ四隅を銀にした。★★" },
+        "rarity-gold": { label: "★★★ 金", src: "card-style-gold-attack.png?v=1", alt: "金の四隅。★★★" },
+        "rarity-boss": { label: "ボス 赤", src: "card-style-boss-attack.png?v=1", alt: "同じ四隅を赤にした。ボス" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -8944,6 +8947,8 @@
             </div>
             <h4>カードスタイル</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
+            <h4>レアリティ</h4>
+            <div class="ref-grid blank-grid">${rarityStyleSheet()}</div>
             <h4>できたカード絵</h4>
             <div class="ref-grid blank-grid">${madeCardSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
@@ -9228,14 +9233,25 @@
       })[kind] || "スキル";
     }
 
-    // カードスタイル＝元の色枠の上に金の四隅。枠自体は変えない。
+    // カードスタイル＝装飾なし（★）。金の四隅は★★★。同じ形の銀が★★、赤がボス。
     const BLANK_FRAMES = [
-      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-gold-attack.png?v=1", alt: "攻撃（赤）。元の枠の上に金の四隅" },
-      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-gold-block.png?v=1", alt: "防御（青）。元の枠の上に金の四隅" },
-      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-gold-skill.png?v=1", alt: "スキル（黄）。元の枠の上に金の四隅" },
-      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-gold-power.png?v=1", alt: "パワー（緑）。元の枠の上に金の四隅" },
-      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-gold-foe.png?v=1", alt: "敵のカード（紫）。元の枠の上に金の四隅" },
+      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
+      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
+      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=7", alt: "スキル（黄）。装飾なし。★" },
+      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
+      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
     ];
+    const RARITY_STYLES = [
+      ["rarity-silver", "★★ 銀", "card-style-silver-attack.png?v=1"],
+      ["rarity-gold", "★★★ 金", "card-style-gold-attack.png?v=1"],
+      ["rarity-boss", "ボス 赤", "card-style-boss-attack.png?v=1"],
+    ];
+    function rarityStyleSheet() {
+      return RARITY_STYLES.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
     function madeCardSheet() {
       return MADE_CARD_ARTS.map((item) => {
         const on = albumZoom === item[0];
