@@ -3817,15 +3817,30 @@
       letter-spacing: 0.08em;
     }
     .title-board .board-stars .k {
-      font-size: 13px;
-      color: #e4b15a;
-      letter-spacing: 0.16em;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 236, 190, 0.55);
+      background: linear-gradient(180deg, rgba(255, 236, 190, 0.22), rgba(120, 80, 20, 0.35));
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff8e6;
+      letter-spacing: 0.22em;
+      text-shadow: 0 1px 0 #5a3d12, 0 0 10px rgba(255, 220, 120, 0.4);
     }
     .title-board .board-stars b {
       font-size: clamp(28px, 2.6vw, 36px);
       color: #ffe9ae;
       text-shadow: 0 0 18px rgba(255, 200, 80, 0.45), 0 2px 0 #5a3d12;
       font-variant-numeric: tabular-nums;
+    }
+    .title-board .board-goals .rank {
+      margin-left: auto;
+      color: #ffe9ae;
+      font-size: 15px;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 10px rgba(255, 200, 80, 0.35);
     }
     .title-board .board-goals {
       position: relative;
@@ -3912,16 +3927,14 @@
       color: #fff6e4;
     }
     .title-board .board-who.off .name { color: #c8b48a; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; }
-    .title-board .board-log {
-      list-style: none;
+    .title-board .board-log-one {
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff6e4;
+      line-height: 1.35;
+      letter-spacing: 0.02em;
     }
-    .title-board .board-log li { font-size: 13px; font-weight: 700; color: #d8c6a4; line-height: 1.35; }
-    .title-board .board-log li.latest { color: #fff6e4; font-size: 14px; }
     .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
       .title-board {
@@ -4181,6 +4194,21 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(180deg, rgba(10, 8, 6, 0.18), rgba(10, 8, 6, 0.15) 40%, rgba(8, 6, 4, 0.72));
+      pointer-events: none;
+    }
+    .dungeon-col .col-rank {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 10%;
+      z-index: 3;
+      margin: 0;
+      text-align: center;
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #ffe9ae;
+      text-shadow: 0 2px 0 #1a120c, 0 0 14px rgba(255, 200, 80, 0.55);
       pointer-events: none;
     }
     .dungeon-col .col-label {
@@ -4791,9 +4819,9 @@
     const HAND_CAP = 10;
     const DRAW_PER_TURN = 5; /* SPD＝毎ターン引く枚数の基本 */
     const DUNGEON_LIST = [
-      { name: "骸洞窟", label: "20", floors: 20, art: "dungeon-cave.jpg?v=1" },
-      { name: "竜の遺骸城", label: "50", floors: 50, art: "dungeon-50.jpg?v=1" },
-      { name: "深淵なる寝所", label: "100", floors: 100, art: "dungeon-100.jpg?v=1" },
+      { name: "骸洞窟", label: "20", floors: 20, rank: "★", art: "dungeon-cave.jpg?v=1" },
+      { name: "竜の遺骸城", label: "50", floors: 50, rank: "★★", art: "dungeon-50.jpg?v=1" },
+      { name: "深淵なる寝所", label: "100", floors: 100, rank: "★★★", art: "dungeon-100.jpg?v=1" },
     ];
     let dungeonName = "骸洞窟";
     let pendingDungeon = DUNGEON_LIST[0];
@@ -7561,12 +7589,12 @@
       const logged = Boolean(loginWord);
       const rows = DUNGEON_LIST.map((item) => {
         const done = logged && dungeonClearedFloors(item.floors);
-        return `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(item.name)}を踏破</span></li>`;
+        return `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(item.name)}を踏破</span><span class="rank" aria-label="難易度">${esc(item.rank || "")}</span></li>`;
       }).join("");
       const slot = logged ? readAccount().slots[loginWord] : null;
       const logins = slot && Array.isArray(slot.logins) ? slot.logins : [];
       const history = logins.length
-        ? `<ol class="board-log">${logins.slice(0, 6).map((ts, i) => `<li class="${i === 0 ? "latest" : ""}">${esc(formatLogin(ts))}</li>`).join("")}</ol>`
+        ? `<p class="board-log-one">${esc(formatLogin(logins[0]))}</p>`
         : `<p class="board-empty">${logged ? "まだありません" : "ログインすると残ります"}</p>`;
       const stars = logged ? Number(meta.stars) || 0 : "—";
       return `
@@ -7818,9 +7846,10 @@
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
         return `
-        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.label)} ${esc(item.name)}${sealed ? "（鎖）" : ""}">
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.rank || "")} ${esc(item.label)} ${esc(item.name)}${sealed ? "（鎖）" : ""}">
           <img src="${item.art}" alt="">
           <span class="col-scrim"></span>
+          <span class="col-rank">${esc(item.rank || "")}</span>
           <span class="col-label">${esc(item.label)}</span>
           <span class="col-sub">${esc(item.name)}</span>
           ${dungeonChainHtml(chains)}
@@ -8010,9 +8039,9 @@
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
-              ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟", "land-ref")}
-              ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城", "land-ref")}
-              ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所", "land-ref")}
+              ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟 ★", "land-ref")}
+              ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城 ★★", "land-ref")}
+              ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所 ★★★", "land-ref")}
               ${sheetFig("chain-one.png?v=2", "錆びた鎖（錠前1）", "cut-ref")}
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
