@@ -1341,7 +1341,7 @@
     /* 色ごとの空の枠。正本と同じ黒鉄。見本は金の唐草。名札・効果は薄く、絵柄の場所に点線 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
-    .blank-grid img.style-red { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
+    .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
     .blank-grid .card.preview:hover { transform: none; }
     .card.blank .nameplate .name, .card.blank .text .note, .card.blank .cost, .card.blank .rarity { opacity: 0.4; }
     .card.blank .art { display: grid; place-items: center; }
@@ -8708,8 +8708,15 @@
 
     function artZoomSide(name) {
       if (!name) return "";
-      if (name === "card-style-master") {
-        return zoomSidePanel("攻撃（赤）", `<img class="art-zoom-img" src="card-style-master.png?v=5" alt="攻撃（赤）の正本。カード名はアタック">`);
+      const masterZoom = {
+        "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=5", alt: "攻撃（赤）の正本。カード名はアタック" },
+        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=1", alt: "防御（青）の正本。絵柄は空" },
+        "card-style-master-skill": { label: "技（黄）", src: "card-style-master-skill.png?v=1", alt: "技（黄）の正本。絵柄は空" },
+        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=1", alt: "パワー（緑）の正本。絵柄は空" },
+        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=1", alt: "敵のカード（紫）の正本。絵柄は空" },
+      }[name];
+      if (masterZoom) {
+        return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const src = CARD_ART[name] || "";
@@ -9185,26 +9192,18 @@
       })[kind] || "技";
     }
 
-    // 設定資料用：絵柄の無い空の枠を、色（分類）ごとに1枚ずつ
+    // 設定資料用：色ごとの正本。攻撃は見本入り。ほかは絵柄空。押すと右半分に拡大
     const BLANK_FRAMES = [
-      { kind: "attack", label: "攻撃（赤）" },
-      { kind: "block", label: "防御（青）" },
-      { kind: "skill", label: "技（黄）" },
-      { kind: "power", label: "パワー（緑）" },
-      { kind: "foe", label: "敵のカード（紫）" },
+      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=5", alt: "攻撃（赤）の正本。カード名はアタック" },
+      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=1", alt: "防御（青）の正本。絵柄は空" },
+      { kind: "skill", label: "技（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=1", alt: "技（黄）の正本。絵柄は空" },
+      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=1", alt: "パワー（緑）の正本。絵柄は空" },
+      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=1", alt: "敵のカード（紫）の正本。絵柄は空" },
     ];
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
-        if (frame.kind === "attack") {
-          const on = albumZoom === "card-style-master";
-          return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="card-style-master" aria-label="攻撃（赤）の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-red" src="card-style-master.png?v=5" alt="攻撃（赤）の正本。カード名はアタック"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
-        }
-        const face = cardFace(
-          { name: "カード名", cost: "0", text: "効果", stars: 3, kind: frame.kind === "foe" ? "skill" : frame.kind },
-          false,
-          frame.kind === "foe"
-        );
-        return `<figure><div class="card preview blank ${frame.kind}">${face}</div><figcaption>${esc(frame.label)}</figcaption></figure>`;
+        const on = albumZoom === frame.zoom;
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${frame.zoom}" aria-label="${esc(frame.label)}の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${frame.src}" alt="${esc(frame.alt)}"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
       }).join("");
     }
 
