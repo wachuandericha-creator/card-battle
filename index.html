@@ -9191,6 +9191,9 @@
     ];
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
+        if (frame.kind === "attack") {
+          return `<figure><img class="back-ref" src="card-style-red.png?v=1" alt="攻撃（赤）の仮カード。絵柄は空"><figcaption>${esc(frame.label)}</figcaption></figure>`;
+        }
         const face = cardFace(
           { name: "カード名", cost: "0", text: "効果", stars: 3, kind: frame.kind === "foe" ? "skill" : frame.kind },
           false,
