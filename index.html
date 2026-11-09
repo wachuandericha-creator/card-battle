@@ -5398,6 +5398,92 @@
       border-width: 3px;
     }
     html.phone .mana-orb { width: 32px; height: 32px; }
+    /* iPhone横画面。高さがないので、装備は左の縦列、上は1行、下は手札 */
+    html.phone.land .battle-screen {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) minmax(96px, 36dvh);
+      grid-template-areas:
+        "gear hud"
+        "gear arena"
+        "gear hand";
+      column-gap: 6px;
+      row-gap: 4px;
+      padding:
+        max(4px, env(safe-area-inset-top))
+        max(10px, env(safe-area-inset-right))
+        max(10px, env(safe-area-inset-bottom))
+        max(10px, env(safe-area-inset-left));
+    }
+    html.phone.land .hud-top {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      padding: 2px 8px;
+      gap: 8px;
+    }
+    html.phone.land .dungeon { gap: 6px; }
+    html.phone.land .dungeon-name { font-size: 16px; letter-spacing: 0.06em; }
+    html.phone.land .dungeon-progress { font-size: 12px; }
+    html.phone.land .status-stars { font-size: 14px; }
+    html.phone.land .hud-actions {
+      width: auto;
+      margin-left: auto;
+      flex-wrap: nowrap;
+      gap: 4px;
+    }
+    html.phone.land .gear-rail {
+      flex-direction: column;
+      align-items: center;
+      width: auto;
+      height: 100%;
+      min-height: 0;
+      padding: 4px 6px;
+    }
+    html.phone.land .gear-board {
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 40px;
+      min-width: 40px;
+      max-width: 40px;
+      height: 100%;
+      min-height: 0;
+    }
+    html.phone.land .gear-slot { flex: 0 0 auto; width: 40px; }
+    html.phone.land .gear-frame { width: 36px; height: 36px; }
+    html.phone.land .gear-label { display: none; }
+    html.phone.land .battle-bands { border-width: 4px; }
+    html.phone.land .enemy-field { grid-template-columns: minmax(0, 1fr) minmax(140px, 30%) minmax(0, 1fr); }
+    html.phone.land .enemy-field > .hero-plate { width: min(220px, 34%); }
+    html.phone.land .foe-plate[data-rank="雑魚"],
+    html.phone.land .foe-plate[data-rank="普通"],
+    html.phone.land .foe-plate[data-rank="強敵"] { width: min(220px, 34%); }
+    html.phone.land .battle-plate h2 { font-size: 13px; }
+    html.phone.land .battle-plate .shield-badge { width: 36px; height: 48px; }
+    html.phone.land .handbar .end,
+    html.phone.land .end {
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      min-height: 64px;
+      max-width: 64px;
+      max-height: 64px;
+      font-size: 13px;
+    }
+    html.phone.land .battle-log {
+      left: 64px;
+      right: auto;
+      bottom: auto;
+      top: 40px;
+      width: min(300px, 42vw);
+      height: auto;
+      max-height: 58%;
+    }
+    html.phone.land .mana-orb { width: 26px; height: 26px; }
+    html.phone.land .hand .card,
+    html.phone.land .hand .card:hover {
+      transform: none;
+    }
   </style>
 </head>
 <body>
@@ -10972,11 +11058,12 @@
       const doc = document.documentElement;
       if (phoneLayout()) {
         doc.classList.add("phone");
+        doc.classList.toggle("land", window.innerWidth > window.innerHeight);
         doc.classList.remove("fit");
         doc.style.removeProperty("--fit");
         return;
       }
-      doc.classList.remove("phone");
+      doc.classList.remove("phone", "land");
       doc.classList.add("fit");
       const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
       doc.style.setProperty("--fit", String(scale));
@@ -10988,6 +11075,12 @@
     window.matchMedia("(max-width: 500px), (max-height: 500px)").addEventListener("change", () => {
       fitStage();
       if (screen === "battle") fitHand();
+    });
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        fitStage();
+        if (screen === "battle") fitHand();
+      }, 80);
     });
 
     // 注釈（パリィ・毒・炎上など）はカードの中ではなく、カードの外の吹き出しに出す。
