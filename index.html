@@ -2274,7 +2274,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札の上。手札帯の中だけ。黄色い宝珠を数だけ。持ち越しは白い宝珠 */
+    /* マナ：山札の上部に重ねる。宝珠は少し大きく、炎が揺れる。山札は手札に近い大きさ */
     .deck-column {
       position: relative;
       height: 100%;
@@ -2283,52 +2283,87 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      gap: 4px;
     }
     .deck-stack {
       position: relative;
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
+      height: 100%;
       display: flex;
       align-items: flex-end;
       justify-content: center;
     }
     .deck-stack .pile { height: 100%; }
+    .handbar .pile-card {
+      flex: 1 1 auto;
+      height: auto;
+      max-height: calc(100% - 34px);
+      min-height: 0;
+    }
     .hand { position: relative; }
     .mana-row {
-      position: relative;
+      position: absolute;
+      left: 50%;
+      top: 22px;
       z-index: 9;
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       margin: 0;
-      flex: 0 0 auto;
+      transform: translateX(-50%);
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 36px;
-      height: 36px;
+      width: 50px;
+      height: 50px;
       flex: 0 0 auto;
       border-radius: 50%;
       border: 2px solid #fff6c8;
       background: radial-gradient(circle at 38% 32%, #fffef6 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
       box-shadow:
         0 0 0 1px rgba(80, 40, 0, 0.55),
-        0 0 12px rgba(255, 196, 60, 0.85),
+        0 0 14px rgba(255, 150, 30, 0.95),
         inset 0 2px 0 rgba(255, 255, 255, 0.75),
         inset 0 -3px 0 rgba(100, 50, 0, 0.35);
-      animation: mana-glow 1.6s ease-in-out infinite;
+      animation: mana-glow 0.7s ease-in-out infinite alternate;
+    }
+    .mana-orb::before,
+    .mana-orb::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 70%;
+      width: 22px;
+      height: 38px;
+      border-radius: 50% 50% 42% 42%;
+      z-index: 2;
+      background: radial-gradient(ellipse at 50% 88%, #fff8d8 0 10%, #ffc44a 28%, #ff6a00 55%, rgba(220, 40, 0, 0.2) 78%, transparent 84%);
+      transform-origin: 50% 100%;
+      animation: flame-body 0.38s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .mana-orb::after {
+      width: 12px;
+      height: 26px;
+      bottom: 82%;
+      background: radial-gradient(circle at 50% 80%, #fff 0%, #ffe08a 40%, transparent 72%);
+      animation-name: flame-core;
+      animation-duration: 0.26s;
     }
     .mana-orb.has-temp {
       border-color: #fff;
       background: radial-gradient(circle at 38% 32%, #fff 0%, #fff6dc 42%, #e4d2a0 74%, #9a8860 100%);
       box-shadow:
         0 0 0 1px rgba(90, 80, 50, 0.5),
-        0 0 12px rgba(255, 246, 220, 0.9),
+        0 0 14px rgba(220, 236, 255, 0.9),
         inset 0 2px 0 rgba(255, 255, 255, 0.9);
+    }
+    .mana-orb.has-temp::before,
+    .mana-orb.has-temp::after {
+      background: radial-gradient(circle at 50% 78%, #fff 0%, #d7ecff 34%, #7eb6ff 62%, transparent 76%);
     }
     .handbar {
       width: 100%;
@@ -5170,7 +5205,9 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 28px; height: 28px; }
+      .mana-orb { width: 38px; height: 38px; }
+      .mana-orb::before { width: 12px; height: 18px; }
+      .mana-orb::after { width: 7px; height: 12px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
