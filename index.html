@@ -769,53 +769,64 @@
     }
     .hero-hit .flash {
       position: absolute;
-      inset: -10%;
+      inset: -8%;
       background:
-        radial-gradient(circle at 48% 46%, rgba(255, 250, 236, 0.95), rgba(255, 92, 28, 0.72) 26%, rgba(140, 10, 4, 0.28) 52%, transparent 72%);
+        radial-gradient(circle at 50% 46%, rgba(255, 252, 240, 0.95), rgba(255, 186, 80, 0.55) 18%, rgba(90, 48, 16, 0.2) 42%, transparent 68%);
       mix-blend-mode: screen;
-      animation: hero-flash 0.9s ease-out forwards;
+      animation: hero-flash 0.7s ease-out forwards;
     }
-    .hero-hit .cut {
+    /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
+    .hero-hit .ring {
       position: absolute;
       left: 50%;
-      top: 48%;
-      width: calc(138% + var(--pow, 0.35) * 36%);
-      height: calc(22px + var(--pow, 0.35) * 26px);
-      background: linear-gradient(90deg, transparent 0%, #fff 16%, #fff 48%, #ffd0c4 70%, transparent 100%);
-      box-shadow:
-        0 0 16px 6px rgba(255, 54, 18, 0.9),
-        0 0 36px 14px rgba(255, 214, 150, 0.65);
-      clip-path: polygon(0 50%, 7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%);
-      opacity: 0;
-    }
-    .hero-hit .cut.a { animation: hero-slash-a 0.78s cubic-bezier(0.16, 0.7, 0.28, 1) forwards; }
-    .hero-hit .cut.b {
-      height: calc(14px + var(--pow, 0.35) * 16px);
-      animation: hero-slash-b 0.82s 0.05s cubic-bezier(0.16, 0.7, 0.28, 1) forwards;
-    }
-    .hero-hit .cut.c {
-      height: calc(11px + var(--pow, 0.35) * 12px);
-      animation: hero-slash-c 0.74s 0.02s cubic-bezier(0.16, 0.7, 0.28, 1) forwards;
-    }
-    .hero-hit .spark {
-      position: absolute;
-      left: 46%;
-      top: 44%;
-      width: 16px;
-      height: 16px;
+      top: 46%;
+      width: calc(70px + var(--pow, 0.35) * 50px);
+      height: calc(70px + var(--pow, 0.35) * 50px);
+      margin: calc((70px + var(--pow, 0.35) * 50px) * -0.5) 0 0 calc((70px + var(--pow, 0.35) * 50px) * -0.5);
       border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 0 14px 8px #ff5a18, 0 0 28px 12px rgba(255, 220, 140, 0.8);
+      border: 4px solid rgba(255, 244, 220, 0.95);
+      box-shadow: 0 0 18px rgba(255, 170, 60, 0.85), inset 0 0 12px rgba(255, 220, 140, 0.45);
       opacity: 0;
-      animation: spark-a 0.72s ease-out forwards;
+      animation: blunt-ring 0.55s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
     }
-    .hero-hit .spark.b { animation-name: spark-b; animation-delay: 0.04s; }
-    .hero-hit .spark.c { left: 54%; animation-name: spark-c; animation-delay: 0.07s; }
-    .hero-hit.fatal .flash { animation-duration: 2.4s; }
-    .hero-hit.fatal .cut.a { animation-duration: 2.2s; }
-    .hero-hit.fatal .cut.b { animation-duration: 2.35s; animation-delay: 0.18s; }
-    .hero-hit.fatal .cut.c { animation-duration: 2.15s; animation-delay: 0.12s; }
-    .hero-hit.fatal .spark { animation-duration: 2s; }
+    .hero-hit .ring.b {
+      border-width: 3px;
+      border-color: rgba(255, 150, 50, 0.8);
+      animation-delay: 0.08s;
+      animation-duration: 0.68s;
+    }
+    .hero-hit .star {
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      width: 8px;
+      height: 8px;
+      margin: -4px 0 0 -4px;
+      background: #fff8e8;
+      clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+      filter: drop-shadow(0 0 6px rgba(255, 190, 80, 0.95));
+      opacity: 0;
+      animation: blunt-star 0.62s ease-out forwards;
+    }
+    .hero-hit .star.s1 { --bx: -78px; --by: -36px; }
+    .hero-hit .star.s2 { --bx: 84px; --by: -22px; animation-delay: 0.03s; }
+    .hero-hit .star.s3 { --bx: -46px; --by: 64px; animation-delay: 0.05s; }
+    .hero-hit .star.s4 { --bx: 58px; --by: 52px; animation-delay: 0.02s; }
+    .hero-hit .star.s5 { --bx: 8px; --by: -88px; animation-delay: 0.06s; }
+    .hero-hit .dust {
+      position: absolute;
+      left: 18%;
+      top: 28%;
+      width: 64%;
+      height: 48%;
+      background: radial-gradient(circle at 50% 55%, rgba(90, 60, 30, 0.45), rgba(255, 210, 140, 0.2) 42%, transparent 70%);
+      opacity: 0;
+      animation: blunt-dust 0.7s ease-out forwards;
+    }
+    .hero-shoulder.blunt .hero-fig { animation: hero-recoil 0.42s ease-out; }
+    .hero-hit.fatal .flash { animation-duration: 2.2s; }
+    .hero-hit.fatal .ring { animation-duration: 1.6s; }
+    .hero-hit.fatal .star { animation-duration: 1.8s; }
     .dmg-pop.me.fatal { animation-duration: 2.8s; font-size: calc(148px + var(--pow, 0.35) * 110px); }
     .fatal-call {
       position: absolute;
@@ -1904,8 +1915,8 @@
       --ang: -45deg;
       --dx: -0.72;
       --dy: 0.72;
-      --len: calc(270px + var(--pow, 0.35) * 190px);
-      --thick: calc(18px + var(--pow, 0.35) * 22px);
+      --len: calc(300px + var(--pow, 0.35) * 210px);
+      --thick: calc(7px + var(--pow, 0.35) * 6px);
       --glow: calc(8px + var(--pow, 0.35) * 14px);
       position: absolute;
       left: 50%;
@@ -1920,23 +1931,31 @@
     .sprite .cut.dir-2 { --ang: 90deg; --dx: 0; --dy: 1; }
     .sprite .cut > i { position: absolute; left: 0; top: 0; display: block; opacity: 0; }
     .sprite .cut .blade,
-    .sprite .cut .trail {
+    .sprite .cut .trail,
+    .sprite .cut .scar {
       width: var(--len);
       height: var(--thick);
       margin: calc(var(--thick) * -0.5) 0 0 calc(var(--len) * -0.5);
-      background: linear-gradient(#fff 0%, #fff8f2 52%, #ffb08a 78%, #d4261a 100%);
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-      mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-      clip-path: polygon(0 50%, 6% 8%, 50% 0, 94% 8%, 100% 50%, 94% 92%, 50% 100%, 6% 92%);
-      filter: drop-shadow(0 0 var(--glow) rgba(255, 250, 242, 0.95)) drop-shadow(0 0 calc(var(--glow) * 2) rgba(255, 90, 60, 0.6));
+      transform-origin: 50% 50%;
+      background: linear-gradient(90deg, transparent 0%, #fff 8%, #fff 46%, #ffd8c8 72%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+      clip-path: polygon(0 50%, 4% 18%, 50% 0, 96% 18%, 100% 50%, 96% 82%, 50% 100%, 4% 82%);
+      filter: drop-shadow(0 0 var(--glow) rgba(255, 252, 246, 1)) drop-shadow(0 0 calc(var(--glow) * 1.6) rgba(255, 70, 40, 0.75));
     }
     .sprite .cut .trail {
-      height: calc(var(--thick) * 0.42);
-      margin-top: calc(var(--thick) * -0.21);
-      width: calc(var(--len) * 1.18);
-      margin-left: calc(var(--len) * -0.59);
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffe9dc 40%, #ff6b4a 100%);
-      filter: blur(1px) drop-shadow(0 0 var(--glow) rgba(255, 120, 90, 0.9));
+      height: calc(var(--thick) * 3.1);
+      margin-top: calc(var(--thick) * -1.55);
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 80, 40, 0.15) 12%, rgba(255, 40, 24, 0.85) 50%, rgba(255, 80, 40, 0.15) 88%, transparent 100%);
+      filter: blur(1.5px);
+      clip-path: none;
+    }
+    .sprite .cut .scar {
+      height: 4px;
+      margin-top: -2px;
+      background: linear-gradient(90deg, transparent 0%, #6e100c 10%, #ff3a28 50%, #6e100c 90%, transparent 100%);
+      filter: drop-shadow(0 0 6px rgba(180, 16, 8, 0.9));
+      clip-path: none;
     }
     .sprite .cut .burst {
       width: calc(60px + var(--pow, 0.35) * 80px);
@@ -1955,20 +1974,44 @@
       background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 40%, #ffd1b8);
       filter: drop-shadow(0 0 4px rgba(255, 220, 180, 0.9));
     }
-    .sprite.slash .cut .blade { animation: slash-blade calc(0.62s + var(--pow, 0.35) * 0.16s) var(--delay, 0s) cubic-bezier(0.14, 0.76, 0.26, 1) both; }
-    .sprite.slash .cut .trail { animation: slash-blade calc(0.62s + var(--pow, 0.35) * 0.16s) calc(var(--delay, 0s) + 0.05s) cubic-bezier(0.14, 0.76, 0.26, 1) both; }
+    .sprite .cut .drop {
+      width: 8px;
+      height: 11px;
+      margin: -5px 0 0 -4px;
+      border-radius: 40% 40% 46% 46%;
+      background: radial-gradient(circle at 40% 30%, #ffb0a4, #c41414 70%);
+    }
+    .sprite .cut .drop.d1 { --fall: -34px; }
+    .sprite .cut .drop.d2 { --fall: 28px; }
+    .sprite.slash .cut .blade { animation: slash-blade 0.42s var(--delay, 0s) cubic-bezier(0.12, 0.8, 0.2, 1) both; }
+    .sprite.slash .cut .trail { animation: slash-blade 0.48s var(--delay, 0s) cubic-bezier(0.12, 0.8, 0.2, 1) both; }
+    .sprite.slash .cut .scar { animation: slash-scar 0.95s var(--delay, 0s) ease-out both; }
+    .sprite.slash .cut .drop { animation: slash-drop 0.7s calc(var(--delay, 0s) + 0.18s) ease-in both; }
     .sprite.slash .cut .burst { animation: slash-burst 0.5s calc(var(--delay, 0s) + 0.1s) ease-out both; }
     .sprite.slash .cut .spark { animation: slash-spark 0.55s calc(var(--delay, 0s) + 0.1s) cubic-bezier(0.1, 0.8, 0.3, 1) both; }
     .sprite.slash .cut .spark.s1 { --sa: calc(var(--ang) + 90deg); --sd: 1; }
     .sprite.slash .cut .spark.s2 { --sa: calc(var(--ang) - 90deg); --sd: 1; }
     .sprite.slash .cut .spark.s3 { --sa: calc(var(--ang) + 62deg); --sd: 0.72; }
+    .sprite.slash .cut .spark.s4 { --sa: calc(var(--ang) + 120deg); --sd: 0.85; }
+    .sprite.slash .cut .spark.s5 { --sa: calc(var(--ang) - 120deg); --sd: 0.8; }
     .sprite.slash img { animation: foe-flash 0.5s var(--flash-delay, 0.1s) ease-out both; }
     .sprite.slash { animation-iteration-count: var(--hits, 1); }
     @keyframes slash-blade {
-      0% { opacity: 0; transform: translate(calc(var(--dx) * -180px), calc(var(--dy) * -180px)) rotate(var(--ang)) scaleX(0.14); }
-      16% { opacity: 1; transform: translate(calc(var(--dx) * -36px), calc(var(--dy) * -36px)) rotate(var(--ang)) scaleX(1); }
-      60% { opacity: 0.95; transform: translate(calc(var(--dx) * 44px), calc(var(--dy) * 44px)) rotate(var(--ang)) scaleX(1.02); }
-      100% { opacity: 0; transform: translate(calc(var(--dx) * 160px), calc(var(--dy) * 160px)) rotate(var(--ang)) scaleX(1.1); }
+      0% { opacity: 0; transform: rotate(var(--ang)) scaleX(0.06); }
+      14% { opacity: 1; transform: rotate(var(--ang)) scaleX(0.55); }
+      36% { opacity: 1; transform: rotate(var(--ang)) scaleX(1); }
+      100% { opacity: 0; transform: rotate(var(--ang)) scaleX(1.04); }
+    }
+    @keyframes slash-scar {
+      0% { opacity: 0; transform: rotate(var(--ang)) scaleX(0.2); }
+      28% { opacity: 0; transform: rotate(var(--ang)) scaleX(0.7); }
+      42% { opacity: 1; transform: rotate(var(--ang)) scaleX(1); }
+      100% { opacity: 0; transform: rotate(var(--ang)) scaleX(1); }
+    }
+    @keyframes slash-drop {
+      0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+      22% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--fall, 0px), 78px) scale(0.85); }
     }
     @keyframes slash-burst {
       0% { opacity: 0; transform: scale(0.2); }
@@ -2056,6 +2099,65 @@
       animation-delay: var(--delay, 0s);
       animation-fill-mode: both;
     }
+    .dmg-pop.foe-hit.poison,
+    .dmg-pop.me.poison {
+      color: #e8ffb0;
+      text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
+    }
+    .poison-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .poison-hit .mist {
+      position: absolute;
+      left: 18%;
+      top: 22%;
+      width: 64%;
+      height: 58%;
+      background:
+        radial-gradient(circle at 40% 55%, rgba(190, 255, 90, 0.72), transparent 46%),
+        radial-gradient(circle at 68% 40%, rgba(170, 70, 240, 0.62), transparent 48%);
+      filter: blur(2px);
+      mix-blend-mode: screen;
+      animation: poison-mist 0.95s ease-out forwards;
+    }
+    .poison-hit .bubble {
+      position: absolute;
+      left: 46%;
+      top: 58%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 32%, #f4ffe4, #8ee05a 46%, #6a28b8 78%);
+      box-shadow: 0 0 10px rgba(140, 230, 70, 0.8), inset 0 0 0 2px rgba(90, 20, 140, 0.45);
+      opacity: 0;
+      animation: poison-bubble 0.9s ease-out forwards;
+    }
+    .poison-hit .b1 { --px: -36px; --py: -90px; width: 22px; height: 22px; }
+    .poison-hit .b2 { --px: 28px; --py: -110px; animation-delay: 0.06s; }
+    .poison-hit .b3 { --px: -8px; --py: -70px; width: 12px; height: 12px; animation-delay: 0.1s; }
+    .poison-hit .b4 { --px: 48px; --py: -64px; width: 14px; height: 14px; animation-delay: 0.04s; }
+    .poison-hit .b5 { --px: -52px; --py: -48px; animation-delay: 0.12s; }
+    .poison-hit .drip {
+      position: absolute;
+      left: 50%;
+      top: 36%;
+      width: 8px;
+      height: 18px;
+      border-radius: 40%;
+      background: linear-gradient(#d8ff8a, #7a32c8);
+      opacity: 0;
+      animation: poison-drip 0.85s ease-in forwards;
+    }
+    .poison-hit .d1 { --px: -24px; animation-delay: 0.08s; }
+    .poison-hit .d2 { --px: 18px; animation-delay: 0.16s; }
+    .poison-hit .d3 { --px: 4px; height: 24px; animation-delay: 0.04s; }
+    .sprite.poison { overflow: visible; }
+    .sprite.poison img { animation: poison-flash 0.85s ease-out both; }
+    .hero-hit.poison { overflow: visible; }
     .screen-heal {
       background:
         radial-gradient(circle at 50% 42%, rgba(214, 255, 226, 0.38), transparent 46%),
@@ -3046,7 +3148,7 @@
     @media (prefers-reduced-motion: reduce) {
       .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-burst, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: none; transition: none; }
       .victory-flash { display: none; }
-      .hero-hit.fatal .flash, .hero-hit.fatal .cut, .dmg-pop.me.fatal { animation-duration: 0.01s; }
+      .hero-hit.fatal .flash, .hero-hit.fatal .ring, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
         left: 50%;
         top: 12vh;
@@ -5004,6 +5106,47 @@
       10% { opacity: 1; }
       100% { opacity: 0; }
     }
+    @keyframes blunt-ring {
+      0% { opacity: 0; transform: scale(0.2); }
+      18% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2.15); }
+    }
+    @keyframes blunt-star {
+      0% { opacity: 0; transform: translate(0, 0) scale(0.3); }
+      16% { opacity: 1; transform: translate(calc(var(--bx) * 0.35), calc(var(--by) * 0.35)) scale(1.2); }
+      100% { opacity: 0; transform: translate(var(--bx), var(--by)) scale(0.6); }
+    }
+    @keyframes blunt-dust {
+      0% { opacity: 0; transform: scale(0.6); }
+      20% { opacity: 0.9; }
+      100% { opacity: 0; transform: scale(1.25); }
+    }
+    @keyframes hero-recoil {
+      0% { transform: none; }
+      16% { transform: translateX(-16px) rotate(-4deg) scale(0.96, 1.04); }
+      42% { transform: translateX(5px) rotate(1deg); }
+      100% { transform: none; }
+    }
+    @keyframes poison-mist {
+      0% { opacity: 0; transform: scale(0.7); }
+      22% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+    @keyframes poison-bubble {
+      0% { opacity: 0; transform: translate(0, 12px) scale(0.4); }
+      18% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(1.05); }
+    }
+    @keyframes poison-drip {
+      0% { opacity: 0; transform: translate(var(--px), 0) scaleY(0.4); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--px), 90px) scaleY(1.1); }
+    }
+    @keyframes poison-flash {
+      0% { filter: none; }
+      24% { filter: drop-shadow(0 0 14px rgba(150, 240, 80, 0.95)) drop-shadow(0 0 26px rgba(150, 60, 220, 0.8)); }
+      100% { filter: none; }
+    }
     @keyframes hero-slash-a {
       0% { opacity: 0; transform: translate(-72%, -86%) rotate(-62deg) scaleX(0.18); }
       16% { opacity: 1; transform: translate(-50%, -50%) rotate(-36deg) scaleX(1); }
@@ -6847,9 +6990,9 @@
       return Math.max(0, Math.min(1, (value - 1) / 14)).toFixed(2);
     }
 
-    function noteHit(side, landed, swung) {
+    function noteHit(side, landed, swung, kind) {
       const n = landed > 0 ? landed : swung;
-      if (n > 0) fxHit = { side, n };
+      if (n > 0) fxHit = { side, n, kind: kind || "slash" };
       if (n > 0 && side === "enemy") fxFoeHits.push(n);
     }
 
@@ -6902,7 +7045,7 @@
       if (who === "player") {
         if (result.hpLoss > 0) {
           fxHurt = true;
-          noteHit("player", result.hpLoss, amount);
+          noteHit("player", result.hpLoss, amount, "poison");
           lastFoeBlow = { name: "毒", hpLoss: result.hpLoss };
           if (target.hp <= 0) {
             fxFatal = true;
@@ -6911,8 +7054,7 @@
         }
         if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
       } else if (result.hpLoss || result.blocked) {
-        slashFoe();
-        noteHit("enemy", result.hpLoss, stacks);
+        noteHit("enemy", result.hpLoss, stacks, "poison");
       }
       log(poisonSentence(name, stacks, 0, result));
       return target.hp <= 0;
@@ -6934,7 +7076,7 @@
       if (result.hpLoss > 0) {
         player.hurtThis = true;
         fxHurt = true;
-        noteHit("player", result.hpLoss, cut.dealt);
+        noteHit("player", result.hpLoss, cut.dealt, "blunt");
         lastFoeBlow = { name, hpLoss: result.hpLoss };
         if (player.hp <= 0) {
           fxFatal = true;
@@ -9735,7 +9877,7 @@
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
       if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
-      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
+      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${hitNow.kind === "poison" ? " poison" : ""}${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
       if (!calls.length) return "";
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
@@ -9776,15 +9918,22 @@
       return t * t * (3 - 2 * t);
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal) {
-      const hit = hurt ? `<div class="hero-hit${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="cut a"></span><span class="cut b"></span><span class="cut c"></span><span class="spark"></span><span class="spark b"></span><span class="spark c"></span></div>` : "";
+    function poisonFxHtml() {
+      return `<div class="poison-hit" aria-hidden="true"><i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
+    }
+
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind) {
+      const poison = hurt && kind === "poison";
+      const hit = !hurt ? "" : poison
+        ? `<div class="hero-hit poison${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml()}</div>`
+        : `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`;
       const guardHtml = guard === "hold"
         ? `<div class="hero-guard" aria-label="ダメージなし">${guardMark()}</div>`
         : guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${poison ? " poison" : ""}${hurt && !poison ? " blunt" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -10708,7 +10857,7 @@
           </div></div>`
         : "";
 
-      const slashNow = fxSlash;
+      const slashNow = fxSlash && !(fxHit && fxHit.side === "enemy" && fxHit.kind === "poison");
       const slashesNow = fxSlashes;
       const foeHitsNow = fxFoeHits;
       const hurtNow = fxHurt;
@@ -10716,15 +10865,16 @@
       const guardNow = fxGuard;
       const healNow = fxHeal;
       const hitNow = fxHit;
+      const foeKind = hitNow && hitNow.side === "enemy" ? (hitNow.kind || "slash") : "";
       const hitPow = hitNow ? hitPower(hitNow.n) : "0.35";
       const HIT_GAP = 0.34;
       const cutsHtml = slashesNow.map((dir, i) => {
         const pow = foeHitsNow[i] != null ? hitPower(foeHitsNow[i]) : (hitNow && hitNow.side === "enemy" ? hitPow : "0.35");
-        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i></span>`;
+        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`;
       }).join("");
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
-        return `<b class="dmg-pop foe-hit" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+        return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
       }).join("");
       fxSlash = false;
       fxSlashes = [];
@@ -10768,7 +10918,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -10777,9 +10927,10 @@
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${foeKind === "poison" ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
                 ${slashNow ? cutsHtml : ""}
+                ${foeKind === "poison" ? poisonFxHtml() : ""}
               </div>
               ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
