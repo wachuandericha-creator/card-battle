@@ -18,11 +18,11 @@
       --panel-face: linear-gradient(180deg, rgba(22, 18, 14, 0.98), rgba(6, 5, 4, 0.99));
       --panel-sheen: radial-gradient(120% 80% at 50% 0%, rgba(212, 168, 74, 0.1), transparent 55%);
       --panel-frame:
-        0 0 0 1px rgba(8, 6, 5, 0.96),
-        0 0 0 2px rgba(212, 168, 74, 0.58),
-        0 0 0 5px rgba(8, 6, 5, 0.9),
-        0 12px 26px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 232, 180, 0.12);
+        0 0 0 1px #0a0806,
+        0 0 0 2px rgba(196, 168, 110, 0.55),
+        0 0 0 3px #12100c,
+        0 10px 22px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 232, 180, 0.08);
       --hp: #c24a3c;
       --hp-bg: #2a1a18;
       --block: #9bb4cc;
@@ -77,62 +77,20 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr);
-      border: 14px solid transparent;
-      border-radius: 18px;
+      border-radius: 14px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
-      background-image:
-        linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
-        var(--dungeon-art, url("dungeon-bg.jpg")),
-        linear-gradient(160deg, #fff8dc 0%, #f3d78a 16%, #fff1c4 34%, #a56b28 48%, #fff6d2 58%, #c9963e 74%, #6b4518 88%, #f8e7b0 100%);
-      background-size: auto, cover, auto;
-      background-position: 0 0, center 38%, 0 0;
-      background-repeat: no-repeat;
-      background-origin: border-box;
-      background-clip: padding-box, padding-box, border-box;
-      box-shadow:
-        0 0 0 2px #140f0b,
-        0 0 0 4px #f6e7b4,
-        0 18px 36px rgba(0, 0, 0, 0.55),
-        inset 0 0 0 2px rgba(255, 236, 190, 0.72),
-        inset 0 0 0 7px rgba(16, 10, 6, 0.88),
-        inset 0 0 0 9px rgba(212, 168, 74, 0.9),
-        inset 0 0 80px rgba(0, 0, 0, 0.28);
-      isolation: isolate;
-    }
-    .battle-bands::before {
-      content: "";
-      position: absolute;
-      z-index: 9;
-      left: 50%;
-      top: 6px;
-      width: 16px;
-      height: 16px;
-      pointer-events: none;
-      transform: translateX(-50%) rotate(45deg);
-      background: linear-gradient(135deg, #fff8dc, #e8c56a 55%, #8a5a22);
-      box-shadow: 0 0 0 2px #3a2410, 0 0 10px rgba(255, 220, 140, 0.85);
-    }
-    .battle-bands::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 9;
-      border-radius: inherit;
-      pointer-events: none;
       background:
-        linear-gradient(#fff1c4, #c4923c) left 8px top 8px / 46px 3px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) left 8px top 8px / 3px 46px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) right 8px top 8px / 46px 3px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) right 8px top 8px / 3px 46px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) left 8px bottom 8px / 46px 3px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) left 8px bottom 8px / 3px 46px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) right 8px bottom 8px / 46px 3px no-repeat,
-        linear-gradient(#fff1c4, #c4923c) right 8px bottom 8px / 3px 46px no-repeat,
-        radial-gradient(circle at 11px 11px, #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
-        radial-gradient(circle at calc(100% - 11px) 11px, #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
-        radial-gradient(circle at 11px calc(100% - 11px), #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
-        radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px);
+        linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
+        var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
+      box-shadow:
+        0 0 0 1px #0a0806,
+        0 0 0 2px rgba(210, 180, 120, 0.7),
+        0 0 0 4px #16120e,
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 230, 180, 0.14),
+        inset 0 0 70px rgba(0, 0, 0, 0.28);
+      isolation: isolate;
     }
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
@@ -3380,8 +3338,7 @@
     .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
     .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
-    /* 最新のカードスタイル：枠画像（768×1152）を一番上に重ね、絵は窓の下、文字は枠の位置へ置く。
-       位置は枠画像の画素÷7.68＝cqw。★は装飾なし、★★は銀の金属枠、★★★は金の金属枠、ボスは赤の四隅 */
+    /* カードスタイルB。★は銅、★★は金。★★★は種類の色。ボスは赤の四隅 */
     .card.attack, .card.block, .card.skill, .card.power, .card.foe {
       border-width: 0;
       border-radius: 0;
@@ -3401,21 +3358,13 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-attack-r1.png?v=3"); }
-    .card .card-fit.k-block { --frame-img: url("frame-block-r1.png?v=3"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-skill-r1.png?v=3"); }
-    .card .card-fit.k-power { --frame-img: url("frame-power-r1.png?v=3"); }
-    .card .card-fit.k-foe { --frame-img: url("frame-foe-r1.png?v=3"); }
-    .card .card-fit.k-attack.r2 { --frame-img: url("frame-attack-r2.png?v=3"); }
-    .card .card-fit.k-block.r2 { --frame-img: url("frame-block-r2.png?v=3"); }
-    .card .card-fit.k-skill.r2 { --frame-img: url("frame-skill-r2.png?v=3"); }
-    .card .card-fit.k-power.r2 { --frame-img: url("frame-power-r2.png?v=3"); }
-    .card .card-fit.k-foe.r2 { --frame-img: url("frame-foe-r2.png?v=3"); }
-    .card .card-fit.k-attack.r3 { --frame-img: url("frame-attack-r3.png?v=3"); }
-    .card .card-fit.k-block.r3 { --frame-img: url("frame-block-r3.png?v=3"); }
-    .card .card-fit.k-skill.r3 { --frame-img: url("frame-skill-r3.png?v=3"); }
-    .card .card-fit.k-power.r3 { --frame-img: url("frame-power-r3.png?v=3"); }
-    .card .card-fit.k-foe.r3 { --frame-img: url("frame-foe-r3.png?v=3"); }
+    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=1"); }
+    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=1"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-star3-attack.png?v=1"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-star3-block.png?v=1"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-star3-skill.png?v=1"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-star3-power.png?v=1"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-star3-foe.png?v=1"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -3423,10 +3372,10 @@
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art {
       position: absolute;
-      left: 7.68cqw;
-      top: 18.75cqw;
-      width: 84.375cqw;
-      height: 63.28cqw;
+      left: 7.6cqw;
+      top: 21.2cqw;
+      width: 84.8cqw;
+      height: 66.5cqw;
       margin: 0;
       z-index: 1;
       border-radius: 0;
@@ -3435,12 +3384,22 @@
     }
     .card .card-fit .genre {
       position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip: rect(0 0 0 0);
+      left: 6.5cqw;
+      top: 79.2cqw;
+      width: 16.4cqw;
+      height: 7.3cqw;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      margin: 0;
       padding: 0;
-      min-width: 0;
+      overflow: hidden;
+      color: #fff8f4;
+      background: transparent;
+      font-size: 3.5cqw;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1;
     }
     .card .card-fit .nameplate {
       position: absolute;
@@ -3456,8 +3415,8 @@
       pointer-events: none;
     }
     .card .card-fit .cost {
-      left: 10.94cqw;
-      top: 11.07cqw;
+      left: 7.4cqw;
+      top: 11.2cqw;
       transform: translate(-50%, -50%);
       width: 7.3cqw;
       height: 7.3cqw;
@@ -3473,9 +3432,9 @@
       text-shadow: none;
     }
     .card .card-fit .nameplate .name {
-      left: 21.6cqw;
+      left: 18cqw;
       right: 7cqw;
-      top: 11.39cqw;
+      top: 13cqw;
       padding: 0;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
       font-size: 6.6cqw;
@@ -3488,10 +3447,10 @@
     }
     .card .card-fit .text {
       position: absolute;
-      left: 9.4cqw;
-      top: 88.5cqw;
-      width: 81.2cqw;
-      height: 51cqw;
+      left: 12cqw;
+      top: 96cqw;
+      width: 76cqw;
+      height: 40cqw;
       margin: 0;
       z-index: 3;
       padding: 2cqw;
@@ -5278,18 +5237,6 @@
       .cast-plaque h1 { font-size: 36px; }
       .party-band { flex-direction: column; }
     }
-    /* PCはWQHDの配置を、今の窓に収まる倍率で縮小する。iPhoneは縦の専用画面 */
-    html.fit, html.fit body { overflow: hidden; background: #050403; }
-    html.fit #game { position: relative; overflow: hidden; }
-    html.fit .battle-screen {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 2560px;
-      height: 1440px;
-      transform: translate(-50%, -50%) scale(var(--fit, 1));
-      transform-origin: center center;
-    }
     html.phone, html.phone body { height: 100%; overflow: hidden; }
     html.phone #game { height: 100%; overflow: hidden; }
     html.phone button { touch-action: manipulation; }
@@ -5372,7 +5319,7 @@
     html.phone .gear-slot { width: auto; flex: 1 1 0; }
     html.phone .gear-frame { width: 44px; height: 44px; }
     html.phone .gear-label { font-size: 9px; }
-    html.phone .battle-bands { border-width: 6px; border-radius: 12px; }
+    html.phone .battle-bands { border-radius: 12px; }
     html.phone .enemy-field { grid-template-columns: minmax(0, 1fr) minmax(64px, 18%) minmax(0, 1fr); }
     html.phone .enemy-field > .hero-plate,
     html.phone .enemy-field > .foe-plate { top: 4px; }
@@ -5452,7 +5399,7 @@
     html.phone.land .gear-slot { flex: 0 0 auto; width: 40px; }
     html.phone.land .gear-frame { width: 36px; height: 36px; }
     html.phone.land .gear-label { display: none; }
-    html.phone.land .battle-bands { border-width: 4px; }
+    html.phone.land .battle-bands { border-radius: 10px; }
     html.phone.land .enemy-field { grid-template-columns: minmax(0, 1fr) minmax(140px, 30%) minmax(0, 1fr); }
     html.phone.land .enemy-field > .hero-plate { width: min(220px, 34%); }
     html.phone.land .foe-plate[data-rank="雑魚"],
@@ -9133,27 +9080,13 @@
     function artZoomSide(name) {
       if (!name) return "";
       const masterZoom = {
-        "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=8", alt: "攻撃（赤）。装飾なし。★" },
-        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=8", alt: "防御（青）。装飾なし。★" },
-        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=8", alt: "スキル（黄）。装飾なし。★" },
-        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
-        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
-        "title-silver": { label: "★★ 銀", src: "card-style-title-silver.png?v=1", alt: "タイトルの裏地だけ銀。外枠はそのまま。★★" },
-        "title-gold": { label: "★★★ 金", src: "card-style-title-gold.png?v=1", alt: "タイトルの裏地だけ金。外枠はそのまま。★★★" },
-        "redo-b": { label: "B", src: "card-style-redo-b.png?v=1", alt: "カードスタイルB。厚枠" },
-        "redo-b-gold": { label: "金", src: "card-style-redo-b-gold.png?v=1", alt: "Bの金色装飾。外枠は黒" },
-        "redo-b-silver": { label: "銀", src: "card-style-redo-b-silver.png?v=1", alt: "Bと同じ形。装飾だけ銀" },
-        "redo-b-copper": { label: "銅", src: "card-style-redo-b-copper.png?v=1", alt: "Bと同じ形。装飾だけ銅" },
-        "redo-b-white": { label: "白", src: "card-style-redo-b-white.png?v=1", alt: "Bと同じ形。装飾だけ白" },
-        "redo-b-black": { label: "黒", src: "card-style-redo-b-black.png?v=1", alt: "Bと同じ形。装飾だけ黒" },
-        "redo-b-brown": { label: "茶", src: "card-style-redo-b-brown.png?v=1", alt: "Bと同じ形。装飾だけ茶" },
-        "redo-b-red": { label: "赤", src: "card-style-redo-b-red.png?v=1", alt: "Bと同じ形。装飾だけ赤" },
-        "redo-b-orange": { label: "橙", src: "card-style-redo-b-orange.png?v=1", alt: "Bと同じ形。装飾だけ橙" },
-        "redo-b-yellow": { label: "黄", src: "card-style-redo-b-yellow.png?v=1", alt: "Bと同じ形。装飾だけ黄" },
-        "redo-b-green": { label: "緑", src: "card-style-redo-b-green.png?v=1", alt: "Bと同じ形。装飾だけ緑" },
-        "redo-b-blue": { label: "青", src: "card-style-redo-b-blue.png?v=1", alt: "Bと同じ形。装飾だけ青" },
-        "redo-b-navy": { label: "紺", src: "card-style-redo-b-navy.png?v=1", alt: "Bと同じ形。装飾だけ紺" },
-        "redo-b-purple": { label: "紫", src: "card-style-redo-b-purple.png?v=1", alt: "Bと同じ形。装飾だけ紫" },
+        "style-star1": { label: "★ 銅", src: "card-style-redo-b-copper.png?v=1", alt: "★の枠。銅" },
+        "style-star2": { label: "★★ 金", src: "card-style-redo-b-gold.png?v=1", alt: "★★の枠。金" },
+        "style-star3-attack": { label: "★★★ 攻撃（赤）", src: "card-style-redo-b-red.png?v=1", alt: "★★★の攻撃。赤" },
+        "style-star3-block": { label: "★★★ 防御（青）", src: "card-style-redo-b-blue.png?v=1", alt: "★★★の防御。青" },
+        "style-star3-skill": { label: "★★★ スキル（黄）", src: "card-style-redo-b-yellow.png?v=1", alt: "★★★のスキル。黄" },
+        "style-star3-power": { label: "★★★ アイテム（緑）", src: "card-style-redo-b-green.png?v=1", alt: "★★★のアイテム。緑" },
+        "style-star3-foe": { label: "★★★ 敵（紫）", src: "card-style-redo-b-purple.png?v=1", alt: "★★★の敵。紫" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9358,12 +9291,8 @@
               <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>カードスタイル　裏</figcaption></figure>
             </div>
             <h4>カードスタイル</h4>
-            <div class="ref-grid blank-grid">${blankCardSheet()}</div>
-            <p class="album-meta">レアリティはタイトルの裏地だけ。★★は銀、★★★は金。外枠は変えない</p>
-            <div class="ref-grid blank-grid">${titleRaritySheet()}</div>
-            <h4>カードスタイル B</h4>
-            <p class="album-meta">Bで決定。形は同じで、装飾の色だけ金・銀・銅・白・黒・茶・赤・橙・黄・緑・青・紺・紫。戦闘中の枠はまだ替えていない</p>
-            <div class="ref-grid blank-grid">${redoStyleSheet()}</div>
+            <p class="album-meta">★は銅、★★は金。★★★は種類の色。パワーはアイテム</p>
+            <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9639,55 +9568,24 @@
         attack: "攻撃",
         block: "防御",
         skill: "スキル",
-        power: "パワー",
+        power: "アイテム",
         foe: "敵",
       })[kind] || "スキル";
     }
 
-    // カードスタイル＝色ごとの枠（装飾なしが★）。内側の色がジャンル。
-    const BLANK_FRAMES = [
-      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=8", alt: "攻撃（赤）。装飾なし。★" },
-      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=8", alt: "防御（青）。装飾なし。★" },
-      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=8", alt: "スキル（黄）。装飾なし。★" },
-      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
-      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
+    const CARD_STYLE = [
+      ["style-star1", "★ 銅", "card-style-redo-b-copper.png?v=1"],
+      ["style-star2", "★★ 金", "card-style-redo-b-gold.png?v=1"],
+      ["style-star3-attack", "★★★ 攻撃（赤）", "card-style-redo-b-red.png?v=1"],
+      ["style-star3-block", "★★★ 防御（青）", "card-style-redo-b-blue.png?v=1"],
+      ["style-star3-skill", "★★★ スキル（黄）", "card-style-redo-b-yellow.png?v=1"],
+      ["style-star3-power", "★★★ アイテム（緑）", "card-style-redo-b-green.png?v=1"],
+      ["style-star3-foe", "★★★ 敵（紫）", "card-style-redo-b-purple.png?v=1"],
     ];
-    const TITLE_RARITY = [
-      ["title-silver", "★★ 銀", "card-style-title-silver.png?v=1"],
-      ["title-gold", "★★★ 金", "card-style-title-gold.png?v=1"],
-    ];
-    const REDO_STYLE = [
-      ["redo-b", "B", "card-style-redo-b.png?v=1"],
-      ["redo-b-gold", "金", "card-style-redo-b-gold.png?v=1"],
-      ["redo-b-silver", "銀", "card-style-redo-b-silver.png?v=1"],
-      ["redo-b-copper", "銅", "card-style-redo-b-copper.png?v=1"],
-      ["redo-b-white", "白", "card-style-redo-b-white.png?v=1"],
-      ["redo-b-black", "黒", "card-style-redo-b-black.png?v=1"],
-      ["redo-b-brown", "茶", "card-style-redo-b-brown.png?v=1"],
-      ["redo-b-red", "赤", "card-style-redo-b-red.png?v=1"],
-      ["redo-b-orange", "橙", "card-style-redo-b-orange.png?v=1"],
-      ["redo-b-yellow", "黄", "card-style-redo-b-yellow.png?v=1"],
-      ["redo-b-green", "緑", "card-style-redo-b-green.png?v=1"],
-      ["redo-b-blue", "青", "card-style-redo-b-blue.png?v=1"],
-      ["redo-b-navy", "紺", "card-style-redo-b-navy.png?v=1"],
-      ["redo-b-purple", "紫", "card-style-redo-b-purple.png?v=1"],
-    ];
-    function redoStyleSheet() {
-      return REDO_STYLE.map((item) => {
+    function cardStyleSheet() {
+      return CARD_STYLE.map((item) => {
         const on = albumZoom === item[0];
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
-    function titleRaritySheet() {
-      return TITLE_RARITY.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
-    function blankCardSheet() {
-      return BLANK_FRAMES.map((frame) => {
-        const on = albumZoom === frame.zoom;
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${frame.zoom}" aria-label="${esc(frame.label)}の正本を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${frame.src}" alt="${esc(frame.alt)}"></button><figcaption>${esc(frame.label)}</figcaption></figure>`;
       }).join("");
     }
 
@@ -10805,7 +10703,7 @@
 
     // hand-sort-v2
     function sortHand() {
-      // 色：黄（スキル）→緑（パワー）→赤（攻撃）→青（防御）
+      // 色：黄（スキル）→緑（アイテム）→赤（攻撃）→青（防御）
       const colorRank = (card) => {
         const kind = cardKind(card);
         if (kind === "skill") return 0;
@@ -11049,8 +10947,6 @@
       const overlap = Math.min(Math.max(base, need), cw - minStep);
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
     }
-    const DESIGN_W = 2560;
-    const DESIGN_H = 1440;
     function phoneLayout() {
       return Math.min(window.innerWidth, window.innerHeight) <= 500;
     }
@@ -11059,14 +10955,11 @@
       if (phoneLayout()) {
         doc.classList.add("phone");
         doc.classList.toggle("land", window.innerWidth > window.innerHeight);
-        doc.classList.remove("fit");
-        doc.style.removeProperty("--fit");
-        return;
+      } else {
+        doc.classList.remove("phone", "land");
       }
-      doc.classList.remove("phone", "land");
-      doc.classList.add("fit");
-      const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
-      doc.style.setProperty("--fit", String(scale));
+      doc.classList.remove("fit");
+      doc.style.removeProperty("--fit");
     }
     window.addEventListener("resize", () => {
       fitStage();
