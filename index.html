@@ -2407,7 +2407,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札と戦闘画面のあいだ。黄色い宝珠を燃やしたものを数だけ */
+    /* マナ：山札の上。黄色い宝珠を数だけ。持ち越しは白い宝珠 */
     .deck-column {
       position: relative;
       height: 100%;
@@ -2429,33 +2429,47 @@
     .mana-row {
       position: absolute;
       left: 50%;
-      bottom: calc(100% - 10px);
+      bottom: calc(100% + 6px);
       z-index: 9;
       display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
       margin: 0;
       transform: translateX(-50%);
       pointer-events: none;
     }
+    .mana-orbs { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .mana-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: #ffe9a0;
+      text-shadow: 0 1px 2px #000, 0 0 8px rgba(0, 0, 0, 0.85);
+    }
     .mana-orb {
       position: relative;
-      width: 46px;
-      height: 62px;
+      width: 36px;
+      height: 36px;
       flex: 0 0 auto;
-      border: 0;
-      background: url("mana-jewel.png?v=1") center bottom / contain no-repeat;
-      box-shadow: none;
-      filter: drop-shadow(0 0 8px rgba(255, 90, 20, 0.55));
-      animation: flame-sway 0.72s ease-in-out infinite alternate;
+      border-radius: 50%;
+      border: 2px solid #fff6c8;
+      background: radial-gradient(circle at 38% 32%, #fffef6 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
+      box-shadow:
+        0 0 0 1px rgba(80, 40, 0, 0.55),
+        0 0 12px rgba(255, 196, 60, 0.85),
+        inset 0 2px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -3px 0 rgba(100, 50, 0, 0.35);
+      animation: mana-glow 1.6s ease-in-out infinite;
     }
-    .mana-orb::before,
-    .mana-orb::after { content: none; }
     .mana-orb.has-temp {
-      background-image: url("mana-jewel-temp.png?v=1");
-      filter: drop-shadow(0 0 10px rgba(255, 230, 180, 0.8));
+      border-color: #fff;
+      background: radial-gradient(circle at 38% 32%, #fff 0%, #fff6dc 42%, #e4d2a0 74%, #9a8860 100%);
+      box-shadow:
+        0 0 0 1px rgba(90, 80, 50, 0.5),
+        0 0 12px rgba(255, 246, 220, 0.9),
+        inset 0 2px 0 rgba(255, 255, 255, 0.9);
     }
     .handbar {
       width: 100%;
@@ -5226,9 +5240,9 @@
       inherits: false;
       initial-value: 42%;
     }
-    @keyframes flame-sway {
-      from { transform: rotate(-6deg); }
-      to { transform: rotate(6deg); }
+    @keyframes mana-glow {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.18); }
     }
     @keyframes flame-body {
       from { transform: translateX(-50%) scaleX(1) scaleY(0.92); }
@@ -5245,7 +5259,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 38px; height: 52px; }
+      .mana-orb { width: 28px; height: 28px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -8549,7 +8563,7 @@
       for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
       for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
       const total = baseOn + temp;
-      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
+      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}"><span class="mana-label">マナ</span><span class="mana-orbs">${orbs.join("")}</span></div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
