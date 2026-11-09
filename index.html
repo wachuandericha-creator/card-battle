@@ -917,54 +917,28 @@
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
-    /* レア演出。描いた光の絵を一瞬だけ重ねる。★の印は出さない */
-    .rare-show { position: relative; overflow: visible; }
-    .rare-fx { position: absolute; inset: -55%; z-index: 6; pointer-events: none; overflow: visible; }
-    .rare-burst {
-      position: absolute;
-      left: 50%;
-      top: 46%;
-      width: 340px;
-      height: 340px;
-      background: url("rare-burst.png?v=1") center / contain no-repeat;
-      pointer-events: none;
-      animation: rare-burst 0.48s ease-out var(--d, 0s) both;
-    }
-    .rare-2 .rare-burst { filter: grayscale(1) brightness(1.45); }
-    .rare-3 .rare-burst { width: 460px; height: 460px; }
-    .rare-4 .rare-burst, .rare-boss .rare-burst { width: 560px; height: 560px; animation-duration: 0.62s; }
-    .rare-5 .rare-burst { width: 720px; height: 720px; animation-duration: 0.78s; }
-    .rare-boss .rare-burst { filter: hue-rotate(-38deg) saturate(1.7); }
+    /* レア演出。出たもの自体が一度だけふわっと光る。描いた光や画面の揺れは出さない */
+    .rare-show { position: relative; --rare: rgba(255, 255, 255, 0.65); }
+    .rare-1 { --rare: rgba(255, 255, 255, 0.45); }
+    .rare-2 { --rare: rgba(214, 226, 242, 0.9); }
+    .rare-3, .rare-4, .rare-5 { --rare: rgba(255, 206, 92, 0.95); }
+    .rare-boss { --rare: rgba(255, 86, 64, 0.92); }
     .rare-show .card,
     .rare-show .gift-img,
     .rare-show .shop-gear,
     .rare-show > img {
-      animation: rare-card 0.42s cubic-bezier(0.16, 0.84, 0.28, 1.28) var(--d, 0s) both;
+      animation: rare-pop 0.42s ease-out var(--d, 0s) both;
     }
-    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.28s; }
+    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.26s; }
+    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.36s; }
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
     .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-duration: 0.5s; }
     .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-duration: 0.58s; }
-    .rare-screen {
-      position: fixed; inset: 0; z-index: 40; pointer-events: none;
-      background: radial-gradient(circle at 50% 42%, rgba(255, 248, 220, 0.55), transparent 58%);
-      animation: rare-flash 0.42s ease-out both;
-    }
-    .rare-screen.s5 { animation-duration: 0.62s; }
-    .rare-screen.sboss { background: radial-gradient(circle at 50% 42%, rgba(255, 90, 70, 0.4), transparent 58%); }
-    .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: rare-shake 0.48s linear 3; }
-    @keyframes rare-burst {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
-      18% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.28); }
-    }
-    @keyframes rare-card {
-      0% { transform: scale(0.12); filter: brightness(2.6); }
-      55% { transform: scale(1.08); filter: brightness(1.25); }
+    @keyframes rare-pop {
+      0% { transform: translateY(8px) scale(0.97); filter: brightness(1.4) drop-shadow(0 0 0 var(--rare)); }
+      42% { transform: none; filter: brightness(1.12) drop-shadow(0 0 18px var(--rare)); }
       100% { transform: none; filter: none; }
     }
-    @keyframes rare-flash { 0% { opacity: 0; } 22% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes rare-shake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-14px) rotate(-0.4deg); } 32% { transform: translateX(16px) rotate(0.4deg); } 50% { transform: translateX(-12px); } 68% { transform: translateX(10px); } 84% { transform: translateX(-5px); } }
     .shop-gear { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(228, 177, 90, 0.7); }
     .shop-panel { text-align: center; }
     .shop-art { width: min(100%, 420px); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; margin: 0 auto 6px; display: block; }
@@ -8962,10 +8936,6 @@
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=1", "タイトル", "タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。")}
-            <h3>レア演出</h3>
-            <div class="ref-grid">
-              ${sheetFig("rare-burst.png?v=1", "レアの光（黒は抜ける）", "cut-ref")}
-            </div>
             <h3>マナ</h3>
             <div class="ref-grid">
               ${sheetFig("mana-jewel.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
@@ -10438,25 +10408,16 @@
       return ` style="--d:${t}s"`;
     }
 
-    function rareFx(level) {
-      if (!level || level === 1) return "";
-      return `<span class="rare-fx" aria-hidden="true"><i class="rare-burst"></i></span>`;
-    }
-
-    function rareScreen(levels) {
-      const nums = levels.filter((n) => typeof n === "number");
-      const top = nums.length ? Math.max(...nums) : 0;
-      const boss = levels.includes("boss");
-      if (top >= 5) return `<div class="rare-screen s5" aria-hidden="true"></div>`;
-      if (top >= 4) return `<div class="rare-screen s4" aria-hidden="true"></div>`;
-      if (top >= 3) return `<div class="rare-screen s3" aria-hidden="true"></div>`;
-      if (boss) return `<div class="rare-screen sboss" aria-hidden="true"></div>`;
-      if (top >= 2) return `<div class="rare-screen s2" aria-hidden="true"></div>`;
+    function rareFx() {
       return "";
     }
 
-    function rareJack(levels) {
-      return levels.some((n) => n === 5) ? " rare-jackpot" : "";
+    function rareScreen() {
+      return "";
+    }
+
+    function rareJack() {
+      return "";
     }
 
     function giftEntity(gift) {
