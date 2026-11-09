@@ -2312,7 +2312,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札の上。黄色い宝珠を数だけ。持ち越しは白い宝珠 */
+    /* マナ：山札の上。手札帯の中だけ。黄色い宝珠を数だけ。持ち越しは白い宝珠 */
     .deck-column {
       position: relative;
       height: 100%;
@@ -2321,37 +2321,29 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
+      gap: 4px;
     }
     .deck-stack {
       position: relative;
-      height: 100%;
-      flex: none;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
       display: flex;
       align-items: flex-end;
+      justify-content: center;
     }
     .deck-stack .pile { height: 100%; }
     .hand { position: relative; }
     .mana-row {
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 6px);
+      position: relative;
       z-index: 9;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
-      gap: 3px;
+      justify-content: center;
+      gap: 8px;
       margin: 0;
-      transform: translateX(-50%);
+      flex: 0 0 auto;
       pointer-events: none;
-    }
-    .mana-orbs { display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .mana-label {
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.22em;
-      color: #ffe9a0;
-      text-shadow: 0 1px 2px #000, 0 0 8px rgba(0, 0, 0, 0.85);
     }
     .mana-orb {
       position: relative;
@@ -2387,7 +2379,8 @@
       gap: 10px;
       overflow: visible;
       margin-top: 0;
-      padding: 0 8px 14px;
+      padding: 8px 8px 14px;
+      box-sizing: border-box;
       position: relative;
       z-index: 8;
       border-radius: 0 0 16px 16px;
@@ -8501,7 +8494,7 @@
       for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
       for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
       const total = baseOn + temp;
-      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}"><span class="mana-label">マナ</span><span class="mana-orbs">${orbs.join("")}</span></div>`;
+      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
