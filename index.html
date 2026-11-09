@@ -2287,11 +2287,12 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札の上部に重ねる。宝珠の上で炎が燃える。動きは明るさだけ。山札は手札に近い大きさ */
+    /* マナ：山札・捨て札の右。重ねない。装備の画面にはみ出さない */
     .deck-column {
       position: relative;
       height: 100%;
-      flex: none;
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2309,35 +2310,56 @@
     }
     .deck-stack .pile { height: 100%; }
     .handbar .pile-card {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
+      width: auto;
+      max-width: 100%;
       height: auto;
       max-height: calc(100% - 34px);
       min-height: 0;
     }
     .hand { position: relative; }
     .mana-row {
-      position: absolute;
-      left: 50%;
-      top: 22px;
-      z-index: 9;
+      position: relative;
+      z-index: 2;
+      flex: none;
+      align-self: center;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
       gap: 6px;
-      margin: 0;
-      transform: translateX(-50%);
+      margin: 0 2px 28px;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 48px;
-      height: 78px;
+      width: 34px;
+      height: 34px;
       flex: 0 0 auto;
-      background: url("mana-mark.png?v=1") center / contain no-repeat;
-      animation: mana-glow 1.8s ease-in-out infinite alternate;
+      border-radius: 50%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 34% 30%, #fff8d2 0%, #ffe56a 26%, #f0b018 58%, #a86408 100%);
+      box-shadow:
+        inset 0 -5px 7px rgba(110, 52, 0, 0.38),
+        inset 0 2px 3px rgba(255, 255, 230, 0.7),
+        0 0 10px rgba(255, 190, 50, 0.72);
+    }
+    .mana-orb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, 0.92) 50%, transparent 68%);
+      transform: translateX(-140%);
+      animation: mana-sweep 2.6s ease-in-out infinite;
+      animation-delay: var(--sweep, 0s);
     }
     .mana-orb.has-temp {
-      background-image: url("mana-mark-temp.png?v=1");
+      background:
+        radial-gradient(circle at 34% 30%, #ffffff 0%, #f4f7fb 28%, #d5dde8 60%, #8e9aab 100%);
+      box-shadow:
+        inset 0 -5px 7px rgba(40, 50, 64, 0.35),
+        inset 0 2px 3px rgba(255, 255, 255, 0.85),
+        0 0 10px rgba(220, 230, 245, 0.7);
     }
     .handbar {
       width: 100%;
@@ -2364,9 +2386,12 @@
       align-items: flex-end;
       gap: 8px;
       height: 100%;
-      flex: none;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 46%;
+      overflow: hidden;
     }
-    .pile { width: auto; height: 100%; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+    .pile { width: auto; height: 100%; flex: 1 1 0; min-width: 0; max-width: 128px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
     .handbar .end {
       align-self: flex-end;
       height: 72%;
@@ -5148,9 +5173,10 @@
       inherits: false;
       initial-value: 42%;
     }
-    @keyframes mana-glow {
-      from { filter: brightness(0.92); }
-      to { filter: brightness(1.06); }
+    @keyframes mana-sweep {
+      0% { transform: translateX(-140%); }
+      32% { transform: translateX(140%); }
+      100% { transform: translateX(140%); }
     }
     @media (max-width: 720px) {
       .hand .card { height: 100%; }
@@ -8632,8 +8658,8 @@
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
       const orbs = [];
-      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
-      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
+      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="--sweep:${(i * 0.42).toFixed(2)}s"></span>`);
+      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="--sweep:${((baseOn + i) * 0.42).toFixed(2)}s"></span>`);
       const total = baseOn + temp;
       return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
@@ -10743,12 +10769,12 @@
           <div class="handbar">
               <div class="pile-pair">
                 <div class="deck-column">
-                  ${pips()}
                   <div class="deck-stack">
                     ${pileMarkup("deck", deck.length)}
                   </div>
                 </div>
                 ${pileMarkup("discard", discard.length)}
+                ${pips()}
               </div>
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
               ${endButtonMarkup()}
