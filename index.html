@@ -2564,30 +2564,20 @@
     .foe-pile { cursor: pointer; }
     .foe-pile .pile-card,
     .foe-discard .pile-card { width: 118px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
-    /* 敵の裏は黒寄りの紫。数字はフィルタの外に残して白のまま */
+    /* 敵の裏は黒寄りの紫の本絵。数字は絵の上に白のまま */
     .foe-pile .pile-card.back,
     .foe-discard .pile-card.back,
     .foe-pile .pile-card.discard,
     .foe-discard .pile-card.discard {
-      background: #0c0a0e;
+      background: #0c0a0e url("card-back-foe.jpg?v=1") center / cover no-repeat;
       filter: none;
       border-color: #141018;
     }
-    .foe-pile .pile-card.back::before,
-    .foe-discard .pile-card.back::before,
-    .foe-pile .pile-card.discard::before,
-    .foe-discard .pile-card.discard::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: url("card-back.jpg?v=3") center / cover no-repeat;
-      filter: hue-rotate(248deg) saturate(0.28) brightness(0.32);
-      pointer-events: none;
-    }
-    .foe-pile .pile-card.discard::before,
-    .foe-discard .pile-card.discard::before {
-      filter: hue-rotate(248deg) saturate(0.2) brightness(0.22);
+    .foe-pile .pile-card.discard,
+    .foe-discard .pile-card.discard {
+      background:
+        linear-gradient(rgba(6, 4, 8, 0.55), rgba(6, 4, 8, 0.55)),
+        url("card-back-foe.jpg?v=1") center / cover no-repeat;
     }
     .foe-pile .pile-count,
     .foe-discard .pile-count { font-size: 44px; }
@@ -9215,6 +9205,7 @@
             <h3>カードスタイル　裏</h3>
             <div class="ref-grid">
               <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>カードスタイル　裏</figcaption></figure>
+              <figure><img class="back-ref" src="card-back-foe.jpg?v=1" alt=""><figcaption>敵の裏（紫）</figcaption></figure>
             </div>
             <h4>カードスタイル</h4>
             <p class="album-meta">★は銅、★★は金。★★★は種類の色（攻撃＝赤、防御＝青、スキル＝黄、アイテム＝緑、敵＝紫）</p>
