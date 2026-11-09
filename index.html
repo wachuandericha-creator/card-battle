@@ -8885,18 +8885,20 @@
         "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
         "title-silver": { label: "★★ 銀", src: "card-style-title-silver.png?v=1", alt: "タイトルの裏地だけ銀。外枠はそのまま。★★" },
         "title-gold": { label: "★★★ 金", src: "card-style-title-gold.png?v=1", alt: "タイトルの裏地だけ金。外枠はそのまま。★★★" },
-        "accent-a": { label: "差し色 A（10）", src: "card-style-accent-a.png?v=1", alt: "差し色を10に太くした候補A" },
-        "accent-b": { label: "差し色 B（13）", src: "card-style-accent-b.png?v=1", alt: "差し色を13に太くした候補B" },
-        "accent-c": { label: "差し色 C（16）", src: "card-style-accent-c.png?v=1", alt: "差し色を16に太くした候補C" },
-        "redo-a": { label: "作り直し A 均整", src: "card-style-redo-a.png?v=1", alt: "作り直し候補A。均整。黒枠とコストの飾りとジャンルの札を最初から入れた枠" },
-        "redo-b": { label: "作り直し B 厚枠", src: "card-style-redo-b.png?v=1", alt: "作り直し候補B。厚枠" },
-        "redo-c": { label: "作り直し C 細密", src: "card-style-redo-c.png?v=1", alt: "作り直し候補C。細密" },
-        "redo-a-gold": { label: "作り直し A 金", src: "card-style-redo-a-gold.png?v=1", alt: "作り直し候補Aの金色装飾。名札が金。外枠は黒" },
-        "redo-b-gold": { label: "作り直し B 金", src: "card-style-redo-b-gold.png?v=1", alt: "作り直し候補Bの金色装飾。名札が金。外枠は黒" },
-        "redo-b-silver": { label: "作り直し B 銀", src: "card-style-redo-b-silver.png?v=1", alt: "B金と同じ形。装飾だけ銀" },
-        "redo-b-red": { label: "作り直し B 赤", src: "card-style-redo-b-red.png?v=1", alt: "B金と同じ形。装飾だけ赤" },
-        "redo-b-copper": { label: "作り直し B 銅", src: "card-style-redo-b-copper.png?v=1", alt: "B金と同じ形。装飾だけ銅" },
-        "redo-c-gold": { label: "作り直し C 金", src: "card-style-redo-c-gold.png?v=1", alt: "作り直し候補Cの金色装飾。名札が金。外枠は黒" },
+        "redo-b": { label: "B", src: "card-style-redo-b.png?v=1", alt: "カードスタイルB。厚枠" },
+        "redo-b-gold": { label: "金", src: "card-style-redo-b-gold.png?v=1", alt: "Bの金色装飾。外枠は黒" },
+        "redo-b-silver": { label: "銀", src: "card-style-redo-b-silver.png?v=1", alt: "Bと同じ形。装飾だけ銀" },
+        "redo-b-copper": { label: "銅", src: "card-style-redo-b-copper.png?v=1", alt: "Bと同じ形。装飾だけ銅" },
+        "redo-b-white": { label: "白", src: "card-style-redo-b-white.png?v=1", alt: "Bと同じ形。装飾だけ白" },
+        "redo-b-black": { label: "黒", src: "card-style-redo-b-black.png?v=1", alt: "Bと同じ形。装飾だけ黒" },
+        "redo-b-brown": { label: "茶", src: "card-style-redo-b-brown.png?v=1", alt: "Bと同じ形。装飾だけ茶" },
+        "redo-b-red": { label: "赤", src: "card-style-redo-b-red.png?v=1", alt: "Bと同じ形。装飾だけ赤" },
+        "redo-b-orange": { label: "橙", src: "card-style-redo-b-orange.png?v=1", alt: "Bと同じ形。装飾だけ橙" },
+        "redo-b-yellow": { label: "黄", src: "card-style-redo-b-yellow.png?v=1", alt: "Bと同じ形。装飾だけ黄" },
+        "redo-b-green": { label: "緑", src: "card-style-redo-b-green.png?v=1", alt: "Bと同じ形。装飾だけ緑" },
+        "redo-b-blue": { label: "青", src: "card-style-redo-b-blue.png?v=1", alt: "Bと同じ形。装飾だけ青" },
+        "redo-b-navy": { label: "紺", src: "card-style-redo-b-navy.png?v=1", alt: "Bと同じ形。装飾だけ紺" },
+        "redo-b-purple": { label: "紫", src: "card-style-redo-b-purple.png?v=1", alt: "Bと同じ形。装飾だけ紫" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9103,10 +9105,8 @@
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
             <p class="album-meta">レアリティはタイトルの裏地だけ。★★は銀、★★★は金。外枠は変えない</p>
             <div class="ref-grid blank-grid">${titleRaritySheet()}</div>
-            <p class="album-meta">差し色の太さ（候補）。いまは7。A＝10、B＝13、C＝16。どれかを選んだら五色と枠に反映する</p>
-            <div class="ref-grid blank-grid">${accentWidthSheet()}</div>
-            <h4>カードスタイル　作り直し候補</h4>
-            <p class="album-meta">B金を基準に、同じ形のまま装飾だけ銀・赤・銅。いまの戦闘中の枠はまだ替えていない</p>
+            <h4>カードスタイル B</h4>
+            <p class="album-meta">Bで決定。形は同じで、装飾の色だけ金・銀・銅・白・黒・茶・赤・橙・黄・緑・青・紺・紫。戦闘中の枠はまだ替えていない</p>
             <div class="ref-grid blank-grid">${redoStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
@@ -9400,27 +9400,21 @@
       ["title-silver", "★★ 銀", "card-style-title-silver.png?v=1"],
       ["title-gold", "★★★ 金", "card-style-title-gold.png?v=1"],
     ];
-    const ACCENT_WIDTH = [
-      ["accent-a", "A（10）", "card-style-accent-a.png?v=1"],
-      ["accent-b", "B（13）", "card-style-accent-b.png?v=1"],
-      ["accent-c", "C（16）", "card-style-accent-c.png?v=1"],
-    ];
-    function accentWidthSheet() {
-      return ACCENT_WIDTH.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="差し色 ${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="差し色 ${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
     const REDO_STYLE = [
-      ["redo-a", "A 均整", "card-style-redo-a.png?v=1"],
-      ["redo-b", "B 厚枠", "card-style-redo-b.png?v=1"],
-      ["redo-c", "C 細密", "card-style-redo-c.png?v=1"],
-      ["redo-a-gold", "A 金", "card-style-redo-a-gold.png?v=1"],
-      ["redo-b-gold", "B 金", "card-style-redo-b-gold.png?v=1"],
-      ["redo-b-silver", "B 銀", "card-style-redo-b-silver.png?v=1"],
-      ["redo-b-red", "B 赤", "card-style-redo-b-red.png?v=1"],
-      ["redo-b-copper", "B 銅", "card-style-redo-b-copper.png?v=1"],
-      ["redo-c-gold", "C 金", "card-style-redo-c-gold.png?v=1"],
+      ["redo-b", "B", "card-style-redo-b.png?v=1"],
+      ["redo-b-gold", "金", "card-style-redo-b-gold.png?v=1"],
+      ["redo-b-silver", "銀", "card-style-redo-b-silver.png?v=1"],
+      ["redo-b-copper", "銅", "card-style-redo-b-copper.png?v=1"],
+      ["redo-b-white", "白", "card-style-redo-b-white.png?v=1"],
+      ["redo-b-black", "黒", "card-style-redo-b-black.png?v=1"],
+      ["redo-b-brown", "茶", "card-style-redo-b-brown.png?v=1"],
+      ["redo-b-red", "赤", "card-style-redo-b-red.png?v=1"],
+      ["redo-b-orange", "橙", "card-style-redo-b-orange.png?v=1"],
+      ["redo-b-yellow", "黄", "card-style-redo-b-yellow.png?v=1"],
+      ["redo-b-green", "緑", "card-style-redo-b-green.png?v=1"],
+      ["redo-b-blue", "青", "card-style-redo-b-blue.png?v=1"],
+      ["redo-b-navy", "紺", "card-style-redo-b-navy.png?v=1"],
+      ["redo-b-purple", "紫", "card-style-redo-b-purple.png?v=1"],
     ];
     function redoStyleSheet() {
       return REDO_STYLE.map((item) => {
