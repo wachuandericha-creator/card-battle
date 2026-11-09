@@ -3364,21 +3364,21 @@
     .card .card-fit.k-skill { --frame-img: url("frame-skill-r1.png?v=3"); }
     .card .card-fit.k-power { --frame-img: url("frame-power-r1.png?v=3"); }
     .card .card-fit.k-foe { --frame-img: url("frame-foe-r1.png?v=3"); }
-    .card .card-fit.k-attack.r2 { --frame-img: url("frame-attack-r2.png?v=2"); }
-    .card .card-fit.k-block.r2 { --frame-img: url("frame-block-r2.png?v=2"); }
-    .card .card-fit.k-skill.r2 { --frame-img: url("frame-skill-r2.png?v=2"); }
-    .card .card-fit.k-power.r2 { --frame-img: url("frame-power-r2.png?v=2"); }
-    .card .card-fit.k-foe.r2 { --frame-img: url("frame-foe-r2.png?v=2"); }
-    .card .card-fit.k-attack.r3 { --frame-img: url("frame-attack-r3.png?v=2"); }
-    .card .card-fit.k-block.r3 { --frame-img: url("frame-block-r3.png?v=2"); }
-    .card .card-fit.k-skill.r3 { --frame-img: url("frame-skill-r3.png?v=2"); }
-    .card .card-fit.k-power.r3 { --frame-img: url("frame-power-r3.png?v=2"); }
-    .card .card-fit.k-foe.r3 { --frame-img: url("frame-foe-r3.png?v=2"); }
-    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=2"); }
-    .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=2"); }
-    .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=2"); }
-    .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=2"); }
-    .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=2"); }
+    .card .card-fit.k-attack.r2 { --frame-img: url("frame-attack-r2.png?v=3"); }
+    .card .card-fit.k-block.r2 { --frame-img: url("frame-block-r2.png?v=3"); }
+    .card .card-fit.k-skill.r2 { --frame-img: url("frame-skill-r2.png?v=3"); }
+    .card .card-fit.k-power.r2 { --frame-img: url("frame-power-r2.png?v=3"); }
+    .card .card-fit.k-foe.r2 { --frame-img: url("frame-foe-r2.png?v=3"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-attack-r3.png?v=3"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-block-r3.png?v=3"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-skill-r3.png?v=3"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-power-r3.png?v=3"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-foe-r3.png?v=3"); }
+    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
+    .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
+    .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
+    .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
+    .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art {
       position: absolute;
       left: 7.68cqw;
@@ -5388,7 +5388,7 @@
       },
       {
         name: "ちびドラゴン",
-        image: "enemy-dragon.png?v=2",
+        image: "enemy-dragon.png?v=3",
         tier: 2,
         rank: "普通",
         hp: 30,
@@ -8718,7 +8718,7 @@
     function dungeonChainHtml(count) {
       const n = Math.max(0, Math.min(2, Number(count) || 0));
       if (n <= 0) return "";
-      const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=2";
+      const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=3";
       return `<div class="chain-wrap" aria-hidden="true"><img class="chain-art" src="${src}" alt=""></div>`;
     }
 
@@ -8866,6 +8866,8 @@
         "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=8", alt: "スキル（黄）。装飾なし。★" },
         "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
         "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
+        "title-silver": { label: "★★ 銀", src: "card-style-title-silver.png?v=1", alt: "タイトルの裏地だけ銀。外枠はそのまま。★★" },
+        "title-gold": { label: "★★★ 金", src: "card-style-title-gold.png?v=1", alt: "タイトルの裏地だけ金。外枠はそのまま。★★★" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9013,7 +9015,7 @@
               ${sheetFig("dungeon-cave.jpg?v=1", "骸洞窟 ★", "land-ref")}
               ${sheetFig("dungeon-50.jpg?v=1", "竜の遺骸城 ★★", "land-ref")}
               ${sheetFig("dungeon-100.jpg?v=1", "深淵なる寝所 ★★★", "land-ref")}
-              ${sheetFig("chain-one.png?v=2", "錆びた鎖（錠前1）", "cut-ref")}
+              ${sheetFig("chain-one.png?v=3", "錆びた鎖（錠前1）", "cut-ref")}
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
@@ -9024,7 +9026,7 @@
               ${sheetFig("enemy-slime.png?v=4", "スライム", "enemy-ref")}
               ${sheetFig("enemy-goblin.png?v=3", "ゴブリン", "enemy-ref")}
               ${sheetFig("enemy-minotaur.png?v=4", "ミノタウロス", "enemy-ref")}
-              ${sheetFig("enemy-dragon.png?v=2", "ちびドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-dragon.png?v=3", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.jpg?v=1", "物乞い", "enemy-ref")}
             </div>
           </div>
@@ -9066,6 +9068,8 @@
             </div>
             <h4>カードスタイル</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
+            <p class="album-meta">レアリティはタイトルの裏地だけ。★★は銀、★★★は金。外枠は変えない</p>
+            <div class="ref-grid blank-grid">${titleRaritySheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9354,6 +9358,16 @@
       { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
       { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
     ];
+    const TITLE_RARITY = [
+      ["title-silver", "★★ 銀", "card-style-title-silver.png?v=1"],
+      ["title-gold", "★★★ 金", "card-style-title-gold.png?v=1"],
+    ];
+    function titleRaritySheet() {
+      return TITLE_RARITY.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
         const on = albumZoom === frame.zoom;
