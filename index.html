@@ -453,7 +453,7 @@
       display: grid;
       place-items: center;
       margin: 0;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 900;
       line-height: 1;
       letter-spacing: 0.04em;
@@ -6600,7 +6600,7 @@
         if (hp == null || !max) continue;
         const bar = root.querySelector(`[data-bar="${who}"]`);
         if (bar) bar.style.width = `${Math.max(0, Math.min(100, (hp / max) * 100))}%`;
-        const text = String(Math.max(0, Math.round(hp)));
+        const text = `${Math.max(0, Math.round(hp))}/${Math.round(max)}`;
         root.querySelectorAll(`[data-hp="${who}"]`).forEach((el) => { el.textContent = text; });
       }
     }
@@ -8511,7 +8511,7 @@
       const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>` : "";
-      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now" data-hp="${who}">${Math.round(hp)}</b><i class="hp-ticks"></i></div></div>`;
+      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now" data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</b><i class="hp-ticks"></i></div></div>`;
     }
 
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
@@ -8530,7 +8530,7 @@
       const stars = extra && extra.stars
         ? `<span class="plate-stars" aria-label="ランク">${esc(extra.stars)}</span>`
         : "";
-      // 板の数値は＋を付けない。値は中央ぞろえ。HP行は最大HPだけ。いまのHPはバーの上に出す。
+      // 板の数値は＋を付けない。値は中央ぞろえ。HP行は出さない。いま/最大は体力バーに出す。
       const statLine = (icon, label, value, kind) => `<div class="hp-line${kind ? ` ${kind}` : ""}"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></div>`;
       const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk, "stat-atk") : "";
       const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def, "stat-def") : "";
@@ -8538,7 +8538,6 @@
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block)}
-        ${statLine(heartIcon(), "HP", maxHp, "stat-hp")}
         ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
       </section>`;
     }
