@@ -2273,7 +2273,7 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札の上部に重ねる。宝珠は少し大きく、炎が揺れる。山札は手札に近い大きさ */
+    /* マナ：山札の上部に重ねる。宝珠の上で炎が燃える。動きは明るさだけ。山札は手札に近い大きさ */
     .deck-column {
       position: relative;
       height: 100%;
@@ -2316,53 +2316,14 @@
     }
     .mana-orb {
       position: relative;
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 78px;
       flex: 0 0 auto;
-      border-radius: 50%;
-      border: 2px solid #fff6c8;
-      background: radial-gradient(circle at 38% 32%, #fffef6 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
-      box-shadow:
-        0 0 0 1px rgba(80, 40, 0, 0.55),
-        0 0 14px rgba(255, 150, 30, 0.95),
-        inset 0 2px 0 rgba(255, 255, 255, 0.75),
-        inset 0 -3px 0 rgba(100, 50, 0, 0.35);
-      animation: mana-glow 0.7s ease-in-out infinite alternate;
-    }
-    .mana-orb::before,
-    .mana-orb::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 70%;
-      width: 22px;
-      height: 38px;
-      border-radius: 50% 50% 42% 42%;
-      z-index: 2;
-      background: radial-gradient(ellipse at 50% 88%, #fff8d8 0 10%, #ffc44a 28%, #ff6a00 55%, rgba(220, 40, 0, 0.2) 78%, transparent 84%);
-      transform-origin: 50% 100%;
-      animation: flame-body 0.38s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-    .mana-orb::after {
-      width: 12px;
-      height: 26px;
-      bottom: 82%;
-      background: radial-gradient(circle at 50% 80%, #fff 0%, #ffe08a 40%, transparent 72%);
-      animation-name: flame-core;
-      animation-duration: 0.26s;
+      background: url("mana-mark.png?v=1") center / contain no-repeat;
+      animation: mana-glow 1.8s ease-in-out infinite alternate;
     }
     .mana-orb.has-temp {
-      border-color: #fff;
-      background: radial-gradient(circle at 38% 32%, #fff 0%, #fff6dc 42%, #e4d2a0 74%, #9a8860 100%);
-      box-shadow:
-        0 0 0 1px rgba(90, 80, 50, 0.5),
-        0 0 14px rgba(220, 236, 255, 0.9),
-        inset 0 2px 0 rgba(255, 255, 255, 0.9);
-    }
-    .mana-orb.has-temp::before,
-    .mana-orb.has-temp::after {
-      background: radial-gradient(circle at 50% 78%, #fff 0%, #d7ecff 34%, #7eb6ff 62%, transparent 76%);
+      background-image: url("mana-mark-temp.png?v=1");
     }
     .handbar {
       width: 100%;
@@ -5201,16 +5162,8 @@
       initial-value: 42%;
     }
     @keyframes mana-glow {
-      from { filter: brightness(1); }
-      to { filter: brightness(1.18); }
-    }
-    @keyframes flame-body {
-      from { transform: translateX(-50%) scaleX(1) scaleY(0.92); }
-      to { transform: translateX(-50%) scaleX(0.78) scaleY(1.14); }
-    }
-    @keyframes flame-core {
-      from { transform: translateX(-50%) scaleY(0.86); opacity: 0.8; }
-      to { transform: translateX(-50%) scaleY(1.16); opacity: 1; }
+      from { filter: brightness(0.92); }
+      to { filter: brightness(1.06); }
     }
     @media (max-width: 720px) {
       .hand .card { height: 100%; }
@@ -5219,9 +5172,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 38px; height: 38px; }
-      .mana-orb::before { width: 12px; height: 18px; }
-      .mana-orb::after { width: 7px; height: 12px; }
+      .mana-orb { width: 36px; height: 58px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5344,7 +5295,7 @@
       font-size: 14px;
       border-width: 3px;
     }
-    html.phone .mana-orb { width: 32px; height: 32px; }
+    html.phone .mana-orb { width: 32px; height: 52px; }
     /* iPhone横画面。高さがないので、装備は左の縦列、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: auto minmax(0, 1fr);
@@ -5426,7 +5377,7 @@
       height: auto;
       max-height: 58%;
     }
-    html.phone.land .mana-orb { width: 26px; height: 26px; }
+    html.phone.land .mana-orb { width: 26px; height: 42px; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
       transform: none;
@@ -9170,8 +9121,8 @@
             ${sheetBanner("title-key.jpg?v=1", "タイトル", "タイトル。戦士2人の後ろに巨大なミノタウロスが迫る。")}
             <h3>マナ</h3>
             <div class="ref-grid">
-              ${sheetFig("mana-jewel.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
-              ${sheetFig("mana-jewel-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
+              ${sheetFig("mana-mark.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
+              ${sheetFig("mana-mark-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
             </div>
             <h3>シールド</h3>
             <div class="ref-grid">
