@@ -928,84 +928,148 @@
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
-    /* 報酬のレア演出。★は小さく、★★は銀、★★★以上は金で星が多いほど派手 */
-    .rare-show { position: relative; --rare: rgba(255, 244, 210, 0.92); }
+    /* 報酬のレア演出。★は小さく、★★は銀、★★★以上は金。星が多いほど放射・輪・粒が大きく長く残る */
+    .rare-show { position: relative; overflow: visible; --rare: rgba(255, 244, 210, 0.92); }
     .rare-2 { --rare: rgba(214, 226, 242, 0.96); }
     .rare-3 { --rare: rgba(255, 206, 90, 0.98); }
     .rare-4 { --rare: rgba(255, 176, 48, 1); }
     .rare-5 { --rare: rgba(255, 228, 140, 1); }
     .rare-boss { --rare: rgba(255, 96, 80, 0.96); }
-    .rare-fx { position: absolute; inset: -36px -28px; pointer-events: none; z-index: 6; }
-    .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-stamp { position: absolute; pointer-events: none; }
-    .rare-rays {
-      left: 50%; top: 46%; width: 280px; height: 280px; margin: -140px 0 0 -140px;
-      background: repeating-conic-gradient(from 0deg, transparent 0 14deg, var(--rare) 16deg 20deg, transparent 22deg 36deg);
-      opacity: 0; mix-blend-mode: screen;
-      animation: rare-rays 1.15s ease-out var(--d, 0s) both;
+    .rare-fx { position: absolute; inset: -90px -70px; pointer-events: none; z-index: 6; overflow: visible; }
+    .rare-halo, .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-star, .rare-glint, .rare-stamp { position: absolute; pointer-events: none; }
+    .rare-halo {
+      left: 50%; top: 46%; width: 240px; height: 240px; margin: -120px 0 0 -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--rare) 0%, transparent 68%);
+      filter: blur(6px);
+      opacity: 0;
+      animation: rare-halo 1.7s ease-out var(--d, 0s) both;
     }
-    .rare-4 .rare-rays { width: 360px; height: 360px; margin: -180px 0 0 -180px; }
-    .rare-5 .rare-rays { width: 460px; height: 460px; margin: -230px 0 0 -230px; }
+    .rare-4 .rare-halo, .rare-5 .rare-halo, .rare-boss .rare-halo { width: 340px; height: 340px; margin: -170px 0 0 -170px; filter: blur(8px); }
+    .rare-rays {
+      left: 50%; top: 46%; width: 320px; height: 320px; margin: -160px 0 0 -160px;
+      background: repeating-conic-gradient(from 0deg, transparent 0 8deg, var(--rare) 9deg 12deg, transparent 13deg 22deg);
+      opacity: 0; mix-blend-mode: screen;
+      animation: rare-rays 1.45s ease-out var(--d, 0s) both;
+    }
+    .rare-rays.late {
+      width: 420px; height: 420px; margin: -210px 0 0 -210px;
+      animation-name: rare-rays-back;
+      animation-delay: calc(var(--d, 0s) + 0.16s);
+      opacity: 0;
+    }
+    .rare-4 .rare-rays, .rare-boss .rare-rays { width: 420px; height: 420px; margin: -210px 0 0 -210px; }
+    .rare-5 .rare-rays { width: 520px; height: 520px; margin: -260px 0 0 -260px; }
+    .rare-5 .rare-rays.late { width: 600px; height: 600px; margin: -300px 0 0 -300px; }
     .rare-ring {
-      left: 50%; top: 46%; width: 110px; height: 110px; margin: -55px 0 0 -55px;
-      border-radius: 50%; border: 3px solid var(--rare); opacity: 0;
-      animation: rare-ring 0.85s ease-out var(--d, 0s) both;
+      left: 50%; top: 46%; width: 120px; height: 120px; margin: -60px 0 0 -60px;
+      border-radius: 50%; border: 3px solid var(--rare);
+      box-shadow: 0 0 16px var(--rare), inset 0 0 12px var(--rare);
+      opacity: 0;
+      animation: rare-ring 0.95s ease-out var(--d, 0s) both;
+    }
+    .rare-ring.late {
+      width: 180px; height: 180px; margin: -90px 0 0 -90px;
+      border-width: 2px;
+      animation-delay: calc(var(--d, 0s) + 0.22s);
     }
     .rare-5 .rare-ring { border-width: 5px; }
     .rare-flash {
-      inset: 8% 6%;
-      background: radial-gradient(circle, #fff 0%, var(--rare) 36%, transparent 70%);
+      inset: 4% 2%;
+      background: radial-gradient(circle, #fff 0%, var(--rare) 28%, transparent 68%);
       opacity: 0;
-      animation: rare-flash 0.55s ease-out var(--d, 0s) both;
+      mix-blend-mode: screen;
+      animation: rare-flash 0.7s ease-out var(--d, 0s) both;
     }
     .rare-spark {
-      left: 50%; top: 42%; width: 8px; height: 8px; margin: -4px 0 0 -4px;
-      border-radius: 50%; background: #fff; box-shadow: 0 0 8px var(--rare);
-      --ang: calc(var(--k) * 30deg);
+      left: 50%; top: 42%; width: 9px; height: 9px; margin: -4px 0 0 -4px;
+      border-radius: 50%; background: #fff; box-shadow: 0 0 10px 2px var(--rare);
+      --ang: calc(var(--k) * (360deg / var(--n, 8)));
       opacity: 0;
-      animation: rare-spark 0.95s ease-out var(--d, 0s) both;
+      animation: rare-spark 1.15s ease-out var(--d, 0s) both;
+    }
+    .rare-4 .rare-spark, .rare-5 .rare-spark, .rare-boss .rare-spark { width: 11px; height: 11px; }
+    .rare-star {
+      left: 50%; top: 40%;
+      margin: 0;
+      font-size: 18px; font-style: normal; font-weight: 900; line-height: 1;
+      color: #fff;
+      text-shadow: 0 0 8px var(--rare), 0 0 2px #fff;
+      --ang: calc(var(--k) * (360deg / var(--n, 6)) + 14deg);
+      opacity: 0;
+      animation: rare-star 1.25s ease-out calc(var(--d, 0s) + 0.08s) both;
+    }
+    .rare-5 .rare-star, .rare-boss .rare-star { font-size: 24px; }
+    .rare-glint {
+      left: 50%; top: 38%; width: 3px; height: 16px; margin: -8px 0 0 -1px;
+      border-radius: 2px;
+      background: linear-gradient(#fff, var(--rare));
+      box-shadow: 0 0 8px var(--rare);
+      --ang: calc(var(--k) * (360deg / var(--n, 6)) + 8deg);
+      opacity: 0;
+      animation: rare-glint 1.05s ease-out calc(var(--d, 0s) + 0.12s) both;
     }
     .rare-stamp {
-      left: 50%; top: 42%; z-index: 2;
+      left: 50%; top: 38%; z-index: 2;
       transform: translate(-50%, -50%);
-      font-size: 40px; font-weight: 900; letter-spacing: 0.08em; white-space: nowrap;
+      font-size: 46px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
       color: #fff8dc;
-      text-shadow: 0 3px 0 #5a3a08, 0 0 18px var(--rare);
-      animation: rare-stamp 1.45s ease-out var(--d, 0s) both;
+      text-shadow: 0 3px 0 #5a3a08, 0 0 22px var(--rare), 0 0 4px #fff;
+      animation: rare-stamp 1.7s ease-out var(--d, 0s) both;
     }
-    .rare-5 .rare-stamp { font-size: 52px; }
-    .rare-boss .rare-stamp { color: #ffe4dc; text-shadow: 0 3px 0 #6a1410, 0 0 18px var(--rare); }
+    .rare-2 .rare-stamp { color: #f4f7ff; text-shadow: 0 3px 0 #2a3344, 0 0 18px var(--rare); }
+    .rare-4 .rare-stamp { font-size: 54px; }
+    .rare-5 .rare-stamp { font-size: 64px; letter-spacing: 0.16em; }
+    .rare-boss .rare-stamp { color: #ffe4dc; text-shadow: 0 3px 0 #6a1410, 0 0 22px var(--rare); }
+    .rare-3 .rare-fx::after,
+    .rare-4 .rare-fx::after,
+    .rare-5 .rare-fx::after,
+    .rare-boss .rare-fx::after {
+      content: "";
+      position: absolute;
+      left: 38%; top: 20%;
+      width: 10%; height: 58%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+      mix-blend-mode: screen;
+      animation: rare-sheen 0.75s ease-out calc(var(--d, 0s) + 0.32s) both;
+    }
     .rare-show .card,
     .rare-show .gift-img,
     .rare-show .shop-gear,
     .rare-show > img {
-      animation: rare-card 0.62s cubic-bezier(0.16, 0.84, 0.28, 1.28) var(--d, 0s) both;
+      animation: rare-card 0.7s cubic-bezier(0.16, 0.84, 0.28, 1.35) var(--d, 0s) both;
     }
     .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.4s; }
     .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img,
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
     .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img,
     .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img {
-      animation: rare-card 0.72s cubic-bezier(0.16, 0.84, 0.28, 1.28) var(--d, 0s) both, rare-aura 1.15s ease-in-out calc(var(--d, 0s) + 0.72s) infinite;
+      animation: rare-card 0.82s cubic-bezier(0.16, 0.84, 0.28, 1.4) var(--d, 0s) both, rare-aura 1.25s ease-in-out calc(var(--d, 0s) + 0.82s) infinite;
     }
     .rare-screen {
       position: fixed; inset: 0; z-index: 40; pointer-events: none;
       background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.55), transparent 58%);
       animation: rare-screen 0.7s ease-out both;
     }
-    .rare-screen.s2 { background: radial-gradient(circle at 50% 42%, rgba(230, 240, 255, 0.55), transparent 58%); }
-    .rare-screen.s3, .rare-screen.s4 { background: radial-gradient(circle at 50% 42%, rgba(255, 236, 170, 0.72), rgba(255, 190, 60, 0.18) 42%, transparent 68%); }
-    .rare-screen.s5 { background: radial-gradient(circle at 50% 42%, rgba(255, 252, 230, 0.95), rgba(255, 196, 60, 0.4) 36%, transparent 70%); animation-duration: 0.95s; }
-    .rare-screen.sboss { background: radial-gradient(circle at 50% 42%, rgba(255, 220, 200, 0.75), rgba(150, 24, 18, 0.28) 42%, transparent 70%); }
-    .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: rare-shake 0.42s linear 2; }
-    @keyframes rare-rays { 0% { opacity: 0; transform: scale(0.25) rotate(0deg); } 22% { opacity: 0.95; } 100% { opacity: 0; transform: scale(1.12) rotate(70deg); } }
-    @keyframes rare-ring { 0% { opacity: 0.95; transform: scale(0.15); } 100% { opacity: 0; transform: scale(2.6); } }
-    @keyframes rare-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes rare-spark { 0% { opacity: 1; transform: rotate(var(--ang)) translateY(0) scale(0.4); } 100% { opacity: 0; transform: rotate(var(--ang)) translateY(-132px) scale(1); } }
-    @keyframes rare-stamp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(1.7); } 16% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 58% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -78%) scale(1.12); } }
-    @keyframes rare-card { 0% { transform: scale(0.12) rotate(-7deg); filter: brightness(2.6); } 58% { transform: scale(1.1) rotate(1.5deg); filter: brightness(1.25); } 100% { transform: none; filter: none; } }
-    @keyframes rare-aura { 0%, 100% { filter: drop-shadow(0 0 6px var(--rare)); } 50% { filter: drop-shadow(0 0 20px var(--rare)); } }
-    @keyframes rare-screen { 0% { opacity: 0; } 18% { opacity: 1; } 100% { opacity: 0; } }
-    @keyframes rare-shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+    .rare-screen.s2 { background: radial-gradient(circle at 50% 42%, rgba(230, 240, 255, 0.62), transparent 62%); }
+    .rare-screen.s3, .rare-screen.s4 { background: radial-gradient(circle at 50% 42%, rgba(255, 248, 220, 0.92), rgba(255, 190, 60, 0.34) 38%, transparent 72%); animation-duration: 0.9s; }
+    .rare-screen.s5 { background: radial-gradient(circle at 50% 42%, rgba(255, 252, 230, 0.98), rgba(255, 196, 60, 0.55) 32%, transparent 74%); animation-duration: 1.15s; }
+    .rare-screen.sboss { background: radial-gradient(circle at 50% 42%, rgba(255, 220, 200, 0.88), rgba(150, 24, 18, 0.4) 40%, transparent 72%); animation-duration: 0.95s; }
+    .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: rare-shake 0.48s linear 3; }
+    @keyframes rare-halo { 0% { opacity: 0; transform: scale(0.4); } 28% { opacity: 0.95; } 100% { opacity: 0; transform: scale(1.35); } }
+    @keyframes rare-rays { 0% { opacity: 0; transform: scale(0.2) rotate(0deg); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(1.18) rotate(96deg); } }
+    @keyframes rare-rays-back { 0% { opacity: 0; transform: scale(0.35) rotate(40deg); } 24% { opacity: 0.85; } 100% { opacity: 0; transform: scale(1.22) rotate(-70deg); } }
+    @keyframes rare-ring { 0% { opacity: 0.98; transform: scale(0.12); } 100% { opacity: 0; transform: scale(2.8); } }
+    @keyframes rare-flash { 0% { opacity: 0; } 22% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes rare-spark { 0% { opacity: 1; transform: rotate(var(--ang)) translateY(0) scale(0.3); } 100% { opacity: 0; transform: rotate(var(--ang)) translateY(-188px) scale(1.15); } }
+    @keyframes rare-star { 0% { opacity: 0; transform: rotate(var(--ang)) translateY(8px) scale(0.4); } 18% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--ang)) translateY(-210px) scale(1.2); } }
+    @keyframes rare-glint { 0% { opacity: 0; transform: rotate(var(--ang)) translateY(0) scaleY(0.4); } 20% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--ang)) translateY(-160px) scaleY(1.4); } }
+    @keyframes rare-stamp { 0% { opacity: 0; transform: translate(-50%, -20%) scale(1.85); } 14% { opacity: 1; transform: translate(-50%, -50%) scale(0.92); } 26% { transform: translate(-50%, -50%) scale(1.08); } 64% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -92%) scale(1.16); } }
+    @keyframes rare-sheen { 0% { opacity: 0; transform: translateX(-220%) rotate(18deg); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateX(280%) rotate(18deg); } }
+    @keyframes rare-card { 0% { transform: scale(0.08) rotate(-8deg); filter: brightness(3); } 55% { transform: scale(1.14) rotate(2deg); filter: brightness(1.45); } 100% { transform: none; filter: none; } }
+    @keyframes rare-aura { 0%, 100% { filter: drop-shadow(0 0 10px var(--rare)); } 50% { filter: drop-shadow(0 0 28px var(--rare)) drop-shadow(0 0 8px #fff); } }
+    @keyframes rare-screen { 0% { opacity: 0; } 16% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes rare-shake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-14px) rotate(-0.4deg); } 32% { transform: translateX(16px) rotate(0.4deg); } 50% { transform: translateX(-12px); } 68% { transform: translateX(10px); } 84% { transform: translateX(-5px); } }
     .shop-gear { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(228, 177, 90, 0.7); }
     .shop-panel { text-align: center; }
     .shop-art { width: min(100%, 420px); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; margin: 0 auto 6px; display: block; }
@@ -3024,7 +3088,7 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-stamp, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-halo, .rare-rays, .rare-ring, .rare-flash, .rare-spark, .rare-star, .rare-glint, .rare-stamp, .rare-screen, .rare-fx::after, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot { animation: none; transition: none; }
       .victory-flash { display: none; }
       .hero-hit.fatal .flash, .hero-hit.fatal .cut, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
@@ -10410,11 +10474,14 @@
 
     function rareFx(level) {
       if (!level) return "";
-      const count = level === "boss" ? 8 : level === 1 ? 0 : Math.min(12, level * 2 + 2);
-      const sparks = Array.from({ length: count }, (_, i) => `<i class="rare-spark" style="--k:${i}"></i>`).join("");
+      const n = level === "boss" ? 4 : level;
+      const sparkN = level === 1 ? 0 : [0, 0, 8, 12, 16, 18][n] || 8;
+      const starN = level === 1 ? 0 : [0, 0, 5, 8, 10, 12][n] || 5;
+      const glintN = n >= 4 ? 10 : n >= 3 ? 6 : 0;
+      const bits = (cls, count, inner) => Array.from({ length: count }, (_, i) => `<i class="${cls}" style="--k:${i};--n:${count}">${inner || ""}</i>`).join("");
       const stamp = level === 1 ? "" : `<b class="rare-stamp">${level === "boss" ? "ボス" : "★".repeat(level)}</b>`;
-      const rays = level === 1 ? "" : `<i class="rare-rays"></i><i class="rare-ring"></i>`;
-      return `<span class="rare-fx" aria-hidden="true">${rays}<i class="rare-flash"></i>${sparks}${stamp}</span>`;
+      const rays = level === 1 ? "" : `<i class="rare-halo"></i><i class="rare-rays"></i><i class="rare-ring"></i>${n >= 3 ? `<i class="rare-rays late"></i><i class="rare-ring late"></i>` : ""}`;
+      return `<span class="rare-fx" aria-hidden="true">${rays}<i class="rare-flash"></i>${bits("rare-spark", sparkN)}${bits("rare-star", starN, "★")}${bits("rare-glint", glintN)}${stamp}</span>`;
     }
 
     function rareScreen(levels) {
