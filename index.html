@@ -4880,12 +4880,13 @@
     }
     .dungeon-caption .preview-meta {
       margin: 0;
-      display: flex;
-      gap: 22px;
-      align-items: baseline;
-      justify-content: center;
+      display: grid;
+      justify-items: center;
+      align-items: center;
+      gap: 2px;
     }
     .dungeon-caption .preview-rank {
+      min-height: 1.15em;
       font-size: clamp(20px, 2.2vw, 28px);
       font-weight: 900;
       letter-spacing: 0.12em;
@@ -4893,9 +4894,11 @@
       text-shadow: 0 2px 0 #1a120c, 0 0 14px rgba(255, 200, 80, 0.55);
     }
     .dungeon-caption .preview-floor {
+      min-height: 1.15em;
       font-size: clamp(16px, 1.8vw, 22px);
       font-weight: 800;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
+      font-variant-numeric: tabular-nums;
       color: #f6d48a;
       text-shadow: 0 2px 0 #1a120c;
     }
@@ -4915,29 +4918,35 @@
       min-width: 0;
       min-height: 0;
       height: 100%;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 46px;
       border: 2px solid rgba(120, 90, 50, 0.45);
       border-radius: 16px;
       overflow: hidden;
       padding: 0;
       background: #120c0a;
       cursor: pointer;
-      filter: brightness(0.38) saturate(0.7);
-      transition: filter 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease;
       font-family: inherit;
       color: inherit;
     }
+    .dungeon-shot {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      filter: brightness(0.38) saturate(0.7);
+      transition: filter 0.22s ease;
+    }
+    .dungeon-col.active .dungeon-shot { filter: none; }
+    .dungeon-col.sealed.active .dungeon-shot { filter: brightness(0.72) saturate(0.85); }
     .dungeon-col.active {
-      filter: brightness(1) saturate(1);
       border-color: #f0c36a;
       box-shadow: 0 0 0 2px rgba(36, 24, 12, 0.85), 0 0 28px rgba(240, 195, 106, 0.45);
-      transform: translateY(-2px);
       z-index: 2;
     }
     .dungeon-col.sealed {
       cursor: not-allowed;
-    }
-    .dungeon-col.sealed.active {
-      filter: brightness(0.72) saturate(0.85);
     }
     .dungeon-col img {
       position: absolute;
@@ -4947,6 +4956,34 @@
       object-fit: cover;
       pointer-events: none;
     }
+    .dungeon-facts {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-rows: 1.15em 1.15em;
+      align-items: center;
+      justify-items: center;
+      background: #140e0c;
+      border-top: 1px solid rgba(228, 177, 90, 0.35);
+      pointer-events: none;
+    }
+    .dungeon-facts .dungeon-rank {
+      color: #ffe9ae;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-shadow: 0 1px 0 #000;
+    }
+    .dungeon-facts .dungeon-floor {
+      color: #f6d48a;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .dungeon-col.active .dungeon-facts { filter: none; }
     .dungeon-col .chain-wrap {
       position: absolute;
       inset: 0;
@@ -8795,7 +8832,7 @@
         if (shown) {
           if (nameEl) nameEl.textContent = shown.name;
           if (rankEl) rankEl.textContent = shown.rank || "";
-          if (floorEl) floorEl.textContent = `到達 ${shown.label}階`;
+          if (floorEl) floorEl.textContent = `最大${shown.label}階`;
         }
       }
       root.querySelectorAll(".dungeon-col").forEach((col) => {
@@ -8833,9 +8870,12 @@
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
         return `
-        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.name)}${sealed ? "（鎖）" : ""}">
-          <img src="${item.art}" alt="">
-          ${dungeonChainHtml(chains)}
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.name)} ${esc(item.rank || "")} 最大${esc(item.label)}階${sealed ? "（鎖）" : ""}">
+          <span class="dungeon-shot">
+            <img src="${item.art}" alt="">
+            ${dungeonChainHtml(chains)}
+          </span>
+          <span class="dungeon-facts" aria-hidden="true"><span class="dungeon-rank">${esc(item.rank || "")}</span><span class="dungeon-floor">最大${esc(item.label)}階</span></span>
         </button>`;
       }).join("");
       castShown = "";
