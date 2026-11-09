@@ -4656,7 +4656,7 @@
       0%, 64% { opacity: 0; }
       100% { opacity: 1; }
     }
-    /* 祝福の画面の前。黄金の光と一緒に天使が出て、それから画面へ */
+    /* 祝福の画面の前。黄金の紙吹雪で一瞬画面を隠し、そこから祝福が見える */
     .bless-arrive {
       position: fixed;
       inset: 0;
@@ -4664,62 +4664,60 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: #100c07;
+      background: transparent;
       pointer-events: auto;
-      animation: bless-veil 2.4s ease forwards;
-    }
-    .bless-arrive-rays {
-      position: absolute;
-      width: 150vmax;
-      height: 150vmax;
-      background: repeating-conic-gradient(from 0deg, rgba(255, 226, 160, 0) 0deg 14deg, rgba(255, 220, 140, 0.22) 17deg 20deg);
-      filter: blur(10px);
-      mix-blend-mode: screen;
-      animation: bless-rays 2.4s ease forwards;
-    }
-    .bless-arrive-glow {
-      position: absolute;
-      width: min(88vw, 920px);
-      height: min(88vw, 920px);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 244, 200, 0.95) 0%, rgba(255, 196, 70, 0.55) 28%, rgba(160, 90, 16, 0.18) 58%, transparent 72%);
-      filter: blur(2px);
-      animation: bless-glow 2.4s ease forwards;
     }
     .bless-arrive-art {
       position: relative;
-      z-index: 2;
+      z-index: 6;
       height: min(70vh, 780px);
       width: auto;
       max-width: 86vw;
       object-fit: contain;
-      animation: bless-angel 2.4s ease forwards;
+      animation: bless-angel 2.8s ease forwards;
     }
-    .bless-arrive.bless-arrive-fast,
-    .bless-arrive.bless-arrive-fast .bless-arrive-rays,
-    .bless-arrive.bless-arrive-fast .bless-arrive-glow,
-    .bless-arrive.bless-arrive-fast .bless-arrive-art { animation-duration: 0.7s; }
-    @keyframes bless-veil {
-      0%, 68% { background: #100c07; }
-      100% { background: transparent; }
+    .bless-arrive-sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      background:
+        radial-gradient(circle at 50% 40%, #fff8dc 0%, #f0c14a 26%, #b87616 58%, #2a1a0c 100%);
+      animation: bless-sheet 2.8s ease forwards;
     }
-    @keyframes bless-rays {
-      0% { opacity: 0; transform: rotate(0deg) scale(0.7); }
-      24% { opacity: 1; transform: rotate(8deg) scale(1); }
-      70% { opacity: 0.9; transform: rotate(22deg) scale(1.05); }
-      100% { opacity: 0; transform: rotate(30deg) scale(1.12); }
+    .bless-confetti {
+      position: absolute;
+      left: var(--l);
+      top: -14%;
+      z-index: 7;
+      width: var(--w);
+      height: var(--h);
+      border-radius: 1px;
+      background: linear-gradient(180deg, #fffef6, var(--c, #e8b44a) 55%, #8a5a10);
+      box-shadow: 0 0 8px rgba(255, 214, 120, 0.65);
+      opacity: 0;
+      animation: bless-confetti var(--t) linear var(--d) forwards;
     }
-    @keyframes bless-glow {
-      0% { opacity: 0; transform: scale(0.4); }
-      22% { opacity: 1; transform: scale(1); }
-      68% { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 0; transform: scale(1.2); }
-    }
+    .bless-arrive.bless-arrive-fast .bless-arrive-art,
+    .bless-arrive.bless-arrive-fast .bless-arrive-sheet,
+    .bless-arrive.bless-arrive-fast .bless-confetti { animation-duration: 0.7s; }
     @keyframes bless-angel {
-      0% { opacity: 0; transform: scale(0.78); filter: brightness(2.2) drop-shadow(0 0 36px rgba(255, 220, 140, 0.95)); }
-      30% { opacity: 1; transform: scale(1); filter: brightness(1.12) drop-shadow(0 0 28px rgba(255, 206, 110, 0.8)); }
-      70% { opacity: 1; transform: scale(1.02); filter: brightness(1) drop-shadow(0 0 22px rgba(255, 206, 110, 0.65)); }
-      100% { opacity: 0; transform: scale(1.05); filter: brightness(1.4); }
+      0% { opacity: 0; transform: scale(0.86); filter: brightness(2.4) drop-shadow(0 0 40px rgba(255, 220, 140, 0.95)); }
+      16% { opacity: 1; transform: scale(1); filter: brightness(1.15) drop-shadow(0 0 28px rgba(255, 206, 110, 0.85)); }
+      34% { opacity: 1; }
+      48% { opacity: 0; filter: brightness(1.6); }
+      100% { opacity: 0; }
+    }
+    @keyframes bless-sheet {
+      0% { opacity: 0; }
+      14% { opacity: 1; }
+      46% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes bless-confetti {
+      0% { opacity: 0; transform: translate3d(0, var(--y), 0) rotate(var(--r)); }
+      8% { opacity: 1; }
+      46% { opacity: 1; }
+      100% { opacity: 0; transform: translate3d(var(--x), calc(var(--y) + 115vh), 0) rotate(calc(var(--r) + 540deg)); }
     }
     .challenge-pick {
       height: 100%;
@@ -8348,12 +8346,25 @@
       veil.setAttribute("role", "status");
       veil.setAttribute("aria-label", "天使が現れた");
       const src = (heroItem() && heroItem().bless) || "blessing-goddess.jpg?v=1";
-      veil.innerHTML = `<div class="bless-arrive-rays" aria-hidden="true"></div><div class="bless-arrive-glow" aria-hidden="true"></div><img class="bless-arrive-art" src="${esc(src)}" alt="">`;
+      const colors = ["#fffef6", "#ffe9a0", "#f0c14a", "#d4922a", "#fff4c8"];
+      const confetti = Array.from({ length: 140 }, () => {
+        const left = (Math.random() * 100).toFixed(1);
+        const delay = (Math.random() * 0.22).toFixed(2);
+        const time = (1.8 + Math.random() * 1).toFixed(2);
+        const w = (8 + Math.random() * 18).toFixed(0);
+        const h = (6 + Math.random() * 14).toFixed(0);
+        const rot = (Math.random() * 360).toFixed(0);
+        const drift = (-90 + Math.random() * 180).toFixed(0);
+        const y = (-18 + Math.random() * 88).toFixed(0);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        return `<i class="bless-confetti" style="--l:${left}%;--d:${delay}s;--t:${time}s;--w:${w}px;--h:${h}px;--r:${rot}deg;--x:${drift}px;--y:${y}vh;--c:${color}"></i>`;
+      }).join("");
+      veil.innerHTML = `<img class="bless-arrive-art" src="${esc(src)}" alt=""><div class="bless-arrive-sheet" aria-hidden="true"></div>${confetti}`;
       document.body.appendChild(veil);
       blessTimer = setTimeout(() => {
         blessTimer = null;
         if (veil.parentNode) veil.remove();
-      }, reduce ? 700 : 2400);
+      }, reduce ? 700 : 2800);
     }
 
     function dropBeggar(index) {
@@ -9222,7 +9233,7 @@
         : "";
       const blessLive = floorPhase === "bless" ? takeRare("bless") : false;
       const giftLive = floorPhase === "show" ? takeRare("gift") : false;
-      const blessDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.55 : 2.4;
+      const blessDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.55 : 2.8;
       const blessLevels = [];
       const blessButtons = floorPhase === "bless"
         ? blessPicks.map((pick, i) => {
