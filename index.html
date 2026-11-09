@@ -3359,11 +3359,11 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-attack-r1.png?v=1"); }
-    .card .card-fit.k-block { --frame-img: url("frame-block-r1.png?v=1"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-skill-r1.png?v=1"); }
-    .card .card-fit.k-power { --frame-img: url("frame-power-r1.png?v=1"); }
-    .card .card-fit.k-foe { --frame-img: url("frame-foe-r1.png?v=1"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-attack-r1.png?v=3"); }
+    .card .card-fit.k-block { --frame-img: url("frame-block-r1.png?v=3"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-skill-r1.png?v=3"); }
+    .card .card-fit.k-power { --frame-img: url("frame-power-r1.png?v=3"); }
+    .card .card-fit.k-foe { --frame-img: url("frame-foe-r1.png?v=3"); }
     .card .card-fit.k-attack.r2 { --frame-img: url("frame-attack-r2.png?v=2"); }
     .card .card-fit.k-block.r2 { --frame-img: url("frame-block-r2.png?v=2"); }
     .card .card-fit.k-skill.r2 { --frame-img: url("frame-skill-r2.png?v=2"); }
@@ -8861,11 +8861,11 @@
     function artZoomSide(name) {
       if (!name) return "";
       const masterZoom = {
-        "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
-        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
-        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=7", alt: "スキル（黄）。装飾なし。★" },
-        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
-        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
+        "card-style-master": { label: "攻撃（赤）", src: "card-style-master.png?v=8", alt: "攻撃（赤）。装飾なし。★" },
+        "card-style-master-block": { label: "防御（青）", src: "card-style-master-block.png?v=8", alt: "防御（青）。装飾なし。★" },
+        "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=8", alt: "スキル（黄）。装飾なし。★" },
+        "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
+        "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9348,11 +9348,11 @@
 
     // カードスタイル＝色ごとの枠（装飾なしが★）。内側の色がジャンル。
     const BLANK_FRAMES = [
-      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
-      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
-      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=7", alt: "スキル（黄）。装飾なし。★" },
-      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
-      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
+      { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=8", alt: "攻撃（赤）。装飾なし。★" },
+      { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=8", alt: "防御（青）。装飾なし。★" },
+      { kind: "skill", label: "スキル（黄）", zoom: "card-style-master-skill", src: "card-style-master-skill.png?v=8", alt: "スキル（黄）。装飾なし。★" },
+      { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=8", alt: "パワー（緑）。装飾なし。★" },
+      { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=8", alt: "敵のカード（紫）。装飾なし。★" },
     ];
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
