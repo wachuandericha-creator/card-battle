@@ -1819,29 +1819,26 @@
     }
     .cast-side .cast-gear img { width: 76px; height: 76px; border-radius: 9px; }
     .cast-side .cast-gear figcaption { margin-top: 5px; font-size: 13px; line-height: 1.2; }
-    .cast-side .cast-deck { gap: 10px; justify-content: flex-start; }
-    .cast-side .cast-deck .card.preview {
-      width: 96px;
-      border-radius: 8px;
-      box-shadow: 0 0 0 1px rgba(228, 177, 90, 0.4), 0 8px 14px rgba(0, 0, 0, 0.45);
-    }
-    .cast-deck .stack-count {
-      position: absolute;
-      right: -4px;
-      bottom: -4px;
-      z-index: 2;
-      min-width: 24px;
-      text-align: center;
-      color: #2a2118;
-      background: linear-gradient(180deg, #fff1c8, #e4b15a);
-      border: 1px solid #5a3d12;
+    .cast-side .cast-deck { gap: 8px; justify-content: flex-start; }
+    .deck-chip {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 6px 12px;
       border-radius: 999px;
-      padding: 0 6px;
-      font-size: 13px;
-      line-height: 1.5;
+      background: rgba(12, 9, 7, 0.55);
+      border: 1px solid rgba(228, 177, 90, 0.45);
+      color: #fff6e4;
+      font-size: 15px;
       font-weight: 800;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
+    .deck-chip small { font-size: 14px; font-weight: 800; color: #f0c36a; }
+    .deck-chip.attack { border-color: #9d3a32; }
+    .deck-chip.block { border-color: #3a6ea6; }
+    .deck-chip.skill { border-color: #e4b15a; }
+    .deck-chip.power { border-color: #2f7a45; }
     /* 挑戦開始：橙金のボタン（炎のアニメは無し） */
     .cast-start {
       position: relative;
@@ -4807,7 +4804,8 @@
       height: auto;
       min-height: 0;
       margin: 0;
-      grid-template-columns: minmax(200px, 46%) minmax(0, 1fr);
+      grid-template-columns: minmax(160px, 42%) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) auto;
       gap: 14px;
       align-items: stretch;
     }
@@ -4837,16 +4835,19 @@
     }
     .challenge-job .cast-side .cast-plaque h1 { font-size: 32px; margin-bottom: 8px; gap: 8px; }
     .challenge-job .cast-side .cast-blurb { font-size: 15px; padding: 10px 12px; margin-bottom: 10px; }
-    .challenge-job .stat-chips { gap: 8px; margin-bottom: 4px; }
-    .challenge-job .stat-chips .chip { padding: 10px 10px; }
-    .challenge-job .stat-chips .chip b { font-size: 26px; }
-    .challenge-job .stat-chips .chip .ico { width: 18px; height: 18px; }
+    .challenge-job .stat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+    .challenge-job .stat-chips .chip { flex: 0 1 auto; min-width: 0; padding: 6px 8px; gap: 4px; }
+    .challenge-job .stat-chips .chip b { font-size: 20px; margin-left: 2px; }
+    .challenge-job .stat-chips .chip .k { letter-spacing: 0.02em; }
+    .challenge-job .stat-chips .chip .ico { width: 16px; height: 16px; }
+    .challenge-job .cast-deck-block { grid-column: 1 / -1; min-width: 0; }
+    .challenge-job .cast-deck-block h2 { margin: 0 0 6px; }
     .challenge-job .cast-side .cast-plaque h2 { margin: 8px 0 6px; font-size: 13px; }
     .challenge-job .cast-side .cast-gear { gap: 10px; }
     .challenge-job .cast-side .cast-gear figure { width: 64px; }
     .challenge-job .cast-side .cast-gear img { width: 56px; height: 56px; }
     .challenge-job .cast-side .cast-gear figcaption { font-size: 11px; }
-    .challenge-job .cast-side .cast-deck .card.preview { width: 92px; }
+    .challenge-job .deck-chip { font-size: 14px; padding: 5px 10px; }
     .challenge-job .cast-roster {
       width: 100%;
       padding: 0;
@@ -5004,7 +5005,7 @@
     }
     @media (max-width: 980px) {
       .challenge-split { grid-template-columns: 1fr; overflow: auto; }
-      .challenge-job .cast-main { grid-template-columns: minmax(120px, 36%) minmax(0, 1fr); }
+      .challenge-job .cast-main { grid-template-columns: minmax(120px, 36%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
       .challenge-dungeon .dungeon-preview { min-height: 220px; }
     }
     @media (max-width: 760px) {
@@ -8671,8 +8672,7 @@
     function starterDeckMarkup() {
       return CARD_POOL.map(([name, count]) => {
         const card = { name, ...(cardDef(name) || {}) };
-        const label = `${card.cost || 0} ${card.name} x${count} ${String(card.text || "").replace(/\n/g, " ")}`;
-        return `<div class="card preview ${cardKind(card)}" aria-label="${esc(label)}">${cardFace(card, false)}<b class="stack-count">x${count}</b></div>`;
+        return `<span class="deck-chip ${cardKind(card)}">${esc(name)} <small>${count}枚</small></span>`;
       }).join("");
     }
 
@@ -8708,9 +8708,11 @@
               <figure><span class="frame"><img src="gear-short-sword.jpg?v=2" alt=""></span><figcaption>ショートソード</figcaption></figure>
               <figure><span class="frame"><img src="gear-buckler.jpg" alt=""></span><figcaption>バックラー</figcaption></figure>
             </div>
-            <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
-            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
+        </div>
+        <div class="cast-deck-block">
+          <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
+          <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
         </div>`;
     }
 
