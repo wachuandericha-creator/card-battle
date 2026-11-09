@@ -5375,21 +5375,21 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-m.jpg?v=1",
+      アタック: "card-attack-f.jpg?v=3",
       チャージアタック: "card-charge-f.jpg?v=6",
       ブロック: "card-block-f.jpg?v=3",
-      集中: "card-focus.jpg?v=4",
-      パリィ: "card-parry.jpg?v=6",
-      捨て身の一撃: "card-reckless.jpg?v=1",
-      怒り: "card-rage.jpg?v=1",
-      パリィスラッシュ: "card-parry-slash.jpg?v=1",
-      臆病者の構え: "card-coward.jpg?v=1",
-      ライフフルネスアタック: "card-lifefull.jpg?v=1",
-      ジャストミート: "card-just-meet.jpg?v=1",
-      余裕の構え: "card-poise.jpg?v=2",
-      ガードブレイク: "card-guard-break.jpg?v=1",
-      致命の一撃: "card-fatal.jpg?v=2",
-      シールドアタック: "card-shield-bash.jpg?v=2",
+      集中: "",
+      パリィ: "",
+      捨て身の一撃: "",
+      怒り: "",
+      パリィスラッシュ: "",
+      臆病者の構え: "",
+      ライフフルネスアタック: "",
+      ジャストミート: "",
+      余裕の構え: "",
+      ガードブレイク: "",
+      致命の一撃: "",
+      シールドアタック: "",
       頭突き: "card-headbutt.jpg?v=1",
       キック: "card-kick.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
@@ -5409,21 +5409,7 @@
       ファイアソード: "card-firesword.jpg?v=1",
       ファイアパラダイス: "card-fireparadise.jpg?v=1",
     };
-    const CARD_ART_CAST = {
-      アタック: ["card-attack-m.jpg?v=2", "card-attack-f.jpg?v=3"],
-      // 男のグラデーション背景は削除。ダンジョン絵がある女の絵を男女とも使う
-      チャージアタック: ["card-charge-f.jpg?v=6", "card-charge-f.jpg?v=6"],
-      ブロック: ["card-block-f.jpg?v=3", "card-block-f.jpg?v=3"],
-      ハードブロック: ["card-hard-block-f.jpg?v=3", "card-hard-block-f.jpg?v=3"],
-      ビッグブロック: ["card-big-block-f.jpg?v=3", "card-big-block-f.jpg?v=3"],
-    };
     function cardArtSrc(name) {
-      const pair = CARD_ART_CAST[name];
-      if (pair) {
-        // カードリストでは、直した女戦士の絵を確認できるように女を出す。戦闘中は選んだ戦士の絵
-        const useFemale = screen === "album" || heroCast === "女の戦士" || (screen === "character" && shownCastName() === "女の戦士");
-        return useFemale ? pair[1] : pair[0];
-      }
       return CARD_ART[name] || "";
     }
     const CARDS = {
@@ -5629,24 +5615,12 @@
     let job = "戦士";
     let castPicked = false;
     let castHover = "";
-    let castLock = "戦士";
+    let castLock = "女の戦士";
     let castShown = "";
     const CAST = [
       {
-        name: "戦士",
-        blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。初期の数値と装備は女の戦士と同じ。",
-        stand: "job-front.png?v=5",
-        chibi: "job-warrior.png?v=9",
-        action: "job-action.jpg?v=3",
-        battle: "hero-shoulder.png?v=26",
-        battleRatio: "864 / 1152",
-        defeat: "warrior-defeat.png?v=3",
-        victory: "warrior-victory.png?v=3",
-        bless: "blessing-goddess.jpg?v=1",
-      },
-      {
         name: "女の戦士",
-        blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。初期の数値と装備は戦士と同じ。",
+        blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=6",
         action: "girl-action.jpg?v=4",
@@ -5657,7 +5631,7 @@
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
-    let heroCast = "戦士";
+    let heroCast = "女の戦士";
     function heroItem() { return castByName(heroCast); }
     function heroName() { return heroItem().name; }
     let jobsHad = ["戦士"];
@@ -8448,7 +8422,7 @@
       veil.className = reduce ? "bless-arrive bless-arrive-fast" : "bless-arrive";
       veil.setAttribute("role", "status");
       veil.setAttribute("aria-label", "天使が現れた");
-      const src = (heroItem() && heroItem().bless) || "blessing-goddess.jpg?v=1";
+      const src = (heroItem() && heroItem().bless) || "blessing-goddess-f.jpg?v=1";
       const colors = ["#fffef6", "#ffe9a0", "#f0c14a", "#d4922a", "#fff4c8"];
       const confetti = Array.from({ length: 140 }, () => {
         const left = (Math.random() * 100).toFixed(1);
@@ -9059,13 +9033,6 @@
           <div class="panel">
             <h2>設定資料</h2>
             <p class="album-meta">画像を押すと右半分に拡大</p>
-            <h3>戦士</h3>
-            <div class="ref-grid pose-grid">
-              ${sheetFig("job-front.png?v=5", "正面", "cut-ref")}
-              ${sheetFig("hero-shoulder.png?v=26", "戦闘（ポケモンの画角）", "cut-ref")}
-              ${sheetFig("warrior-defeat.png?v=3", "敗北", "cut-ref")}
-              ${sheetFig("warrior-victory.png?v=3", "勝利", "cut-ref")}
-            </div>
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
@@ -9078,15 +9045,10 @@
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
-              ${sheetFig("job-front.png?v=5", "戦士の立ち絵", "cut-ref")}
-              ${sheetFig("job-action.jpg?v=3", "戦士の一枚絵", "land-ref", "span-2")}
-            </div>
-            <div class="ref-grid">
               ${sheetFig("girl-front.png?v=11", "女の戦士の立ち絵", "cut-ref")}
               ${sheetFig("girl-action.jpg?v=4", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-warrior.png?v=9", "戦士の選択コマ（正面デフォルメ）", "cut-ref")}
               ${sheetFig("job-girl.png?v=6", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
@@ -9166,7 +9128,6 @@
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
-            ${sheetBanner("blessing-goddess.jpg?v=1", "祝福（戦士）", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
             ${sheetBanner("blessing-goddess-f.jpg?v=1", "祝福（女の戦士）", "荘厳な女神が、ひざまずく女の戦士に祝福を授けている")}
             <h3>敵</h3>
             <div class="ref-grid">
@@ -9329,7 +9290,7 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div>`
         : "";
       const art = floorKind === "挑戦者に祝福を"
-        ? `<img class="bless-art" src="${esc(heroItem().bless || "blessing-goddess.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
+        ? `<img class="bless-art" src="${esc(heroItem().bless || "blessing-goddess-f.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
         : "";
       const blessLive = floorPhase === "bless" ? takeRare("bless") : false;
       const giftLive = floorPhase === "show" ? takeRare("gift") : false;
@@ -11038,7 +10999,7 @@
         if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
         if (name === "character") {
           castHover = "";
-          castLock = castLock || "戦士";
+          castLock = castLock || "女の戦士";
           dungeonHover = "";
           screen = "character";
           render();
