@@ -453,22 +453,22 @@
       display: grid;
       place-items: center;
       margin: 0;
-      font-size: 18px;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: 0.04em;
-      color: #fff8f0;
-      font-variant-numeric: tabular-nums;
-      text-shadow:
-        0 0 2px #3a0c08,
-        0 1px 0 #3a0c08,
-        0 -1px 0 #3a0c08,
-        1px 0 0 #3a0c08,
-        -1px 0 0 #3a0c08,
-        0 0 10px rgba(0, 0, 0, 0.85);
       pointer-events: none;
     }
-    .battle-plate.low .meter.hp .hp-now { color: #ffe8e0; }
+    .battle-plate .meter.hp .hp-now span {
+      padding: 2px 9px 3px;
+      border-radius: 7px;
+      background: rgba(8, 4, 3, 0.78);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 0 #000;
+    }
+    .battle-plate.low .meter.hp .hp-now span { color: #ffe8e0; }
     .battle-plate .meter.hp > span {
       position: relative;
       z-index: 1;
@@ -8439,7 +8439,7 @@
       const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = block > 0 ? `<div class="shield-row"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>` : "";
-      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now" data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</b><i class="hp-ticks"></i></div></div>`;
+      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div></div>`;
     }
 
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
