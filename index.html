@@ -8924,6 +8924,12 @@
         "accent-a": { label: "差し色 A（10）", src: "card-style-accent-a.png?v=1", alt: "差し色を10に太くした候補A" },
         "accent-b": { label: "差し色 B（13）", src: "card-style-accent-b.png?v=1", alt: "差し色を13に太くした候補B" },
         "accent-c": { label: "差し色 C（16）", src: "card-style-accent-c.png?v=1", alt: "差し色を16に太くした候補C" },
+        "redo-a": { label: "作り直し A 均整", src: "card-style-redo-a.png?v=1", alt: "作り直し候補A。均整。黒枠とコストの飾りとジャンルの札を最初から入れた枠" },
+        "redo-b": { label: "作り直し B 厚枠", src: "card-style-redo-b.png?v=1", alt: "作り直し候補B。厚枠" },
+        "redo-c": { label: "作り直し C 細密", src: "card-style-redo-c.png?v=1", alt: "作り直し候補C。細密" },
+        "redo-a-gold": { label: "作り直し A 金", src: "card-style-redo-a-gold.png?v=1", alt: "作り直し候補Aの金色装飾。名札が金。外枠は黒" },
+        "redo-b-gold": { label: "作り直し B 金", src: "card-style-redo-b-gold.png?v=1", alt: "作り直し候補Bの金色装飾。名札が金。外枠は黒" },
+        "redo-c-gold": { label: "作り直し C 金", src: "card-style-redo-c-gold.png?v=1", alt: "作り直し候補Cの金色装飾。名札が金。外枠は黒" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9128,6 +9134,9 @@
             <div class="ref-grid blank-grid">${titleRaritySheet()}</div>
             <p class="album-meta">差し色の太さ（候補）。いまは7。A＝10、B＝13、C＝16。どれかを選んだら五色と枠に反映する</p>
             <div class="ref-grid blank-grid">${accentWidthSheet()}</div>
+            <h4>カードスタイル　作り直し候補</h4>
+            <p class="album-meta">黒枠、コストの飾り、ジャンルの札を最初から入れた枠。A均整、B厚枠、C細密。続く3枚は名札を金にした装飾。銀と赤はまだ出さない。未選択</p>
+            <div class="ref-grid blank-grid">${redoStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9429,6 +9438,20 @@
       return ACCENT_WIDTH.map((item) => {
         const on = albumZoom === item[0];
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="差し色 ${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="差し色 ${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
+    const REDO_STYLE = [
+      ["redo-a", "A 均整", "card-style-redo-a.png?v=1"],
+      ["redo-b", "B 厚枠", "card-style-redo-b.png?v=1"],
+      ["redo-c", "C 細密", "card-style-redo-c.png?v=1"],
+      ["redo-a-gold", "A 金", "card-style-redo-a-gold.png?v=1"],
+      ["redo-b-gold", "B 金", "card-style-redo-b-gold.png?v=1"],
+      ["redo-c-gold", "C 金", "card-style-redo-c-gold.png?v=1"],
+    ];
+    function redoStyleSheet() {
+      return REDO_STYLE.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
     }
     function titleRaritySheet() {
