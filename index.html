@@ -921,26 +921,34 @@
     .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
-    /* レア演出。出たもの自体が一度だけふわっと光る。描いた光や画面の揺れは出さない */
-    .rare-show { position: relative; --rare: rgba(255, 255, 255, 0.65); }
-    .rare-1 { --rare: rgba(255, 255, 255, 0.45); }
-    .rare-2 { --rare: rgba(214, 226, 242, 0.9); }
-    .rare-3, .rare-4, .rare-5 { --rare: rgba(255, 206, 92, 0.95); }
-    .rare-boss { --rare: rgba(255, 86, 64, 0.92); }
+    /* レア演出。出たもの自体が一度だけ強く光る。描いた光や画面の揺れ、★の印は出さない */
+    .rare-show { position: relative; --rare: rgba(255, 255, 255, 0.9); }
+    .rare-1 { --rare: rgba(255, 255, 255, 0.75); }
+    .rare-2 { --rare: rgba(220, 232, 255, 1); }
+    .rare-3, .rare-4, .rare-5 { --rare: rgba(255, 196, 64, 1); }
+    .rare-boss { --rare: rgba(255, 64, 40, 1); }
     .rare-show .card,
     .rare-show .gift-img,
     .rare-show .shop-gear,
     .rare-show > img {
-      animation: rare-pop 0.42s ease-out var(--d, 0s) both;
+      animation: rare-pop 0.62s cubic-bezier(0.16, 0.84, 0.28, 1) var(--d, 0s) both;
     }
-    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.26s; }
-    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.36s; }
+    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.38s; }
+    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.55s; }
+    .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img { animation-name: rare-pop-hot; animation-duration: 0.82s; }
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
-    .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-duration: 0.5s; }
-    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-duration: 0.58s; }
+    .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 1.05s; }
+    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-hot; animation-duration: 1.28s; }
     @keyframes rare-pop {
-      0% { transform: translateY(8px) scale(0.97); filter: brightness(1.4) drop-shadow(0 0 0 var(--rare)); }
-      42% { transform: none; filter: brightness(1.12) drop-shadow(0 0 18px var(--rare)); }
+      0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
+      18% { transform: scale(1.1); filter: brightness(1.9) drop-shadow(0 0 22px #fff) drop-shadow(0 0 46px var(--rare)); }
+      48% { transform: scale(1.02); filter: brightness(1.35) drop-shadow(0 0 34px var(--rare)) drop-shadow(0 0 70px var(--rare)); }
+      100% { transform: none; filter: none; }
+    }
+    @keyframes rare-pop-hot {
+      0% { transform: scale(0.76); filter: brightness(3) drop-shadow(0 0 16px #fff) drop-shadow(0 0 28px var(--rare)); }
+      14% { transform: scale(1.16); filter: brightness(2.15) drop-shadow(0 0 26px #fff) drop-shadow(0 0 72px var(--rare)); }
+      36% { transform: scale(1.05); filter: brightness(1.6) drop-shadow(0 0 40px #fff) drop-shadow(0 0 96px var(--rare)); }
       100% { transform: none; filter: none; }
     }
     .shop-gear { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(228, 177, 90, 0.7); }
