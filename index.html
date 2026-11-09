@@ -1279,7 +1279,7 @@
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
     .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
     .ref-grid figure.wide-land { grid-column: 1 / -1; max-width: 720px; }
-    /* カードスタイル＝装飾なし。名札・効果は薄く、絵柄の場所に点線 */
+    /* カードスタイルの見本。★銅、★★金、★★★は種類の色 */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
     .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
@@ -3202,37 +3202,10 @@
       filter: none;
       background: none;
     }
-    .card-fit.r2 .frame::before, .card-fit.r3 .frame::before,
-    .card-fit.r2 .frame::after, .card-fit.r3 .frame::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 100% 100%;
-    }
-    .card-fit.r2 .frame::before { background-image: url("card-frame-silver.png?v=1"); }
-    .card-fit.r3 .frame::before { background-image: url("card-frame-gold.png?v=1"); }
-    .card-fit.r2 .frame::after, .card-fit.r3 .frame::after {
-      background-color: var(--genre-line, #9d3a32);
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-position: center;
-      mask-position: center;
-      -webkit-mask-size: 100% 100%;
-      mask-size: 100% 100%;
-    }
-    .card-fit.r2 .frame::after {
-      -webkit-mask-image: url("card-accent-silver.png?v=1");
-      mask-image: url("card-accent-silver.png?v=1");
-    }
-    .card-fit.r3 .frame::after {
-      -webkit-mask-image: url("card-accent-gold.png?v=1");
-      mask-image: url("card-accent-gold.png?v=1");
-    }
+    .card-fit.r2 .frame::before,
+    .card-fit.r3 .frame::before,
+    .card-fit.r2 .frame::after,
+    .card-fit.r3 .frame::after { content: none; }
     .card .rarity { z-index: 6; }
     .card-fit.r2 .rarity { color: #f3f6fa; text-shadow: 0 0 2px #4f5b6a, 0 1px 0 #2d3540, 0 0 8px rgba(220, 230, 245, 0.8); }
     .card-fit.r3 .rarity { color: #ffe27a; text-shadow: 0 0 2px #7a5410, 0 1px 0 #4d3306, 0 0 10px rgba(255, 215, 120, 0.9); }
@@ -9241,7 +9214,7 @@
               <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>カードスタイル　裏</figcaption></figure>
             </div>
             <h4>カードスタイル</h4>
-            <p class="album-meta">★は銅、★★は金。★★★は種類の色。パワーはアイテム</p>
+            <p class="album-meta">★は銅、★★は金。★★★は種類の色（攻撃＝赤、防御＝青、スキル＝黄、アイテム＝緑、敵＝紫）</p>
             <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
