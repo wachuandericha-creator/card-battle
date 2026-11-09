@@ -1499,7 +1499,7 @@
     }
     .cast-plaque {
       max-height: 100%;
-      overflow: auto;
+      overflow: visible;
       background: linear-gradient(180deg, rgba(54, 40, 26, 0.94), rgba(16, 12, 10, 0.94));
       border: 2px solid #e4b15a;
       border-radius: 18px;
@@ -1526,34 +1526,33 @@
       font-size: 18px;
       letter-spacing: 0.18em;
     }
+    /* 初期デッキ：枚数バッジではなく実物を並べる。小さく一望、乗せると拡大 */
     .cast-deck {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 4px;
       margin: 0;
+      align-content: start;
+      overflow: visible;
     }
-    .cast-deck .deck-card { position: relative; min-width: 0; }
+    .cast-deck .deck-card {
+      position: relative;
+      min-width: 0;
+      z-index: 1;
+    }
+    .cast-deck .deck-card:hover { z-index: 40; }
     .cast-deck .card.preview {
       width: 100%;
-      pointer-events: none;
+      pointer-events: auto;
+      cursor: zoom-in;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+      transform-origin: center bottom;
     }
-    .cast-deck .deck-count {
-      position: absolute;
-      z-index: 4;
-      top: -4px;
-      right: -2px;
-      min-width: 20px;
-      height: 20px;
-      padding: 0 4px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      background: #f0c36a;
-      color: #1a120c;
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    .cast-deck .deck-card:hover .card.preview {
+      transform: scale(2.55);
+      box-shadow:
+        0 0 0 2px rgba(255, 220, 140, 0.9),
+        0 16px 28px rgba(0, 0, 0, 0.7);
     }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
     .cast-roster {
@@ -1633,18 +1632,18 @@
     }
     .cast-side {
       min-height: 0;
-      overflow: auto;
+      overflow: visible;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-    /* ジョブ選択の右の板：暗い漆に金の縁。初期ステは3つの札、装備は金枠、デッキは大きめ */
+    /* ジョブ選択の右の板：暗い漆に金の縁。初期ステは3つの札、装備は金枠、デッキは小さく一望 */
     .cast-side .cast-plaque {
       position: relative;
       max-height: none;
       flex: 0 1 auto;
       min-height: 0;
-      overflow: hidden;
+      overflow: visible;
       padding: 16px 18px 18px;
       border: 1px solid rgba(228, 177, 90, 0.85);
       border-radius: 16px;
@@ -4709,24 +4708,29 @@
       height: 100%;
       max-height: 100%;
       box-sizing: border-box;
-      overflow: auto;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 10px 10px 12px;
     }
-    .challenge-job .cast-side .cast-plaque {
-      padding: 12px 12px 14px;
-    }
-    .challenge-job .cast-side .cast-plaque h1 { font-size: 32px; margin-bottom: 8px; gap: 8px; }
-    .challenge-job .cast-side .cast-blurb { font-size: 15px; padding: 10px 12px; margin-bottom: 10px; }
-    .challenge-job .stat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
-    .challenge-job .stat-chips .chip { flex: 0 1 auto; min-width: 0; padding: 6px 8px; gap: 4px; }
-    .challenge-job .stat-chips .chip b { font-size: 20px; margin-left: 2px; }
+    .challenge-job .cast-side .cast-plaque h1 { font-size: 28px; margin-bottom: 6px; gap: 8px; }
+    .challenge-job .cast-side .cast-blurb { font-size: 13px; padding: 8px 10px; margin-bottom: 8px; }
+    .challenge-job .stat-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 2px; }
+    .challenge-job .stat-chips .chip { flex: 0 1 auto; min-width: 0; padding: 5px 7px; gap: 4px; }
+    .challenge-job .stat-chips .chip b { font-size: 18px; margin-left: 2px; }
     .challenge-job .stat-chips .chip .k { letter-spacing: 0.02em; }
-    .challenge-job .stat-chips .chip .ico { width: 16px; height: 16px; }
-    .challenge-job .cast-side .cast-plaque h2 { margin: 8px 0 6px; font-size: 13px; }
-    .challenge-job .cast-side .cast-gear { gap: 10px; }
-    .challenge-job .cast-side .cast-gear figure { width: 64px; }
-    .challenge-job .cast-side .cast-gear img { width: 56px; height: 56px; }
-    .challenge-job .cast-side .cast-gear figcaption { font-size: 11px; }
-    .challenge-job .cast-deck { gap: 5px; }
+    .challenge-job .stat-chips .chip .ico { width: 14px; height: 14px; }
+    .challenge-job .cast-side .cast-plaque h2 { margin: 6px 0 4px; font-size: 12px; }
+    .challenge-job .cast-side .cast-gear { gap: 8px; }
+    .challenge-job .cast-side .cast-gear figure { width: 56px; }
+    .challenge-job .cast-side .cast-gear img { width: 48px; height: 48px; }
+    .challenge-job .cast-side .cast-gear figcaption { font-size: 10px; }
+    .challenge-job .cast-deck {
+      gap: 3px;
+      flex: 0 0 auto;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
     .challenge-job .cast-roster {
       width: 100%;
       padding: 0;
@@ -8600,11 +8604,14 @@
     }
 
     function starterDeckMarkup() {
-      return CARD_POOL.map(([name, count]) => {
+      const cards = [];
+      for (const [name, count] of CARD_POOL) {
         const card = { name, ...(cardDef(name) || {}) };
-        const badge = count > 1 ? `<b class="deck-count">${count}</b>` : "";
-        return `<div class="deck-card">${badge}<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
-      }).join("");
+        for (let i = 0; i < count; i += 1) {
+          cards.push(`<div class="deck-card" title="${esc(name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`);
+        }
+      }
+      return cards.join("");
     }
 
     function starterDeckCount() {
