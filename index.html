@@ -1609,15 +1609,33 @@
       letter-spacing: 0.18em;
     }
     .cast-deck {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
       margin: 0;
     }
+    .cast-deck .deck-card { position: relative; min-width: 0; }
     .cast-deck .card.preview {
-      width: 112px;
+      width: 100%;
       pointer-events: none;
+    }
+    .cast-deck .deck-count {
+      position: absolute;
+      z-index: 4;
+      top: -4px;
+      right: -2px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 4px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #f0c36a;
+      color: #1a120c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
     }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
     .cast-roster {
@@ -1824,26 +1842,7 @@
     }
     .cast-side .cast-gear img { width: 76px; height: 76px; border-radius: 9px; }
     .cast-side .cast-gear figcaption { margin-top: 5px; font-size: 13px; line-height: 1.2; }
-    .cast-side .cast-deck { gap: 8px; justify-content: flex-start; }
-    .deck-chip {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(12, 9, 7, 0.55);
-      border: 1px solid rgba(228, 177, 90, 0.45);
-      color: #fff6e4;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
-    .deck-chip small { font-size: 14px; font-weight: 800; color: #f0c36a; }
-    .deck-chip.attack { border-color: #9d3a32; }
-    .deck-chip.block { border-color: #3a6ea6; }
-    .deck-chip.skill { border-color: #e4b15a; }
-    .deck-chip.power { border-color: #2f7a45; }
+    .cast-side .cast-deck { gap: 8px; }
     /* 挑戦開始：橙金のボタン（炎のアニメは無し） */
     .cast-start {
       position: relative;
@@ -4776,7 +4775,7 @@
       min-height: 0;
       margin: 0;
       grid-template-columns: minmax(160px, 42%) minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr) auto;
+      grid-template-rows: minmax(0, 1fr);
       gap: 14px;
       align-items: stretch;
     }
@@ -4811,14 +4810,12 @@
     .challenge-job .stat-chips .chip b { font-size: 20px; margin-left: 2px; }
     .challenge-job .stat-chips .chip .k { letter-spacing: 0.02em; }
     .challenge-job .stat-chips .chip .ico { width: 16px; height: 16px; }
-    .challenge-job .cast-deck-block { grid-column: 1 / -1; min-width: 0; }
-    .challenge-job .cast-deck-block h2 { margin: 0 0 6px; }
     .challenge-job .cast-side .cast-plaque h2 { margin: 8px 0 6px; font-size: 13px; }
     .challenge-job .cast-side .cast-gear { gap: 10px; }
     .challenge-job .cast-side .cast-gear figure { width: 64px; }
     .challenge-job .cast-side .cast-gear img { width: 56px; height: 56px; }
     .challenge-job .cast-side .cast-gear figcaption { font-size: 11px; }
-    .challenge-job .deck-chip { font-size: 14px; padding: 5px 10px; }
+    .challenge-job .cast-deck { gap: 5px; }
     .challenge-job .cast-roster {
       width: 100%;
       padding: 0;
@@ -5336,7 +5333,7 @@
       const pair = CARD_ART_CAST[name];
       if (pair) {
         // カードリストでは、直した女戦士の絵を確認できるように女を出す。戦闘中は選んだ戦士の絵
-        const useFemale = screen === "album" || heroCast === "女の戦士";
+        const useFemale = screen === "album" || heroCast === "女の戦士" || (screen === "character" && shownCastName() === "女の戦士");
         return useFemale ? pair[1] : pair[0];
       }
       return CARD_ART[name] || "";
@@ -8658,7 +8655,8 @@
     function starterDeckMarkup() {
       return CARD_POOL.map(([name, count]) => {
         const card = { name, ...(cardDef(name) || {}) };
-        return `<span class="deck-chip ${cardKind(card)}">${esc(name)} <small>${count}枚</small></span>`;
+        const badge = count > 1 ? `<b class="deck-count">${count}</b>` : "";
+        return `<div class="deck-card">${badge}<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
       }).join("");
     }
 
@@ -8694,11 +8692,9 @@
               <figure><span class="frame"><img src="gear-short-sword.jpg?v=2" alt=""></span><figcaption>ショートソード</figcaption></figure>
               <figure><span class="frame"><img src="gear-buckler.jpg" alt=""></span><figcaption>バックラー</figcaption></figure>
             </div>
+            <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
+            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
-        </div>
-        <div class="cast-deck-block">
-          <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
-          <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
         </div>`;
     }
 
