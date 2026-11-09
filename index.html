@@ -2579,11 +2579,22 @@
     .foe-pile { cursor: pointer; }
     .foe-pile .pile-card,
     .foe-discard .pile-card { width: 118px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
+    /* 敵の裏は、自分の赤地を紫へ。絵柄は同じ */
+    .foe-pile .pile-card.back,
+    .foe-discard .pile-card.back {
+      filter: hue-rotate(248deg) saturate(1.45) brightness(0.92);
+      border-color: #241433;
+    }
+    .foe-pile .pile-card.discard,
+    .foe-discard .pile-card.discard {
+      filter: hue-rotate(248deg) saturate(1.15) brightness(0.62);
+      border-color: #3a2850;
+    }
     .foe-pile .pile-count,
     .foe-discard .pile-count { font-size: 44px; }
     .foe-pile .pile-label,
     .foe-discard .pile-label { font-size: 16px; letter-spacing: 0.08em; white-space: nowrap; }
-    .foe-pile:hover .pile-card { box-shadow: 0 0 14px rgba(200, 150, 62, 0.75), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(90, 81, 72, 0.75); }
+    .foe-pile:hover .pile-card { box-shadow: 0 0 14px rgba(168, 96, 220, 0.8), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(90, 70, 110, 0.75); }
     .foe-peek {
       position: absolute;
       right: 10px;
