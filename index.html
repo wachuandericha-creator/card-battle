@@ -627,20 +627,32 @@
       height: auto;
       margin: 5px 0 0;
       display: grid;
-      grid-template-columns: 72px minmax(0, 1fr) 72px;
+      grid-template-columns: 1fr 1fr;
       align-items: center;
+      justify-items: center;
+      column-gap: 0;
       font-size: 12px;
       letter-spacing: 0.14em;
       color: #d9c39a;
       text-shadow: 0 1px 0 #000;
     }
-    .battle-plate .hp-line .lbl { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; grid-column: 1; }
+    .battle-plate .hp-line .lbl {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-weight: 800;
+      grid-column: 1;
+      width: 100%;
+      text-align: center;
+    }
     .battle-plate .hp-line .lbl .ico { width: 14px; height: 14px; flex: none; }
     .battle-plate .hp-line .num {
       grid-column: 2;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
       min-width: 0;
       text-align: center;
       letter-spacing: 0.02em;
