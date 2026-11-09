@@ -8866,16 +8866,6 @@
         "card-style-master-skill": { label: "スキル（黄）", src: "card-style-master-skill.png?v=7", alt: "スキル（黄）。装飾なし。★" },
         "card-style-master-power": { label: "パワー（緑）", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
         "card-style-master-foe": { label: "敵のカード（紫）", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
-        "rarity-silver-attack": { label: "★★ 銀・攻撃", src: "card-style-silver-attack.png?v=2", alt: "外枠が銀。内側の赤が攻撃。★★" },
-        "rarity-silver-block": { label: "★★ 銀・防御", src: "card-style-silver-block.png?v=2", alt: "外枠が銀。内側の青が防御。★★" },
-        "rarity-silver-skill": { label: "★★ 銀・スキル", src: "card-style-silver-skill.png?v=2", alt: "外枠が銀。内側の黄がスキル。★★" },
-        "rarity-silver-power": { label: "★★ 銀・パワー", src: "card-style-silver-power.png?v=2", alt: "外枠が銀。内側の緑がパワー。★★" },
-        "rarity-silver-foe": { label: "★★ 銀・敵", src: "card-style-silver-foe.png?v=2", alt: "外枠が銀。内側の紫が敵。★★" },
-        "rarity-gold-attack": { label: "★★★ 金・攻撃", src: "card-style-gold-attack.png?v=2", alt: "外枠が金。内側の赤が攻撃。★★★" },
-        "rarity-gold-block": { label: "★★★ 金・防御", src: "card-style-gold-block.png?v=2", alt: "外枠が金。内側の青が防御。★★★" },
-        "rarity-gold-skill": { label: "★★★ 金・スキル", src: "card-style-gold-skill.png?v=2", alt: "外枠が金。内側の黄がスキル。★★★" },
-        "rarity-gold-power": { label: "★★★ 金・パワー", src: "card-style-gold-power.png?v=2", alt: "外枠が金。内側の緑がパワー。★★★" },
-        "rarity-gold-foe": { label: "★★★ 金・敵", src: "card-style-gold-foe.png?v=2", alt: "外枠が金。内側の紫が敵。★★★" },
       }[name];
       if (masterZoom) {
         return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
@@ -9076,9 +9066,6 @@
             </div>
             <h4>カードスタイル</h4>
             <div class="ref-grid blank-grid">${blankCardSheet()}</div>
-            <h4>レアリティ</h4>
-            <p class="album-meta">外枠が金属。銀が★★、金が★★★。内側の色がジャンル</p>
-            <div class="ref-grid blank-grid">${rarityStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -9359,7 +9346,7 @@
       })[kind] || "スキル";
     }
 
-    // カードスタイル＝装飾なし（★）。★★は銀の金属枠、★★★は金の金属枠。内側の色がジャンル。
+    // カードスタイル＝色ごとの枠（装飾なしが★）。内側の色がジャンル。
     const BLANK_FRAMES = [
       { kind: "attack", label: "攻撃（赤）", zoom: "card-style-master", src: "card-style-master.png?v=7", alt: "攻撃（赤）。装飾なし。★" },
       { kind: "block", label: "防御（青）", zoom: "card-style-master-block", src: "card-style-master-block.png?v=7", alt: "防御（青）。装飾なし。★" },
@@ -9367,24 +9354,6 @@
       { kind: "power", label: "パワー（緑）", zoom: "card-style-master-power", src: "card-style-master-power.png?v=7", alt: "パワー（緑）。装飾なし。★" },
       { kind: "foe", label: "敵のカード（紫）", zoom: "card-style-master-foe", src: "card-style-master-foe.png?v=7", alt: "敵のカード（紫）。装飾なし。★" },
     ];
-    const RARITY_STYLES = [
-      ["rarity-silver-attack", "★★ 銀・攻撃", "card-style-silver-attack.png?v=2"],
-      ["rarity-silver-block", "★★ 銀・防御", "card-style-silver-block.png?v=2"],
-      ["rarity-silver-skill", "★★ 銀・スキル", "card-style-silver-skill.png?v=2"],
-      ["rarity-silver-power", "★★ 銀・パワー", "card-style-silver-power.png?v=2"],
-      ["rarity-silver-foe", "★★ 銀・敵", "card-style-silver-foe.png?v=2"],
-      ["rarity-gold-attack", "★★★ 金・攻撃", "card-style-gold-attack.png?v=2"],
-      ["rarity-gold-block", "★★★ 金・防御", "card-style-gold-block.png?v=2"],
-      ["rarity-gold-skill", "★★★ 金・スキル", "card-style-gold-skill.png?v=2"],
-      ["rarity-gold-power", "★★★ 金・パワー", "card-style-gold-power.png?v=2"],
-      ["rarity-gold-foe", "★★★ 金・敵", "card-style-gold-foe.png?v=2"],
-    ];
-    function rarityStyleSheet() {
-      return RARITY_STYLES.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
-    }
     function blankCardSheet() {
       return BLANK_FRAMES.map((frame) => {
         const on = albumZoom === frame.zoom;
