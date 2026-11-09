@@ -536,7 +536,7 @@
       color: #e4eef8;
       text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.9);
     }
-    /* シールドの札：板の右上。青鋼の盾札 */
+    /* シールド：板の右上。青鋼のヒーター盾 */
     .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 10, 14, 0.95), 0 0 0 4px rgba(140, 178, 214, 0.62), 0 0 16px rgba(100, 150, 200, 0.28), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(200, 220, 240, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
     /* パリィ中：金の光で無敵感を出す（次の攻撃を受けない） */
     .battle-plate.parried {
@@ -559,55 +559,32 @@
     }
     .battle-plate .shield-badge {
       position: absolute;
-      right: -20px;
-      top: -34px;
-      width: 64px;
-      height: 84px;
+      right: -4px;
+      top: -8px;
+      width: 76px;
+      height: 100px;
       z-index: 2;
       display: grid;
       place-items: center;
-      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 10px rgba(120, 168, 214, 0.42));
+      filter: drop-shadow(0 6px 7px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 8px rgba(90, 150, 210, 0.35));
     }
     .battle-plate .shield-badge .plate-shield {
       position: absolute;
       inset: 0;
-      /* 7角形：上の2辺を長く（両肩を下げる）→ 両脇 → 下尖り */
-      clip-path: polygon(14% 0%, 86% 0%, 100% 44%, 88% 72%, 50% 100%, 12% 72%, 0% 44%);
-      background:
-        linear-gradient(115deg, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0) 32%),
-        linear-gradient(180deg, #eef6fc 0%, #9eb4c8 34%, #5a738c 68%, #243848 100%);
-      box-shadow: inset 0 0 0 2px rgba(220, 236, 248, 0.55);
-    }
-    .battle-plate .shield-badge .plate-shield::before {
-      content: "";
-      position: absolute;
-      inset: 5px;
-      clip-path: inherit;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(20, 32, 44, 0.22) 42%, rgba(0, 0, 0, 0.28) 100%);
-      box-shadow: inset 0 0 0 1px rgba(180, 210, 230, 0.3);
-    }
-    .battle-plate .shield-badge .plate-shield::after {
-      content: none;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
     }
     .battle-plate .parry-badge {
       filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.72)) drop-shadow(0 0 12px rgba(232, 190, 70, 0.75));
     }
     .battle-plate.shielded .parry-badge { right: 52px; }
-    .battle-plate .parry-badge .plate-shield {
-      background:
-        linear-gradient(115deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0) 34%),
-        linear-gradient(180deg, #fff6d0 0%, #f0c45a 34%, #c48a22 68%, #6a4a10 100%);
-      box-shadow: inset 0 0 0 2px rgba(255, 236, 180, 0.75);
-    }
-    .battle-plate .parry-badge .plate-shield::before {
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(90, 60, 12, 0.16) 42%, rgba(0, 0, 0, 0.22) 100%);
-      box-shadow: inset 0 0 0 1px rgba(255, 220, 140, 0.35);
-    }
     .battle-plate .shield-badge b {
       position: relative;
       z-index: 1;
-      margin-top: 2px;
-      font-size: 36px;
+      margin-top: -16px;
+      font-size: 28px;
       font-weight: 900;
       line-height: 1;
       font-variant-numeric: tabular-nums;
@@ -6412,7 +6389,12 @@
     }
 
     function shieldIcon() {
-      return `<svg class="ico shield" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2l8 3v7c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V5z"/></svg>`;
+      return `<svg class="ico shield" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3.2h18c.9 0 1.6.8 1.6 1.7v6.2c0 5.6-4.4 9.4-10.6 12.1C6 20.5 1.4 16.7 1.4 11.1V4.9C1.4 4 2.1 3.2 3 3.2z"/></svg>`;
+    }
+
+    function plateShieldSvg(gold) {
+      const src = gold ? "shield-mark-gold.png?v=1" : "shield-mark-steel.png?v=1";
+      return `<img class="plate-shield" src="${src}" alt="">`;
     }
 
     function ironShield(suffix) {
@@ -8491,9 +8473,9 @@
       const low = maxHp > 0 && shownHp / maxHp <= 0.3 ? " low" : "";
       const parryN = who === "player" && typeof player !== "undefined" && player ? parryCount(player) : 0;
       const parried = parryN > 0;
-      // シールドは板の右上の青鋼の盾。パリィは同じ位置の金の盾。両方あるときはパリィをシールドのとなりへ
-      const shieldBadge = block > 0 ? `<div class="shield-badge" aria-label="シールド ${block}"><i class="plate-shield" aria-hidden="true"></i><b>${block}</b></div>` : "";
-      const parryBadge = parried ? `<div class="shield-badge parry-badge" aria-label="パリィ ${parryN}"><i class="plate-shield" aria-hidden="true"></i>${parryN > 1 ? `<b>${parryN}</b>` : ""}</div>` : "";
+      // シールドは板の右上の青鋼ヒーター盾。パリィは同じ形の金の盾。両方あるときはパリィをとなりへ
+      const shieldBadge = block > 0 ? `<div class="shield-badge" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
+      const parryBadge = parried ? `<div class="shield-badge parry-badge" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryN > 1 ? `<b>${parryN}</b>` : ""}</div>` : "";
       const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
       const badges = extra && extra.badges
@@ -8988,6 +8970,11 @@
             <div class="ref-grid">
               ${sheetFig("mana-jewel.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
               ${sheetFig("mana-jewel-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
+            </div>
+            <h3>シールド</h3>
+            <div class="ref-grid">
+              ${sheetFig("shield-mark-steel.png?v=1", "青鋼の盾", "cut-ref")}
+              ${sheetFig("shield-mark-gold.png?v=1", "金の盾（パリィ）", "cut-ref")}
             </div>
             <h3>装備</h3>
             <div class="ref-grid">
