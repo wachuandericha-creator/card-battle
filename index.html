@@ -7477,7 +7477,8 @@
       } else {
         logTurn("enemy");
         const card = intentAt(0);
-        // シールドはターンの終わりに消えない（敵も同じ。削られるまで残る）
+        // 敵のシールドは、自分の攻撃が終わったあとの敵の番の始まりで消える
+        dropShield(enemy, enemy.name);
         enemyUseCard(card);
         advanceEnemyLoop();
         if (player.hp > 0 && enemyNow().trait && !enemy.rallied && hpHalf(enemy)) {
@@ -7505,6 +7506,13 @@
       render();
       const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
+    }
+
+    function dropShield(who, name) {
+      const had = Math.max(0, Number(who && who.block) || 0);
+      if (!had) return;
+      who.block = 0;
+      log(`${name}のシールドが消えた。`);
     }
 
     function endTurn() {
@@ -7549,7 +7557,8 @@
       logTurn("player");
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
-      // シールドはターンの終わりに消えない。削られるまで残る
+      // 自分のシールドは、敵の番が終わって次の自分の番になるときに消える
+      dropShield(player, heroName());
       syncGearStats();
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
       const carried = Math.max(0, Number(player.pendingCarry) || 0);
