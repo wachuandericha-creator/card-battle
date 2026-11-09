@@ -8,7 +8,7 @@
     :root {
       --hand-scale: 0.64;
       --card-ratio: 2 / 3;
-      --edge-clear: clamp(44px, 7.5vmin, 100px);
+      --edge-clear: 0px;
       --bg: #0a0908;
       --ink: #1a1612;
       --cream: #f0e4cc;
@@ -1505,22 +1505,27 @@
     .cast-title {
       margin: 0;
       flex: 0 0 auto;
-      width: min(1100px, 100%);
+      width: 100%;
       text-align: center;
-      color: #f6d48a;
-      font-size: clamp(22px, 2.2vw, 32px);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(36px, 4.4vw, 64px);
       font-weight: 800;
-      letter-spacing: 0.06em;
-      text-shadow: 0 3px 0 #6a4a16, 0 0 18px rgba(240, 195, 106, 0.45);
+      letter-spacing: 0.16em;
+      line-height: 1.15;
+      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 34%, #e2ad4a 62%, #fff1c4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 22px rgba(255, 196, 110, 0.45));
     }
     .cast-title::after {
       content: "";
       display: block;
-      width: min(360px, 70%);
-      height: 3px;
-      margin: 6px auto 0;
-      background: linear-gradient(90deg, transparent, #f0c36a, transparent);
-      box-shadow: 0 0 12px rgba(240, 195, 106, 0.65);
+      width: min(520px, 72%);
+      height: 2px;
+      margin: 10px auto 0;
+      background: linear-gradient(90deg, transparent, #f0c36a 20%, #fff6d4 50%, #f0c36a 80%, transparent);
+      box-shadow: 0 0 16px rgba(240, 195, 106, 0.75);
     }
     .cast-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
     .cast-pick {
@@ -1875,7 +1880,7 @@
         inset 0 -10px 18px rgba(160, 30, 0, 0.4);
     }
     .cast-start[hidden] { display: none; }
-    /* もどる と 挑戦開始 は、外枠の一番下（もどるが左、挑戦開始が右） */
+    /* もどる と 挑戦開始 は、画面の一番下（もどるが左、挑戦開始が右） */
     .cast-actions {
       position: fixed;
       left: 50%;
@@ -1883,7 +1888,7 @@
       right: auto;
       bottom: 0;
       z-index: 40;
-      height: var(--edge-clear);
+      height: 76px;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -1893,9 +1898,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: calc(var(--edge-clear) - 16px);
-      min-height: 36px;
-      max-height: 64px;
+      height: 52px;
+      min-height: 52px;
+      max-height: none;
       padding: 0 28px;
       line-height: 1;
       font-size: 20px;
@@ -1903,10 +1908,10 @@
       letter-spacing: 0.12em;
     }
     .cast-actions > button.cast-start {
-      height: calc(var(--edge-clear) - 16px);
-      min-height: 36px;
-      max-height: 64px;
-      padding: 0 32px;
+      height: 52px;
+      min-height: 52px;
+      max-height: none;
+      padding: 0 36px;
       letter-spacing: 0.16em;
     }
     .cast-actions .cast-back {
@@ -3887,72 +3892,7 @@
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
     #game { height: 100%; overflow: visible; }
-    /* 戦闘以外：外枠は各画面の背景だけ。黒く塗り分けない。操作・文字・絵は置かない */
-    #game.edge-clear-screen {
-      box-sizing: border-box;
-      padding: 0;
-      background: transparent;
-    }
-    #game.edge-clear-screen > *:not(.nav-title):not(.overlay):not(.title-screen) {
-      height: 100%;
-      max-height: 100%;
-      min-height: 0;
-      box-sizing: border-box;
-      border: var(--edge-clear) solid transparent;
-    }
-    body.edge-clear .nav-title {
-      left: calc(14px + var(--edge-clear));
-      top: calc(12px + var(--edge-clear));
-    }
-    body.edge-clear .overlay {
-      inset: 0;
-      width: auto;
-      height: auto;
-      box-sizing: border-box;
-      padding: var(--edge-clear);
-    }
-    body.edge-clear .overlay.victory.finale {
-      padding: calc(12px + var(--edge-clear)) calc(18px + var(--edge-clear)) calc(18px + var(--edge-clear));
-    }
-    /* 挑戦内容は、外枠まで同じ一枚のグラデーション。ボタンは外枠の一番下 */
-    #game.edge-clear-screen:has(.challenge-pick) {
-      background:
-        radial-gradient(ellipse at 50% 12%, rgba(140, 92, 36, 0.46), transparent 46%),
-        radial-gradient(ellipse at 80% 88%, rgba(70, 32, 16, 0.35), transparent 42%),
-        linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
-    }
-    #game.edge-clear-screen .challenge-pick { background: transparent; }
-    body.edge-clear .challenge-pick .cast-actions {
-      bottom: 0;
-      height: var(--edge-clear);
-    }
-    #game.edge-clear-screen .challenge-pick {
-      padding-bottom: 12px;
-    }
-    #game.edge-clear-screen .title-screen { overflow: visible; }
-    #game.edge-clear-screen .title-vignette { inset: 0; }
-    body.edge-clear .overlay .panel.wide,
-    body.edge-clear .overlay.victory .panel.wide.reward-panel,
-    body.edge-clear .overlay .panel.wide.shop-panel {
-      width: min(1240px, calc(100% - 24px));
-      max-height: calc(100% - 24px);
-    }
-    #game.edge-clear-screen .dungeon-cover {
-      top: 4%;
-      left: 3%;
-      width: 94%;
-      height: 92%;
-    }
-    #game.edge-clear-screen .dungeon-gate-name { top: calc(8% + 1.2em); }
-    #game.edge-clear-screen .dungeon-enter { bottom: 8%; }
-    #game.edge-clear-screen .challenge-pick,
-    #game.edge-clear-screen .cast-screen,
-    #game.edge-clear-screen .menu,
-    #game.edge-clear-screen .end-screen,
-    #game.edge-clear-screen .title-screen,
-    #game.edge-clear-screen .album-screen {
-      box-sizing: border-box;
-    }
+    /* 画面は端まで使う。余白の外枠は無い */
     .end-screen {
       height: 100%;
       min-height: 0;
@@ -4482,10 +4422,16 @@
     }
     .menu h1 {
       margin: 0;
-      color: #f6d48a;
-      font-size: 40px;
-      letter-spacing: 0.16em;
-      text-shadow: 0 3px 0 #6a4a16, 0 0 16px rgba(240, 195, 106, 0.4);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      line-height: 1.2;
+      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 40%, #e2ad4a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.4));
     }
     .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
     .pass-box { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(440px, 100%); }
@@ -4519,10 +4465,18 @@
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.bless h1 {
-      font-size: 36px;
+      font-size: clamp(42px, 5vw, 72px);
       letter-spacing: 0.22em;
-      color: #ffe7a8;
-      text-shadow: 0 0 18px rgba(240, 195, 106, 0.55), 0 3px 0 #6a4a16;
+      filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
+    }
+    .menu.bless h1::after {
+      content: "";
+      display: block;
+      width: min(420px, 70%);
+      height: 2px;
+      margin: 10px auto 0;
+      background: linear-gradient(90deg, transparent, #fff6d4, transparent);
+      box-shadow: 0 0 16px rgba(255, 214, 120, 0.8);
     }
     .gift-row { display: flex; gap: 22px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
     .menu .gift-btn {
@@ -4599,16 +4553,21 @@
     }
     .dungeon-gate-name {
       position: absolute;
-      top: calc(8vh + 1.2em);
+      top: 7vh;
       left: 0;
       right: 0;
       z-index: 2;
       margin: 0;
       text-align: center;
-      color: #f6d48a;
-      font-size: clamp(36px, 5vw, 64px);
-      letter-spacing: 0.14em;
-      text-shadow: 0 3px 0 #1a120c, 0 0 18px rgba(0, 0, 0, 0.85);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(48px, 6vw, 84px);
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 42%, #e2ad4a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 4px 0 #1a120c) drop-shadow(0 0 22px rgba(0, 0, 0, 0.85));
     }
     .dungeon-enter {
       position: absolute;
@@ -4775,8 +4734,8 @@
     }
     .challenge-pick .cast-title {
       width: 100%;
-      font-size: clamp(22px, 2.6vw, 34px);
-      letter-spacing: 0.12em;
+      font-size: clamp(34px, 4.2vw, 62px);
+      letter-spacing: 0.14em;
     }
     .challenge-split {
       flex: 1 1 auto;
@@ -5521,7 +5480,6 @@
     let battleIndex = 0;
     let showLog = true;
     let autoEndTurn = true;
-    let edgeClear = true;
     let cleared = false;
     let runEnded = null;
     let loginWord = "";
@@ -7830,23 +7788,20 @@
         const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
         if (typeof saved.showLog === "boolean") showLog = saved.showLog;
         if (typeof saved.autoEndTurn === "boolean") autoEndTurn = saved.autoEndTurn;
-        if (typeof saved.edgeClear === "boolean") edgeClear = saved.edgeClear;
       } catch (error) {
         showLog = true;
         autoEndTurn = true;
-        edgeClear = true;
       }
       paintEdgeClear();
     }
 
     function persistSettings() {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog, autoEndTurn, edgeClear }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ showLog, autoEndTurn }));
     }
 
     function paintEdgeClear() {
-      document.body.classList.toggle("edge-clear", !!edgeClear);
-      const battleNow = screen === "battle";
-      root.classList.toggle("edge-clear-screen", !!edgeClear && !battleNow);
+      document.body.classList.remove("edge-clear");
+      root.classList.remove("edge-clear-screen");
     }
 
     function readSave() {
@@ -8672,7 +8627,6 @@
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
-          ${menuButton(edgeClear ? "画面の端をあける：オン" : "画面の端をあける：オフ", "toggle-edge-clear", true)}
           ${handBtn}
           ${menuButton("もどる", "back")}
         </div>`;
@@ -10965,7 +10919,6 @@
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
-        if (name === "toggle-edge-clear") { edgeClear = !edgeClear; persistSettings(); paintEdgeClear(); render(); }
         if (name === "fill-hand-look") { fillHandForLook(); return; }
         if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
         if (name === "close-art-zoom") {
