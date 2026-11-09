@@ -77,21 +77,62 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr);
-      border-radius: 16px;
+      border: 14px solid transparent;
+      border-radius: 18px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
-      background:
+      background-image:
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
-        var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
+        var(--dungeon-art, url("dungeon-bg.jpg")),
+        linear-gradient(160deg, #fff8dc 0%, #f3d78a 16%, #fff1c4 34%, #a56b28 48%, #fff6d2 58%, #c9963e 74%, #6b4518 88%, #f8e7b0 100%);
+      background-size: auto, cover, auto;
+      background-position: 0 0, center 38%, 0 0;
+      background-repeat: no-repeat;
+      background-origin: border-box;
+      background-clip: padding-box, padding-box, border-box;
       box-shadow:
-        0 0 0 1px rgba(18, 12, 9, 0.95),
-        0 0 0 3px rgba(228, 177, 90, 0.62),
-        0 0 0 6px rgba(18, 12, 9, 0.88),
-        0 0 0 7px rgba(176, 132, 58, 0.28),
-        0 18px 36px rgba(0, 0, 0, 0.5),
-        inset 0 0 0 1px rgba(255, 236, 200, 0.12),
-        inset 0 0 90px rgba(0, 0, 0, 0.28);
+        0 0 0 2px #140f0b,
+        0 0 0 4px #f6e7b4,
+        0 18px 36px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 2px rgba(255, 236, 190, 0.72),
+        inset 0 0 0 7px rgba(16, 10, 6, 0.88),
+        inset 0 0 0 9px rgba(212, 168, 74, 0.9),
+        inset 0 0 80px rgba(0, 0, 0, 0.28);
       isolation: isolate;
+    }
+    .battle-bands::before {
+      content: "";
+      position: absolute;
+      z-index: 9;
+      left: 50%;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+      transform: translateX(-50%) rotate(45deg);
+      background: linear-gradient(135deg, #fff8dc, #e8c56a 55%, #8a5a22);
+      box-shadow: 0 0 0 2px #3a2410, 0 0 10px rgba(255, 220, 140, 0.85);
+    }
+    .battle-bands::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        linear-gradient(#fff1c4, #c4923c) left 8px top 8px / 46px 3px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) left 8px top 8px / 3px 46px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) right 8px top 8px / 46px 3px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) right 8px top 8px / 3px 46px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) left 8px bottom 8px / 46px 3px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) left 8px bottom 8px / 3px 46px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) right 8px bottom 8px / 46px 3px no-repeat,
+        linear-gradient(#fff1c4, #c4923c) right 8px bottom 8px / 3px 46px no-repeat,
+        radial-gradient(circle at 11px 11px, #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
+        radial-gradient(circle at calc(100% - 11px) 11px, #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
+        radial-gradient(circle at 11px calc(100% - 11px), #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px),
+        radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #fff8dc 0 3px, #e8c56a 4px, #6a4418 6px, transparent 8px);
     }
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
