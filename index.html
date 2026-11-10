@@ -44,8 +44,8 @@
       height: 100%;
       display: grid;
       grid-template-columns: auto minmax(0, 1fr) minmax(0, 12.5%);
-      /* 手札を大きく、戦闘（arena）は少しだけ小さく。合計 3.7fr は維持 */
-      grid-template-rows: auto minmax(0, 2.3fr) minmax(0, 1.4fr);
+      /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
+      grid-template-rows: auto minmax(0, 1.7fr) minmax(0, 2fr);
       grid-template-areas:
         "gear hud log"
         "gear arena log"
@@ -486,23 +486,18 @@
       pointer-events: none;
     }
     .battle-plate .meter.hp .hp-now span {
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: 30px;
-      font-weight: 700;
+      font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
+      font-size: 20px;
+      font-weight: 800;
       line-height: 1;
-      letter-spacing: 0;
+      letter-spacing: 0.02em;
       white-space: nowrap;
-      color: #fff8ee;
+      color: #fffaf4;
       font-variant-numeric: tabular-nums;
-      text-shadow:
-        0 1px 0 #140806,
-        0 -1px 0 #140806,
-        1px 0 0 #140806,
-        -1px 0 0 #140806,
-        1px 1px 0 #140806,
-        -1px 1px 0 #140806,
-        1px -1px 0 #140806,
-        -1px -1px 0 #140806;
+      background: rgba(8, 4, 3, 0.82);
+      padding: 2px 8px 3px;
+      border-radius: 6px;
+      text-shadow: none;
     }
     .battle-plate.low .meter.hp .hp-now span { color: #ffe8e0; }
     .battle-plate .meter.hp > span {
@@ -2460,11 +2455,11 @@
     }
     .deck-stack .pile { height: 100%; }
     .handbar .pile-card {
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       width: auto;
-      max-width: 100%;
-      height: auto;
-      max-height: calc(100% - 34px);
+      max-width: none;
+      height: var(--pile-card-h, 80%);
+      max-height: none;
       min-height: 0;
     }
     .hand { position: relative; }
@@ -2536,12 +2531,12 @@
       align-items: flex-end;
       gap: 8px;
       height: 100%;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       min-width: 0;
-      max-width: 46%;
-      overflow: hidden;
+      max-width: none;
+      overflow: visible;
     }
-    .pile { width: auto; height: 100%; flex: 1 1 0; min-width: 0; max-width: 128px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+    .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
     .handbar .end {
       align-self: flex-end;
       height: 72%;
@@ -3108,8 +3103,8 @@
       transition: transform 0.15s ease;
     }
     .hand .card {
-      height: var(--hand-card-h, 88%);
-      max-height: 88%;
+      height: var(--hand-card-h, 100%);
+      max-height: 100%;
       width: auto;
       max-width: none;
       margin-inline: calc(var(--overlap, 33px) * -0.5);
@@ -5300,6 +5295,7 @@
       gap: 10px;
     }
     .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
+    .floor-call b { font-size: min(12vw, 120px); letter-spacing: 0.08em; color: #f0c36a; }
     .encounter-stars {
       font-size: min(6vw, 48px);
       font-weight: 800;
@@ -5784,6 +5780,7 @@
     const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
     let phase = "player";
     let encounter = false;
+    let floorCall = false;
     let intentShown = true;
     let intentArrive = false;
     let note = "";
@@ -5859,7 +5856,7 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=7",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=24",
+        battle: "girl-battle.png?v=25",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=9",
         victory: "girl-victory.png?v=10",
@@ -8347,7 +8344,8 @@
       turn = 0;
       startEnemyLoop(true);
       phase = "intro";
-      encounter = true;
+      floorCall = true;
+      encounter = false;
       intentShown = false;
       intentArrive = false;
       note = "";
@@ -8358,7 +8356,16 @@
       saveNote = "";
       buildDeck();
       render();
-      timer = setTimeout(beginEncounter, 1700);
+      timer = setTimeout(showEncounter, 1400);
+    }
+
+    function showEncounter() {
+      timer = null;
+      if (phase !== "intro" || outcome) return;
+      floorCall = false;
+      encounter = true;
+      render();
+      timer = setTimeout(beginEncounter, 1600);
     }
 
     function foeRankName() {
@@ -8778,10 +8785,11 @@
         render();
         timer = setTimeout(startPlayerTurn, 650);
       } else if (screen === "battle" && phase === "intro" && !outcome) {
-        encounter = true;
+        floorCall = true;
+        encounter = false;
         intentShown = false;
         render();
-        timer = setTimeout(beginEncounter, 1700);
+        timer = setTimeout(showEncounter, 1400);
       } else {
         render();
       }
@@ -9233,7 +9241,7 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=24", "戦闘（いま）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=25", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
@@ -9841,7 +9849,8 @@
 
     function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow) {
       const calls = [];
-      if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars">${esc(foeStarText())}</span></div>`);
+      if (floorCall) calls.push(`<div class="turn-call floor-call" aria-hidden="true"><b>${floorNo()}Ｆ</b></div>`);
+      else if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars">${esc(foeStarText())}</span></div>`);
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
@@ -10994,8 +11003,16 @@
       const base = 44 * 0.74;
       handEl.style.setProperty("--hand-card-h", "100%");
       handEl.style.removeProperty("--hand-hang");
+      const syncPiles = () => {
+        const bar = handEl.parentElement;
+        if (!bar) return;
+        const sample = cards[0];
+        const px = sample ? sample.offsetHeight : handEl.clientHeight;
+        if (px > 0) bar.style.setProperty("--pile-card-h", `${Math.round(px * 0.8)}px`);
+      };
       if (cards.length < 2) {
         handEl.style.setProperty("--overlap", `${base}px`);
+        syncPiles();
         return;
       }
       const n = cards.length;
@@ -11008,14 +11025,14 @@
       let cw = first.offsetWidth || Math.round(fullH * ratio);
       const fitW = avail - (n - 1) * minStep;
       if (fitW < cw) {
-        // 以前の 60% まで潰すのはやめて、だいたい元の大きさのまま重ねる
-        const h = Math.max(fullH * 0.9, fitW / ratio);
+        const h = Math.max(fullH, fitW / ratio);
         handEl.style.setProperty("--hand-card-h", `${Math.round(h)}px`);
         cw = Math.round(h * ratio);
       }
       const need = (n * cw - avail) / (n - 1);
       const overlap = Math.min(Math.max(base, need), cw - minStep);
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
+      syncPiles();
     }
     function phoneLayout() {
       return Math.min(window.innerWidth, window.innerHeight) <= 500;
