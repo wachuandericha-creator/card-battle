@@ -5049,13 +5049,17 @@
       z-index: 3;
       background: #050403;
       opacity: 0;
-      animation: depart-fade 2.6s ease forwards;
+      animation: depart-cover 2.6s ease forwards;
     }
     .depart.depart-fast .depart-art,
     .depart.depart-fast .depart-name,
     .depart.depart-fast::after { animation-duration: 0.7s; }
     .depart.depart-out { animation: depart-fade 0.8s ease forwards; }
     @keyframes depart-fade { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes depart-cover {
+      0%, 64% { opacity: 0; }
+      100% { opacity: 1; }
+    }
     .screen-flash {
       position: fixed;
       inset: 0;
@@ -5084,10 +5088,6 @@
       0%, 18% { opacity: 0; }
       36%, 68% { opacity: 1; }
       100% { opacity: 0; }
-    }
-    @keyframes depart-fade {
-      0%, 64% { opacity: 0; }
-      100% { opacity: 1; }
     }
     /* 祝福の画面の前。黄金の紙吹雪で一瞬画面を隠し、そこから祝福が見える */
     .bless-arrive {
@@ -9130,8 +9130,8 @@
       if (!pick) return;
       const got = takeGift(pick);
       if (!got) return;
-      floorNote = "女神の手が離れ、選んだ恵みだけが残った。光は静かに薄れていく。";
-      floorPrompt = got;
+      floorNote = got || "";
+      floorPrompt = "";
       blessPicks = [];
       floorPhase = "show";
       const token = ++blessAuto;
@@ -9212,8 +9212,8 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "洞窟の入口に、光が柱となって降りた。長い金の髪の女神が、ひざまずくあなたの前に立つ。光輪と翼がゆっくり揺れ、白と金の衣が床の湿りを払う。女神は三つの恵みを両手に載せた。この先の戦いに持っていけるのは、そのうちひとつだけだ。残りは、光とともに消える。";
-        floorPrompt = "報酬をひとつ選べ。";
+        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
+        floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
         floorHp = 30;
