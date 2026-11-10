@@ -4646,11 +4646,16 @@
     }
     .menu.event .event-prompt {
       margin-top: 8px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(228, 177, 90, 0.45);
+      padding: 8px 14px;
+      border-top: 0;
+      border-radius: 10px;
+      width: fit-content;
       font-size: clamp(16px, 1.3vw, 20px);
-      letter-spacing: 0.16em;
-      color: #ffe7a4;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #2a1408;
+      background: linear-gradient(180deg, #ffe7a8, #e4b15a);
+      text-shadow: none;
     }
     .menu.event .event-choice > p,
     .menu.event .event-choice > h2 {
@@ -4663,6 +4668,17 @@
       letter-spacing: 0.08em;
       color: #fff8e8;
       text-shadow: 0 2px 0 #1a120c;
+    }
+    .menu.event .event-choice > p.event-prompt {
+      width: fit-content;
+      margin-top: 8px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      color: #2a1408;
+      background: linear-gradient(180deg, #ffe7a8, #e4b15a);
+      text-shadow: none;
     }
     .menu.event .gift-row,
     .menu.event .shop-row { width: 100%; justify-content: space-between; }
@@ -5911,7 +5927,7 @@
       チャージアタック: { cost: 2, text: "7ダメージ", damage: 7 },
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
       集中: { cost: 0, text: "次の攻撃か防御の数値+2", focus: 2 },
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "パリィは次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。パリィがあるあいだは、シールドを得られない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。" },
     };
     const WARRIOR = {
       捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
@@ -6038,7 +6054,7 @@
     let enemyLoop = [];
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "パリィは次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。パリィがあるあいだは、シールドを得られない。奥義「パリィが重複する」のときは重なる。";
+    const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
     const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
     let phase = "player";
@@ -6120,10 +6136,10 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=8",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=26",
+        battle: "girl-battle.png?v=27",
         battleRatio: "3 / 4",
-        defeat: "girl-defeat.png?v=9",
-        victory: "girl-victory.png?v=10",
+        defeat: "girl-defeat.png?v=10",
+        victory: "girl-victory.png?v=11",
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
@@ -8219,6 +8235,10 @@
       logTurn("player");
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
+      if (parryCount(player) > 0) {
+        player.parry = 0;
+        log(`${heroName()}のパリィが、ターンの終わりに消失した。`);
+      }
       // 自分のシールドは、敵の番が終わって次の自分の番になるときに消える
       dropShield(player);
       syncGearStats();
@@ -9401,7 +9421,7 @@
         <aside class="cast-keys" aria-label="キーワード">
           <h2>キーワード</h2>
           <h3>パリィ</h3>
-          <p>次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。金の盾で、シールドと同じ位置に出す。シールドがあるときはとなり。パリィがあるあいだは、シールドを得られない。</p>
+          <p>次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。</p>
         </aside>`;
     }
 
@@ -9411,7 +9431,7 @@
     }
 
     function paintChallengeStart() {
-      const start = root.querySelector(".cast-start");
+      const start = root.querySelector('[data-action="dungeon-enter"]');
       if (!start) return;
       start.hidden = false;
       start.disabled = !challengeReady();
@@ -9582,7 +9602,7 @@
           <div class="cast-roster many">${tokens}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="title">もどる</button>
-            <button type="button" class="cast-start" data-action="open-dungeon">ダンジョンへ</button>
+            <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
           </div>
         </div>`;
       paintCast();
@@ -9732,14 +9752,14 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=26", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=27", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("girl-defeat.png?v=9", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.png?v=10", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=11", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -11751,7 +11771,7 @@
           screen = "character";
           render();
         }
-        if (name === "open-dungeon") { screen = "dungeon"; render(); }
+        if (name === "open-dungeon") { castLock = shownCastName(); screen = "dungeon"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
           castHover = "";
