@@ -6226,7 +6226,7 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=11",
+        chibi: "job-girl.png?v=12",
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=31",
         battleRatio: "3 / 4",
@@ -6606,7 +6606,7 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=11", label: "ジョブ" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=12", label: "ジョブ" };
       if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -6689,16 +6689,16 @@
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=4" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.jpg?v=4" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=3" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-chain-attack.jpg?v=4" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-chain-guard.jpg?v=4" },
-      { id: "power-bracelet", name: "力の腕輪", slot: "braceletR", stars: 2, atk: 3, effect: "★★　右手。ATK+3", image: "gear-power-bracelet.jpg?v=3" },
-      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.jpg?v=4" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=4" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-chain-attack.jpg?v=5" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-chain-guard.jpg?v=5" },
+      { id: "power-bracelet", name: "力の腕輪", slot: "braceletR", stars: 2, atk: 3, effect: "★★　右手。ATK+3", image: "gear-power-bracelet.jpg?v=4" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.jpg?v=5" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=5" },
     ];
     // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「ボス」。
     const BOSS_GEAR = [
       { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　左右どちらかの腕輪枠に付けられる。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg", halfMana: 1 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　左右どちらかの腕輪枠に付けられる。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=2", halfMana: 1 },
     ];
 
     function gearRarityText(item) {
@@ -9879,7 +9879,7 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=11", "女の戦士の選択コマ（かわいい）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=12", "女の戦士の選択コマ（かわいい）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
@@ -9905,11 +9905,12 @@
               ${sheetFig("gear-battle-counter.jpg?v=4", "バトルカウンター")}
               ${sheetFig("gear-eagle-shield.jpg?v=4", "大天使の盾")}
               ${sheetFig("gear-lion-shield.jpg?v=3", "獅子の盾")}
-              ${sheetFig("gear-chain-attack.jpg?v=4", "連撃の腕輪")}
-              ${sheetFig("gear-chain-guard.jpg?v=4", "連守の腕輪")}
-              ${sheetFig("gear-power-bracelet.jpg?v=3", "力の腕輪")}
-              ${sheetFig("gear-guard-bracelet.jpg?v=4", "守りの腕輪")}
-              ${sheetFig("gear-reuse-bracelet.jpg?v=4", "再利用の腕輪")}
+              ${sheetFig("gear-chain-attack.jpg?v=5", "連撃の腕輪")}
+              ${sheetFig("gear-chain-guard.jpg?v=5", "連守の腕輪")}
+              ${sheetFig("gear-power-bracelet.jpg?v=4", "力の腕輪")}
+              ${sheetFig("gear-guard-bracelet.jpg?v=5", "守りの腕輪")}
+              ${sheetFig("gear-reuse-bracelet.jpg?v=5", "再利用の腕輪")}
+              ${sheetFig("gear-bracelet.jpg?v=2", "ミノタウロスの腕輪")}
               ${sheetFig("gear-medal.jpg", "メダル")}
             </div>
             <h4>使い捨てアイテム</h4>
@@ -9939,12 +9940,12 @@
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-search.jpg?v=3", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=4", "探索", "land-ref", "span-2")}
               ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
-              ${sheetFig("shop-merchant.jpg?v=4", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=3", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=3", "ジョブ", "land-ref", "span-2")}
+              ${sheetFig("shop-merchant.jpg?v=5", "お店", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=4", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-job.jpg?v=4", "ジョブ", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -10121,11 +10122,11 @@
         : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=1", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
-        "お店": ["shop-merchant.jpg?v=4", "怒って、値段を負けてもらおうとしている女の戦士"],
-        "探索": ["event-search.jpg?v=3", "宝箱の鍵を開けている女の戦士"],
-        "キャンプ": ["event-rest.jpg?v=3", "横になって寝ている女の戦士。奥のミノタウロスは気づかず通り過ぎる"],
+        "お店": ["shop-merchant.jpg?v=5", "ジト目で、値段を負けてもらおうとしている女の戦士"],
+        "探索": ["event-search.jpg?v=4", "宝箱を開けようとして、光が漏れている女の戦士"],
+        "キャンプ": ["event-rest.jpg?v=4", "左太ももにベルト。よだれを垂らしてかわいく寝ている。奥のミノタウロスは気づかず通り過ぎる"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す女の戦士"],
-        "ジョブ": ["event-job.jpg?v=3", "ギルドの中へ入っていく女の戦士"],
+        "ジョブ": ["event-job.jpg?v=4", "聖なる力でジョブを変えている女の戦士"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
