@@ -4497,14 +4497,35 @@
       color: #ffe8dc;
     }
     /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
-    .bless-art {
-      height: min(40vh, 500px);
-      width: auto;
-      max-width: 84vw;
+    .menu.event {
+      width: min(1440px, calc(100vw - 32px));
+      height: calc(100vh - 32px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      align-items: center;
+      gap: 28px;
+      overflow: hidden;
+    }
+    .menu.event .event-picture {
+      width: 100%;
+      height: min(82vh, 860px);
       object-fit: contain;
       border-radius: 18px;
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
+    }
+    .menu.event .event-choice {
+      min-width: 0;
+      max-height: 100%;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .menu.event { grid-template-columns: 1fr; height: auto; overflow: auto; }
+      .menu.event .event-picture { height: 42vh; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.bless h1 {
@@ -8626,36 +8647,7 @@
       if (kind === "祝福") playBlessArrive();
     }
 
-    function playBlessArrive() {
-      const old = document.querySelector(".bless-arrive");
-      if (old) old.remove();
-      if (blessTimer) clearTimeout(blessTimer);
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const veil = document.createElement("div");
-      veil.className = reduce ? "bless-arrive bless-arrive-fast" : "bless-arrive";
-      veil.setAttribute("role", "status");
-      veil.setAttribute("aria-label", "天使が現れた");
-      const src = (heroItem() && heroItem().bless) || "blessing-goddess-f.jpg?v=1";
-      const colors = ["#fffef6", "#ffe9a0", "#f0c14a", "#d4922a", "#fff4c8"];
-      const confetti = Array.from({ length: 140 }, () => {
-        const left = (Math.random() * 100).toFixed(1);
-        const delay = (Math.random() * 0.22).toFixed(2);
-        const time = (1.8 + Math.random() * 1).toFixed(2);
-        const w = (8 + Math.random() * 18).toFixed(0);
-        const h = (6 + Math.random() * 14).toFixed(0);
-        const rot = (Math.random() * 360).toFixed(0);
-        const drift = (-90 + Math.random() * 180).toFixed(0);
-        const y = (-18 + Math.random() * 88).toFixed(0);
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        return `<i class="bless-confetti" style="--l:${left}%;--d:${delay}s;--t:${time}s;--w:${w}px;--h:${h}px;--r:${rot}deg;--x:${drift}px;--y:${y}vh;--c:${color}"></i>`;
-      }).join("");
-      veil.innerHTML = `<img class="bless-arrive-art" src="${esc(src)}" alt=""><div class="bless-arrive-sheet" aria-hidden="true"></div>${confetti}`;
-      document.body.appendChild(veil);
-      blessTimer = setTimeout(() => {
-        blessTimer = null;
-        if (veil.parentNode) veil.remove();
-      }, reduce ? 700 : 2800);
-    }
+    function playBlessArrive() {}
 
     function dropBeggar(index) {
       if (floorKind !== "物乞いに遭遇" || beggarCut) return;
@@ -9498,49 +9490,30 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div>`
         : "";
       const art = floorKind === "挑戦者に祝福を"
-        ? `<img class="bless-art" src="${esc(heroItem().bless || "blessing-goddess-f.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
+        ? `<img class="event-picture" src="${esc(heroItem().bless || "blessing-goddess-f.jpg?v=1")}" alt="荘厳な女神が、ひざまずく${esc(heroName())}に祝福を授けている">`
+        : floorKind === "お店"
+        ? `<img class="event-picture" src="shop-merchant.jpg?v=2" alt="女の戦士と、おしゃれな骸骨の商い">`
         : "";
       const blessLive = floorPhase === "bless" ? takeRare("bless") : false;
       const giftLive = floorPhase === "show" ? takeRare("gift") : false;
-      const blessDelay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.55 : 2.8;
       const blessLevels = [];
       const blessButtons = floorPhase === "bless"
         ? blessPicks.map((pick, i) => {
           const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
           if (lv) blessLevels.push(lv);
-          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i, blessDelay)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
-      if (floorKind === "お店" && floorPhase === "show") {
-        const shopLive = takeRare("shop");
-        root.innerHTML = `
-          <div class="menu shop-floor">
-            <p>${esc(dungeonName)}　${floorLabel()}</p>
-            <div class="shop-panel">${shopMarkup(shopStock, "お店", shopLive)}</div>
-            <p>${esc(floorNote)}</p>
-            ${next}
-          </div>`;
-        return;
-      }
+      const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "お店", takeRare("shop")) : "";
       const where = floorKind === "挑戦者に祝福を" ? "" : `<p>${esc(dungeonName)}　${floorLabel()}</p>`;
-      root.innerHTML = `
-        <div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">
-          ${rareFlash}
-          <h1>${esc(floorKind)}</h1>
-          ${where}
-          ${art}
-          ${gift}
-          <p>${esc(floorNote)}</p>
-          ${bless}
-          ${beggar}
-          ${jobs}
-          ${ultimates}
-          ${next}
-        </div>`;
+      const choice = `${rareFlash}<h1>${esc(floorKind)}</h1>${where}${shop}${gift}<p>${esc(floorNote)}</p>${bless}${beggar}${jobs}${ultimates}${next}`;
+      root.innerHTML = art
+        ? `<div class="menu event${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${art}<div class="event-choice">${choice}</div></div>`
+        : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${choice}</div>`;
     }
 
     function renderClear() {
@@ -10505,7 +10478,7 @@
         }
         return "";
       }).join("");
-      return `${hot ? rareScreen(levels) : ""}<img class="shop-art" src="shop-merchant.jpg?v=2" alt="女の戦士と、おしゃれな骸骨の商い"><h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row${rareJack(levels)}">${slots}</div>`;
+      return `${hot ? rareScreen(levels) : ""}<h2>${esc(heading || "お店")}</h2><p>所持 ★${have}</p><p>品は6つ。カード2つ、装備2つ、ショップ限定の武器2つ。値段はレアリティと同じ（★の数）。</p><div class="shop-row${rareJack(levels)}">${slots}</div>`;
     }
 
     function flyRewardCardToDeck(made) {
@@ -10694,10 +10667,9 @@
       return level === "boss" ? " rare-show rare-boss" : ` rare-show rare-${level}`;
     }
 
-    function rareStyle(level, index, extra) {
+    function rareStyle(level) {
       if (!level) return "";
-      const t = ((extra || 0) + index * 0.28).toFixed(2);
-      return ` style="--d:${t}s"`;
+      return "";
     }
 
     function rareFx() {
