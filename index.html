@@ -9828,16 +9828,14 @@
               ${sheetFig("path-unknown.jpg?v=5", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
-            <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。お店は女の戦士とおしゃれな骸骨</p>
+            <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-search.jpg?v=1", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=2", "探索", "land-ref", "span-2")}
               ${sheetFig("event-fight.jpg?v=1", "連戦", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
-              ${sheetFig("shop-merchant.jpg?v=2", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=1", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-lost.jpg?v=1", "迷子", "land-ref", "span-2")}
-              ${sheetFig("event-unknown.jpg?v=1", "遭遇", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=1", "ジョブ", "land-ref", "span-2")}
+              ${sheetFig("shop-merchant.jpg?v=3", "お店", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=2", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-job.jpg?v=2", "ジョブ", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -10014,12 +10012,11 @@
         : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=1", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
-        "お店": ["shop-merchant.jpg?v=2", "女の戦士と、おしゃれな骸骨の商い"],
-        "探索": ["event-search.jpg?v=1", "宝箱を照らす女の戦士"],
-        "キャンプ": ["event-rest.jpg?v=1", "焚き火で休む女の戦士"],
+        "お店": ["shop-merchant.jpg?v=3", "たじたじの骸骨を、女の戦士がねぎらっている"],
+        "探索": ["event-search.jpg?v=2", "宝箱を開けようとして、よだれが出ている女の戦士"],
+        "キャンプ": ["event-rest.jpg?v=2", "寝てしまった女の戦士。奥のモンスターは気づかず通り過ぎる"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す女の戦士"],
-        "ジョブ": ["event-job.jpg?v=1", "紋章の前に立つ女の戦士"],
-        "未知": ["event-unknown.jpg?v=1", "見知らぬ人と出会う女の戦士"],
+        "ジョブ": ["event-job.jpg?v=2", "ジョブ修行所に入る女の戦士。やる気に満ちている"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
