@@ -245,18 +245,18 @@
     }
     .dungeon-name {
       margin: 0;
-      font-size: 40px;
+      font-size: 56px;
       font-weight: 800;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
       color: var(--cream);
     }
     .dungeon-progress {
       color: var(--gold);
-      font-size: 52px;
+      font-size: 34px;
       font-weight: 900;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       white-space: nowrap;
-      text-shadow: 0 3px 0 #1a120c;
+      text-shadow: 0 2px 0 #1a120c;
     }
     .status-row {
       display: flex;
@@ -268,7 +268,7 @@
     .status-stars {
       justify-self: center;
       color: var(--gold);
-      font-size: 36px;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-align: center;
@@ -277,9 +277,18 @@
     }
     .hud-actions {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       justify-self: end;
+      min-width: 0;
+    }
+    .hud-actions .small-btn {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
     h1 {
       margin: 0;
@@ -3802,6 +3811,9 @@
       flex-direction: column;
       align-items: center;
     }
+    .leave-ask .panel { gap: 8px; min-width: min(420px, calc(100vw - 32px)); }
+    .leave-ask .leave-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .leave-ask .leave-actions button { margin: 0; }
     .overlay h2 { margin: 0 0 8px; font-size: 28px; color: var(--cream); letter-spacing: 0.06em; }
     .overlay p { margin: 0 0 16px; color: var(--muted); }
     .overlay.victory {
@@ -4194,8 +4206,9 @@
     .title-screen {
       position: relative;
       height: 100%;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) min(380px, 32vw);
+      grid-template-rows: auto minmax(0, 1fr) auto;
       overflow: hidden;
       background:
         radial-gradient(ellipse 70% 55% at 50% 38%, #2a1c14 0%, transparent 70%),
@@ -4266,17 +4279,19 @@
     }
     /* ロゴは上中央、操作は画面中央下（端すぎると押しにくい） */
     .title-hero {
-      position: absolute;
+      position: relative;
       z-index: 3;
-      top: clamp(20px, 4.5vh, 48px);
-      left: 50%;
+      grid-column: 1;
+      grid-row: 1;
+      top: auto;
+      left: auto;
       right: auto;
-      transform: translateX(-50%);
+      transform: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      padding: 0;
+      padding: 28px 24px 0;
       pointer-events: none;
     }
     .title-kicker {
@@ -4336,19 +4351,22 @@
     .title-rule i { flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(240, 195, 106, 0.95)); box-shadow: 0 0 8px rgba(240, 195, 106, 0.6); }
     .title-rule i:last-child { background: linear-gradient(90deg, rgba(240, 195, 106, 0.95), transparent); }
     .title-actions {
-      position: absolute;
+      position: relative;
       z-index: 4;
-      left: 50%;
+      grid-column: 1;
+      grid-row: 3;
+      left: auto;
       right: auto;
-      bottom: clamp(56px, 11vh, 108px);
-      transform: translateX(-50%);
+      bottom: auto;
+      transform: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
       gap: 14px;
+      margin: 0 auto 28px;
       padding: 12px 16px;
-      width: min(420px, calc(100% - 64px));
+      width: min(420px, calc(100% - 48px));
       pointer-events: auto;
     }
     .title-actions > button.primary {
@@ -4396,14 +4414,18 @@
     .title-sub-actions button.logged-in::before { content: "● "; color: #9bff94; }
     .title-sub-actions button.logged-in:hover:not(:disabled) { border-color: #c6ffc0; background: linear-gradient(180deg, rgba(48, 110, 52, 0.92), rgba(22, 62, 28, 0.92)); }
     .title-board {
-      position: absolute;
+      position: relative;
       z-index: 5;
-      top: 4vh;
+      grid-column: 2;
+      grid-row: 1 / -1;
+      top: auto;
+      right: auto;
       bottom: auto;
-      right: max(24px, 3vw);
-      width: min(400px, 36vw);
+      align-self: start;
+      width: auto;
       height: auto;
-      max-height: calc(100vh - 8vh);
+      max-height: calc(100% - 24px);
+      margin: 12px 12px 12px 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -4597,13 +4619,16 @@
     }
     .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
+      .title-screen { grid-template-columns: 1fr; }
       .title-board {
+        grid-column: 1;
+        grid-row: 2;
         top: auto;
-        right: 16px;
-        bottom: 16px;
-        height: auto;
-        width: min(300px, 48vw);
-        max-height: 44vh;
+        right: auto;
+        bottom: auto;
+        width: auto;
+        max-height: none;
+        margin: 8px 12px;
         padding: 14px;
         gap: 10px;
       }
@@ -5840,7 +5865,8 @@
     html.phone .hud-actions { grid-area: actions; width: 100%; flex-wrap: nowrap; gap: 4px; }
     html.phone .small-btn { font-size: 12px; padding: 5px 8px; }
     html.phone .dungeon { gap: 8px; }
-    html.phone .dungeon-name { font-size: 22px; letter-spacing: 0.08em; }
+    html.phone .dungeon-name { font-size: 28px; letter-spacing: 0.06em; }
+    html.phone .dungeon-progress { font-size: 20px; }
     html.phone .dungeon-progress { font-size: 28px; }
     html.phone .status-stars { font-size: 18px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
@@ -6206,7 +6232,7 @@
         battle: "girl-battle.png?v=31",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
-        victory: "girl-victory.png?v=13",
+        victory: "girl-victory.png?v=14",
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
@@ -9843,12 +9869,10 @@
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-battle.png?v=31", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
-              ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
-              ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.png?v=13", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=14", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10253,13 +10277,11 @@
     }
 
     const CARD_STYLE = [
-      ["style-star1", "★ 銅", "frame-star1.png?v=9"],
-      ["style-star2", "★★ 銀", "frame-star2.png?v=9"],
-      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=9"],
-      ["style-red", "差し色 赤", "frame-metal-red.png?v=3"],
-      ["style-blue", "差し色 青", "frame-metal-blue.png?v=3"],
       ["style-green", "差し色 緑", "frame-metal-green.png?v=2"],
-      ["style-yellow", "差し色 黄", "frame-metal-yellow.png?v=3"],
+      ["style-red", "差し色 赤", "frame-metal-red.png?v=4"],
+      ["style-yellow", "差し色 金", "frame-metal-yellow.png?v=4"],
+      ["style-blue", "差し色 青", "frame-metal-blue.png?v=4"],
+      ["style-navy", "差し色 紺", "frame-metal-navy.png?v=1"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
@@ -11468,11 +11490,13 @@
       }).join("");
       const overlay = rewardOverlay();
       const leaveOverlay = askLeave
-        ? `<div class="overlay"><div class="panel">
+        ? `<div class="overlay leave-ask"><div class="panel">
             <h2>タイトルに戻る？</h2>
             <p>終わっていない戦いは残らない。</p>
-            <button type="button" data-action="title">タイトルへ</button>
-            <button type="button" class="ghost" data-action="stay">戦いを続ける</button>
+            <div class="leave-actions">
+              <button type="button" data-action="title">タイトルへ</button>
+              <button type="button" class="ghost" data-action="stay">戦いを続ける</button>
+            </div>
           </div></div>`
         : "";
 
