@@ -1007,7 +1007,11 @@
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 2px rgba(228, 177, 90, 0.75), 0 18px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100vw - 40px)); padding: 36px 48px 32px; }
     .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
-    .reward-pick.gear-pick { width: 150px; padding: 10px; border-radius: 14px; background: rgba(20, 14, 10, 0.55); border: 1px solid rgba(228, 177, 90, 0.6); color: var(--cream); }
+    .reward-pick.gear-pick { width: min(250px, 24vw); padding: 0; border: 0; background: none; color: var(--cream); }
+    .gear-offer { width: min(250px, 24vw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .gear-offer .gear-effect { position: relative; left: auto; top: auto; width: 100%; max-width: none; max-height: none; pointer-events: none; }
+    .rare-caption { margin: 8px 0 0; text-align: center; font-size: 22px; font-weight: 800; letter-spacing: 0.14em; color: #ffe27a; text-shadow: 0 0 8px rgba(255, 210, 120, 0.45); line-height: 1; }
+    .rare-caption.boss { color: #ffb0a4; }
     .reward-pick.gear-pick b { font-size: 16px; }
     .reward-pick.gear-pick small { font-size: 12px; line-height: 1.4; font-weight: 700; }
     /* レア演出。出たもの自体が一度だけ強く光る。描いた光や画面の揺れ、★の印は出さない */
@@ -4584,23 +4588,25 @@
       gap: 8px 16px;
       overflow: hidden;
     }
-    .menu.event > h1 { grid-area: title; text-align: center; margin: 0; }
+    .menu.event > h1 { grid-area: title; text-align: center; margin: 36px 0 0; }
     .menu.event .event-picture {
       grid-area: picture;
-      width: 118%;
+      width: auto;
       height: auto;
-      max-height: 78%;
+      max-width: 86%;
+      max-height: 64%;
       aspect-ratio: 16 / 9;
-      object-fit: cover;
+      object-fit: contain;
       object-position: center;
-      justify-self: end;
+      justify-self: center;
       align-self: center;
-      margin-right: -14%;
+      margin: 0;
       border-radius: 16px;
-      border: 2px solid rgba(228, 177, 90, 0.88);
-      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
+      border: 3px solid #e4c27a;
+      box-shadow: 0 0 0 1px #5c3d12, 0 16px 28px rgba(0, 0, 0, 0.4);
       position: relative;
       z-index: 1;
+      background: #120e0c;
     }
     .menu.event .event-choice {
       grid-area: choice;
@@ -4613,11 +4619,19 @@
       align-items: stretch;
       justify-content: center;
       gap: 14px;
-      padding: 12px 7% 12px 16%;
+      padding: 12px 8% 12px 8%;
       box-sizing: border-box;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
       position: relative;
       z-index: 2;
+    }
+    .menu.event .event-prompt {
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(228, 177, 90, 0.45);
+      font-size: clamp(20px, 1.7vw, 26px);
+      letter-spacing: 0.16em;
+      color: #ffe7a4;
     }
     .menu.event .event-choice > p,
     .menu.event .event-choice > h2 {
@@ -4964,23 +4978,30 @@
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
     .cast-screen.character-focus {
-      padding-left: 72px;
-      padding-right: 72px;
+      padding-left: 0;
+      padding-right: 0;
+      align-items: center;
     }
     .cast-screen.character-focus .cast-main {
-      width: 100%;
-      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 400px) minmax(220px, 280px);
+      width: max-content;
+      max-width: calc(100% - 8vw);
+      margin-left: auto;
+      margin-right: auto;
+      grid-template-columns: minmax(240px, 28vw) minmax(280px, 360px) minmax(220px, 260px);
+      gap: 0;
       align-items: stretch;
+      justify-content: center;
     }
     .cast-screen.character-focus .cast-action {
-      width: 66%;
+      width: 100%;
       max-width: none;
       height: 100%;
       aspect-ratio: auto;
-      justify-self: center;
+      justify-self: stretch;
       align-self: stretch;
       object-fit: cover;
       object-position: center 8%;
+      border-radius: 16px 0 0 16px;
     }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
@@ -5344,7 +5365,10 @@
       .cast-screen.character-focus .cast-main {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(180px, 32vh) auto auto;
+        width: 100%;
+        max-width: none;
       }
+      .cast-screen.character-focus .cast-action { border-radius: 16px; }
       .cast-main { grid-template-columns: minmax(0, 1fr); }
       .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
     }
@@ -6087,6 +6111,7 @@
     let ultimate = "";
     let floorKind = "";
     let floorNote = "";
+    let floorPrompt = "";
     let floorPhase = "show";
     let floorGift = null;
     let blessPicks = [];
@@ -6819,6 +6844,7 @@
       if (slotId === "shield") return "盾";
       if (slotId === "braceletL") return "腕輪・左";
       if (slotId === "braceletR") return "腕輪・右";
+      if (slotId === "braceletAny") return "腕輪";
       if (slotId === "medal") return "メダル";
       if (slotId === "itemL" || slotId === "itemR") return "アイテム";
       return "装備";
@@ -6827,7 +6853,7 @@
     function gearSlotIcon(slotId) {
       if (slotId === "sword") return swordIcon();
       if (slotId === "shield") return shieldIcon();
-      if (slotId === "braceletL" || slotId === "braceletR") return braceletIcon();
+      if (slotId === "braceletL" || slotId === "braceletR" || slotId === "braceletAny") return braceletIcon();
       if (slotId === "medal") return medalIcon();
       return itemIcon();
     }
@@ -8877,7 +8903,9 @@
       if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
       const pick = blessPicks[index];
       if (!pick) return;
-      floorNote = takeGift(pick);
+      const got = takeGift(pick);
+      floorNote = got ? "女神の手が離れ、選んだ恵みだけが残った。光は静かに薄れていく。" : "";
+      floorPrompt = got;
       blessPicks = [];
       floorPhase = "show";
       render();
@@ -8904,12 +8932,15 @@
       const fx = rareFx(lv);
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div><b>${esc(gift.card.name)}</b></div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div>${rareCaption(gift.card)}<b>${esc(gift.card.name)}</b></div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
+      if (gift.kind === "gear") {
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearOfferHtml(item)}</div>`;
+      }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
-      return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small></div>`;
+      return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>${rareCaption(item)}</div>`;
     }
 
     function jobCandidates() {
@@ -8939,6 +8970,7 @@
       const kind = String(route[battleIndex] || "").slice("出来事:".length);
       floorKind = kind;
       floorNote = "";
+      floorPrompt = "";
       floorPhase = "show";
       floorGift = null;
       blessPicks = [];
@@ -8948,15 +8980,18 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
+        floorNote = "洞窟の入口に、光が柱となって降りた。長い金の髪の女神が、ひざまずくあなたの前に立つ。光輪と翼がゆっくり揺れ、白と金の衣が床の湿りを払う。女神は三つの恵みを両手に載せた。この先の戦いに持っていけるのは、そのうちひとつだけだ。残りは、光とともに消える。";
+        floorPrompt = "報酬をひとつ選べ。";
         armRare("bless");
       } else if (kind === "キャンプ") {
         floorHp = 30;
         if (player) player.hp = 30;
-        floorNote = "体力が全快した。";
+        floorNote = "行き止まりのくぼみに、誰かが残した燃えさしがあった。腰を下ろすと、洞窟の滴る音だけが残る。刃の熱が引き、息が深くなっていく。ここでは、まだ誰もあなたを見つけていない。";
+        floorPrompt = "体力が全快した。先へ進む。";
       } else if (kind === "お店") {
         shopStock = rollShopStock();
-        floorNote = "おしゃれな骸骨が商いをしている。";
+        floorNote = "角を曲がると、絹の帽子をかぶった骸骨が布を広げていた。骨の指が品を並べ、空いた眼窩があなたの星を数える。星を置けば、剣も薬も手に入る。星が足りない棚は、指一本動かない。";
+        floorPrompt = "買うものを選べ。";
         armRare("shop");
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
@@ -8964,7 +8999,8 @@
           startBattle(floorHp);
           return;
         }
-        floorNote = grantExplore();
+        floorNote = "壁の割れ目に、誰かの置き忘れた荷があった。布をほどくと、埃の中から一つの恵みが見える。持っていけるのは、それだけだ。";
+        floorPrompt = grantExplore() || "先へ進む。";
       } else if (kind === "未知") {
         const roll = ["キャンプ", "お店", "探索", "戦闘"][Math.floor(Math.random() * 4)];
         if (roll === "戦闘") {
@@ -8975,22 +9011,27 @@
         if (roll === "キャンプ") {
           floorHp = 30;
           if (player) player.hp = 30;
-          floorNote = "未知は、キャンプだった。体力が全快した。";
+          floorNote = "道標のない分岐で、足元の石が別の部屋へ落ちた。そこは野営の跡だった。火は消えているが、熱はまだ石に残っている。誰の泊まりかは、もう分からない。";
+          floorPrompt = "体力が全快した。先へ進む。";
         } else if (roll === "探索") {
-          floorNote = `未知は、探索だった。${grantExplore()}`;
+          floorNote = "道標のない分岐の先に、置き忘れた荷があった。布は湿っていて、中のものは一つだけ無事だった。";
+          floorPrompt = grantExplore() || "先へ進む。";
         } else {
           floorKind = "お店";
           shopStock = rollShopStock();
-          floorNote = "未知は、お店だった。おしゃれな骸骨が商いをしている。";
+          floorNote = "道標のない分岐の先で、絹帽子の骸骨が待っていた。骨の指が布をめくり、空いた眼窩があなたの星を数える。この店は、地図には無い。";
+          floorPrompt = "買うものを選べ。";
           armRare("shop");
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
-        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。進むと、物乞いが襲ってくる。";
+        floorNote = "通路の暗がりに、痩せた人影が座っている。差し出した手は震えていて、目はあなたの札を見ている。一枚渡せば、この影は道を空ける。渡さずに背を向ければ、物乞いは牙をむいて襲ってくる。";
+        floorPrompt = "渡すカードを選べ。渡さず進んでもよい。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
-        floorNote = `いまのジョブは${job}。カードは捨てない。`;
+        floorNote = `足元の紋章が熱を持ち、別の戦い方を壁に映している。いまの名は${job}。持っている札は捨てなくてよい。新しい名を受ければ、奥は別の手で開く。`;
+        floorPrompt = "ジョブを選べ。";
       }
       screen = "floor";
       render();
@@ -9008,7 +9049,7 @@
       removed.push(gift);
       beggarGift = [gift];
       beggarCut = true;
-      floorNote = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
+      floorPrompt = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
       render();
     }
 
@@ -9941,7 +9982,7 @@
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "お店", takeRare("shop")) : "";
       const where = floorKind === "挑戦者に祝福を" ? "" : `<p>${esc(dungeonName)}　${floorLabel()}</p>`;
       const title = `<h1>${esc(floorKind)}</h1>`;
-      const choice = `${rareFlash}${where}${shop}${gift}<p>${esc(floorNote)}</p>${bless}${beggar}${jobs}${ultimates}${next}`;
+      const choice = `${rareFlash}${where}${eventNoteHtml()}${shop}${gift}${bless}${beggar}${jobs}${ultimates}${next}`;
       root.innerHTML = art
         ? `<div class="menu event${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
         : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${title}${choice}</div>`;
@@ -10916,11 +10957,10 @@
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const fx = rareFx(lv);
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div>${rareCaption(slot.card)}<b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
-          const picture = slot.gear.image ? `<img class="shop-gear" src="${esc(slot.gear.image)}" alt="">` : "";
-          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}${picture}<b>${esc(slot.gear.name)}</b><small>${esc(slot.gear.effect || "")}</small><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}${gearOfferHtml(slot.gear)}<span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
@@ -11032,7 +11072,8 @@
           applyPath("straight");
           return;
         }
-        floorNote = grantExplore();
+        floorNote = "壁の割れ目に、誰かの置き忘れた荷があった。布をほどくと、埃の中から一つの恵みが見える。持っていけるのは、それだけだ。";
+        floorPrompt = grantExplore() || "先へ進む。";
         rewardStep = "event";
         persistSave(true);
         render();
@@ -11054,7 +11095,8 @@
         if (roll === "camp") {
           restoreHp(player.maxHp - player.hp);
           floorGift = null;
-          floorNote = "未知は、キャンプだった。体力が全快した。";
+          floorNote = "道標のない分岐で、足元の石が別の部屋へ落ちた。そこは野営の跡だった。火は消えているが、熱はまだ石に残っている。";
+          floorPrompt = "体力が全快した。先へ進む。";
           rewardStep = "event";
           persistSave(true);
           render();
@@ -11065,7 +11107,8 @@
           applyPath("straight");
           return;
         }
-        floorNote = `未知は、探索だった。${grantExplore()}`;
+        floorNote = "道標のない分岐の先に、置き忘れた荷があった。布は湿っていて、中のものは一つだけ無事だった。";
+        floorPrompt = grantExplore() || "先へ進む。";
         rewardStep = "event";
         persistSave(true);
         render();
@@ -11098,6 +11141,30 @@
       if (rareArmed !== id) return false;
       rareArmed = "";
       return true;
+    }
+
+    function rareCaption(entity) {
+      if (!entity) return "";
+      if (entity.boss) return `<p class="rare-caption boss">ボス</p>`;
+      const n = Math.max(0, Math.floor(Number(entity.stars) || 0));
+      if (!n) return "";
+      return `<p class="rare-caption">${"★".repeat(Math.min(5, n))}</p>`;
+    }
+
+    function gearOfferHtml(item) {
+      if (!item) return "";
+      return `<div class="gear-offer">${gearPopShell(item.slot || "sword", {
+        name: item.name || "",
+        rarity: gearRarityText(item),
+        image: item.image || "",
+        body: esc(gearEffectPlain(item)),
+        stats: gearStatChips(item),
+      })}${rareCaption(item)}</div>`;
+    }
+
+    function eventNoteHtml() {
+      if (!floorNote && !floorPrompt) return "";
+      return `<p class="event-tale">${esc(floorNote)}</p>${floorPrompt ? `<p class="event-prompt">${esc(floorPrompt)}</p>` : ""}`;
     }
 
     function rareLevel(entity) {
@@ -11164,7 +11231,7 @@
         const picks = rewardPicks.map((card, i) => {
           const lv = live ? rareLevel(card) : 0;
           if (lv) levels.push(lv);
-          return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`;
+          return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
         }).join("");
         const burst = victoryStars();
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
@@ -11180,11 +11247,10 @@
           if (lv) levels.push(lv);
           const at = gear.medal ? i + 1 : i;
           if (pick.kind === "card" && pick.card) {
-            return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div></button>`;
+            return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
-          const picture = item.image ? `<img class="shop-gear" src="${esc(item.image)}" alt="">` : "";
-          return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${picture}<b>${esc(gearTitle(item) || item.name || "")}</b><small>${esc(item.effect || "")}</small></button>`;
+          return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
@@ -11204,12 +11270,12 @@
       if (rewardStep === "event") {
         const live = takeRare("gift");
         const lv = live ? rareLevel(giftEntity(floorGift)) : 0;
-        return `<div class="overlay">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>${esc(pathEventTitle)}</h2>${giftMarkup(floorGift, true, live, 0)}<p>${esc(floorNote)}</p><button type="button" data-action="reward-go">進む</button></div></div>`;
+        return `<div class="overlay">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>${esc(pathEventTitle)}</h2>${eventNoteHtml()}${giftMarkup(floorGift, true, live, 0)}<button type="button" data-action="reward-go">進む</button></div></div>`;
       }
       const live = rewardStep === "detour" ? takeRare("reward") : false;
       const lv = live && bonusCard ? rareLevel(bonusCard) : 0;
       const bonus = bonusCard
-        ? `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, 0)} data-action="reward-bonus">${rareFx(lv)}<div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div></button><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button>`
+        ? `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, 0)} data-action="reward-bonus">${rareFx(lv)}<div class="card preview ${offerTone(bonusCard)}">${cardFace(bonusCard)}</div>${rareCaption(bonusCard)}</button><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button>`
         : "";
       return `<div class="overlay">${rareScreen(lv ? [lv] : [])}<div class="panel"><h2>回り道</h2><p>戦闘が1回増えた。</p>${bonus}<p>装備の報酬は、装備が来てから。</p><button type="button" data-action="reward-go">進む</button></div></div>`;
     }
@@ -11704,15 +11770,17 @@
           if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
           floorPhase = "ultimate";
           ultimatePicks = rollUltimates(nextJob);
-          floorNote = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
+          floorNote = `${nextJob}の名が腕に残った。持っていた札は、まだデッキにある。紋章は、最後に一つの奥義を求めている。`;
+          floorPrompt = "奥義をひとつ選べ。";
           render();
         }
         if (name === "ultimate-pick") {
           ultimate = ultimateLabel(action.dataset.ultimate || "");
           floorPhase = "show";
           floorNote = ultimate === "パリィが重複する"
-            ? "奥義はパリィが重複する。パリィは重なる。"
-            : `奥義は${ultimate}。効果の名前は、まだ無い。`;
+            ? "選んだ奥義が、受け流しの型に重なった。同じパリィが、一度では終わらない。"
+            : `選んだ奥義は${ultimate}。名はまだ壁に刻まれていないが、力だけは腕に残った。`;
+          floorPrompt = "先へ進む。";
           render();
         }
         if (name === "new") {
