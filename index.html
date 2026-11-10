@@ -4346,10 +4346,11 @@
     .title-board {
       position: absolute;
       z-index: 5;
-      top: 7vh;
+      top: 5vh;
+      bottom: 5vh;
       right: max(24px, 3vw);
       width: min(400px, 36vw);
-      max-height: calc(100% - 12vh);
+      max-height: none;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -4407,8 +4408,9 @@
       position: relative;
       z-index: 1;
       margin: 0;
+      flex: 1 1 auto;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: center;
       gap: 10px;
       padding: 12px 14px;
@@ -4455,7 +4457,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
     }
     .title-board .board-goals li {
@@ -4499,7 +4501,7 @@
     .title-board .board-foot {
       position: relative;
       z-index: 1;
-      margin-top: auto;
+      margin-top: 0;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
       gap: 12px;
@@ -4545,6 +4547,7 @@
         top: auto;
         right: 16px;
         bottom: 16px;
+        height: auto;
         width: min(300px, 48vw);
         max-height: 44vh;
         padding: 14px;
@@ -9258,10 +9261,12 @@
 
     function titleBoardHtml() {
       const logged = Boolean(loginWord);
-      const rows = DUNGEON_LIST.map((item) => {
-        const done = logged && dungeonClearedFloors(item.floors);
-        return `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(item.name)}を踏破</span><span class="rank" aria-label="難易度">${esc(item.rank || "")}</span></li>`;
-      }).join("");
+      const goal = (done, label, rank) => `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(label)}</span>${rank ? `<span class="rank" aria-label="難易度">${esc(rank)}</span>` : ""}</li>`;
+      const warriorDone = logged && DUNGEON_LIST.some((item) => clearNames(item.floors).includes("女の戦士"));
+      const rows = [
+        goal(warriorDone, "女の戦士で踏破", ""),
+        ...DUNGEON_LIST.map((item) => goal(logged && dungeonClearedFloors(item.floors), `${item.name}を踏破`, item.rank || "")),
+      ].join("");
       const slot = logged ? readAccount().slots[loginWord] : null;
       const logins = slot && Array.isArray(slot.logins) ? slot.logins : [];
       const history = logins.length
@@ -9271,8 +9276,8 @@
       return `
         <aside class="title-board" aria-label="達成状況">
           <h2><span>達成状況</span></h2>
-          <p class="board-stars"><span class="k">所持</span><b>★${stars}</b></p>
           <ul class="board-goals">${rows}</ul>
+          <p class="board-stars"><span class="k">所持</span><b>★${stars}</b></p>
           <div class="board-foot">
             <div class="board-who${logged ? "" : " off"}">
               <span class="lbl">ログイン名</span>
