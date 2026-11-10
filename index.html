@@ -45,7 +45,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 12.5%);
       /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
-      grid-template-rows: auto minmax(0, 1.7fr) minmax(0, 2fr);
+      grid-template-rows: auto minmax(0, 2.6fr) minmax(0, 1.1fr);
       grid-template-areas:
         "hud log"
         "arena log"
@@ -2425,70 +2425,43 @@
       max-height: none;
       min-height: 0;
     }
-    /* マナは山札の上。宝珠は光が回る */
+    /* マナは山札の上。燃える炎。持ち越しは白い炎 */
     .deck-stack .pile { position: relative; }
     .deck-stack .mana-row {
       position: absolute;
       z-index: 4;
       left: 50%;
       top: 0;
-      transform: translate(-50%, -42%);
+      transform: translate(-50%, -58%);
       display: flex;
-      flex-flow: row wrap;
-      align-items: center;
+      flex-flow: row nowrap;
+      align-items: flex-end;
       justify-content: center;
-      gap: 6px;
+      gap: 0;
       width: max-content;
-      max-width: 140%;
       margin: 0;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 58px;
       flex: 0 0 auto;
-      border-radius: 50%;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 32% 26%, #fffef6 0 8%, #fff1a8 16%, #f6c034 42%, #d48410 68%, #7a3e06 100%);
-      box-shadow:
-        inset 0 -8px 10px rgba(90, 36, 0, 0.5),
-        inset 0 3px 5px rgba(255, 255, 236, 0.9),
-        0 0 0 2px #fff6d4,
-        0 0 0 4px #c48a28,
-        0 0 0 6px #5c3810,
-        0 0 16px 3px rgba(255, 196, 60, 0.9);
-      animation: mana-pulse 2.2s ease-in-out infinite;
+      border: 0;
+      border-radius: 0;
+      overflow: visible;
+      background: url("mana-flame.png?v=1") center bottom / contain no-repeat;
+      box-shadow: none;
+      filter: drop-shadow(0 0 8px rgba(255, 90, 20, 0.55));
+      animation: flame-sway 0.72s ease-in-out infinite alternate;
       animation-delay: var(--sweep, 0s);
     }
-    .mana-orb .mana-glint {
-      position: absolute;
-      inset: -30%;
-      background: conic-gradient(from 20deg, transparent 0 58%, rgba(255, 252, 230, 0.95) 72%, transparent 84%);
-      mix-blend-mode: screen;
-      animation: mana-spin 3.2s linear infinite;
-      animation-delay: var(--sweep, 0s);
-    }
-    .mana-orb::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.95) 48%, transparent 66%);
-      transform: translateX(-140%);
-      animation: mana-sweep 2.8s ease-in-out infinite;
-      animation-delay: var(--sweep, 0s);
-    }
+    .mana-orb::before,
+    .mana-orb::after { content: none; }
     .mana-orb.has-temp {
-      background:
-        radial-gradient(circle at 32% 26%, #ffffff 0 10%, #f7fbff 22%, #d5e2f2 48%, #8ea0b8 74%, #4c5c70 100%);
-      box-shadow:
-        inset 0 -8px 10px rgba(30, 40, 54, 0.4),
-        inset 0 3px 5px rgba(255, 255, 255, 0.95),
-        0 0 0 2px #ffffff,
-        0 0 0 4px #b7c6d8,
-        0 0 0 6px #445060,
-        0 0 16px 3px rgba(220, 232, 248, 0.85);
+      background: url("mana-flame-temp.png?v=1") center bottom / contain no-repeat;
+      box-shadow: none;
+      filter: drop-shadow(0 0 10px rgba(255, 230, 180, 0.8));
     }
     .handbar {
       width: 100%;
@@ -5420,17 +5393,9 @@
       inherits: false;
       initial-value: 42%;
     }
-    @keyframes mana-sweep {
-      0% { transform: translateX(-140%); }
-      38% { transform: translateX(140%); }
-      100% { transform: translateX(140%); }
-    }
-    @keyframes mana-spin {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes mana-pulse {
-      0%, 100% { filter: brightness(1); }
-      50% { filter: brightness(1.22); }
+    @keyframes flame-sway {
+      from { transform: rotate(-6deg); }
+      to { transform: rotate(6deg); }
     }
     @media (max-width: 720px) {
       .hand .card { height: 100%; }
@@ -5439,7 +5404,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 28px; height: 28px; }
+      .mana-orb { width: 30px; height: 42px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5530,7 +5495,7 @@
       font-size: 14px;
       border-width: 3px;
     }
-    html.phone .mana-orb { width: 26px; height: 26px; }
+    html.phone .mana-orb { width: 26px; height: 36px; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: minmax(0, 1fr);
@@ -8851,8 +8816,8 @@
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
       const orbs = [];
-      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="--sweep:${(i * 0.42).toFixed(2)}s"><i class="mana-glint"></i></span>`);
-      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="--sweep:${((baseOn + i) * 0.42).toFixed(2)}s"><i class="mana-glint"></i></span>`);
+      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
+      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
       const total = baseOn + temp;
       return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
@@ -9301,8 +9266,8 @@
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
             <h3>マナ</h3>
             <div class="ref-grid">
-              ${sheetFig("mana-mark.png?v=1", "黄色い宝珠（燃えている）", "cut-ref")}
-              ${sheetFig("mana-mark-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
+              ${sheetFig("mana-flame.png?v=1", "燃える炎", "cut-ref")}
+              ${sheetFig("mana-flame-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
             </div>
             <h3>シールド</h3>
             <div class="ref-grid">
