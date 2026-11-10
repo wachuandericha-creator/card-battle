@@ -3454,9 +3454,9 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.r1 { --frame-img: url("card-blank-attack-copper.png?v=2"); }
-    .card .card-fit.r2 { --frame-img: url("card-blank-attack-silver.png?v=2"); }
-    .card .card-fit.r3 { --frame-img: url("card-blank-attack-gold.png?v=2"); }
+    .card .card-fit.r1 { --frame-img: url("card-blank-attack-copper.png?v=3"); }
+    .card .card-fit.r2 { --frame-img: url("card-blank-attack-silver.png?v=3"); }
+    .card .card-fit.r3 { --frame-img: url("card-blank-attack-gold.png?v=3"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -9178,17 +9178,9 @@
 
     function artZoomSide(name) {
       if (!name) return "";
-      const masterZoom = {
-        "style-star1": { label: "★ 銅", src: "card-style-redo-b-copper.png?v=1", alt: "★の枠。銅" },
-        "style-star2": { label: "★★ 金", src: "card-style-redo-b-gold.png?v=1", alt: "★★の枠。金" },
-        "style-star3-attack": { label: "★★★ 攻撃（赤）", src: "card-style-redo-b-red.png?v=1", alt: "★★★の攻撃。赤" },
-        "style-star3-block": { label: "★★★ 防御（青）", src: "card-style-redo-b-blue.png?v=1", alt: "★★★の防御。青" },
-        "style-star3-skill": { label: "★★★ スキル（黄）", src: "card-style-redo-b-yellow.png?v=1", alt: "★★★のスキル。黄" },
-        "style-star3-power": { label: "★★★ アイテム（緑）", src: "card-style-redo-b-green.png?v=1", alt: "★★★のアイテム。緑" },
-        "style-star3-foe": { label: "★★★ 敵（紫）", src: "card-style-redo-b-purple.png?v=1", alt: "★★★の敵。紫" },
-      }[name];
-      if (masterZoom) {
-        return zoomSidePanel(masterZoom.label, `<img class="art-zoom-img" src="${masterZoom.src}" alt="${esc(masterZoom.alt)}">`);
+      const style = CARD_STYLE.find((item) => item[0] === name);
+      if (style) {
+        return zoomSidePanel(style[1], `<img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}">`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
@@ -9657,9 +9649,9 @@
     }
 
     const CARD_STYLE = [
-      ["style-star1", "★ 銅", "card-blank-attack-copper.png?v=2"],
-      ["style-star2", "★★ 銀", "card-blank-attack-silver.png?v=2"],
-      ["style-star3", "★★★ 金", "card-blank-attack-gold.png?v=2"],
+      ["style-star1", "★ 銅", "card-blank-attack-copper.png?v=3"],
+      ["style-star2", "★★ 銀", "card-blank-attack-silver.png?v=3"],
+      ["style-star3", "★★★ 金", "card-blank-attack-gold.png?v=3"],
     ];
     function cardStyleSheet() {
       return CARD_STYLE.map((item) => {
