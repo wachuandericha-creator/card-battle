@@ -1578,6 +1578,20 @@
     .cast-gear { display: flex; gap: 12px; }
     .cast-gear figure { margin: 0; width: 96px; }
     .cast-gear img { width: 96px; height: 96px; object-fit: cover; display: block; }
+    .cast-gear .cast-gear-slot {
+      width: 108px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff6e4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .cast-gear .cast-gear-slot .gear-frame { width: 96px; height: 96px; }
+    .cast-gear .cast-gear-name { font-size: 14px; font-weight: 800; letter-spacing: 0.04em; }
     .cast-gear figcaption, .cast-deck { font-size: 14px; }
     .cast-blank { min-height: 1.4em; color: var(--muted); }
     .cast-title {
@@ -1706,6 +1720,12 @@
       pointer-events: auto;
       cursor: pointer;
     }
+    .cast-deck .card .text {
+      background: transparent;
+      color: #fff6e4;
+    }
+    .cast-deck .card .fx,
+    .cast-deck .card .fx b { color: #fff6e4; }
     .cast-card-pop {
       position: fixed;
       z-index: 80;
@@ -2606,45 +2626,52 @@
     }
     .handbar .mana-dock {
       flex: 0 0 auto;
-      align-self: stretch;
+      align-self: center;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      min-width: 168px;
-      height: 100%;
+      min-width: 0;
+      height: auto;
     }
-    .handbar .mana-row {
-      position: static;
-      transform: none;
+    .mana-read {
       display: flex;
-      flex-flow: row nowrap;
-      align-items: flex-end;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      gap: 8px;
-      width: 100%;
-      height: 100%;
-      max-height: 148px;
-      margin: 0;
-      pointer-events: none;
+      gap: 2px;
+      min-width: 112px;
+      padding: 8px 12px 10px;
+      border-radius: 18px;
+      border: 3px solid #ffe7a4;
+      background: radial-gradient(circle at 50% 28%, #8a6220, #1a120c 72%);
+      box-shadow: 0 0 0 3px #120e0b, 0 8px 16px rgba(0, 0, 0, 0.45);
     }
-    .handbar .mana-orb {
-      position: relative;
-      width: 58px;
-      height: 100%;
-      max-height: 148px;
-      flex: 0 0 auto;
-      margin: 0;
-      border: 0;
-      background: none;
-      box-shadow: none;
+    .mana-read b {
+      font-size: 56px;
+      line-height: 0.85;
+      font-weight: 900;
+      color: #fff8dc;
+      text-shadow: 0 3px 0 #000, 0 0 14px rgba(255, 214, 100, 0.85);
     }
-    .mana-orb .mana-fire {
-      display: block;
-      width: 100%;
-      height: 100%;
+    .mana-read > span {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      color: #ffe7a4;
     }
-    .mana-orb::before,
-    .mana-orb::after { content: none; }
+    .mana-pips { display: flex; gap: 6px; margin-top: 4px; }
+    .mana-pip {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff6c2, #e4b15a 46%, #8a5812);
+      box-shadow: 0 0 8px rgba(255, 200, 80, 0.85);
+    }
+    .mana-pip.temp {
+      background: radial-gradient(circle at 35% 30%, #fff, #d9ecff 42%, #6aa4dc);
+      box-shadow: 0 0 8px rgba(180, 220, 255, 0.85);
+    }
+    .mana-pip.off { opacity: 0.28; box-shadow: none; }
     .handbar {
       width: 100%;
       min-width: 0;
@@ -2862,7 +2889,13 @@
         url("card-back-foe.jpg?v=1") center / cover no-repeat;
     }
     .foe-pile .pile-count,
-    .foe-discard .pile-count { font-size: 44px; }
+    .foe-discard .pile-count,
+    .ally-piles .pile-count {
+      font-size: 42px;
+      font-weight: 900;
+      color: #fff8ee;
+      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.9);
+    }
     .foe-pile .pile-label,
     .foe-discard .pile-label { font-size: 16px; letter-spacing: 0.08em; white-space: nowrap; }
     .foe-pile:hover .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
@@ -3013,11 +3046,10 @@
       width: 100%;
     }
     .plate-gear .gear-board {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: flex-start;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: stretch;
+      justify-content: stretch;
       gap: 6px;
       width: 100%;
       min-width: 0;
@@ -3029,10 +3061,10 @@
       container-type: normal;
     }
     .plate-gear .gear-pair { display: contents; }
-    .plate-gear .gear-slot { width: 64px; flex: 0 0 64px; max-width: 64px; }
+    .plate-gear .gear-slot { width: 100%; flex: none; max-width: none; }
     .plate-gear .gear-frame {
-      width: 64px;
-      max-width: 64px;
+      width: 100%;
+      max-width: none;
       height: auto;
       aspect-ratio: 1;
     }
@@ -4907,24 +4939,34 @@
       box-sizing: border-box;
     }
     .cast-keys h2 {
-      margin: 0 0 14px;
-      color: #f6d48a;
-      font-size: 22px;
-      letter-spacing: 0.2em;
+      margin: 0 0 10px;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(36px, 3.2vw, 52px);
+      font-weight: 900;
+      letter-spacing: 0.28em;
       text-align: center;
+      color: #ffe7a4;
+      text-shadow: 0 3px 0 #6a4510, 0 0 18px rgba(255, 210, 110, 0.55);
     }
     .cast-keys h3 {
-      margin: 0 0 8px;
-      color: #fff1c8;
-      font-size: 28px;
-      letter-spacing: 0.16em;
+      margin: 4px 0 12px;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(40px, 3.6vw, 64px);
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-align: center;
+      color: #fff6d4;
+      text-shadow:
+        0 0 12px rgba(255, 214, 120, 0.9),
+        0 4px 0 #7a5410,
+        0 0 28px rgba(255, 186, 60, 0.45);
     }
     .cast-keys p {
-      margin: 0;
+      margin: 0 0 12px;
       color: #fff6e4;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      line-height: 1.65;
+      line-height: 1.75;
       letter-spacing: 0.04em;
     }
     .dungeon-enter {
@@ -5003,10 +5045,18 @@
     .depart.depart-fast::after { animation-duration: 0.7s; }
     .depart.depart-out { animation: depart-fade 0.8s ease forwards; }
     @keyframes depart-fade { from { opacity: 1; } to { opacity: 0; } }
-    .menu.event.bless.arrive { animation: bless-in 0.8s ease; }
-    @keyframes bless-in {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: none; }
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 42%, rgba(255, 250, 230, 0.95), rgba(255, 214, 120, 0.55) 36%, rgba(255, 214, 120, 0) 68%);
+      animation: screen-flash 0.7s ease forwards;
+    }
+    @keyframes screen-flash {
+      0% { opacity: 0; }
+      22% { opacity: 1; }
+      100% { opacity: 0; }
     }
     @media (prefers-reduced-motion: reduce) {
       .depart.depart-out,
@@ -5108,28 +5158,49 @@
       align-items: center;
     }
     .cast-screen.character-focus .cast-main {
+      position: relative;
       width: 100%;
       max-width: none;
       margin-left: auto;
       margin-right: auto;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.9fr);
-      gap: 0;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 34%) minmax(0, 1fr);
+      gap: 16px;
       align-items: stretch;
       justify-content: center;
+      overflow: hidden;
+    }
+    .cast-screen.character-focus .cast-wash {
+      position: absolute;
+      inset: -8%;
+      z-index: 0;
+      width: 116%;
+      height: 116%;
+      object-fit: cover;
+      object-position: center 18%;
+      filter: blur(14px) brightness(0.55);
+      transform: scale(1.04);
+      pointer-events: none;
     }
     .cast-screen.character-focus .cast-action {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: none;
       height: 100%;
       aspect-ratio: auto;
       justify-self: stretch;
       align-self: stretch;
-      object-fit: cover;
-      object-position: center 8%;
-      border-radius: 16px 0 0 16px;
+      object-fit: contain;
+      object-position: center;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
     }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
+      position: relative;
+      z-index: 2;
       height: 100%;
       min-height: 0;
       align-self: stretch;
@@ -5139,6 +5210,10 @@
       height: 100%;
       max-height: 100%;
       overflow: auto;
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 55%),
+        rgba(16, 11, 9, 0.72);
+      backdrop-filter: blur(2px);
     }
     .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(36px, 3vw, 52px); }
     .cast-screen.character-focus .cast-blurb { font-size: 20px; line-height: 1.55; }
@@ -5870,8 +5945,8 @@
     html.phone .status-stars { font-size: 18px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
     html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
-    html.phone .plate-gear .gear-frame { width: 48px; max-width: 48px; height: auto; }
-    html.phone .plate-gear .gear-slot { width: 48px; flex-basis: 48px; max-width: 48px; }
+    html.phone .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
+    html.phone .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
     html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
     html.phone .foe-plate[data-rank="雑魚"],
     html.phone .foe-plate[data-rank="普通"],
@@ -5930,8 +6005,8 @@
       gap: 4px;
     }
     html.phone.land .hero-stack { width: min(220px, 34%); }
-    html.phone.land .plate-gear .gear-frame { width: 44px; max-width: 44px; height: auto; }
-    html.phone.land .plate-gear .gear-slot { width: 44px; flex-basis: 44px; max-width: 44px; }
+    html.phone.land .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
+    html.phone.land .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
     html.phone.land .foe-plate[data-rank="雑魚"],
     html.phone.land .foe-plate[data-rank="普通"],
     html.phone.land .foe-plate[data-rank="強敵"] { width: min(220px, 34%); }
@@ -6243,6 +6318,7 @@
     let floorKind = "";
     let floorNote = "";
     let floorPrompt = "";
+    let blessAuto = 0;
     let floorPhase = "show";
     let floorGift = null;
     let blessPicks = [];
@@ -6600,7 +6676,7 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { label: "祝福", mark: "祝" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=1", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=7", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=5", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
@@ -6689,16 +6765,16 @@
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=4" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.jpg?v=4" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=3" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-chain-attack.jpg?v=5" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-chain-guard.jpg?v=5" },
-      { id: "power-bracelet", name: "力の腕輪", slot: "braceletR", stars: 2, atk: 3, effect: "★★　右手。ATK+3", image: "gear-power-bracelet.jpg?v=4" },
-      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.jpg?v=5" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=5" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=5" },
+      { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=4" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=5" },
       { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=5" },
     ];
     // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「ボス」。
     const BOSS_GEAR = [
       { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　左右どちらかの腕輪枠に付けられる。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=2", halfMana: 1 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=2", halfMana: 1 },
     ];
 
     function gearRarityText(item) {
@@ -6726,9 +6802,13 @@
       return ["sword", "shield", "braceletR", "braceletL", "medal"].some((key) => gear[key] && gear[key].id === id);
     }
 
+    function isAccessorySlot(slot) {
+      return slot === "braceletL" || slot === "braceletR" || slot === "braceletAny";
+    }
+
     function giveGear(item) {
       if (!item) return;
-      if (item.slot === "braceletAny") {
+      if (isAccessorySlot(item.slot)) {
         const key = !gear.braceletL ? "braceletL" : !gear.braceletR ? "braceletR" : "braceletL";
         gear[key] = { ...item };
       } else {
@@ -6923,7 +7003,7 @@
           continue;
         }
         const item = data[key] && gearItem(data[key].id);
-        const fits = item && (item.slot === key || (item.slot === "braceletAny" && (key === "braceletL" || key === "braceletR")));
+        const fits = item && (item.slot === key || (isAccessorySlot(item.slot) && isAccessorySlot(key)));
         if (fits) next[key] = { ...item };
       }
       const medals = Math.floor(Number(data.medals) || 0);
@@ -6978,8 +7058,8 @@
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
-      const left = slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() });
-      const right = slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() });
+      const left = slotButton({ id: "braceletL", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
+      const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
       const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg";
       const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="メダル"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
@@ -6990,9 +7070,7 @@
     function gearSlotLabel(slotId) {
       if (slotId === "sword") return "剣";
       if (slotId === "shield") return "盾";
-      if (slotId === "braceletL") return "腕輪・左";
-      if (slotId === "braceletR") return "腕輪・右";
-      if (slotId === "braceletAny") return "腕輪";
+      if (slotId === "braceletL" || slotId === "braceletR" || slotId === "braceletAny") return "アクセサリー";
       if (slotId === "medal") return "メダル";
       if (slotId === "itemL" || slotId === "itemR") return "アイテム";
       return "装備";
@@ -9058,11 +9136,18 @@
       const pick = blessPicks[index];
       if (!pick) return;
       const got = takeGift(pick);
-      floorNote = got || "";
-      floorPrompt = "";
+      if (!got) return;
+      floorNote = "女神の手が離れ、選んだ恵みだけが残った。光は静かに薄れていく。";
+      floorPrompt = got;
       blessPicks = [];
       floorPhase = "show";
+      const token = ++blessAuto;
       render();
+      setTimeout(() => {
+        if (token !== blessAuto) return;
+        if (screen !== "floor" || floorKind !== "挑戦者に祝福を" || floorPhase !== "show") return;
+        advance(1);
+      }, 1400);
     }
 
     function grantExplore() {
@@ -9086,16 +9171,15 @@
       const fx = rareFx(lv);
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div>${rareCaption(gift.card)}</div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(gift.card)}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
-      if (gift.kind === "gear") {
-        const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>${rareCaption(item)}</div>`;
-      }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
-      return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>${rareCaption(item)}</div>`;
+      const detail = gift.kind === "gear"
+        ? `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`
+        : `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
+      return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
     }
 
     function jobCandidates() {
@@ -9135,8 +9219,8 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
-        floorPrompt = "";
+        floorNote = "洞窟の入口に、光が柱となって降りた。長い金の髪の女神が、ひざまずくあなたの前に立つ。光輪と翼がゆっくり揺れ、白と金の衣が床の湿りを払う。女神は三つの恵みを両手に載せた。この先の戦いに持っていけるのは、そのうちひとつだけだ。残りは、光とともに消える。";
+        floorPrompt = "報酬をひとつ選べ。";
         armRare("bless");
       } else if (kind === "キャンプ") {
         floorHp = 30;
@@ -9194,11 +9278,10 @@
     }
 
     function playBlessArrive() {
-      const menu = document.querySelector(".menu.event.bless");
-      if (!menu || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      menu.classList.remove("arrive");
-      void menu.offsetWidth;
-      menu.classList.add("arrive");
+      const flash = document.createElement("div");
+      flash.className = "screen-flash";
+      document.body.appendChild(flash);
+      setTimeout(() => { if (flash.parentNode) flash.remove(); }, 700);
     }
 
     function dropBeggar(index) {
@@ -9382,11 +9465,12 @@
     function pips() {
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
-      const orbs = [];
-      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb"><canvas class="mana-fire" width="96" height="128"></canvas></span>`);
-      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp"><canvas class="mana-fire" data-temp="1" width="96" height="128"></canvas></span>`);
       const total = baseOn + temp;
-      return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
+      const dots = [];
+      for (let i = 0; i < baseOn; i += 1) dots.push(`<i class="mana-pip"></i>`);
+      for (let i = 0; i < temp; i += 1) dots.push(`<i class="mana-pip temp"></i>`);
+      if (!dots.length) dots.push(`<i class="mana-pip off"></i>`);
+      return `<div class="mana-read" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}"><b>${total}</b><span>マナ</span><div class="mana-pips">${dots.join("")}</div></div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
@@ -9508,12 +9592,57 @@
       return castHover || castLock || CAST[0].name;
     }
 
+    function castGearButton(id) {
+      const item = gearItem(id);
+      if (!item) return "";
+      return `<button type="button" class="gear-slot cast-gear-slot" data-cast-gear="${esc(id)}" aria-label="${esc(item.name)}"><span class="gear-frame"><img src="${esc(item.image || "")}" alt=""></span><span class="cast-gear-name">${esc(item.name)}</span></button>`;
+    }
+
+    function showCastGear(button) {
+      const item = gearItem(button.dataset.castGear || "");
+      const old = root.querySelector(".gear-effect.cast-pop");
+      if (old) old.remove();
+      if (!item) return;
+      root.insertAdjacentHTML("beforeend", gearPopShell(item.slot, {
+        name: item.name,
+        rarity: gearRarityText(item),
+        image: item.image || "",
+        body: esc(gearEffectPlain(item)),
+        stats: gearStatChips(item),
+      }).replace('class="gear-effect', 'class="gear-effect cast-pop'));
+      const box = root.querySelector(".gear-effect.cast-pop");
+      if (!box) return;
+      const r = button.getBoundingClientRect();
+      const w = box.offsetWidth || 288;
+      const h = box.offsetHeight || 120;
+      let left = r.right + 12;
+      let top = r.top;
+      if (left + w > window.innerWidth - 8) left = Math.max(8, r.left - 12 - w);
+      if (top + h > window.innerHeight - 8) top = Math.max(8, window.innerHeight - 8 - h);
+      box.style.left = `${Math.round(left)}px`;
+      box.style.top = `${Math.round(top)}px`;
+    }
+
+    function hideCastGear() {
+      const box = root.querySelector(".gear-effect.cast-pop");
+      if (box) box.remove();
+    }
+
+    function bindCastGearHover() {
+      root.querySelectorAll("[data-cast-gear]").forEach((button) => {
+        if (button.dataset.hoverBound) return;
+        button.dataset.hoverBound = "1";
+        button.addEventListener("pointerenter", () => showCastGear(button));
+        button.addEventListener("pointerleave", () => hideCastGear());
+      });
+    }
+
     function castMainMarkup(item) {
       const blurb = item.blurb
         ? `<p class="cast-blurb">${esc(item.blurb)}</p>`
         : "";
       return `
-        <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
+        <img class="cast-wash" src="${item.action}" alt="" aria-hidden="true">
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
@@ -9525,17 +9654,20 @@
             </ul>
             <h2><span>初期装備</span></h2>
             <div class="cast-gear">
-              <figure><span class="frame"><img src="gear-short-sword.jpg?v=2" alt=""></span><figcaption>ショートソード</figcaption></figure>
-              <figure><span class="frame"><img src="gear-buckler.jpg" alt=""></span><figcaption>バックラー</figcaption></figure>
+              ${castGearButton("short-sword")}
+              ${castGearButton("buckler")}
             </div>
             <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
         </div>
+        <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
         <aside class="cast-keys" aria-label="キーワード">
           <h2>キーワード</h2>
           <h3>パリィ</h3>
-          <p>次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。</p>
+          <p>次の攻撃を１回無効にする。重複不可。</p>
+          <p>ターン終了時に消失。</p>
+          <p>パリィがある間、シールドを追加で得ることはできない。</p>
         </aside>`;
     }
 
@@ -9565,6 +9697,7 @@
       });
       paintChallengeStart();
       bindDeckHover();
+      bindCastGearHover();
     }
 
     function placeCastCardPop(action) {
@@ -9930,6 +10063,7 @@
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤枠。道システムの画面実装はこれから</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=7", "探索")}
+              ${sheetFig("path-bless.jpg?v=1", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=4", "物乞い")}
               ${sheetFig("path-shop.jpg?v=6", "お店")}
@@ -10112,7 +10246,7 @@
       const ultimates = floorPhase === "ultimate"
         ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
         : "";
-      const next = floorPhase === "show" ? menuButton(floorKind === "物乞いに遭遇" && !beggarCut ? "外さずに進む" : "進む", "floor-next", true) : "";
+      const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" ? menuButton(floorKind === "物乞いに遭遇" && !beggarCut ? "外さずに進む" : "進む", "floor-next", true) : "";
       const beggar = floorKind === "物乞いに遭遇"
         ? `<div class="deck-cards beggar-cards">${runDeck().map((card, i) => {
           const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
