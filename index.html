@@ -114,7 +114,75 @@
       width: 100%;
       pointer-events: auto;
     }
-    .battle-log { grid-area: log; min-width: 0; overflow: auto; }
+    .battle-log { min-width: 0; overflow: auto; }
+    .side-rail {
+      grid-area: log;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .road-map {
+      flex: 0 0 46%;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 10px 8px 8px;
+      border-radius: 16px;
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
+      color: var(--cream);
+    }
+    .road-map h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      letter-spacing: 0.22em;
+      text-align: center;
+      color: var(--gold);
+    }
+    .road-map ol {
+      list-style: none;
+      margin: 0;
+      padding: 0 0 0 10px;
+      overflow: auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-left: 2px solid rgba(228, 177, 90, 0.45);
+    }
+    .road-node {
+      display: grid;
+      grid-template-columns: 28px 22px minmax(0, 1fr);
+      align-items: center;
+      gap: 4px;
+      min-height: 24px;
+      color: rgba(240, 228, 204, 0.45);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .road-node img, .road-node i {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #1a1410;
+    }
+    .road-node i { display: block; border: 1px solid rgba(228, 177, 90, 0.35); }
+    .road-node.done { color: #f0e4cc; }
+    .road-node.now {
+      color: #fff6d0;
+      background: rgba(228, 177, 90, 0.18);
+      border-radius: 8px;
+    }
+    .road-node.boss { color: #ffb0a4; }
+    .road-node.boss img { box-shadow: 0 0 0 2px #c43a32; }
+    .road-floor { letter-spacing: 0.02em; }
+    .road-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -2476,9 +2544,10 @@
     }
     .mana-orb {
       position: relative;
-      width: 54px;
-      height: 78px;
+      width: 74px;
+      height: 108px;
       flex: 0 0 auto;
+      margin: 0 -20px;
       border: 0;
       border-radius: 0;
       overflow: visible;
@@ -3582,24 +3651,28 @@
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
-      width: auto;
-      height: 86%;
-      min-width: 148px;
-      min-height: 148px;
-      max-width: 160px;
-      max-height: 160px;
-      aspect-ratio: 1;
+      width: 108px;
+      height: 78%;
+      min-width: 108px;
+      min-height: 0;
+      max-width: none;
+      max-height: 168px;
+      aspect-ratio: auto;
       flex: none;
       align-self: center;
       margin: 0 12px;
-      border-radius: 50%;
-      border: 4px solid var(--gold);
-      background: rgba(18, 14, 12, 0.72);
-      color: var(--gold);
-      font-size: 28px;
-      font-weight: 800;
+      border-radius: 16px;
+      border: 0;
+      background:
+        linear-gradient(180deg, #fff1c4 0%, #e2ad4a 42%, #8a5414 100%);
+      color: #2a1608;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
       line-height: 1.15;
       cursor: pointer;
+      box-shadow: 0 7px 0 #5c3810, 0 12px 18px rgba(0, 0, 0, 0.45);
     }
     .fly-card {
       position: fixed;
@@ -3613,11 +3686,10 @@
       filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.55));
     }
     .end:disabled { opacity: 0.4; cursor: default; }
-    .end:not(:disabled):hover { background: rgba(228, 177, 90, 0.12); }
+    .end:not(:disabled):hover { filter: brightness(1.08); }
     .end.ready {
-      background: rgba(228, 177, 90, 0.34);
-      color: #fff6d8;
-      box-shadow: 0 0 18px 4px rgba(228, 177, 90, 0.9);
+      color: #2a1008;
+      box-shadow: 0 7px 0 #5c3810, 0 0 18px 4px rgba(255, 196, 80, 0.85);
       animation: end-glow 1.05s ease-in-out infinite;
     }
     @keyframes end-glow {
@@ -5577,7 +5649,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 30px; height: 42px; }
+      .mana-orb { width: 46px; height: 66px; margin: 0 -12px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5616,6 +5688,8 @@
       column-gap: 0;
       overflow: hidden;
     }
+    html.phone .side-rail { display: contents; }
+    html.phone .road-map { display: none; }
     html.phone .battle-log {
       display: none;
       position: absolute;
@@ -5668,7 +5742,7 @@
       font-size: 14px;
       border-width: 3px;
     }
-    html.phone .mana-orb { width: 26px; height: 36px; }
+    html.phone .mana-orb { width: 40px; height: 58px; margin: 0 -10px; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: minmax(0, 1fr);
@@ -5728,7 +5802,7 @@
       height: auto;
       max-height: 58%;
     }
-    html.phone.land .mana-orb { width: 26px; height: 42px; }
+    html.phone.land .mana-orb { width: 36px; height: 52px; margin: 0 -8px; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
       transform: none;
@@ -6367,6 +6441,35 @@
     function floorNo() { return battleIndex + 1 - floorStart(); }
     function floorMax() { return battleTotal - floorStart(); }
     function floorLabel() { return `最大${floorMax()}Ｆ　現在　${floorNo()}Ｆ`; }
+
+    function roadFace(node) {
+      const name = String(node || "");
+      if (name === "出来事:祝福") return { label: "祝福", mark: "祝" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=6", label: "探索" };
+      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=5", label: "遭遇" };
+      if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
+      if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
+      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=8", label: "ジョブ" };
+      if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
+      return { src: "path-fight.jpg?v=5", label: "戦闘" };
+    }
+
+    function roadMapHtml() {
+      if (!route || !route.length) return "";
+      const rows = route.map((node, i) => {
+        const face = roadFace(node);
+        const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
+        const show = state !== "ahead" || face.boss;
+        const floor = route[0] === "出来事:祝福" ? i : i + 1;
+        const icon = show && face.src
+          ? `<img src="${face.src}" alt="">`
+          : `<i></i>`;
+        const caption = show ? face.label : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor === 0 ? "入口" : `${floor}F`}</span>${icon}<span class="road-name">${esc(caption)}</span></li>`;
+      }).join("");
+      return `<section class="road-map" aria-label="道のり"><h2>道</h2><ol>${rows}</ol></section>`;
+    }
 
     function enemyNow() {
       const foe = enemyByName(route[battleIndex] || DUNGEON.boss);
@@ -11271,7 +11374,10 @@
               ${endButtonMarkup()}
             </div>
         </div>
-        ${showLog ? `<aside class="battle-log"><h2>ログ</h2>${logHtml}</aside>` : ""}
+        <aside class="side-rail">
+          ${roadMapHtml()}
+          ${showLog ? `<div class="battle-log"><h2>ログ</h2>${logHtml}</div>` : ""}
+        </aside>
         </div>
         ${deckOverlay()}
         ${foeDeckOverlay()}
@@ -11287,6 +11393,9 @@
       startManaFires();
       paintGear();
       fitHand();
+      const roadNow = root.querySelector(".road-node.now");
+      const roadList = root.querySelector(".road-map ol");
+      if (roadNow && roadList) roadList.scrollTop = Math.max(0, roadNow.offsetTop - roadList.clientHeight / 2);
       if (dealNow) {
         startHandDeal();
       } else {
@@ -11347,7 +11456,7 @@
         if (!bar) return;
         const sample = cards[0];
         const px = sample ? sample.offsetHeight : handEl.clientHeight;
-        if (px > 0) bar.style.setProperty("--pile-card-h", `${Math.round(px * 0.8)}px`);
+        if (px > 0) bar.style.setProperty("--pile-card-h", `${Math.round(px * 0.64)}px`);
       };
       if (cards.length < 2) {
         handEl.style.setProperty("--overlap", `${base}px`);
