@@ -43,13 +43,13 @@
     .battle-screen {
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 12.5%);
+      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr) minmax(0, 12.5%);
       /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
       grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1.3fr);
       grid-template-areas:
-        "hud log"
-        "arena log"
-        "hand log";
+        "road hud log"
+        "road arena log"
+        "road hand log";
       padding: 10px 10px 4px;
       row-gap: 12px;
       column-gap: 10px;
@@ -60,11 +60,11 @@
         #0a0908;
     }
     .battle-screen.no-log {
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr);
       grid-template-areas:
-        "hud"
-        "arena"
-        "hand";
+        "road hud"
+        "road arena"
+        "road hand";
     }
     .game { display: contents; }
     .hud-top { grid-area: hud; min-width: 0; overflow: hidden; }
@@ -121,11 +121,12 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
     }
     .road-map {
-      flex: 0 0 46%;
+      grid-area: road;
+      min-width: 0;
       min-height: 0;
+      height: 100%;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -148,6 +149,7 @@
       margin: 0;
       padding: 0 0 0 10px;
       overflow: auto;
+      flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -156,18 +158,19 @@
     }
     .road-node {
       display: grid;
-      grid-template-columns: 28px 22px minmax(0, 1fr);
+      grid-template-columns: 32px 42px minmax(0, 1fr);
       align-items: center;
       gap: 4px;
-      min-height: 24px;
+      flex: 0 0 calc((100% - 36px) / 10);
+      min-height: 0;
       color: rgba(240, 228, 204, 0.45);
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 800;
     }
     .road-node img, .road-node i {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
       object-fit: cover;
       background: #1a1410;
     }
@@ -383,7 +386,7 @@
       z-index: 4;
       height: 100%;
       width: auto;
-      max-width: min(100%, 490px);
+      max-width: min(100%, 400px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2535,23 +2538,24 @@
       position: absolute;
       z-index: 4;
       left: 50%;
-      top: 0;
-      transform: translate(-50%, -62%);
+      top: auto;
+      bottom: calc(var(--pile-card-h, 64%) - 6px);
+      transform: translate(-50%, 0);
       display: flex;
       flex-flow: row nowrap;
       align-items: flex-end;
       justify-content: center;
-      gap: 0;
+      gap: 10px;
       width: max-content;
       margin: 0;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 74px;
-      height: 108px;
+      width: 96px;
+      height: 112px;
       flex: 0 0 auto;
-      margin: 0 -20px;
+      margin: 0;
       border: 0;
       border-radius: 0;
       overflow: visible;
@@ -4716,11 +4720,11 @@
     .gift-pick .gift-img { width: 230px; height: 230px; object-fit: cover; border-radius: 14px; border: 2px solid rgba(228, 177, 90, 0.7); }
     .gift-pick b { font-size: 26px; letter-spacing: 0.04em; }
     .gift-pick small { font-size: 16px; line-height: 1.45; font-weight: 700; max-width: 260px; text-align: center; color: #fff6e4; }
-    .gift-show { padding: 10px 18px 12px; border-radius: 18px; background: rgba(20, 14, 10, 0.55); border: 2px solid rgba(228, 177, 90, 0.75); box-shadow: 0 0 22px rgba(240, 195, 106, 0.35); }
+    .gift-show { width: max-content; max-width: 240px; align-self: center; padding: 10px 12px 12px; border-radius: 18px; background: rgba(20, 14, 10, 0.55); border: 2px solid rgba(228, 177, 90, 0.75); box-shadow: 0 0 22px rgba(240, 195, 106, 0.35); }
     .gift-show .card.preview { width: 190px; height: auto; }
     .gift-show .gift-img { width: 190px; height: 190px; object-fit: cover; border-radius: 16px; border: 2px solid rgba(228, 177, 90, 0.8); }
     .gift-show b { font-size: 22px; color: #f6d48a; }
-    .gift-show small { font-size: 14px; line-height: 1.4; font-weight: 700; max-width: 320px; text-align: center; }
+    .gift-show small { font-size: 14px; line-height: 1.4; font-weight: 700; max-width: 210px; text-align: center; }
     .menu button, .title-actions button, .small-btn {
       min-width: 220px;
       border-radius: 14px;
@@ -5673,7 +5677,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 46px; height: 66px; margin: 0 -12px; }
+      .mana-orb { width: 52px; height: 46px; margin: 0 3px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5766,7 +5770,7 @@
       font-size: 14px;
       border-width: 3px;
     }
-    html.phone .mana-orb { width: 40px; height: 58px; margin: 0 -10px; }
+    html.phone .mana-orb { width: 44px; height: 40px; margin: 0 3px; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: minmax(0, 1fr);
@@ -5826,7 +5830,7 @@
       height: auto;
       max-height: 58%;
     }
-    html.phone.land .mana-orb { width: 36px; height: 52px; margin: 0 -8px; }
+    html.phone.land .mana-orb { width: 40px; height: 36px; margin: 0 2px; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
       transform: none;
@@ -7040,8 +7044,10 @@
     }
 
     function plateShieldSvg(gold) {
-      const src = gold ? "shield-mark-gold.png?v=2" : "shield-mark-steel.png?v=2";
-      return `<img class="plate-shield" src="${src}" alt="">`;
+      const fill = gold ? "#e2b44a" : "#3d74c4";
+      const rim = gold ? "#fff6d2" : "#e7f2ff";
+      const edge = gold ? "#7a5814" : "#163056";
+      return `<svg class="plate-shield" viewBox="0 0 80 96" aria-hidden="true"><path d="M40 8 68 20v26c0 20-11 34-28 42C23 80 12 66 12 46V20Z" fill="${fill}" stroke="${edge}" stroke-width="5"/><path d="M40 16 60 26v18c0 15-8 26-20 32C28 70 20 59 20 44V26Z" fill="none" stroke="${rim}" stroke-width="2.5"/></svg>`;
     }
 
     function ironShield(suffix) {
@@ -11436,10 +11442,8 @@
               ${endButtonMarkup()}
             </div>
         </div>
-        <aside class="side-rail">
-          ${roadMapHtml()}
-          ${showLog ? `<div class="battle-log"><h2>ログ</h2>${logHtml}</div>` : ""}
-        </aside>
+        ${roadMapHtml()}
+        ${showLog ? `<aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml}</div></aside>` : ""}
         </div>
         ${deckOverlay()}
         ${foeDeckOverlay()}
