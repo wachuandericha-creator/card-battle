@@ -1088,15 +1088,16 @@
       border: 0;
       background: transparent;
       cursor: zoom-in;
-      border-radius: 10px;
-      overflow: hidden;
+      border-radius: 0;
+      overflow: visible;
     }
     /* サムネは ref-grid の比率に合わせる。height:auto だと全部が大きく見える */
     .sheet-zoom-btn img {
       display: block;
       width: 100%;
-      height: 100%;
+      height: auto;
       max-height: none;
+      object-fit: contain;
     }
     .ref-grid figure.on .sheet-zoom-btn,
     .sheet-art-zoom.on {
@@ -1205,11 +1206,22 @@
       width: 100%;
       height: 100%;
       margin: 0;
-      overflow: hidden;
+      overflow: visible;
       display: grid;
       place-items: center;
     }
-    .art-zoom-side .art-zoom-img,
+    .art-zoom-side .art-zoom-img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      aspect-ratio: auto;
+      object-fit: contain;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
     .art-zoom-side .art-zoom-card .card.preview {
       display: block;
       width: min(100cqi, calc(100cqb * 2 / 3));
