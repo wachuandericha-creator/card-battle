@@ -4611,14 +4611,52 @@
       margin: 0;
       text-align: center;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(48px, 6vw, 84px);
-      font-weight: 800;
-      letter-spacing: 0.2em;
-      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 42%, #e2ad4a 100%);
+      font-size: clamp(64px, 8vw, 120px);
+      font-weight: 900;
+      letter-spacing: 0.34em;
+      background: linear-gradient(180deg, #fffdf4 0%, #ffe7a4 38%, #e2ad4a 62%, #fff1c4 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 4px 0 #1a120c) drop-shadow(0 0 22px rgba(0, 0, 0, 0.85));
+      filter: drop-shadow(0 5px 0 #1a1008) drop-shadow(0 0 28px rgba(0, 0, 0, 0.95));
+    }
+    .cast-keys {
+      position: relative;
+      min-height: 0;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(228, 177, 90, 0.85);
+      border-radius: 16px;
+      background:
+        radial-gradient(120% 60% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 60%),
+        linear-gradient(180deg, #2a2019 0%, #1a1310 42%, #120d0b 100%);
+      box-shadow:
+        0 0 0 3px #15100d,
+        0 0 0 4px rgba(228, 177, 90, 0.6),
+        0 18px 34px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 236, 190, 0.22);
+      text-align: left;
+      box-sizing: border-box;
+    }
+    .cast-keys h2 {
+      margin: 0 0 14px;
+      color: #f6d48a;
+      font-size: 22px;
+      letter-spacing: 0.2em;
+      text-align: center;
+    }
+    .cast-keys h3 {
+      margin: 0 0 8px;
+      color: #fff1c8;
+      font-size: 28px;
+      letter-spacing: 0.16em;
+    }
+    .cast-keys p {
+      margin: 0;
+      color: #fff6e4;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.65;
+      letter-spacing: 0.04em;
     }
     .dungeon-enter {
       position: absolute;
@@ -4672,11 +4710,16 @@
       position: relative;
       z-index: 2;
       margin: 0;
-      color: #f6d48a;
-      font-size: clamp(40px, 6vw, 76px);
-      font-weight: 800;
-      letter-spacing: 0.22em;
-      text-shadow: 0 3px 0 #1a120c, 0 0 22px rgba(0, 0, 0, 0.9);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(64px, 8vw, 120px);
+      font-weight: 900;
+      letter-spacing: 0.34em;
+      line-height: 1;
+      background: linear-gradient(180deg, #fffdf4 0%, #ffe7a4 38%, #e2ad4a 62%, #fff1c4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 5px 0 #1a1008) drop-shadow(0 0 28px rgba(0, 0, 0, 0.95));
       opacity: 0;
       animation: depart-name 2.6s ease forwards;
     }
@@ -4781,23 +4824,71 @@
         radial-gradient(ellipse at 80% 88%, rgba(70, 32, 16, 0.35), transparent 42%),
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
+    .cast-screen.character-focus {
+      padding-left: 28px;
+      padding-right: 28px;
+    }
     .cast-screen.character-focus .cast-main {
-      width: min(1560px, 100%);
-      grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.7fr);
+      width: 100%;
+      grid-template-columns: minmax(0, 1.8fr) minmax(300px, 380px) minmax(220px, 280px);
+      align-items: stretch;
     }
     .cast-screen.character-focus .cast-action {
       width: 100%;
       max-width: none;
       height: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: contain;
+      aspect-ratio: auto;
+      align-self: stretch;
+      object-fit: cover;
+      object-position: center 28%;
+    }
+    .cast-screen.character-focus .cast-side,
+    .cast-screen.character-focus .cast-keys {
+      height: 100%;
+      min-height: 0;
+      align-self: stretch;
+    }
+    .cast-screen.character-focus .cast-side .cast-plaque,
+    .cast-screen.character-focus .cast-keys {
+      height: 100%;
+      max-height: 100%;
+      overflow: auto;
     }
     .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(36px, 3vw, 52px); }
     .cast-screen.character-focus .cast-blurb { font-size: 20px; line-height: 1.55; }
     .cast-screen.character-focus .stat-chips .chip { padding: 10px 14px; }
     .cast-screen.character-focus .stat-chips .chip b { font-size: 32px; }
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 16px; }
-    .dungeon-screen .dungeon-preview { height: min(42vh, 460px); }
+    .cast-screen.dungeon-screen {
+      width: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1.55fr) auto auto auto auto minmax(168px, 0.95fr);
+      align-items: stretch;
+      justify-items: center;
+      gap: 8px;
+    }
+    .dungeon-screen .cast-title { grid-row: 1; }
+    .dungeon-screen .dungeon-preview {
+      grid-row: 2;
+      height: 100%;
+      min-height: 0;
+      width: min(1280px, 100%);
+      border-radius: 16px;
+    }
+    .dungeon-screen .foe-label { grid-row: 3; }
+    .dungeon-screen .dungeon-foes { grid-row: 4; }
+    .dungeon-screen .clear-label { grid-row: 5; }
+    .dungeon-screen .dungeon-clear-slot { grid-row: 6; }
+    .dungeon-screen .dungeon-columns {
+      grid-row: 7;
+      height: 100%;
+      width: min(1180px, 100%);
+      min-height: 0;
+    }
+    .dungeon-screen .dungeon-foes figure,
+    .dungeon-screen .dungeon-clears figure { width: 112px; font-size: 15px; }
+    .dungeon-screen .dungeon-foes img,
+    .dungeon-screen .dungeon-clears img { width: 100px; height: 100px; }
     .dungeon-foes, .dungeon-clears {
       display: flex;
       flex-wrap: wrap;
@@ -5103,6 +5194,10 @@
         gap: 8px;
       }
       .dungeon-col { min-height: 0; height: 100%; }
+      .cast-screen.character-focus .cast-main {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(180px, 32vh) auto auto;
+      }
       .cast-main { grid-template-columns: minmax(0, 1fr); }
       .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
     }
@@ -8961,7 +9056,12 @@
             <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
-        </div>`;
+        </div>
+        <aside class="cast-keys" aria-label="キーワード">
+          <h2>キーワード</h2>
+          <h3>パリィ</h3>
+          <p>次の攻撃を1回無効にする。重ならない。攻撃を受けるまで残る。金の盾で、シールドと同じ位置に出す。シールドがあるときはとなり。パリィがあるあいだは、シールドを得られない。</p>
+        </aside>`;
     }
 
     function challengeReady() {
@@ -8989,6 +9089,43 @@
         token.classList.toggle("shown", token.dataset.cast === name);
       });
       paintChallengeStart();
+      bindDeckHover();
+    }
+
+    function placeCastCardPop(action) {
+      const old = root.querySelector(".cast-card-pop");
+      if (old && old.dataset.index === (action.dataset.index || "")) return;
+      if (old) old.remove();
+      const card = action.querySelector(".card");
+      if (!card) return;
+      const pop = document.createElement("div");
+      pop.className = "cast-card-pop";
+      pop.dataset.index = action.dataset.index || "";
+      pop.innerHTML = card.outerHTML;
+      root.appendChild(pop);
+      const rect = action.getBoundingClientRect();
+      const width = pop.offsetWidth || 280;
+      const height = pop.offsetHeight || 420;
+      let left = rect.left - width - 12;
+      if (left < 8) left = Math.min(rect.right + 12, window.innerWidth - width - 8);
+      let top = rect.top + rect.height / 2 - height / 2;
+      top = Math.max(8, Math.min(window.innerHeight - height - 8, top));
+      pop.style.left = `${Math.round(left)}px`;
+      pop.style.top = `${Math.round(top)}px`;
+    }
+
+    function hideCastCardPop() {
+      const pop = root.querySelector(".cast-card-pop");
+      if (pop) pop.remove();
+    }
+
+    function bindDeckHover() {
+      root.querySelectorAll(".cast-deck .deck-card").forEach((card) => {
+        if (card.dataset.hoverBound) return;
+        card.dataset.hoverBound = "1";
+        card.addEventListener("pointerenter", () => placeCastCardPop(card));
+        card.addEventListener("pointerleave", () => hideCastCardPop());
+      });
     }
 
     function bindCastHover() {
@@ -9152,9 +9289,9 @@
               <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
             </div>
           </div>
-          <p class="dungeon-note">登場する敵</p>
+          <p class="dungeon-note foe-label">登場する敵</p>
           <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
-          <p class="dungeon-note">踏破したキャラ</p>
+          <p class="dungeon-note clear-label">踏破したキャラ</p>
           <div class="dungeon-clear-slot"></div>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
@@ -11217,33 +11354,6 @@
           screen = "character";
           render();
         }
-        if (name === "cast-card") {
-          const old = root.querySelector(".cast-card-pop");
-          if (old && old.dataset.index === (action.dataset.index || "")) {
-            old.remove();
-            return;
-          }
-          if (old) old.remove();
-          const card = action.querySelector(".card");
-          if (!card) return;
-          const pop = document.createElement("div");
-          pop.className = "cast-card-pop";
-          pop.dataset.index = action.dataset.index || "";
-          pop.innerHTML = card.outerHTML;
-          root.appendChild(pop);
-          const rect = action.getBoundingClientRect();
-          const width = pop.offsetWidth || 280;
-          const height = pop.offsetHeight || 420;
-          let left = rect.right + 12;
-          if (left + width > window.innerWidth - 8) left = Math.max(8, rect.left - width - 12);
-          let top = rect.top;
-          if (top + height > window.innerHeight - 8) top = Math.max(8, window.innerHeight - 8 - height);
-          pop.style.left = `${Math.round(left)}px`;
-          pop.style.top = `${Math.round(top)}px`;
-          return;
-        }
-        const pop = root.querySelector(".cast-card-pop");
-        if (pop) pop.remove();
         if (name === "open-dungeon") { screen = "dungeon"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
