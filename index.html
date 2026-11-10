@@ -131,59 +131,38 @@
       display: flex;
       flex-direction: column;
       margin: 0;
-      padding: 10px 8px 8px;
+      padding: 6px;
       border-radius: 16px;
       background: var(--panel-sheen), var(--panel-face);
       box-shadow: var(--panel-frame);
       color: var(--cream);
     }
-    .road-map h2 {
-      margin: 0 0 8px;
-      padding: 7px 8px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 214, 120, 0.75);
-      background:
-        radial-gradient(120% 90% at 50% 0%, rgba(255, 226, 150, 0.34), transparent 62%),
-        linear-gradient(180deg, rgba(146, 96, 28, 0.72), rgba(48, 28, 10, 0.55));
-      box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.55), 0 6px 14px rgba(0, 0, 0, 0.28);
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: 0.42em;
-      text-indent: 0.42em;
-      text-align: center;
-      color: #fff3c4;
-      text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.5);
-    }
-    .road-map h2::before { content: "◆ "; letter-spacing: 0; text-indent: 0; font-size: 11px; }
-    .road-map h2::after { content: " ◆"; letter-spacing: 0; font-size: 11px; }
     .road-map ol {
       list-style: none;
       margin: 0;
-      padding: 0 0 0 10px;
+      padding: 0;
       overflow: auto;
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      border-left: 2px solid rgba(228, 177, 90, 0.45);
+      gap: 6px;
     }
     .road-node {
-      display: grid;
-      grid-template-columns: 32px 42px minmax(0, 1fr);
-      align-items: center;
-      gap: 4px;
-      flex: 0 0 calc((100% - 16px) / 5);
+      position: relative;
+      display: block;
+      flex: 0 0 calc((100% - 24px) / 5);
       min-height: 0;
-      color: rgba(240, 228, 204, 0.45);
+      overflow: hidden;
+      border-radius: 10px;
+      color: rgba(240, 228, 204, 0.72);
       font-size: 13px;
       font-weight: 800;
     }
     .road-node img, .road-node i {
-      width: 42px;
-      height: 42px;
-      border-radius: 8px;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
       object-fit: cover;
       background: #1a1410;
     }
@@ -204,8 +183,15 @@
     }
     .road-node.boss { color: #ffb0a4; }
     .road-node.boss img { box-shadow: 0 0 0 2px #c43a32; }
-    .road-floor { letter-spacing: 0.02em; }
-    .road-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .road-floor, .road-name {
+      position: absolute;
+      z-index: 1;
+      left: 4px;
+      right: 4px;
+      text-shadow: 0 1px 2px #000, 0 0 6px #000;
+    }
+    .road-floor { top: 4px; letter-spacing: 0.02em; }
+    .road-name { bottom: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       display: grid;
@@ -2543,11 +2529,12 @@
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
-      height: 100%;
+      height: auto;
       display: flex;
       align-items: flex-end;
       justify-content: center;
     }
+    .deck-column .deck-stack { flex: 1 1 auto; height: auto; min-height: 0; }
     .deck-stack .pile { height: 100%; }
     .handbar .pile-card {
       flex: 0 0 auto;
@@ -2557,31 +2544,28 @@
       max-height: none;
       min-height: 0;
     }
-    /* マナは山札の上。立ち上る炎。持ち越しは白い炎 */
-    .deck-stack .pile { position: relative; }
-    .deck-stack .mana-row {
-      position: absolute;
+    /* マナは山札の上の空き。山札の絵にはかぶせない。持ち越しは白い炎 */
+    .deck-column .mana-row {
+      position: static;
       z-index: 4;
-      left: 50%;
-      top: 2px;
-      bottom: calc(var(--pile-card-h, 64%) + 8px);
-      transform: translateX(-50%);
+      transform: none;
       display: flex;
       flex-flow: row nowrap;
       align-items: flex-end;
       justify-content: center;
-      gap: 0;
-      width: max-content;
-      max-width: calc(100% - 8px);
+      gap: 6px;
+      width: 100%;
+      height: 52px;
+      flex: 0 0 52px;
       margin: 0;
-      overflow: hidden;
+      overflow: visible;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 54px;
-      height: 100%;
-      max-height: 72px;
+      width: 36px;
+      height: 52px;
+      max-height: 52px;
       flex: 0 0 auto;
       margin: 0;
       border: 0;
@@ -2630,11 +2614,13 @@
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
     .handbar .end {
       align-self: center;
-      height: 52px;
-      max-height: 52px;
-      min-width: 0;
-      min-height: 0;
-      margin: 0 8px 0 0;
+      width: 132px;
+      height: 132px;
+      min-width: 132px;
+      min-height: 132px;
+      max-width: 132px;
+      max-height: 132px;
+      margin: 0 8px;
     }
     .pile-card {
       position: relative;
@@ -2734,14 +2720,7 @@
       color: #fff3c4;
       text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.45);
     }
-    .battle-log h2::after {
-      content: "◆";
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      letter-spacing: 0;
-      color: rgba(212, 168, 74, 0.65);
-    }
+    .battle-log h2::after { content: none; }
     .battle-log p {
       margin: 0 0 16px;
       font-size: 22px;
@@ -2887,14 +2866,7 @@
       background-repeat: no-repeat;
       background-position: bottom center;
     }
-    .gear-rail h2::after {
-      content: "◆";
-      display: block;
-      margin-top: 5px;
-      font-size: 10px;
-      letter-spacing: 0;
-      color: rgba(212, 168, 74, 0.65);
-    }
+    .gear-rail h2::after { content: none; }
     .gear-rail .party-stack {
       margin-top: auto;
       display: flex;
@@ -2977,13 +2949,14 @@
     }
     .plate-gear .gear-board {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: wrap;
       align-items: flex-start;
       justify-content: flex-start;
       gap: 6px;
-      width: 72px;
-      min-width: 72px;
-      max-width: 72px;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
       height: auto;
       min-height: 0;
       flex: none;
@@ -2991,10 +2964,10 @@
       container-type: normal;
     }
     .plate-gear .gear-pair { display: contents; }
-    .plate-gear .gear-slot { width: 72px; flex: 0 0 72px; max-width: 72px; }
+    .plate-gear .gear-slot { width: 64px; flex: 0 0 64px; max-width: 64px; }
     .plate-gear .gear-frame {
-      width: 72px;
-      max-width: 72px;
+      width: 64px;
+      max-width: 64px;
       height: auto;
       aspect-ratio: 1;
     }
@@ -3695,25 +3668,25 @@
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
-      width: 148px;
-      height: 52px;
-      min-width: 148px;
-      min-height: 0;
-      max-width: none;
-      max-height: 52px;
-      aspect-ratio: auto;
+      width: 132px;
+      height: 132px;
+      min-width: 132px;
+      min-height: 132px;
+      max-width: 132px;
+      max-height: 132px;
+      aspect-ratio: 1;
       flex: none;
       align-self: center;
       margin: 0 12px;
-      border-radius: 999px;
-      border: 2px solid #e4c27a;
-      background: #1c120c;
-      color: #ffe7a4;
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      background: rgba(18, 14, 12, 0.72);
+      color: var(--gold);
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      line-height: 1;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.15;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px #6b4518, 0 8px 16px rgba(0, 0, 0, 0.4);
     }
@@ -5744,7 +5717,7 @@
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
-      .end { width: 132px; height: 44px; min-width: 132px; min-height: 44px; max-height: 44px; font-size: 14px; border-radius: 999px; }
+      .end { width: 108px; height: 108px; min-width: 108px; min-height: 108px; max-width: 108px; max-height: 108px; font-size: 15px; border-radius: 50%; }
       .mana-orb { width: 36px; height: 100%; max-height: 48px; margin: 0; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
@@ -5816,7 +5789,8 @@
     html.phone .status-stars { font-size: 18px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
     html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
-    html.phone .plate-gear .gear-frame { width: 100%; height: auto; }
+    html.phone .plate-gear .gear-frame { width: 48px; max-width: 48px; height: auto; }
+    html.phone .plate-gear .gear-slot { width: 48px; flex-basis: 48px; max-width: 48px; }
     html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
     html.phone .foe-plate[data-rank="雑魚"],
     html.phone .foe-plate[data-rank="普通"],
@@ -5828,17 +5802,17 @@
     html.phone .handbar { padding: 4px 4px 6px; gap: 4px; }
     html.phone .handbar .end,
     html.phone .end {
-      width: 108px;
-      height: 40px;
-      min-width: 108px;
-      min-height: 40px;
-      max-width: 108px;
-      max-height: 40px;
+      width: 72px;
+      height: 72px;
+      min-width: 72px;
+      min-height: 72px;
+      max-width: 72px;
+      max-height: 72px;
       margin: 0 2px 6px 0;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      border-radius: 999px;
-      border-width: 2px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 50%;
+      border-width: 3px;
     }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
@@ -5875,7 +5849,8 @@
       gap: 4px;
     }
     html.phone.land .hero-stack { width: min(220px, 34%); }
-    html.phone.land .plate-gear .gear-frame { width: 100%; height: auto; }
+    html.phone.land .plate-gear .gear-frame { width: 44px; max-width: 44px; height: auto; }
+    html.phone.land .plate-gear .gear-slot { width: 44px; flex-basis: 44px; max-width: 44px; }
     html.phone.land .foe-plate[data-rank="雑魚"],
     html.phone.land .foe-plate[data-rank="普通"],
     html.phone.land .foe-plate[data-rank="強敵"] { width: min(220px, 34%); }
@@ -5883,14 +5858,14 @@
     html.phone.land .battle-plate .shield-badge { width: 36px; height: 48px; }
     html.phone.land .handbar .end,
     html.phone.land .end {
-      width: 96px;
-      height: 36px;
-      min-width: 96px;
-      min-height: 36px;
-      max-width: 96px;
-      max-height: 36px;
-      font-size: 11px;
-      border-radius: 999px;
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      min-height: 64px;
+      max-width: 64px;
+      max-height: 64px;
+      font-size: 10px;
+      border-radius: 50%;
     }
     html.phone.land .battle-log {
       left: 64px;
@@ -6172,7 +6147,7 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=11",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=29",
+        battle: "girl-battle.png?v=30",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
         victory: "girl-victory.png?v=13",
@@ -6575,7 +6550,7 @@
         return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor}</span>${icon}<span class="road-name">${esc(face.label || "")}</span></li>`;
       }).join("");
       const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
-      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
+      return `<section class="road-map" aria-label="マップ"><ol>${rows}${pad}</ol></section>`;
     }
 
     function placeRoad() {
@@ -9810,7 +9785,7 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=29", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=30", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
@@ -11534,8 +11509,9 @@
           <div class="handbar">
               <div class="pile-pair">
                 <div class="deck-column">
+                  ${pips()}
                   <div class="deck-stack">
-                    ${pileMarkup("deck", deck.length, pips())}
+                    ${pileMarkup("deck", deck.length)}
                   </div>
                 </div>
                 ${pileMarkup("discard", discard.length)}
