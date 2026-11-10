@@ -45,7 +45,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 12.5%);
       /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
-      grid-template-rows: auto minmax(0, 2.6fr) minmax(0, 1.1fr);
+      grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1.3fr);
       grid-template-areas:
         "hud log"
         "arena log"
@@ -447,7 +447,7 @@
     .battle-plate .meters { width: 100%; min-width: 0; }
     .battle-plate .meter.hp {
       position: relative;
-      height: 34px;
+      height: 42px;
       border-radius: 8px;
       background: linear-gradient(180deg, #24120f, #3a2220);
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(228, 177, 90, 0.35), 0 1px 0 rgba(255, 236, 200, 0.08);
@@ -464,17 +464,22 @@
     }
     .battle-plate .meter.hp .hp-now span {
       font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 28px;
+      font-weight: 900;
       line-height: 1;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
       white-space: nowrap;
-      color: #fffaf4;
+      color: #fff;
       font-variant-numeric: tabular-nums;
-      background: rgba(8, 4, 3, 0.82);
-      padding: 2px 8px 3px;
-      border-radius: 6px;
-      text-shadow: none;
+      background: rgba(0, 0, 0, 0.78);
+      padding: 2px 12px 3px;
+      border-radius: 8px;
+      text-shadow:
+        0 1px 0 #000,
+        0 -1px 0 #000,
+        1px 0 0 #000,
+        -1px 0 0 #000,
+        0 2px 3px #000;
     }
     .battle-plate.low .meter.hp .hp-now span { color: #ffe8e0; }
     .battle-plate .meter.hp > span {
@@ -2428,14 +2433,14 @@
       max-height: none;
       min-height: 0;
     }
-    /* マナは山札の上。燃える炎。持ち越しは白い炎 */
+    /* マナは山札の上。立ち上る炎。持ち越しは白い炎 */
     .deck-stack .pile { position: relative; }
     .deck-stack .mana-row {
       position: absolute;
       z-index: 4;
       left: 50%;
       top: 0;
-      transform: translate(-50%, -58%);
+      transform: translate(-50%, -62%);
       display: flex;
       flex-flow: row nowrap;
       align-items: flex-end;
@@ -2447,25 +2452,22 @@
     }
     .mana-orb {
       position: relative;
-      width: 42px;
-      height: 58px;
+      width: 54px;
+      height: 78px;
       flex: 0 0 auto;
       border: 0;
       border-radius: 0;
       overflow: visible;
-      background: url("mana-flame.png?v=1") center bottom / contain no-repeat;
+      background: none;
       box-shadow: none;
-      filter: drop-shadow(0 0 8px rgba(255, 90, 20, 0.55));
-      animation: flame-sway 0.72s ease-in-out infinite alternate;
-      animation-delay: var(--sweep, 0s);
+    }
+    .mana-orb .mana-fire {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
     .mana-orb::before,
     .mana-orb::after { content: none; }
-    .mana-orb.has-temp {
-      background: url("mana-flame-temp.png?v=1") center bottom / contain no-repeat;
-      box-shadow: none;
-      filter: drop-shadow(0 0 10px rgba(255, 230, 180, 0.8));
-    }
     .handbar {
       width: 100%;
       min-width: 0;
@@ -2840,10 +2842,10 @@
     }
     .plate-gear .gear-board {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 6px;
       width: 100%;
       min-width: 0;
       max-width: none;
@@ -2853,11 +2855,13 @@
       overflow: visible;
       container-type: normal;
     }
-    .plate-gear .gear-slot { width: auto; flex: 1 1 0; }
+    .plate-gear .gear-pair { display: contents; }
+    .plate-gear .gear-slot { width: calc((100% - 18px) / 4); flex: 0 0 calc((100% - 18px) / 4); max-width: 56px; }
     .plate-gear .gear-frame {
       width: 100%;
-      max-width: 52px;
+      max-width: none;
       height: auto;
+      aspect-ratio: 1;
     }
     .plate-gear .gear-label { display: none; }
     .gear-effect .item-use {
@@ -4470,25 +4474,28 @@
     }
     /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
     .menu.event {
-      width: min(1600px, calc(100vw - 24px));
-      height: calc(100vh - 24px);
+      width: 100%;
+      height: 100%;
+      padding: 8px 16px 12px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
       grid-template-areas:
         "title title"
         "picture choice";
-      align-items: center;
-      gap: 16px 28px;
+      align-items: stretch;
+      justify-items: stretch;
+      gap: 8px 16px;
       overflow: hidden;
     }
-    .menu.event > h1 { grid-area: title; text-align: center; }
+    .menu.event > h1 { grid-area: title; text-align: center; margin: 0; }
     .menu.event .event-picture {
       grid-area: picture;
       width: 100%;
       height: 100%;
-      max-height: 100%;
-      object-fit: contain;
+      max-height: none;
+      object-fit: cover;
+      object-position: center;
       border-radius: 18px;
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
@@ -4497,14 +4504,20 @@
       grid-area: choice;
       min-width: 0;
       height: 100%;
-      max-height: 100%;
+      max-height: none;
       overflow: auto;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
       gap: 12px;
     }
+    .menu.event .event-choice > p,
+    .menu.event .event-choice > h2 { width: 100%; margin: 0; text-align: left; }
+    .menu.event .gift-row,
+    .menu.event .shop-row { width: 100%; justify-content: space-between; }
+    .menu.event .gift-btn { flex: 1 1 0; width: auto; min-width: 0; }
+    .menu.event.bless { justify-content: stretch; overflow: hidden; padding-top: 8px; }
     @media (max-width: 900px) {
       .menu.event {
         grid-template-columns: 1fr;
@@ -5887,6 +5900,7 @@
     let beggarCut = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
+    let manaFireGen = 0;
     let hpStamp = 0;
     let fxSlash = false;
     let fxSlashes = [];
@@ -6626,11 +6640,13 @@
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
-      const weapons = `<div class="gear-pair">${sword}${shield}</div>`;
-      const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
-      const medal = slotButton({ id: "medal", label: "メダル", icon: medalIcon() });
+      const left = slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() });
+      const right = slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() });
+      const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
+      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg";
+      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="メダル"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
       const items = ["itemL", "itemR"].filter((id) => gear && gear[id]).map((id) => slotButton({ id, label: "アイテム", icon: itemIcon() })).join("");
-      return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
+      return `<div class="gear-board">${sword}${shield}${left}${right}${medals}${items}</div>`;
     }
 
     function gearSlotLabel(slotId) {
@@ -6685,7 +6701,14 @@
     function gearEffectHtml(slotId) {
       if (!slotId) return "";
       if (slotId === "medal" && !gear.medal) {
-        return gearPopShell(slotId, {
+        const look = (Number(gear.medals) || 0) > 0 ? GEAR_ITEMS.find((item) => item.id === "minotaur-medal") : null;
+        return gearPopShell(slotId, look ? {
+          name: look.name,
+          rarity: gearRarityText(look),
+          image: look.image || "",
+          body: esc(gearEffectPlain(look)),
+          stats: gearStatChips(look),
+        } : {
           name: "メダル",
           body: "ボスを倒すと確定でもらえる。",
           empty: true,
@@ -7025,6 +7048,83 @@
       hpStamp = 0;
       if (hpFrame) cancelAnimationFrame(hpFrame);
       hpFrame = requestAnimationFrame(pumpHp);
+    }
+
+    function spawnManaBit(w, h, fresh) {
+      const life = 0.26 + Math.random() * 0.22;
+      return {
+        x: w * (0.32 + Math.random() * 0.36),
+        y: h * (fresh ? 0.64 + Math.random() * 0.2 : 0.8),
+        vx: (Math.random() - 0.5) * 22,
+        vy: -70 - Math.random() * 80,
+        life,
+        max: life,
+        r: 14 + Math.random() * 14,
+      };
+    }
+
+    function paintManaBit(ctx, bit, white) {
+      const t = 1 - bit.life / bit.max;
+      const radius = bit.r * (1 - t * 0.55);
+      const glow = ctx.createRadialGradient(bit.x, bit.y, 0, bit.x, bit.y, radius);
+      if (white) {
+        glow.addColorStop(0, "rgba(255, 252, 244, 0.95)");
+        glow.addColorStop(0.45, t < 0.6 ? "rgba(255, 214, 150, 0.7)" : "rgba(255, 170, 90, 0.28)");
+        glow.addColorStop(1, "rgba(255, 120, 40, 0)");
+      } else if (t < 0.3) {
+        glow.addColorStop(0, "rgba(255, 252, 230, 0.95)");
+        glow.addColorStop(0.4, "rgba(255, 186, 48, 0.75)");
+        glow.addColorStop(1, "rgba(255, 70, 8, 0)");
+      } else if (t < 0.65) {
+        glow.addColorStop(0, "rgba(255, 196, 60, 0.8)");
+        glow.addColorStop(0.55, "rgba(255, 78, 12, 0.45)");
+        glow.addColorStop(1, "rgba(160, 20, 0, 0)");
+      } else {
+        glow.addColorStop(0, "rgba(255, 60, 10, 0.28)");
+        glow.addColorStop(1, "rgba(90, 8, 0, 0)");
+      }
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(bit.x, bit.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function startManaFires() {
+      const gen = ++manaFireGen;
+      const canvases = [...document.querySelectorAll(".mana-orb .mana-fire")];
+      if (!canvases.length) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const fires = canvases.map((canvas) => {
+        const ctx = canvas.getContext("2d");
+        const bits = Array.from({ length: 34 }, () => spawnManaBit(canvas.width, canvas.height, true));
+        return { canvas, ctx, bits, white: canvas.dataset.temp === "1" };
+      });
+      const draw = (dt) => {
+        fires.forEach(({ canvas, ctx, bits, white }) => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          bits.forEach((bit) => {
+            bit.life -= dt;
+            if (bit.life <= 0) Object.assign(bit, spawnManaBit(canvas.width, canvas.height, false));
+            bit.x += bit.vx * dt;
+            bit.y += bit.vy * dt;
+            bit.vx += (Math.random() - 0.5) * 80 * dt;
+            paintManaBit(ctx, bit, white);
+          });
+        });
+      };
+      if (reduce) {
+        draw(0);
+        return;
+      }
+      let last = 0;
+      const frame = (now) => {
+        if (gen !== manaFireGen) return;
+        const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
+        last = now;
+        draw(dt);
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
     }
 
     function finalDamageLine(actor, card, result) {
@@ -8914,8 +9014,8 @@
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
       const orbs = [];
-      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="animation-delay:${(i * 0.22).toFixed(2)}s"></span>`);
-      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="animation-delay:${((baseOn + i) * 0.22).toFixed(2)}s"></span>`);
+      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb"><canvas class="mana-fire" width="96" height="128"></canvas></span>`);
+      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp"><canvas class="mana-fire" data-temp="1" width="96" height="128"></canvas></span>`);
       const total = baseOn + temp;
       return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
@@ -9000,12 +9100,16 @@
       const handBtn = inBattle
         ? menuButton(`手札を${HAND_CAP}枚にする（見た目確認）`, "fill-hand-look", true)
         : `<button type="button" disabled>手札を${HAND_CAP}枚にする（見た目確認・戦闘中のみ）</button>`;
+      const medalBtn = inBattle
+        ? menuButton("メダルを10個にする（見た目確認）", "medal-look", true)
+        : `<button type="button" disabled>メダルを10個にする（見た目確認・戦闘中のみ）</button>`;
       root.innerHTML = `
         <div class="menu">
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
           ${handBtn}
+          ${medalBtn}
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -11092,6 +11196,7 @@
       bindLogPeek();
       bindFoePeek();
       bindGearHover();
+      startManaFires();
       paintGear();
       fitHand();
       if (dealNow) {
@@ -11339,6 +11444,14 @@
         }
         if (name === "toggle-auto-end") { autoEndTurn = !autoEndTurn; persistSettings(); render(); }
         if (name === "fill-hand-look") { fillHandForLook(); return; }
+        if (name === "medal-look") {
+          if (screen === "settings" && returnScreen === "battle") {
+            gear.medals = 10;
+            screen = "battle";
+            render();
+          }
+          return;
+        }
         if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
         if (name === "close-art-zoom") {
           if (screen === "album" || screen === "sheet") captureAlbumScroll();
