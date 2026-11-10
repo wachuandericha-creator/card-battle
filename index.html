@@ -1333,7 +1333,7 @@
     /* カードスタイルの見本。★銅、★★銀、★★★金。ジャンルの札は枠に描かない */
     .blank-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
     .blank-grid .card.preview { width: 100%; height: auto; cursor: default; }
-    .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
+    .blank-grid img.style-master { width: 100%; height: auto; aspect-ratio: 2 / 3; object-fit: contain; }
     .blank-grid .card.preview:hover { transform: none; }
     .card.blank .nameplate .name, .card.blank .text .note, .card.blank .cost, .card.blank .rarity { opacity: 0.4; }
     .card.blank .art { display: grid; place-items: center; }
@@ -3454,9 +3454,9 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.r1 { --frame-img: url("card-blank-attack-copper.png?v=3"); }
-    .card .card-fit.r2 { --frame-img: url("card-blank-attack-silver.png?v=3"); }
-    .card .card-fit.r3 { --frame-img: url("card-blank-attack-gold.png?v=3"); }
+    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=4"); }
+    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=4"); }
+    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=4"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -9649,9 +9649,9 @@
     }
 
     const CARD_STYLE = [
-      ["style-star1", "★ 銅", "card-blank-attack-copper.png?v=3"],
-      ["style-star2", "★★ 銀", "card-blank-attack-silver.png?v=3"],
-      ["style-star3", "★★★ 金", "card-blank-attack-gold.png?v=3"],
+      ["style-star1", "★ 銅", "frame-star1.png?v=4"],
+      ["style-star2", "★★ 銀", "frame-star2.png?v=4"],
+      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=4"],
     ];
     function cardStyleSheet() {
       return CARD_STYLE.map((item) => {
