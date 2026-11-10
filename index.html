@@ -5190,6 +5190,10 @@
       filter: none;
       pointer-events: none;
     }
+    .cast-screen.character-focus .cast-keys {
+      justify-self: end;
+      width: min(420px, 100%);
+    }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
       position: relative;
@@ -9654,7 +9658,14 @@
             <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
-        </div>`;
+        </div>
+        <aside class="cast-keys" aria-label="キーワード">
+          <h2>キーワード</h2>
+          <h3>パリィ</h3>
+          <p>次の攻撃を１回無効にする。重複不可。</p>
+          <p>ターン終了時に消失。</p>
+          <p>パリィがある間、シールドを追加で得ることはできない。</p>
+        </aside>`;
     }
 
     function challengeReady() {
