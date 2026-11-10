@@ -2029,8 +2029,32 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.7),
         inset 0 -10px 18px rgba(160, 30, 0, 0.35);
     }
+    .cast-actions > button.cast-start:not(.lit) {
+      filter: grayscale(0.45) brightness(0.62);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+    }
+    .cast-actions > button.cast-start.lit {
+      filter: none;
+      animation: decide-glow 1.15s ease-in-out infinite;
+    }
+    @keyframes decide-glow {
+      0%, 100% {
+        filter: brightness(1);
+        box-shadow:
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 18px rgba(255, 190, 80, 0.55),
+          0 12px 26px rgba(0, 0, 0, 0.5);
+      }
+      50% {
+        filter: brightness(1.22);
+        box-shadow:
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 0 6px rgba(255, 220, 140, 0.55),
+          0 0 36px rgba(255, 196, 80, 0.95),
+          0 14px 28px rgba(0, 0, 0, 0.55);
+      }
+    }
     .cast-start:hover {
-      filter: brightness(1.08);
       box-shadow:
         0 0 0 2px rgba(40, 12, 6, 0.92),
         0 0 0 5px rgba(255, 190, 90, 0.5),
@@ -5258,38 +5282,37 @@
       align-items: flex-start;
       gap: 12px;
     }
-    .cast-vitals { flex: 1; min-width: 140px; }
+    .cast-vitals { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 6px; margin: 8px 0 4px; }
     .cast-gear-col { flex: 0 0 auto; }
     .cast-gear-col h2 { margin-top: 0; }
     .cast-gear-col .cast-gear { flex-direction: column; align-items: flex-end; }
-    .cast-vitals { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 4px; }
-    .cast-vitals .meter.hp {
-      position: relative;
-      height: 28px;
-      border-radius: 8px;
-      background: #2a1814;
-      overflow: hidden;
-    }
-    .cast-vitals .meter.hp span { display: block; height: 100%; background: #c4473a; }
-    .cast-vitals .meter.hp b {
-      position: absolute;
-      inset: 0;
+    .cast-vitals .hp-line {
       display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 16px;
-      text-shadow: 0 1px 0 #000, 0 0 4px #000;
+      grid-template-columns: 92px auto;
+      align-items: center;
+      justify-content: start;
+      gap: 8px;
+      margin: 0;
+      color: #fff6e4;
     }
-    .cast-statline {
-      display: grid;
-      grid-template-columns: 22px 1fr auto;
+    .cast-vitals .hp-line .lbl {
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #fff6e4;
       font-weight: 800;
+      letter-spacing: 0.08em;
     }
-    .cast-statline .ico { width: 18px; height: 18px; }
-    .cast-statline b { font-size: 22px; }
+    .cast-vitals .hp-line .ico { width: 22px; height: 22px; flex: none; }
+    .cast-vitals .hp-line b {
+      font-size: 26px;
+      line-height: 1;
+      color: #fff6e6;
+      text-shadow: 0 1px 0 #000;
+    }
+    .cast-vitals .hp-line .ico.heart { color: #ff6b5a; filter: drop-shadow(0 0 4px rgba(255, 90, 60, 0.6)); }
+    .cast-vitals .hp-line .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
+    .cast-vitals .hp-line .ico.shield { color: #d7dde6; filter: drop-shadow(0 0 5px rgba(220, 226, 232, 0.45)); }
+    .cast-vitals .hp-line .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
       position: relative;
@@ -5323,39 +5346,60 @@
     .cast-screen.dungeon-screen {
       width: 100%;
       display: grid;
-      grid-template-rows: auto minmax(0, 1.55fr) auto auto auto auto minmax(168px, 0.95fr);
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 34%);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "title title"
+        "preview rail"
+        "columns columns";
       align-items: stretch;
-      justify-items: center;
-      gap: 8px;
+      justify-items: stretch;
+      gap: 10px 18px;
+      padding-right: 22px;
     }
-    .dungeon-screen .cast-title { grid-row: 1; }
+    .dungeon-screen .cast-title { grid-area: title; }
     .dungeon-screen .dungeon-preview {
-      grid-row: 2;
+      grid-area: preview;
       height: 100%;
       min-height: 0;
-      width: min(1280px, 100%);
+      width: 100%;
       border-radius: 16px;
     }
-    .dungeon-screen .foe-label { grid-row: 3; }
-    .dungeon-screen .dungeon-foes { grid-row: 4; }
-    .dungeon-screen .clear-label { grid-row: 5; }
-    .dungeon-screen .dungeon-clear-slot { grid-row: 6; }
+    .dungeon-screen .dungeon-rail {
+      grid-area: rail;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: 8px;
+      overflow: auto;
+    }
+    .dungeon-screen .dungeon-rail .dungeon-note { width: 100%; text-align: right; }
+    .dungeon-screen .clear-label {
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(228, 177, 90, 0.4);
+    }
+    .dungeon-screen .dungeon-clear-slot .dungeon-note { font-size: 13px; opacity: 0.85; }
     .dungeon-screen .dungeon-columns {
-      grid-row: 7;
-      height: 100%;
+      grid-area: columns;
+      height: min(168px, 22vh);
       width: min(1180px, 100%);
       min-height: 0;
+      justify-self: center;
     }
     .dungeon-screen .dungeon-foes figure,
-    .dungeon-screen .dungeon-clears figure { width: 112px; font-size: 15px; }
+    .dungeon-screen .dungeon-clears figure { width: 140px; font-size: 13px; line-height: 1.25; }
     .dungeon-screen .dungeon-foes img,
-    .dungeon-screen .dungeon-clears img { width: 100px; height: 100px; }
+    .dungeon-screen .dungeon-clears img { width: 96px; height: 96px; }
     .dungeon-foes, .dungeon-clears {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: flex-end;
       gap: 10px;
-      width: min(1100px, 100%);
+      width: 100%;
       margin: 0;
     }
     .dungeon-foes figure, .dungeon-clears figure {
@@ -6395,6 +6439,8 @@
     let castPicked = false;
     let castHover = "";
     let castLock = "戦士";
+    let castLit = false;
+    let dungeonLit = false;
     let castShown = "";
     const CAST = [
       {
@@ -9760,10 +9806,10 @@
             ${blurb}
             <div class="cast-mid">
               <div class="cast-vitals" aria-label="初期ステータス">
-                <div class="meter hp"><span style="width:100%"></span><b>30/30</b></div>
-                <div class="cast-statline">${swordIcon()}<span>ATK</span><b>1</b></div>
-                <div class="cast-statline">${shieldIcon()}<span>DEF</span><b>1</b></div>
-                <div class="cast-statline">${bootIcon()}<span>SPD</span><b>${DRAW_PER_TURN}</b></div>
+                <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>30</b></span></div>
+                <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>1</b></span></div>
+                <div class="hp-line stat-def"><span class="lbl">${shieldIcon()}DEF</span><span class="num"><b>1</b></span></div>
+                <div class="hp-line stat-spd"><span class="lbl">${bootIcon()}SPD</span><span class="num"><b>${DRAW_PER_TURN}</b></span></div>
               </div>
               <div class="cast-gear-col">
                 <h2><span>初期装備</span></h2>
@@ -9810,6 +9856,8 @@
         token.classList.toggle("shown", token.dataset.cast === name);
       });
       paintChallengeStart();
+      const decide = root.querySelector('[data-action="open-dungeon"]');
+      if (decide) decide.classList.toggle("lit", castLit);
       bindDeckHover();
       bindCastGearHover();
     }
@@ -9931,6 +9979,8 @@
       const slot = root.querySelector(".dungeon-clear-slot");
       if (slot) slot.innerHTML = shown ? dungeonClearFaces(shown.floors) : "";
       paintChallengeStart();
+      const start = root.querySelector('[data-action="dungeon-enter"]');
+      if (start) start.classList.toggle("lit", dungeonLit && !start.disabled);
     }
 
     function bindDungeonHover() {
@@ -9956,13 +10006,13 @@
           <span>${esc(item.name)}</span>
         </button>`).join("");
       castShown = "";
+      castLit = false;
       root.innerHTML = `
         <div class="cast-screen character-focus">
           <h1 class="cast-title">挑戦するキャラを選んでください</h1>
           <div class="cast-main"></div>
           <div class="cast-roster many">${tokens}</div>
           <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="title">もどる</button>
             <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
           </div>
         </div>`;
@@ -10001,6 +10051,7 @@
           <span class="dungeon-facts" aria-hidden="true"><span class="dungeon-rank">${esc(item.rank || "")}</span><span class="dungeon-floor">最大${esc(item.label)}階</span></span>
         </button>`;
       }).join("");
+      dungeonLit = false;
       root.innerHTML = `
         <div class="cast-screen dungeon-screen">
           <h1 class="cast-title">ダンジョンを選択してください</h1>
@@ -10011,10 +10062,12 @@
               <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
             </div>
           </div>
-          <p class="dungeon-note foe-label">登場する敵</p>
-          <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
-          <p class="dungeon-note clear-label">踏破したキャラ</p>
-          <div class="dungeon-clear-slot"></div>
+          <aside class="dungeon-rail">
+            <p class="dungeon-note foe-label">登場する敵</p>
+            <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
+            <p class="dungeon-note clear-label">踏破したキャラ</p>
+            <div class="dungeon-clear-slot"></div>
+          </aside>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
@@ -10516,6 +10569,7 @@
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=5"],
       ["style-green", "アイテム", "frame-metal-green.png?v=3"],
       ["style-navy", "紺", "frame-metal-navy.png?v=2"],
+      ["style-purple", "紫", "card-style-blank-purple.png?v=1"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
@@ -11718,8 +11772,8 @@
         const mid = (hand.length - 1) / 2;
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
-        // ゆるい扇：端ほど少し傾ける。中央はマナ列へ上がり、端はなだらかに垂らす
-        const fan = Math.round(t * 8 * 10) / 10;
+        // カード名は水平。端はなだらかに垂らすだけで、傾けない
+        const fan = 0;
         const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
@@ -12122,6 +12176,7 @@
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
           castHover = "";
+          castLit = true;
           paintCast();
         }
         if (name === "cast-pick") { castPicked = true; render(); }
@@ -12137,6 +12192,7 @@
         if (name === "dungeon-token") {
           dungeonLock = action.dataset.dungeon || "";
           dungeonHover = "";
+          dungeonLit = true;
           pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
           paintDungeon();
         }
