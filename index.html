@@ -5174,7 +5174,7 @@
       max-width: none;
       margin-left: auto;
       margin-right: auto;
-      grid-template-columns: minmax(0, 1fr) minmax(220px, 34%) minmax(0, 1fr);
+      grid-template-columns: minmax(280px, 38%) minmax(0, 1fr);
       gap: 16px;
       align-items: stretch;
       justify-content: center;
@@ -5182,31 +5182,14 @@
     }
     .cast-screen.character-focus .cast-wash {
       position: absolute;
-      inset: -8%;
+      inset: 0;
       z-index: 0;
-      width: 116%;
-      height: 116%;
-      object-fit: cover;
-      object-position: center 18%;
-      filter: blur(14px) brightness(0.55);
-      transform: scale(1.04);
-      pointer-events: none;
-    }
-    .cast-screen.character-focus .cast-action {
-      position: relative;
-      z-index: 1;
       width: 100%;
-      max-width: none;
       height: 100%;
-      aspect-ratio: auto;
-      justify-self: stretch;
-      align-self: stretch;
       object-fit: contain;
       object-position: center;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      background: transparent;
+      filter: none;
+      pointer-events: none;
     }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
@@ -5576,11 +5559,10 @@
       .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(180px, 32vh) auto auto;
+        grid-template-rows: minmax(0, 1fr);
         width: 100%;
         max-width: none;
       }
-      .cast-screen.character-focus .cast-action { border-radius: 16px; }
       .cast-main { grid-template-columns: minmax(0, 1fr); }
       .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
     }
@@ -9653,7 +9635,7 @@
         ? `<p class="cast-blurb">${esc(item.blurb)}</p>`
         : "";
       return `
-        <img class="cast-wash" src="${item.action}" alt="" aria-hidden="true">
+        <img class="cast-wash" src="${item.action}" alt="${esc(item.name)}の一枚絵">
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
@@ -9671,15 +9653,7 @@
             <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
-        </div>
-        <img class="cast-action" src="${item.action}" alt="${esc(item.name)}の一枚絵">
-        <aside class="cast-keys" aria-label="キーワード">
-          <h2>キーワード</h2>
-          <h3>パリィ</h3>
-          <p>次の攻撃を１回無効にする。重複不可。</p>
-          <p>ターン終了時に消失。</p>
-          <p>パリィがある間、シールドを追加で得ることはできない。</p>
-        </aside>`;
+        </div>`;
     }
 
     function challengeReady() {
