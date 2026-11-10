@@ -3664,13 +3664,10 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=9"); }
-    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=9"); }
-    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=9"); }
-    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=4"); }
-    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=4"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=4"); }
-    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=2"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=5"); }
+    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=5"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=5"); }
+    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=3"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -3722,31 +3719,31 @@
       pointer-events: none;
     }
     .card .card-fit .cost {
-      left: 10.9cqw;
-      top: 11.3cqw;
+      left: 10.7cqw;
+      top: 10.7cqw;
       transform: translate(-50%, -50%);
-      width: 7.2cqw;
-      height: 7.2cqw;
+      width: 8.8cqw;
+      height: 8.8cqw;
       border: 0;
       border-radius: 0;
       background: none;
       box-shadow: none;
-      color: #f1efed;
+      color: #fffef8;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: 4.6cqw;
-      font-weight: 700;
+      font-size: 6.6cqw;
+      font-weight: 900;
       -webkit-text-stroke: 0;
-      text-shadow: none;
+      text-shadow: 0 1px 0 #140c08, 0 0 2px #140c08;
     }
     .card .card-fit .nameplate .name {
-      left: 17.2cqw;
+      left: 21cqw;
       right: 8cqw;
-      top: 11.6cqw;
+      top: 10.7cqw;
       transform: translateY(-50%);
       padding: 0;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
       font-size: 5.2cqw;
-      font-weight: 700;
+      font-weight: 900;
       letter-spacing: 0.02em;
       text-align: left;
       color: #14110e;
@@ -3769,16 +3766,6 @@
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
     }
     .card .card-fit .fx.note { font-size: 6.6cqw; font-weight: 700; }
-    .card .card-fit .rare-layer {
-      position: absolute;
-      inset: 0;
-      z-index: 4;
-      pointer-events: none;
-      background: center / 100% 100% no-repeat;
-    }
-    .card .card-fit .rare-layer.silver { background-image: url("rare-layer-silver.png?v=1"); }
-    .card .card-fit .rare-layer.gold { background-image: url("rare-layer-gold.png?v=1"); }
-    .card .card-fit .rare-layer.black { background-image: url("rare-layer-black.png?v=1"); }
     .card .card-fit .genre { z-index: 6; }
     .card .card-fit .nameplate,
     .card .card-fit .text { z-index: 5; }
@@ -9957,12 +9944,6 @@
       if (style) {
         return zoomSidePanel(style[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}"></div>`, false);
       }
-      const rare = /^rare-(silver|gold|black)$/.exec(name);
-      if (rare && CARDS["アタック"]) {
-        const label = rare[1] === "silver" ? "銀" : rare[1] === "gold" ? "金" : "黒";
-        const sample = { ...CARDS["アタック"], name: "アタック", rareLayer: rare[1] };
-        return zoomSidePanel(`アタック ${label}`, `<div class="art-zoom-card"><div class="card preview attack">${cardFace(sample, false)}</div></div>`, false);
-      }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
       return zoomSidePanel(name, body, false);
@@ -10143,8 +10124,6 @@
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
             </div>
-            <h3>レアリティの装飾</h3>
-            <div class="deck-cards">${raritySampleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　押すと右半分に全体　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -10414,11 +10393,11 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-metal-red.png?v=4"],
-      ["style-blue", "ブロック", "frame-metal-blue.png?v=4"],
-      ["style-yellow", "スキル", "frame-metal-yellow.png?v=4"],
-      ["style-green", "アイテム", "frame-metal-green.png?v=2"],
-      ["style-navy", "紺", "frame-metal-navy.png?v=1"],
+      ["style-red", "アタック", "frame-metal-red.png?v=5"],
+      ["style-blue", "ブロック", "frame-metal-blue.png?v=5"],
+      ["style-yellow", "スキル", "frame-metal-yellow.png?v=5"],
+      ["style-green", "アイテム", "frame-metal-green.png?v=3"],
+      ["style-navy", "紺", "frame-metal-navy.png?v=2"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
@@ -10430,25 +10409,6 @@
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
     }
-    function rareLayerOf(card) {
-      if (card && card.rareLayer) return card.rareLayer;
-      if (!card) return "";
-      if (card.boss || (card.stars || 1) >= 3) return "black";
-      if ((card.stars || 1) >= 2) return "gold";
-      return "silver";
-    }
-
-    function raritySampleSheet() {
-      const base = CARDS["アタック"];
-      if (!base) return "";
-      return [["silver", "銀"], ["gold", "金"], ["black", "黒"]].map(([layer, label]) => {
-        const id = `rare-${layer}`;
-        const on = albumZoom === id;
-        const card = { ...base, name: "アタック", rareLayer: layer };
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${id}" aria-label="アタックに${label}の装飾" aria-pressed="${on ? "true" : "false"}"><span class="card preview attack">${cardFace(card, false)}</span></button><figcaption>アタック ${esc(label)}</figcaption></figure>`;
-      }).join("");
-    }
-
     function cardStyleSheet() {
       return CARD_STYLE.map((item) => {
         const on = albumZoom === item[0];
@@ -10606,9 +10566,7 @@
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
-      const layer = rareLayerOf(card);
-      const deco = layer ? `<i class="rare-layer ${layer}" aria-hidden="true"></i>` : "";
-      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i>${deco}</div>`;
+      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
