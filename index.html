@@ -1522,20 +1522,20 @@
       min-width: 0;
       z-index: 1;
     }
-    .cast-deck .deck-card:hover { z-index: 40; }
+    .cast-deck .deck-card:hover { z-index: 2; }
     .cast-deck .card.preview {
       width: 100%;
       pointer-events: auto;
-      cursor: zoom-in;
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
-      transform-origin: center bottom;
+      cursor: pointer;
     }
-    .cast-deck .deck-card:hover .card.preview {
-      transform: scale(2.55);
-      box-shadow:
-        0 0 0 2px rgba(255, 220, 140, 0.9),
-        0 16px 28px rgba(0, 0, 0, 0.7);
+    .cast-card-pop {
+      position: fixed;
+      z-index: 80;
+      width: min(300px, 42vw);
+      pointer-events: none;
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.65));
     }
+    .cast-card-pop .card.preview { width: 100%; height: auto; }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
     .cast-roster {
       display: flex;
@@ -4494,33 +4494,48 @@
     }
     /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
     .menu.event {
-      width: min(1440px, calc(100vw - 32px));
-      height: calc(100vh - 32px);
+      width: min(1600px, calc(100vw - 24px));
+      height: calc(100vh - 24px);
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "title title"
+        "picture choice";
       align-items: center;
-      gap: 28px;
+      gap: 16px 28px;
       overflow: hidden;
     }
+    .menu.event > h1 { grid-area: title; text-align: center; }
     .menu.event .event-picture {
+      grid-area: picture;
       width: 100%;
-      height: min(82vh, 860px);
+      height: 100%;
+      max-height: 100%;
       object-fit: contain;
       border-radius: 18px;
       border: 2px solid rgba(228, 177, 90, 0.88);
       box-shadow: 0 16px 28px rgba(0, 0, 0, 0.4);
     }
     .menu.event .event-choice {
+      grid-area: choice;
       min-width: 0;
+      height: 100%;
       max-height: 100%;
       overflow: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 12px;
     }
     @media (max-width: 900px) {
-      .menu.event { grid-template-columns: 1fr; height: auto; overflow: auto; }
+      .menu.event {
+        grid-template-columns: 1fr;
+        grid-template-areas: "title" "picture" "choice";
+        height: auto;
+        overflow: auto;
+      }
       .menu.event .event-picture { height: 42vh; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
@@ -4790,11 +4805,48 @@
         radial-gradient(ellipse at 80% 88%, rgba(70, 32, 16, 0.35), transparent 42%),
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
-    .challenge-pick .cast-title {
-      width: 100%;
-      font-size: clamp(34px, 4.2vw, 62px);
-      letter-spacing: 0.14em;
+    .cast-screen.character-focus .cast-main {
+      width: min(1560px, 100%);
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.7fr);
     }
+    .cast-screen.character-focus .cast-action {
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+    }
+    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(36px, 3vw, 52px); }
+    .cast-screen.character-focus .cast-blurb { font-size: 20px; line-height: 1.55; }
+    .cast-screen.character-focus .stat-chips .chip { padding: 10px 14px; }
+    .cast-screen.character-focus .stat-chips .chip b { font-size: 32px; }
+    .cast-screen.character-focus .stat-chips .chip .k { font-size: 16px; }
+    .dungeon-screen .dungeon-preview { height: min(42vh, 460px); }
+    .dungeon-foes, .dungeon-clears {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      width: min(1100px, 100%);
+      margin: 0;
+    }
+    .dungeon-foes figure, .dungeon-clears figure {
+      margin: 0;
+      width: 84px;
+      text-align: center;
+      color: #fff6e4;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .dungeon-foes img, .dungeon-clears img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      background: #120e0c;
+      border-radius: 12px;
+      border: 2px solid rgba(228, 177, 90, 0.7);
+    }
+    .dungeon-note { margin: 0; color: #f0c36a; font-size: 16px; font-weight: 800; letter-spacing: 0.08em; }
     .challenge-split {
       flex: 1 1 auto;
       min-height: 0;
@@ -5806,7 +5858,7 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=7",
+        chibi: "job-girl.png?v=8",
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=25",
         battleRatio: "3 / 4",
@@ -5864,8 +5916,15 @@
     let dungeonLock = "";
     let meta = { uses: 0, clears: 0, stars: 0, cleared: {} };
 
+    function clearNames(floors) {
+      const raw = meta.cleared && meta.cleared[String(floors)];
+      if (raw === true) return ["女の戦士"];
+      if (Array.isArray(raw)) return raw.filter(Boolean);
+      return [];
+    }
+
     function dungeonClearedFloors(floors) {
-      return !!(meta.cleared && meta.cleared[String(floors)]);
+      return clearNames(floors).length > 0;
     }
 
     /** 鎖の本数。0 なら挑戦可。100 は最大2本。 */
@@ -5888,7 +5947,10 @@
 
     function markDungeonCleared(floors) {
       if (!meta.cleared || typeof meta.cleared !== "object") meta.cleared = {};
-      meta.cleared[String(floors)] = true;
+      const names = clearNames(floors);
+      const who = heroCast || "女の戦士";
+      if (!names.includes(who)) names.push(who);
+      meta.cleared[String(floors)] = names;
     }
 
     function shuffle(list) {
@@ -8890,7 +8952,7 @@
       for (const [name, count] of CARD_POOL) {
         const card = { name, ...(cardDef(name) || {}) };
         for (let i = 0; i < count; i += 1) {
-          cards.push(`<div class="deck-card" title="${esc(name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`);
+          cards.push(`<button type="button" class="deck-card" data-action="cast-card" data-index="${cards.length}" title="${esc(name)}" aria-label="${esc(name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`);
         }
       }
       return cards.join("");
@@ -8940,7 +9002,7 @@
     }
 
     function paintChallengeStart() {
-      const start = root.querySelector(".challenge-pick .cast-start");
+      const start = root.querySelector(".cast-start");
       if (!start) return;
       start.hidden = false;
       start.disabled = !challengeReady();
@@ -9039,6 +9101,8 @@
         col.classList.toggle("active", active);
         col.setAttribute("aria-pressed", active && col.dataset.dungeon === dungeonLock ? "true" : "false");
       });
+      const slot = root.querySelector(".dungeon-clear-slot");
+      if (slot) slot.innerHTML = shown ? dungeonClearFaces(shown.floors) : "";
       paintChallengeStart();
     }
 
@@ -9059,12 +9123,45 @@
     }
 
     function renderCharacter() {
-      // ジョブ（左）とダンジョン（右）を同時に決める。見出しは挑戦内容で統一。
       const tokens = CAST.map((item) => `
         <button type="button" class="cast-token mini" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}">
           <img src="${item.chibi}" alt="">
           <span>${esc(item.name)}</span>
         </button>`).join("");
+      castShown = "";
+      root.innerHTML = `
+        <div class="cast-screen character-focus">
+          <h1 class="cast-title">挑戦するキャラを選んでください</h1>
+          <div class="cast-main"></div>
+          <div class="cast-roster many">${tokens}</div>
+          <div class="cast-actions">
+            <button type="button" class="cast-back" data-action="title">もどる</button>
+            <button type="button" class="primary" data-action="open-dungeon">ダンジョンへ</button>
+          </div>
+        </div>`;
+      paintCast();
+      bindCastHover();
+    }
+
+    function dungeonEnemyFaces() {
+      return ["スライム", "ゴブリン", "ちびドラゴン", "ミノタウロス"].map((name) => {
+        const foe = ENEMIES.find((enemy) => enemy.name === name);
+        if (!foe) return "";
+        const boss = name === "ミノタウロス" ? "（ボス）" : "";
+        return `<figure><img src="${esc(foe.image)}" alt=""><figcaption>${esc(name)}${boss}</figcaption></figure>`;
+      }).join("");
+    }
+
+    function dungeonClearFaces(floors) {
+      const names = clearNames(floors);
+      if (!names.length) return `<p class="dungeon-note">踏破したキャラは、まだいません</p>`;
+      return `<div class="dungeon-clears">${names.map((name) => {
+        const who = castByName(name);
+        return `<figure><img src="${esc(who.chibi)}" alt=""><figcaption>${esc(who.name)}</figcaption></figure>`;
+      }).join("")}</div>`;
+    }
+
+    function renderDungeon() {
       const columns = DUNGEON_LIST.map((item) => {
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
@@ -9077,39 +9174,28 @@
           <span class="dungeon-facts" aria-hidden="true"><span class="dungeon-rank">${esc(item.rank || "")}</span><span class="dungeon-floor">最大${esc(item.label)}階</span></span>
         </button>`;
       }).join("");
-      castShown = "";
       root.innerHTML = `
-        <div class="cast-screen challenge-pick">
-          <h1 class="cast-title">挑戦内容を選択してください</h1>
-          <div class="challenge-split">
-            <section class="challenge-job" aria-label="ジョブ">
-              <div class="cast-main"></div>
-              <div class="cast-roster many">${tokens}</div>
-            </section>
-            <section class="challenge-dungeon" aria-label="ダンジョン">
-              <div class="dungeon-preview">
-                <img alt="" hidden>
-                <div class="dungeon-caption" hidden>
-                  <p class="preview-name"></p>
-                  <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
-                </div>
-              </div>
-              <div class="dungeon-columns">${columns}</div>
-            </section>
+        <div class="cast-screen dungeon-screen">
+          <h1 class="cast-title">ダンジョンを選択してください</h1>
+          <div class="dungeon-preview">
+            <img alt="" hidden>
+            <div class="dungeon-caption" hidden>
+              <p class="preview-name"></p>
+              <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
+            </div>
           </div>
+          <p class="dungeon-note">登場する敵</p>
+          <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
+          <p class="dungeon-note">踏破したキャラ</p>
+          <div class="dungeon-clear-slot"></div>
+          <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
-            <button type="button" class="cast-back" data-action="title">もどる</button>
+            <button type="button" class="cast-back" data-action="character">もどる</button>
             <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
           </div>
         </div>`;
-      paintCast();
       paintDungeon();
-      bindCastHover();
       bindDungeonHover();
-    }
-
-    function renderDungeon() {
-      renderCharacter();
     }
 
     function albumCatalog() {
@@ -9209,7 +9295,7 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=7", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=8", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
@@ -9472,10 +9558,11 @@
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "お店", takeRare("shop")) : "";
       const where = floorKind === "挑戦者に祝福を" ? "" : `<p>${esc(dungeonName)}　${floorLabel()}</p>`;
-      const choice = `${rareFlash}<h1>${esc(floorKind)}</h1>${where}${shop}${gift}<p>${esc(floorNote)}</p>${bless}${beggar}${jobs}${ultimates}${next}`;
+      const title = `<h1>${esc(floorKind)}</h1>`;
+      const choice = `${rareFlash}${where}${shop}${gift}<p>${esc(floorNote)}</p>${bless}${beggar}${jobs}${ultimates}${next}`;
       root.innerHTML = art
-        ? `<div class="menu event${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${art}<div class="event-choice">${choice}</div></div>`
-        : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${choice}</div>`;
+        ? `<div class="menu event${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
+        : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${title}${choice}</div>`;
     }
 
     function renderClear() {
@@ -11112,7 +11199,8 @@
       if (name === "cast-token") {
         castLock = action.dataset.cast || castLock;
         castHover = "";
-        paintCast();
+        screen = "dungeon";
+        render();
       }
       if (name === "dungeon-token") {
         dungeonLock = action.dataset.dungeon || dungeonLock;
@@ -11161,6 +11249,34 @@
           screen = "character";
           render();
         }
+        if (name === "cast-card") {
+          const old = root.querySelector(".cast-card-pop");
+          if (old && old.dataset.index === (action.dataset.index || "")) {
+            old.remove();
+            return;
+          }
+          if (old) old.remove();
+          const card = action.querySelector(".card");
+          if (!card) return;
+          const pop = document.createElement("div");
+          pop.className = "cast-card-pop";
+          pop.dataset.index = action.dataset.index || "";
+          pop.innerHTML = card.outerHTML;
+          root.appendChild(pop);
+          const rect = action.getBoundingClientRect();
+          const width = pop.offsetWidth || 280;
+          const height = pop.offsetHeight || 420;
+          let left = rect.right + 12;
+          if (left + width > window.innerWidth - 8) left = Math.max(8, rect.left - width - 12);
+          let top = rect.top;
+          if (top + height > window.innerHeight - 8) top = Math.max(8, window.innerHeight - 8 - height);
+          pop.style.left = `${Math.round(left)}px`;
+          pop.style.top = `${Math.round(top)}px`;
+          return;
+        }
+        const pop = root.querySelector(".cast-card-pop");
+        if (pop) pop.remove();
+        if (name === "open-dungeon") { screen = "dungeon"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
           castHover = "";
@@ -11175,7 +11291,7 @@
           } else paintChallengeStart();
         }
         if (name === "cast-stay") { screen = "character"; render(); }
-        if (name === "dungeon-list") { screen = "character"; render(); }
+        if (name === "dungeon-list") { screen = "dungeon"; render(); }
         if (name === "dungeon-token") {
           dungeonLock = action.dataset.dungeon || "";
           dungeonHover = "";
