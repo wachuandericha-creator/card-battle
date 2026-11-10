@@ -7,7 +7,7 @@
   <style>
     :root {
       --hand-scale: 0.64;
-      --card-ratio: 2 / 3;
+      --card-ratio: 3 / 4;
       --edge-clear: 0px;
       --bg: #0a0908;
       --ink: #1a1612;
@@ -1299,11 +1299,11 @@
     }
     .art-zoom-side .art-zoom-card .card.preview {
       display: block;
-      width: min(100cqi, calc(100cqb * 2 / 3));
+      width: min(100cqi, calc(100cqb * 3 / 4));
       height: auto;
       max-width: 100%;
       max-height: 100%;
-      aspect-ratio: 2 / 3;
+      aspect-ratio: 3 / 4;
       object-fit: contain;
       border-radius: 0;
       background: transparent;
@@ -3548,20 +3548,21 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=5"); }
-    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=5"); }
-    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=5"); }
+    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=6"); }
+    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=6"); }
+    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=6"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
+    .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
       position: absolute;
       left: 7.4cqw;
-      top: 22.6cqw;
-      width: 85cqw;
-      height: 68.6cqw;
+      top: 20.2cqw;
+      width: 84.9cqw;
+      height: 60.9cqw;
       margin: 0;
       z-index: 1;
       border-radius: 0;
@@ -3602,41 +3603,42 @@
     }
     .card .card-fit .cost {
       left: 10.9cqw;
-      top: 12.7cqw;
+      top: 11.3cqw;
       transform: translate(-50%, -50%);
-      width: 8.2cqw;
-      height: 8.2cqw;
+      width: 7.2cqw;
+      height: 7.2cqw;
       border: 0;
       border-radius: 0;
       background: none;
       box-shadow: none;
       color: #f1efed;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: 8.4cqw;
+      font-size: 4.6cqw;
       font-weight: 700;
       -webkit-text-stroke: 0;
       text-shadow: none;
     }
     .card .card-fit .nameplate .name {
-      left: 17cqw;
+      left: 17.2cqw;
       right: 8cqw;
-      top: 10.4cqw;
+      top: 11.6cqw;
+      transform: translateY(-50%);
       padding: 0;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: 6.6cqw;
+      font-size: 5.2cqw;
       font-weight: 700;
       letter-spacing: 0.02em;
       text-align: left;
-      color: #f1efed;
+      color: #14110e;
       -webkit-text-stroke: 0;
       text-shadow: none;
     }
     .card .card-fit .text {
       position: absolute;
-      left: 10cqw;
-      top: 96.6cqw;
-      width: 80cqw;
-      height: 42cqw;
+      left: 9cqw;
+      top: 85.8cqw;
+      width: 82cqw;
+      height: 39.8cqw;
       margin: 0;
       z-index: 3;
       padding: 2cqw;
@@ -10117,13 +10119,13 @@
     }
 
     const CARD_STYLE = [
-      ["style-star1", "★ 銅", "frame-star1.png?v=5"],
-      ["style-star2", "★★ 銀", "frame-star2.png?v=5"],
-      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=5"],
-      ["style-red", "赤", "frame-metal-red.png?v=1"],
-      ["style-blue", "青", "frame-metal-blue.png?v=1"],
-      ["style-green", "緑", "frame-metal-green.png?v=1"],
-      ["style-yellow", "黄", "frame-metal-yellow.png?v=1"],
+      ["style-star1", "★ 銅", "frame-star1.png?v=6"],
+      ["style-star2", "★★ 銀", "frame-star2.png?v=6"],
+      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=6"],
+      ["style-red", "差し色 赤", "frame-metal-red.png?v=2"],
+      ["style-blue", "差し色 青", "frame-metal-blue.png?v=2"],
+      ["style-green", "差し色 緑", "frame-metal-green.png?v=2"],
+      ["style-yellow", "差し色 黄", "frame-metal-yellow.png?v=2"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
