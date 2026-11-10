@@ -3655,6 +3655,10 @@
     .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=9"); }
     .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=9"); }
     .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=9"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=4"); }
+    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=4"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=4"); }
+    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=2"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -3753,10 +3757,23 @@
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
     }
     .card .card-fit .fx.note { font-size: 6.6cqw; font-weight: 700; }
+    .card .card-fit .rare-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background: center / 100% 100% no-repeat;
+    }
+    .card .card-fit .rare-layer.silver { background-image: url("rare-layer-silver.png?v=1"); }
+    .card .card-fit .rare-layer.gold { background-image: url("rare-layer-gold.png?v=1"); }
+    .card .card-fit .rare-layer.black { background-image: url("rare-layer-black.png?v=1"); }
+    .card .card-fit .genre { z-index: 6; }
+    .card .card-fit .nameplate,
+    .card .card-fit .text { z-index: 5; }
     .card .card-fit .rarity {
       right: 10.4cqw;
       bottom: 9.6cqw;
-      z-index: 4;
+      z-index: 6;
       font-size: 5cqw;
       color: #1c1816;
       text-shadow: none;
@@ -4238,9 +4255,8 @@
     .title-screen {
       position: relative;
       height: 100%;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) min(380px, 32vw);
-      grid-template-rows: auto minmax(0, 1fr) auto;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
       background:
         radial-gradient(ellipse 70% 55% at 50% 38%, #2a1c14 0%, transparent 70%),
@@ -4311,14 +4327,12 @@
     }
     /* ロゴは上中央、操作は画面中央下（端すぎると押しにくい） */
     .title-hero {
-      position: relative;
+      position: absolute;
       z-index: 3;
-      grid-column: 1;
-      grid-row: 1;
-      top: auto;
-      left: auto;
+      top: clamp(20px, 4.5vh, 48px);
+      left: 50%;
       right: auto;
-      transform: none;
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -4383,22 +4397,20 @@
     .title-rule i { flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(240, 195, 106, 0.95)); box-shadow: 0 0 8px rgba(240, 195, 106, 0.6); }
     .title-rule i:last-child { background: linear-gradient(90deg, rgba(240, 195, 106, 0.95), transparent); }
     .title-actions {
-      position: relative;
+      position: absolute;
       z-index: 4;
-      grid-column: 1;
-      grid-row: 3;
-      left: auto;
+      left: 50%;
       right: auto;
-      bottom: auto;
-      transform: none;
+      bottom: clamp(56px, 11vh, 108px);
+      transform: translateX(-50%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
       gap: 14px;
-      margin: 0 auto 28px;
-      padding: 12px 16px;
-      width: min(420px, calc(100% - 48px));
+      margin: 0;
+      padding: 0;
+      width: min(420px, calc(100% - 64px));
       pointer-events: auto;
     }
     .title-actions > button.primary {
@@ -4446,18 +4458,15 @@
     .title-sub-actions button.logged-in::before { content: "● "; color: #9bff94; }
     .title-sub-actions button.logged-in:hover:not(:disabled) { border-color: #c6ffc0; background: linear-gradient(180deg, rgba(48, 110, 52, 0.92), rgba(22, 62, 28, 0.92)); }
     .title-board {
-      position: relative;
+      position: absolute;
       z-index: 5;
-      grid-column: 2;
-      grid-row: 1 / -1;
-      top: auto;
-      right: auto;
+      top: 4vh;
+      right: max(24px, 3vw);
       bottom: auto;
-      align-self: start;
-      width: auto;
+      width: min(400px, 36vw);
       height: auto;
-      max-height: calc(100% - 24px);
-      margin: 12px 12px 12px 0;
+      max-height: calc(100vh - 8vh);
+      margin: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -4514,7 +4523,6 @@
     .title-board .board-stars {
       position: relative;
       z-index: 1;
-      order: -1;
       margin: 0;
       flex: 0 0 auto;
       display: flex;
@@ -4544,6 +4552,11 @@
       text-shadow: 0 1px 0 #5a3d12, 0 0 10px rgba(255, 220, 120, 0.4);
     }
     .title-board .board-stars b {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transform: translateY(-0.08em);
       font-size: clamp(18px, 1.5vw, 22px);
       color: #ffe9ae;
       text-shadow: 0 0 18px rgba(255, 200, 80, 0.45), 0 2px 0 #5a3d12;
@@ -4651,18 +4664,16 @@
     }
     .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
-      .title-screen { grid-template-columns: 1fr; }
+      .title-hero { top: 12px; }
+      .title-actions { bottom: 16px; width: min(420px, calc(100% - 32px)); }
       .title-board {
-        grid-column: 1;
-        grid-row: 2;
-        top: auto;
-        right: auto;
-        bottom: auto;
-        width: auto;
-        max-height: none;
-        margin: 8px 12px;
-        padding: 14px;
-        gap: 10px;
+        top: 8px;
+        right: 8px;
+        width: min(240px, 46vw);
+        max-height: calc(100vh - 16px);
+        margin: 0;
+        padding: 10px;
+        gap: 8px;
       }
       .title-board h2 { font-size: 16px; letter-spacing: 0.14em; }
       .title-board .board-stars b { font-size: 16px; }
@@ -6301,12 +6312,12 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=12",
+        chibi: "job-girl.png?v=13",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=31",
+        battle: "girl-battle.png?v=32",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
-        victory: "girl-victory.png?v=14",
+        victory: "girl-victory.png?v=15",
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
@@ -6682,7 +6693,7 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=12", label: "ジョブ" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=13", label: "ジョブ" };
       if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -9494,8 +9505,8 @@
       return `
         <aside class="title-board" aria-label="達成状況">
           <h2><span>達成状況</span></h2>
-          <ul class="board-goals">${rows}</ul>
           <p class="board-stars" aria-label="スター ${stars}"><b>★${stars}</b></p>
+          <ul class="board-goals">${rows}</ul>
           <div class="board-foot">
             <div class="board-who${logged ? "" : " off"}">
               <span class="lbl">ログイン名</span>
@@ -9940,9 +9951,10 @@
       sheetZoom = null;
     }
 
-    function zoomSidePanel(title, body) {
+    function zoomSidePanel(title, body, withClose = true) {
       if (!title || !body) return "";
-      return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}<button type="button" data-action="close-art-zoom">閉じる</button></aside>`;
+      const close = withClose ? `<button type="button" data-action="close-art-zoom">閉じる</button>` : "";
+      return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}${close}</aside>`;
     }
 
     function artZoomSide(name) {
@@ -9951,15 +9963,21 @@
       }
       const face = ALBUM_FACE.find((item) => item[0] === name);
       if (face) {
-        return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`);
+        return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`, false);
       }
       const style = CARD_STYLE.find((item) => item[0] === name);
       if (style) {
-        return zoomSidePanel(style[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}"></div>`);
+        return zoomSidePanel(style[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}"></div>`, false);
+      }
+      const rare = /^rare-(silver|gold|black)$/.exec(name);
+      if (rare && CARDS["アタック"]) {
+        const label = rare[1] === "silver" ? "銀" : rare[1] === "gold" ? "金" : "黒";
+        const sample = { ...CARDS["アタック"], name: "アタック", rareLayer: rare[1] };
+        return zoomSidePanel(`アタック ${label}`, `<div class="art-zoom-card"><div class="card preview attack">${cardFace(sample, false)}</div></div>`, false);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
-      return zoomSidePanel(name, body);
+      return zoomSidePanel(name, body, false);
     }
 
     function sheetZoomSide() {
@@ -9999,12 +10017,12 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=31", "戦闘（縁取り）", "cut-ref")}
-              ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=32", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle-prev.png?v=2", "戦闘（前）", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.png?v=14", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=15", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10012,15 +10030,10 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=12", "女の戦士の選択コマ（かわいい）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=13", "女の戦士の選択コマ（かわいい）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
-            <h3>マナ</h3>
-            <div class="ref-grid">
-              ${sheetFig("mana-flame.png?v=1", "燃える炎", "cut-ref")}
-              ${sheetFig("mana-flame-temp.png?v=1", "持ち越し（白い炎）", "cut-ref")}
-            </div>
             <h3>シールド</h3>
             <div class="ref-grid">
               ${sheetFig("shield-mark-steel.png?v=2", "青鋼の盾", "cut-ref")}
@@ -10068,7 +10081,7 @@
               ${sheetFig("path-beggar.jpg?v=4", "物乞い")}
               ${sheetFig("path-shop.jpg?v=6", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
-              ${sheetFig("path-lost.jpg?v=7", "迷子")}
+              ${sheetFig("path-lost.jpg?v=8", "迷子")}
               ${sheetFig("path-unknown.jpg?v=5", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -10142,6 +10155,8 @@
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
             </div>
+            <h3>レアリティの装飾</h3>
+            <div class="deck-cards">${raritySampleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">全${catalog.length}種　表示${shown.length}　押すと右半分に全体　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
@@ -10411,11 +10426,11 @@
     }
 
     const CARD_STYLE = [
-      ["style-green", "差し色 緑", "frame-metal-green.png?v=2"],
-      ["style-red", "差し色 赤", "frame-metal-red.png?v=4"],
-      ["style-yellow", "差し色 金", "frame-metal-yellow.png?v=4"],
-      ["style-blue", "差し色 青", "frame-metal-blue.png?v=4"],
-      ["style-navy", "差し色 紺", "frame-metal-navy.png?v=1"],
+      ["style-red", "アタック", "frame-metal-red.png?v=4"],
+      ["style-blue", "ブロック", "frame-metal-blue.png?v=4"],
+      ["style-yellow", "スキル", "frame-metal-yellow.png?v=4"],
+      ["style-green", "アイテム", "frame-metal-green.png?v=2"],
+      ["style-navy", "紺", "frame-metal-navy.png?v=1"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
@@ -10427,6 +10442,25 @@
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
     }
+    function rareLayerOf(card) {
+      if (card && card.rareLayer) return card.rareLayer;
+      if (!card) return "";
+      if (card.boss || (card.stars || 1) >= 3) return "black";
+      if ((card.stars || 1) >= 2) return "gold";
+      return "silver";
+    }
+
+    function raritySampleSheet() {
+      const base = CARDS["アタック"];
+      if (!base) return "";
+      return [["silver", "銀"], ["gold", "金"], ["black", "黒"]].map(([layer, label]) => {
+        const id = `rare-${layer}`;
+        const on = albumZoom === id;
+        const card = { ...base, name: "アタック", rareLayer: layer };
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${id}" aria-label="アタックに${label}の装飾" aria-pressed="${on ? "true" : "false"}"><span class="card preview attack">${cardFace(card, false)}</span></button><figcaption>アタック ${esc(label)}</figcaption></figure>`;
+      }).join("");
+    }
+
     function cardStyleSheet() {
       return CARD_STYLE.map((item) => {
         const on = albumZoom === item[0];
@@ -10584,7 +10618,9 @@
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
-      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      const layer = rareLayerOf(card);
+      const deco = layer ? `<i class="rare-layer ${layer}" aria-hidden="true"></i>` : "";
+      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i>${deco}</div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
@@ -12118,7 +12154,7 @@
       if (zoomCard && screen === "album") {
         const name = zoomCard.dataset.artZoom || "";
         captureAlbumScroll();
-        albumZoom = name;
+        albumZoom = albumZoom === name ? "" : name;
         render();
         return;
       }
