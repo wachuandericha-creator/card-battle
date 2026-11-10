@@ -9488,7 +9488,7 @@
       const goal = (done, label, rank) => `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(label)}</span>${rank ? `<span class="rank" aria-label="難易度">${esc(rank)}</span>` : ""}</li>`;
       const warriorDone = logged && DUNGEON_LIST.some((item) => clearNames(item.floors).includes("戦士"));
       const rows = [
-        goal(warriorDone, "戦士で踏破", ""),
+        goal(warriorDone, "戦士でダンジョンクリア", ""),
         ...DUNGEON_LIST.map((item) => goal(logged && dungeonClearedFloors(item.floors), `${item.name}を踏破`, "")),
       ].join("");
       const slot = logged ? readAccount().slots[loginWord] : null;
