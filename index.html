@@ -138,12 +138,25 @@
       color: var(--cream);
     }
     .road-map h2 {
-      margin: 0 0 6px;
-      font-size: 16px;
-      letter-spacing: 0.22em;
+      margin: 0 0 8px;
+      padding: 7px 8px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 214, 120, 0.75);
+      background:
+        radial-gradient(120% 90% at 50% 0%, rgba(255, 226, 150, 0.34), transparent 62%),
+        linear-gradient(180deg, rgba(146, 96, 28, 0.72), rgba(48, 28, 10, 0.55));
+      box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.55), 0 6px 14px rgba(0, 0, 0, 0.28);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.42em;
+      text-indent: 0.42em;
       text-align: center;
-      color: var(--gold);
+      color: #fff3c4;
+      text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.5);
     }
+    .road-map h2::before { content: "◆ "; letter-spacing: 0; text-indent: 0; font-size: 11px; }
+    .road-map h2::after { content: " ◆"; letter-spacing: 0; font-size: 11px; }
     .road-map ol {
       list-style: none;
       margin: 0;
@@ -161,7 +174,7 @@
       grid-template-columns: 32px 42px minmax(0, 1fr);
       align-items: center;
       gap: 4px;
-      flex: 1 0 44px;
+      flex: 0 0 calc((100% - 16px) / 5);
       min-height: 0;
       color: rgba(240, 228, 204, 0.45);
       font-size: 13px;
@@ -174,7 +187,15 @@
       object-fit: cover;
       background: #1a1410;
     }
-    .road-node i { display: block; border: 1px solid rgba(228, 177, 90, 0.35); }
+    .road-node i {
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(228, 177, 90, 0.35);
+      font-size: 12px;
+      font-style: normal;
+      color: #f0d078;
+    }
+    .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
     .road-node.now {
       color: #fff6d0;
@@ -2698,18 +2719,20 @@
     }
     .battle-log h2 {
       margin: 0 0 14px;
-      padding-bottom: 12px;
-      border-bottom: 0;
-      background: linear-gradient(90deg, transparent 4%, rgba(212, 168, 74, 0.55) 50%, transparent 96%);
-      background-size: 100% 1px;
-      background-repeat: no-repeat;
-      background-position: bottom center;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.28em;
+      padding: 8px 8px 12px;
+      border: 1px solid rgba(255, 214, 120, 0.75);
+      border-radius: 12px;
+      background:
+        radial-gradient(120% 90% at 50% 0%, rgba(255, 226, 150, 0.28), transparent 62%),
+        linear-gradient(180deg, rgba(146, 96, 28, 0.55), rgba(48, 28, 10, 0.4));
+      box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.45), 0 6px 14px rgba(0, 0, 0, 0.28);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.42em;
+      text-indent: 0.42em;
       text-align: center;
-      color: var(--gold);
-      text-shadow: 0 0 10px rgba(212, 168, 74, 0.22);
+      color: #fff3c4;
+      text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.45);
     }
     .battle-log h2::after {
       content: "◆";
@@ -2954,13 +2977,13 @@
     }
     .plate-gear .gear-board {
       display: flex;
-      flex-flow: row wrap;
+      flex-direction: column;
       align-items: flex-start;
       justify-content: flex-start;
       gap: 6px;
-      width: 100%;
-      min-width: 0;
-      max-width: none;
+      width: 72px;
+      min-width: 72px;
+      max-width: 72px;
       height: auto;
       min-height: 0;
       flex: none;
@@ -2968,10 +2991,10 @@
       container-type: normal;
     }
     .plate-gear .gear-pair { display: contents; }
-    .plate-gear .gear-slot { width: calc((100% - 18px) / 4); flex: 0 0 calc((100% - 18px) / 4); max-width: none; }
+    .plate-gear .gear-slot { width: 72px; flex: 0 0 72px; max-width: 72px; }
     .plate-gear .gear-frame {
-      width: 100%;
-      max-width: none;
+      width: 72px;
+      max-width: 72px;
       height: auto;
       aspect-ratio: 1;
     }
@@ -4924,6 +4947,17 @@
     .depart.depart-fast .depart-art,
     .depart.depart-fast .depart-name,
     .depart.depart-fast::after { animation-duration: 0.7s; }
+    .depart.depart-out { animation: depart-fade 0.8s ease forwards; }
+    @keyframes depart-fade { from { opacity: 1; } to { opacity: 0; } }
+    .menu.event.bless.arrive { animation: bless-in 0.8s ease; }
+    @keyframes bless-in {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .depart.depart-out,
+      .menu.event.bless.arrive { animation: none; }
+    }
     .depart-name span { color: inherit; }
     @keyframes depart-zoom {
       0% { transform: scale(1.02); filter: brightness(0.55); }
@@ -6521,24 +6555,38 @@
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
 
+    function roadFixed(node, index) {
+      const name = String(node || "");
+      if (name === "出来事:祝福" || name === "出来事:ジョブ" || name === DUNGEON.boss) return true;
+      return index === 1 && route[0] === "出来事:祝福";
+    }
+
     function roadMapHtml() {
       if (!route || !route.length) return "";
       const blessing = route[0] === "出来事:祝福";
-      const rows = route.map((node, i) => ({ node, i }))
-        .filter(({ node }) => node !== "出来事:祝福")
-        .reverse()
-        .map(({ node, i }) => {
-          const face = roadFace(node);
-          const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-          const show = state !== "ahead" || face.boss;
-          const floor = blessing ? i : i + 1;
-          const icon = show && face.src
-            ? `<img src="${face.src}" alt="">`
-            : `<i></i>`;
-          const caption = show ? face.label : "";
-          return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor}F</span>${icon}<span class="road-name">${esc(caption)}</span></li>`;
-        }).join("");
-      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}</ol></section>`;
+      const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
+        const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
+        const known = state !== "ahead" || roadFixed(node, i);
+        const face = known ? roadFace(node) : { label: "道" };
+        const floor = node === "出来事:祝福" ? "祝" : `${blessing ? i : i + 1}F`;
+        const icon = face.src
+          ? `<img src="${face.src}" alt="">`
+          : `<i>${esc(face.mark || "")}</i>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor}</span>${icon}<span class="road-name">${esc(face.label || "")}</span></li>`;
+      }).join("");
+      const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
+      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
+    }
+
+    function placeRoad() {
+      const ol = document.querySelector(".road-map ol");
+      const now = ol && ol.querySelector(".road-node.now");
+      if (!ol || !now) return;
+      const row = ol.clientHeight / 5;
+      const prev = now.nextElementSibling;
+      const anchor = prev && prev.classList.contains("road-node") ? prev : now;
+      const extra = anchor === now ? row : 0;
+      ol.scrollTop = Math.max(0, anchor.offsetTop + anchor.offsetHeight + extra - ol.clientHeight);
     }
 
     function enemyNow() {
@@ -8955,8 +9003,8 @@
       const pick = blessPicks[index];
       if (!pick) return;
       const got = takeGift(pick);
-      floorNote = got ? "女神の手が離れ、選んだ恵みだけが残った。光は静かに薄れていく。" : "";
-      floorPrompt = got;
+      floorNote = got || "";
+      floorPrompt = "";
       blessPicks = [];
       floorPhase = "show";
       render();
@@ -8988,7 +9036,8 @@
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
       if (gift.kind === "gear") {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearOfferHtml(item)}</div>`;
+        const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>${rareCaption(item)}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${picture}<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>${rareCaption(item)}</div>`;
@@ -9031,18 +9080,18 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "洞窟の入口に、光が柱となって降りた。長い金の髪の女神が、ひざまずくあなたの前に立つ。光輪と翼がゆっくり揺れ、白と金の衣が床の湿りを払う。女神は三つの恵みを両手に載せた。この先の戦いに持っていけるのは、そのうちひとつだけだ。残りは、光とともに消える。";
-        floorPrompt = "報酬をひとつ選べ。";
+        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
+        floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
         floorHp = 30;
         if (player) player.hp = 30;
-        floorNote = "行き止まりのくぼみに、誰かが残した燃えさしがあった。腰を下ろすと、洞窟の滴る音だけが残る。刃の熱が引き、息が深くなっていく。ここでは、まだ誰もあなたを見つけていない。";
-        floorPrompt = "体力が全快した。先へ進む。";
+        floorNote = "体力が全快した。";
+        floorPrompt = "";
       } else if (kind === "お店") {
         shopStock = rollShopStock();
-        floorNote = "角を曲がると、絹の帽子をかぶった骸骨が布を広げていた。骨の指が品を並べ、空いた眼窩があなたの星を数える。星を置けば、剣も薬も手に入る。星が足りない棚は、指一本動かない。";
-        floorPrompt = "買うものを選べ。";
+        floorNote = "おしゃれな骸骨が商いをしている。";
+        floorPrompt = "";
         armRare("shop");
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
@@ -9050,8 +9099,8 @@
           startBattle(floorHp);
           return;
         }
-        floorNote = "壁の割れ目に、誰かの置き忘れた荷があった。布をほどくと、埃の中から一つの恵みが見える。持っていけるのは、それだけだ。";
-        floorPrompt = grantExplore() || "先へ進む。";
+        floorNote = grantExplore() || "先へ進む。";
+        floorPrompt = "";
       } else if (kind === "未知") {
         const roll = ["キャンプ", "お店", "探索", "戦闘"][Math.floor(Math.random() * 4)];
         if (roll === "戦闘") {
@@ -9062,34 +9111,40 @@
         if (roll === "キャンプ") {
           floorHp = 30;
           if (player) player.hp = 30;
-          floorNote = "道標のない分岐で、足元の石が別の部屋へ落ちた。そこは野営の跡だった。火は消えているが、熱はまだ石に残っている。誰の泊まりかは、もう分からない。";
-          floorPrompt = "体力が全快した。先へ進む。";
+          floorNote = "未知は、キャンプだった。体力が全快した。";
+          floorPrompt = "";
         } else if (roll === "探索") {
-          floorNote = "道標のない分岐の先に、置き忘れた荷があった。布は湿っていて、中のものは一つだけ無事だった。";
-          floorPrompt = grantExplore() || "先へ進む。";
+          floorNote = `未知は、探索だった。${grantExplore()}`;
+          floorPrompt = "";
         } else {
           floorKind = "お店";
           shopStock = rollShopStock();
-          floorNote = "道標のない分岐の先で、絹帽子の骸骨が待っていた。骨の指が布をめくり、空いた眼窩があなたの星を数える。この店は、地図には無い。";
-          floorPrompt = "買うものを選べ。";
+          floorNote = "未知は、お店だった。おしゃれな骸骨が商いをしている。";
+          floorPrompt = "";
           armRare("shop");
         }
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
-        floorNote = "通路の暗がりに、痩せた人影が座っている。差し出した手は震えていて、目はあなたの札を見ている。一枚渡せば、この影は道を空ける。渡さずに背を向ければ、物乞いは牙をむいて襲ってくる。";
-        floorPrompt = "渡すカードを選べ。渡さず進んでもよい。";
+        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。進むと、物乞いが襲ってくる。";
+        floorPrompt = "";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
-        floorNote = `足元の紋章が熱を持ち、別の戦い方を壁に映している。いまの名は${job}。持っている札は捨てなくてよい。新しい名を受ければ、奥は別の手で開く。`;
-        floorPrompt = "ジョブを選べ。";
+        floorNote = `いまのジョブは${job}。カードは捨てない。`;
+        floorPrompt = "";
       }
       screen = "floor";
       render();
       if (kind === "祝福") playBlessArrive();
     }
 
-    function playBlessArrive() {}
+    function playBlessArrive() {
+      const menu = document.querySelector(".menu.event.bless");
+      if (!menu || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      menu.classList.remove("arrive");
+      void menu.offsetWidth;
+      menu.classList.add("arrive");
+    }
 
     function dropBeggar(index) {
       if (floorKind !== "物乞いに遭遇" || beggarCut) return;
@@ -9100,7 +9155,8 @@
       removed.push(gift);
       beggarGift = [gift];
       beggarCut = true;
-      floorPrompt = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
+      floorNote = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
+      floorPrompt = "";
       render();
     }
 
@@ -9127,9 +9183,10 @@
       if (departTimer) clearTimeout(departTimer);
       departTimer = setTimeout(() => {
         departTimer = null;
-        if (veil.parentNode) veil.remove();
         departing = false;
         beginRun(chosen.floors, chosen.name);
+        veil.classList.add("depart-out");
+        setTimeout(() => { if (veil.parentNode) veil.remove(); }, reduce ? 200 : 800);
       }, ms);
     }
 
@@ -10132,6 +10189,7 @@
       }
       paintEdgeClear();
       paintTitleNav();
+      requestAnimationFrame(placeRoad);
     }
 
     function pileMarkup(kind, count, overlay) {
@@ -11135,8 +11193,8 @@
           applyPath("straight");
           return;
         }
-        floorNote = "壁の割れ目に、誰かの置き忘れた荷があった。布をほどくと、埃の中から一つの恵みが見える。持っていけるのは、それだけだ。";
-        floorPrompt = grantExplore() || "先へ進む。";
+        floorNote = grantExplore() || "先へ進む。";
+        floorPrompt = "";
         rewardStep = "event";
         persistSave(true);
         render();
@@ -11158,8 +11216,8 @@
         if (roll === "camp") {
           restoreHp(player.maxHp - player.hp);
           floorGift = null;
-          floorNote = "道標のない分岐で、足元の石が別の部屋へ落ちた。そこは野営の跡だった。火は消えているが、熱はまだ石に残っている。";
-          floorPrompt = "体力が全快した。先へ進む。";
+          floorNote = "未知は、キャンプだった。体力が全快した。";
+          floorPrompt = "";
           rewardStep = "event";
           persistSave(true);
           render();
@@ -11170,8 +11228,8 @@
           applyPath("straight");
           return;
         }
-        floorNote = "道標のない分岐の先に、置き忘れた荷があった。布は湿っていて、中のものは一つだけ無事だった。";
-        floorPrompt = grantExplore() || "先へ進む。";
+        floorNote = `未知は、探索だった。${grantExplore()}`;
+        floorPrompt = "";
         rewardStep = "event";
         persistSave(true);
         render();
@@ -11828,17 +11886,15 @@
           if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
           floorPhase = "ultimate";
           ultimatePicks = rollUltimates(nextJob);
-          floorNote = `${nextJob}の名が腕に残った。持っていた札は、まだデッキにある。紋章は、最後に一つの奥義を求めている。`;
-          floorPrompt = "奥義をひとつ選べ。";
+          floorNote = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
+          floorPrompt = "";
           render();
         }
         if (name === "ultimate-pick") {
           ultimate = ultimateLabel(action.dataset.ultimate || "");
           floorPhase = "show";
-          floorNote = ultimate === "パリィが重複する"
-            ? "選んだ奥義が、受け流しの型に重なった。同じパリィが、一度では終わらない。"
-            : `選んだ奥義は${ultimate}。名はまだ壁に刻まれていないが、力だけは腕に残った。`;
-          floorPrompt = "先へ進む。";
+          floorNote = ultimate === "パリィが重複する" ? "パリィが重なるようになった。" : `奥義は${ultimate}。`;
+          floorPrompt = "";
           render();
         }
         if (name === "new") {
