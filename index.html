@@ -137,6 +137,19 @@
       box-shadow: var(--panel-frame);
       color: var(--cream);
     }
+    .road-map h2 {
+      flex: 0 0 auto;
+      margin: 0 0 6px;
+      padding: 4px 0 6px;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
+      text-align: center;
+      color: #fff3c4;
+      border-bottom: 1px solid rgba(228, 177, 90, 0.45);
+    }
     .road-map ol {
       list-style: none;
       margin: 0;
@@ -183,15 +196,33 @@
     }
     .road-node.boss { color: #ffb0a4; }
     .road-node.boss img { box-shadow: 0 0 0 2px #c43a32; }
-    .road-floor, .road-name {
+    .road-cap {
       position: absolute;
       z-index: 1;
-      left: 4px;
-      right: 4px;
-      text-shadow: 0 1px 2px #000, 0 0 6px #000;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 16px 6px 4px;
+      background: linear-gradient(180deg, transparent, rgba(8, 6, 4, 0.92) 42%);
     }
-    .road-floor { top: 4px; letter-spacing: 0.02em; }
-    .road-name { bottom: 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .road-floor {
+      flex: 0 0 auto;
+      color: #ffe7a4;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+    .road-name {
+      min-width: 0;
+      overflow: hidden;
+      color: #fff6e4;
+      font-size: 14px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       display: grid;
@@ -289,7 +320,27 @@
     }
     .stage .foe-piles,
     .stage .foe-pile,
-    .stage .foe-peek { pointer-events: auto; }
+    .stage .foe-peek,
+    .stage .ally-piles,
+    .stage .ally-piles .pile { pointer-events: auto; }
+    .ally-piles {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      z-index: 7;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .ally-piles .pile { width: 128px; height: auto; }
+    .ally-piles .pile-card {
+      width: 118px;
+      height: auto;
+      max-height: none;
+      aspect-ratio: var(--card-ratio);
+    }
+    .ally-piles .pile-count { font-size: 44px; }
+    .ally-piles .pile-label { font-size: 16px; letter-spacing: 0.08em; }
     /* 自分のステータスは戦闘画面の左上、敵は右上 */
     .enemy-field {
       position: relative;
@@ -2544,33 +2595,37 @@
       max-height: none;
       min-height: 0;
     }
-    /* マナは山札の上の空き。山札の絵にはかぶせない。持ち越しは白い炎 */
-    .deck-column .mana-row {
+    .handbar .mana-dock {
+      flex: 0 0 auto;
+      align-self: stretch;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-width: 168px;
+      height: 100%;
+    }
+    .handbar .mana-row {
       position: static;
-      z-index: 4;
       transform: none;
       display: flex;
       flex-flow: row nowrap;
       align-items: flex-end;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       width: 100%;
-      height: 52px;
-      flex: 0 0 52px;
+      height: 100%;
+      max-height: 148px;
       margin: 0;
-      overflow: visible;
       pointer-events: none;
     }
-    .mana-orb {
+    .handbar .mana-orb {
       position: relative;
-      width: 36px;
-      height: 52px;
-      max-height: 52px;
+      width: 58px;
+      height: 100%;
+      max-height: 148px;
       flex: 0 0 auto;
       margin: 0;
       border: 0;
-      border-radius: 0;
-      overflow: visible;
       background: none;
       box-shadow: none;
     }
@@ -2614,13 +2669,14 @@
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
     .handbar .end {
       align-self: center;
-      width: 132px;
-      height: 132px;
-      min-width: 132px;
-      min-height: 132px;
-      max-width: 132px;
-      max-height: 132px;
-      margin: 0 8px;
+      width: 148px;
+      height: 52px;
+      min-width: 148px;
+      min-height: 52px;
+      max-width: none;
+      max-height: 52px;
+      margin: 0 8px 0 0;
+      border-radius: 999px;
     }
     .pile-card {
       position: relative;
@@ -3668,25 +3724,25 @@
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
-      width: 132px;
-      height: 132px;
-      min-width: 132px;
-      min-height: 132px;
-      max-width: 132px;
-      max-height: 132px;
-      aspect-ratio: 1;
+      width: 148px;
+      height: 52px;
+      min-width: 148px;
+      min-height: 52px;
+      max-width: none;
+      max-height: 52px;
+      aspect-ratio: auto;
       flex: none;
       align-self: center;
       margin: 0 12px;
-      border-radius: 50%;
-      border: 4px solid var(--gold);
-      background: rgba(18, 14, 12, 0.72);
-      color: var(--gold);
+      border-radius: 999px;
+      border: 2px solid #e4c27a;
+      background: #1c120c;
+      color: #ffe7a4;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      line-height: 1.15;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      line-height: 1;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px #6b4518, 0 8px 16px rgba(0, 0, 0, 0.4);
     }
@@ -5717,7 +5773,7 @@
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
-      .end { width: 108px; height: 108px; min-width: 108px; min-height: 108px; max-width: 108px; max-height: 108px; font-size: 15px; border-radius: 50%; }
+      .end { width: 132px; height: 44px; min-width: 132px; min-height: 44px; max-height: 44px; font-size: 14px; border-radius: 999px; }
       .mana-orb { width: 36px; height: 100%; max-height: 48px; margin: 0; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
@@ -5802,17 +5858,17 @@
     html.phone .handbar { padding: 4px 4px 6px; gap: 4px; }
     html.phone .handbar .end,
     html.phone .end {
-      width: 72px;
-      height: 72px;
-      min-width: 72px;
-      min-height: 72px;
-      max-width: 72px;
-      max-height: 72px;
+      width: 108px;
+      height: 40px;
+      min-width: 108px;
+      min-height: 40px;
+      max-width: 108px;
+      max-height: 40px;
       margin: 0 2px 6px 0;
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      border-radius: 50%;
-      border-width: 3px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      border-radius: 999px;
+      border-width: 2px;
     }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
@@ -5858,14 +5914,14 @@
     html.phone.land .battle-plate .shield-badge { width: 36px; height: 48px; }
     html.phone.land .handbar .end,
     html.phone.land .end {
-      width: 64px;
-      height: 64px;
-      min-width: 64px;
-      min-height: 64px;
-      max-width: 64px;
-      max-height: 64px;
-      font-size: 10px;
-      border-radius: 50%;
+      width: 96px;
+      height: 36px;
+      min-width: 96px;
+      min-height: 36px;
+      max-width: 96px;
+      max-height: 36px;
+      font-size: 11px;
+      border-radius: 999px;
     }
     html.phone.land .battle-log {
       left: 64px;
@@ -6147,7 +6203,7 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=11",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=30",
+        battle: "girl-battle.png?v=31",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
         victory: "girl-victory.png?v=13",
@@ -6547,10 +6603,10 @@
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i>${esc(face.mark || "")}</i>`;
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor}</span>${icon}<span class="road-name">${esc(face.label || "")}</span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
       const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
-      return `<section class="road-map" aria-label="マップ"><ol>${rows}${pad}</ol></section>`;
+      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
     }
 
     function placeRoad() {
@@ -9785,7 +9841,7 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=30", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=31", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
@@ -11482,6 +11538,10 @@
             </div>
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
+              <div class="ally-piles">
+                ${pileMarkup("deck", deck.length)}
+                ${pileMarkup("discard", discard.length)}
+              </div>
               ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind)}
             </div>
             <div class="duel-mid">
@@ -11507,15 +11567,7 @@
           </div>
           </div>
           <div class="handbar">
-              <div class="pile-pair">
-                <div class="deck-column">
-                  ${pips()}
-                  <div class="deck-stack">
-                    ${pileMarkup("deck", deck.length)}
-                  </div>
-                </div>
-                ${pileMarkup("discard", discard.length)}
-              </div>
+              <div class="mana-dock">${pips()}</div>
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
               ${endButtonMarkup()}
             </div>
