@@ -1050,9 +1050,20 @@
       padding-top: 64px;
       box-sizing: border-box;
     }
-    .album-screen.has-zoom {
+    .album-screen.has-zoom,
+    .album-screen.album-split {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
+    .album-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.8fr) minmax(0, 0.95fr);
+      gap: 14px;
+      margin: 0 0 12px;
+    }
+    .album-top h3 { margin: 0 0 8px; text-align: center; font-size: 18px; letter-spacing: 0.12em; }
+    .album-top .ref-grid,
+    .album-top .blank-grid { margin: 0; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); }
+    .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
       width: auto;
@@ -4528,6 +4539,20 @@
       .menu.event .event-picture { height: 42vh; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
+    .menu.event,
+    .menu.event.bless {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      box-sizing: border-box;
+      justify-content: stretch;
+      align-content: stretch;
+      justify-items: stretch;
+      align-items: stretch;
+    }
     .menu.bless h1 {
       font-size: clamp(42px, 5vw, 72px);
       letter-spacing: 0.22em;
@@ -4627,11 +4652,8 @@
       font-size: clamp(64px, 8vw, 120px);
       font-weight: 900;
       letter-spacing: 0.34em;
-      background: linear-gradient(180deg, #fffdf4 0%, #ffe7a4 38%, #e2ad4a 62%, #fff1c4 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 5px 0 #1a1008) drop-shadow(0 0 28px rgba(0, 0, 0, 0.95));
+      color: #ffe7a4;
+      text-shadow: 0 5px 0 #1a1008, 0 0 28px rgba(0, 0, 0, 0.95);
     }
     .cast-keys {
       position: relative;
@@ -4728,11 +4750,8 @@
       font-weight: 900;
       letter-spacing: 0.34em;
       line-height: 1;
-      background: linear-gradient(180deg, #fffdf4 0%, #ffe7a4 38%, #e2ad4a 62%, #fff1c4 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 5px 0 #1a1008) drop-shadow(0 0 28px rgba(0, 0, 0, 0.95));
+      color: #ffe7a4;
+      text-shadow: 0 5px 0 #1a1008, 0 0 28px rgba(0, 0, 0, 0.95);
       opacity: 0;
       animation: depart-name 2.6s ease forwards;
     }
@@ -4748,16 +4767,17 @@
     .depart.depart-fast .depart-art,
     .depart.depart-fast .depart-name,
     .depart.depart-fast::after { animation-duration: 0.7s; }
+    .depart-name span { color: inherit; }
     @keyframes depart-zoom {
       0% { transform: scale(1.02); filter: brightness(0.55); }
-      16% { filter: brightness(1); }
+      16% { transform: scale(1.06); filter: brightness(1); }
       70% { transform: scale(1.16); filter: brightness(1); }
       100% { transform: scale(1.22); filter: brightness(0.15); }
     }
     @keyframes depart-name {
-      0%, 18% { opacity: 0; transform: translateY(14px); }
-      36%, 68% { opacity: 1; transform: none; }
-      100% { opacity: 0; transform: none; }
+      0%, 18% { opacity: 0; }
+      36%, 68% { opacity: 1; }
+      100% { opacity: 0; }
     }
     @keyframes depart-fade {
       0%, 64% { opacity: 0; }
@@ -4838,12 +4858,12 @@
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
     .cast-screen.character-focus {
-      padding-left: 28px;
-      padding-right: 28px;
+      padding-left: 72px;
+      padding-right: 72px;
     }
     .cast-screen.character-focus .cast-main {
       width: 100%;
-      grid-template-columns: minmax(0, 1.8fr) minmax(300px, 380px) minmax(220px, 280px);
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 400px) minmax(220px, 280px);
       align-items: stretch;
     }
     .cast-screen.character-focus .cast-action {
@@ -4853,7 +4873,7 @@
       aspect-ratio: auto;
       align-self: stretch;
       object-fit: cover;
-      object-position: center 28%;
+      object-position: center 8%;
     }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
@@ -8865,7 +8885,7 @@
       const veil = document.createElement("div");
       veil.className = reduce ? "depart depart-fast" : "depart";
       veil.setAttribute("role", "status");
-      veil.innerHTML = `<img class="depart-art" src="${chosen.art}" alt=""><h1 class="depart-name">${esc(chosen.name)}</h1>`;
+      veil.innerHTML = `<img class="depart-art" src="${chosen.art}" alt=""><h1 class="depart-name"><span>${esc(chosen.name)}</span></h1>`;
       document.body.appendChild(veil);
       if (departTimer) clearTimeout(departTimer);
       departTimer = setTimeout(() => {
@@ -9442,7 +9462,13 @@
     }
 
     function artZoomSide(name) {
-      if (!name) return "";
+      if (!name) {
+        return `<aside class="art-zoom-side" aria-label="全体表示"><h3>全体</h3><p class="art-zoom-note">左を押すと、ここに全体を出します。</p></aside>`;
+      }
+      const face = ALBUM_FACE.find((item) => item[0] === name);
+      if (face) {
+        return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`);
+      }
       const style = CARD_STYLE.find((item) => item[0] === name);
       if (style) {
         return zoomSidePanel(style[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}"></div>`);
@@ -9622,20 +9648,30 @@
       const faces = sortedCards(shown).map((card) =>
         `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}" aria-label="${esc(card.name)}のカードを拡大" aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`
       ).join("");
+      const surfaces = [1, 2, 3].map((stars) => catalog.find((card) => (card.stars || 1) === stars && card.klass !== "敵")).filter(Boolean);
+      const surfaceHtml = surfaces.map((card) =>
+        `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}" aria-label="${esc(card.name)}の表面">${cardFace(card, false)}</button>`
+      ).join("");
       root.innerHTML = `
-        <div class="album-screen${albumZoom ? " has-zoom" : ""}">
+        <div class="album-screen album-split">
           <div class="panel">
             <h2>カードリスト</h2>
-            <h3>カードスタイル　裏</h3>
-            <div class="ref-grid">
-              <figure><img class="back-ref" src="card-back.jpg?v=3" alt=""><figcaption>カードスタイル　裏</figcaption></figure>
-              <figure><img class="back-ref" src="card-back-foe.jpg?v=1" alt=""><figcaption>敵の裏（紫）</figcaption></figure>
+            <div class="album-top">
+              <section>
+                <h3>カードスタイル</h3>
+                <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
+              </section>
+              <section>
+                <h3>裏面</h3>
+                <div class="ref-grid">${albumFaceSheet()}</div>
+              </section>
+              <section>
+                <h3>表面</h3>
+                <div class="ref-grid blank-grid">${surfaceHtml}</div>
+              </section>
             </div>
-            <h4>カードスタイル</h4>
-            <p class="album-meta">★は銅、★★は銀、★★★は金。ジャンルの札は枠に描かない</p>
-            <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
             <div class="album-tabs" role="tablist">${tabs}</div>
-            <p class="album-meta">全${catalog.length}種　表示${shown.length}　カードを押すと右にカードを拡大　★${meta.stars}</p>
+            <p class="album-meta">全${catalog.length}種　表示${shown.length}　押すと右半分に全体　★${meta.stars}</p>
             <section class="deck-group"><h3>${esc(label)} ${shown.length}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
           </div>
           ${artZoomSide(albumZoom)}
@@ -9901,6 +9937,16 @@
       ["style-star2", "★★ 銀", "frame-star2.png?v=4"],
       ["style-star3", "★★★ 金", "frame-star3-attack.png?v=4"],
     ];
+    const ALBUM_FACE = [
+      ["back-player", "裏面", "card-back.jpg?v=3"],
+      ["back-foe", "敵の裏面", "card-back-foe.jpg?v=1"],
+    ];
+    function albumFaceSheet() {
+      return ALBUM_FACE.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
     function cardStyleSheet() {
       return CARD_STYLE.map((item) => {
         const on = albumZoom === item[0];
@@ -11559,7 +11605,6 @@
       const albumBtn = el.closest("[data-album]");
       if (albumBtn && screen === "album") {
         albumTab = albumBtn.dataset.album || "all";
-        albumZoom = "";
         albumScrollTop = 0;
         render();
         return;
@@ -11568,7 +11613,7 @@
       if (zoomCard && screen === "album") {
         const name = zoomCard.dataset.artZoom || "";
         captureAlbumScroll();
-        albumZoom = albumZoom === name ? "" : name;
+        albumZoom = name;
         render();
         return;
       }
