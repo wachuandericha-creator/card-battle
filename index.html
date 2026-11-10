@@ -1204,16 +1204,21 @@
       letter-spacing: 0.12em;
       color: var(--gold);
     }
-    .art-zoom-side .art-zoom-img {
-      display: block;
+    .art-zoom-side .art-zoom-frame {
       flex: 1 1 auto;
       min-width: 0;
       min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .art-zoom-side .art-zoom-img {
+      display: block;
       width: auto;
-      max-width: 100%;
       height: auto;
+      max-width: 100%;
       max-height: 100%;
-      aspect-ratio: 2 / 3;
       object-fit: contain;
       border-radius: 12px;
       background: #120e0c;
@@ -1268,9 +1273,6 @@
       }
       .art-zoom-side {
         min-height: 0;
-      }
-      .art-zoom-side .art-zoom-img {
-        max-height: calc(46vh - 120px);
       }
     }
     .nav-title {
@@ -9193,7 +9195,7 @@
       if (!name) return "";
       const style = CARD_STYLE.find((item) => item[0] === name);
       if (style) {
-        return zoomSidePanel(style[1], `<img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}">`);
+        return zoomSidePanel(style[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(style[1])}"></div>`);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
       const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
@@ -9203,7 +9205,7 @@
     function sheetZoomSide() {
       if (!sheetZoom || !sheetZoom.src) return "";
       const title = sheetZoom.title || "画像";
-      const body = `<img class="art-zoom-img" src="${esc(sheetZoom.src)}" alt="${esc(title)}">`;
+      const body = `<div class="art-zoom-frame"><img class="art-zoom-img" src="${esc(sheetZoom.src)}" alt="${esc(title)}"></div>`;
       return zoomSidePanel(title, body);
     }
 
