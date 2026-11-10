@@ -6170,12 +6170,12 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=10",
+        chibi: "job-girl.png?v=11",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=28",
+        battle: "girl-battle.png?v=29",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
-        victory: "girl-victory.png?v=12",
+        victory: "girl-victory.png?v=13",
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
@@ -6550,7 +6550,7 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=10", label: "ジョブ" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=11", label: "ジョブ" };
       if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -6625,20 +6625,19 @@
     const GEAR_ITEMS = [
       { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=2" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=2" },
-      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=3" },
-      { id: "flame-sword", name: "フレイムソード", slot: "sword", stars: 3, atk: 2, burnHit: 1, effect: "★★★　ATK+2。与えるダメージを通すたび炎上+1", image: "gear-flame-sword.jpg?v=3" },
-      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreDef: true, effect: "★★★★★　ATK+5。敵のDEFを無視する", image: "gear-excalibur.jpg?v=3" },
+      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=4" },
+      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreDef: true, effect: "★★★★★　ATK+5。敵のDEFを無視する", image: "gear-excalibur.jpg?v=4" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-buckler.jpg" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=3" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.jpg?v=3" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=4" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.jpg?v=4" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=3" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-chain-attack.jpg?v=3" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-chain-guard.jpg?v=3" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletR", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。右にのみ装備できる。", image: "gear-chain-attack.jpg?v=4" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletL", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。左にのみ装備できる。", image: "gear-chain-guard.jpg?v=4" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletR", stars: 2, atk: 3, effect: "★★　右手。ATK+3", image: "gear-power-bracelet.jpg?v=3" },
-      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.jpg?v=3" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=3" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletL", stars: 2, def: 3, effect: "★★　左手。DEF+3", image: "gear-guard-bracelet.jpg?v=4" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=4" },
     ];
     // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「ボス」。
     const BOSS_GEAR = [
@@ -9811,14 +9810,14 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=28", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=29", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.png?v=12", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=13", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -9826,7 +9825,7 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=10", "女の戦士の選択コマ（構え）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=11", "女の戦士の選択コマ（かわいい）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
@@ -9844,20 +9843,19 @@
             <div class="ref-grid">
               ${sheetFig("gear-short-sword.jpg?v=2", "ショートソード")}
               ${sheetFig("gear-long-sword.jpg?v=2", "ロングソード")}
-              ${sheetFig("gear-poison-sword.jpg?v=3", "ポイズンソード")}
-              ${sheetFig("gear-flame-sword.jpg?v=3", "フレイムソード")}
-              ${sheetFig("gear-excalibur.jpg?v=3", "大天使の剣")}
+              ${sheetFig("gear-poison-sword.jpg?v=4", "ポイズンソード")}
+              ${sheetFig("gear-excalibur.jpg?v=4", "大天使の剣")}
               ${sheetFig("gear-buckler.jpg", "バックラー")}
               ${sheetFig("gear-leather-shield.jpg", "皮の盾")}
               ${sheetFig("gear-iron-shield.jpg", "鉄の盾")}
-              ${sheetFig("gear-battle-counter.jpg?v=3", "バトルカウンター")}
-              ${sheetFig("gear-eagle-shield.jpg?v=3", "大天使の盾")}
+              ${sheetFig("gear-battle-counter.jpg?v=4", "バトルカウンター")}
+              ${sheetFig("gear-eagle-shield.jpg?v=4", "大天使の盾")}
               ${sheetFig("gear-lion-shield.jpg?v=3", "獅子の盾")}
-              ${sheetFig("gear-chain-attack.jpg?v=3", "連撃の腕輪")}
-              ${sheetFig("gear-chain-guard.jpg?v=3", "連守の腕輪")}
+              ${sheetFig("gear-chain-attack.jpg?v=4", "連撃の腕輪")}
+              ${sheetFig("gear-chain-guard.jpg?v=4", "連守の腕輪")}
               ${sheetFig("gear-power-bracelet.jpg?v=3", "力の腕輪")}
-              ${sheetFig("gear-guard-bracelet.jpg?v=3", "守りの腕輪")}
-              ${sheetFig("gear-reuse-bracelet.jpg?v=3", "再利用の腕輪")}
+              ${sheetFig("gear-guard-bracelet.jpg?v=4", "守りの腕輪")}
+              ${sheetFig("gear-reuse-bracelet.jpg?v=4", "再利用の腕輪")}
               ${sheetFig("gear-medal.jpg", "メダル")}
             </div>
             <h4>使い捨てアイテム</h4>
@@ -9881,7 +9879,7 @@
               ${sheetFig("path-beggar.jpg?v=4", "物乞い")}
               ${sheetFig("path-shop.jpg?v=6", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
-              ${sheetFig("path-lost.jpg?v=6", "迷子")}
+              ${sheetFig("path-lost.jpg?v=7", "迷子")}
               ${sheetFig("path-unknown.jpg?v=5", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
