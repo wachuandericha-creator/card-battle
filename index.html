@@ -972,6 +972,9 @@
     /* 敵も自分と同じ列の高さ。HP板は上端そろえ。ランクは幅と絵の大きさだけ変える */
     .enemy-main {
       --foe-scale: 1;
+      --cut-x: 50%;
+      --cut-y: 46%;
+      --pop-y: 30%;
       position: relative;
       right: auto;
       top: auto;
@@ -1005,10 +1008,10 @@
       height: calc(100% * var(--foe-scale));
       max-height: 100%;
     }
-    .enemy-main[data-size="small"] { --foe-scale: 0.86; max-width: min(72%, 340px); }
-    .enemy-main[data-size="medium"] { --foe-scale: 0.94; max-width: min(82%, 380px); }
-    .enemy-main[data-size="large"] { --foe-scale: 1; max-width: min(88%, 420px); }
-    .enemy-main[data-size="boss"] { --foe-scale: 1.08; max-width: min(96%, 480px); }
+    .enemy-main[data-size="small"] { --foe-scale: 0.86; max-width: min(72%, 340px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
+    .enemy-main[data-size="medium"] { --foe-scale: 0.94; max-width: min(82%, 380px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
+    .enemy-main[data-size="large"] { --foe-scale: 1; max-width: min(88%, 420px); --cut-x: 48%; --cut-y: 42%; --pop-y: 26%; }
+    .enemy-main[data-size="boss"] { --foe-scale: 1.08; max-width: min(96%, 480px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
     .intent { flex: none; text-align: center; background: transparent; border: 0; padding: 0; }
     .intent .now { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 32px; font-weight: 800; line-height: 1.2; }
     .act { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; line-height: 1; }
@@ -2104,8 +2107,8 @@
       --thick: calc(7px + var(--pow, 0.35) * 6px);
       --glow: calc(8px + var(--pow, 0.35) * 14px);
       position: absolute;
-      left: 50%;
-      top: 46%;
+      left: var(--cut-x, 50%);
+      top: var(--cut-y, 46%);
       width: 0;
       height: 0;
       pointer-events: none;
@@ -2277,7 +2280,7 @@
     .dmg-pop.foe-hit {
       position: absolute;
       left: calc(50% + var(--shift, 0px));
-      top: 30%;
+      top: var(--pop-y, 30%);
       z-index: 7;
       transform: translate(-50%, -50%);
       font-size: calc(54px + var(--pow, 0.35) * 30px);
@@ -6287,6 +6290,8 @@
     const BATTLE_TOTAL = 3;
     let battleTotal = BATTLE_TOTAL;
     let route = CLASSIC_ROUTE.slice();
+    let dungeonFloors = 20;
+    let floorAt = [];
     let job = "戦士";
     let castPicked = false;
     let castHover = "";
@@ -6665,11 +6670,32 @@
       return route;
     }
 
-    // 表示する層の番号。先頭が祝福なら、それを0層目として数える
+    // 表示する層の番号。先頭が祝福なら、それを0層目として数える。
+    // 最大はダンジョンの階数。寄り道で足した戦闘は、次の階層の番号を共有し、最大は増やさない。
     function floorStart() { return route[0] === "出来事:祝福" ? 1 : 0; }
-    function floorNo() { return battleIndex + 1 - floorStart(); }
-    function floorMax() { return battleTotal - floorStart(); }
+    function floorsOf(name) {
+      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === name);
+      return item ? item.floors : 20;
+    }
+    function rememberFloors(floors) {
+      const blessing = route[0] === "出来事:祝福";
+      dungeonFloors = floors || dungeonFloors || floorsOf(dungeonName);
+      floorAt = route.map((_, i) => Math.min(dungeonFloors, blessing ? i : i + 1));
+    }
+    function floorNo() {
+      const n = floorAt[battleIndex];
+      if (n > 0) return n;
+      return Math.max(1, battleIndex + 1 - floorStart());
+    }
+    function floorMax() { return dungeonFloors; }
     function floorLabel() { return `最大${floorMax()}Ｆ　現在　${floorNo()}Ｆ`; }
+    function insertAhead(node) {
+      const at = Math.min(Math.max(battleIndex + 1, 0), route.length);
+      route.splice(at, 0, node);
+      const mark = floorAt[at] != null ? floorAt[at] : (floorAt.length ? floorAt[floorAt.length - 1] : dungeonFloors);
+      floorAt.splice(at, 0, mark);
+      battleTotal = route.length;
+    }
 
     function roadFace(node) {
       const name = String(node || "");
@@ -6697,7 +6723,8 @@
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
         const known = state !== "ahead" || roadFixed(node, i);
         const face = known ? roadFace(node) : { mark: "？", label: "" };
-        const floor = node === "出来事:祝福" ? "祝" : `${blessing ? i : i + 1}F`;
+        const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
+        const floor = node === "出来事:祝福" || num === 0 ? "祝" : `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i>${esc(face.mark || "")}</i>`;
@@ -6740,8 +6767,7 @@
       const current = enemyNow();
       const tier = current.name === DUNGEON.boss ? DUNGEON.road[DUNGEON.road.length - 1] : (current.tier || 1);
       const extra = rollRank(tier);
-      route.splice(battleIndex + 1, 0, extra);
-      battleTotal = route.length;
+      insertAhead(extra);
     }
 
     function signed(n) {
@@ -8744,6 +8770,8 @@
         beggarGift,
         battleTotal,
         route,
+        dungeonFloors,
+        floorAt,
         battleStartHp,
         floorZero: true, // 祝福を0層目として数える新しい道（古いセーブの見分け用）
         dungeonName,
@@ -8887,6 +8915,16 @@
         route.splice(battleIndex === 0 ? 1 : battleIndex + 1, 0, rollRank(1));
       }
       battleTotal = route.length;
+      if (data.dungeonName) {
+        const legacy = { "20": "洞窟", "はじまりの洞窟": "洞窟", "骸洞窟": "洞窟", "50": "古城", "竜の遺骸城": "古城", "100": "深淵", "深淵なる寝所": "深淵" };
+        dungeonName = legacy[data.dungeonName] || data.dungeonName;
+      }
+      if (Array.isArray(data.floorAt) && data.floorAt.length === route.length) {
+        dungeonFloors = Number(data.dungeonFloors) || floorsOf(dungeonName);
+        floorAt = data.floorAt.map((n) => Number(n) || 0);
+      } else {
+        rememberFloors(Number(data.dungeonFloors) || floorsOf(dungeonName));
+      }
       if (enemy && route[battleIndex] && !isEventNode(route[battleIndex])) {
         const foe = enemyNow();
         enemy.name = foeLabel();
@@ -8896,10 +8934,6 @@
         enemy.def = hiddenDef(foe) - enemy.anger;
       }
       restoreEnemyLoop(data);
-      if (data.dungeonName) {
-        const legacy = { "20": "洞窟", "はじまりの洞窟": "洞窟", "骸洞窟": "洞窟", "50": "古城", "竜の遺骸城": "古城", "100": "深淵", "深淵なる寝所": "深淵" };
-        dungeonName = legacy[data.dungeonName] || data.dungeonName;
-      }
       heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
@@ -9333,6 +9367,7 @@
       dungeonName = name || "洞窟";
       battleIndex = 0;
       route = buildRoute(floors || 20, dungeonName);
+      rememberFloors(floors || 20);
       battleTotal = route.length;
       cleared = false;
       gear = starterGear();
@@ -11329,8 +11364,7 @@
 
     function advance(step) {
       if (screen === "floor" && floorKind === "物乞いに遭遇" && step > 0 && route[battleIndex + 1] !== "物乞い") {
-        route.splice(battleIndex + 1, 0, "物乞い");
-        battleTotal = route.length;
+        insertAhead("物乞い");
       }
       const hp = screen === "floor" ? floorHp : (player ? player.hp : floorHp);
       const next = battleIndex + step;
@@ -11706,8 +11740,8 @@
                 <img src="${esc(enemy.image || "enemy-slime.png?v=4")}" alt="">
                 ${slashNow ? cutsHtml : ""}
                 ${foeKind === "poison" ? poisonFxHtml() : ""}
+                ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
-              ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
               </div>
               ${foePileMarkup()}
