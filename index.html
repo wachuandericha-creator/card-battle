@@ -467,7 +467,7 @@
     .foe-plate .shield-badge { right: -8px; left: auto; }
     .battle-plate .hp-line .lbl .ico.heart { color: #ff6b5a; filter: drop-shadow(0 0 4px rgba(255, 90, 60, 0.6)); }
     .battle-plate .hp-line .lbl .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
-    .battle-plate .hp-line .lbl .ico.shield { color: #5aa8ff; filter: drop-shadow(0 0 5px rgba(80, 160, 255, 0.75)); }
+    .battle-plate .hp-line .lbl .ico.shield { color: #d7dde6; filter: drop-shadow(0 0 5px rgba(220, 226, 232, 0.45)); }
     .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
     .hero-body .hero-guard { inset: -12% -18% 8%; }
     .foe-plate[data-rank="雑魚"] { width: min(300px, 50%); }
@@ -1686,7 +1686,7 @@
       padding: 4px;
       background: rgba(18, 14, 12, 0.55);
     }
-    .cast-token.mini img { width: 168px; height: 210px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+    .cast-token.mini img { width: 168px; height: 168px; object-fit: cover; border-radius: 12px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
     .cast-token.mini span { font-size: 16px; letter-spacing: 0.1em; }
     .cast-token.mini.shown { border-color: #e4b15a; }
     .cast-hero {
@@ -1807,7 +1807,7 @@
     .stat-chips .chip b { margin-left: auto; font-size: 27px; line-height: 1; color: #fff6e4; font-variant-numeric: tabular-nums; text-shadow: 0 1px 0 #000; }
     .stat-chips .chip.hp { --chip: #ff5c4a; }
     .stat-chips .chip.atk { --chip: #ffb14a; }
-    .stat-chips .chip.def { --chip: #7eb6ff; }
+    .stat-chips .chip.def { --chip: #c5ccd4; }
     .cast-side .cast-blurb {
       position: relative;
       z-index: 1;
@@ -3149,7 +3149,7 @@
       border: 1px solid rgba(228, 177, 90, 0.45);
     }
     .gear-effect-stats .atk { color: #ffc28a; }
-    .gear-effect-stats .def { color: #9ec8ff; }
+    .gear-effect-stats .def { color: #d5dbe3; }
     .gear-effect-body {
       margin: 0;
       padding: 10px 12px;
@@ -6134,7 +6134,7 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=8",
+        chibi: "job-girl.png?v=9",
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=27",
         battleRatio: "3 / 4",
@@ -6514,7 +6514,7 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=8", label: "ジョブ" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=9", label: "ジョブ" };
       if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -7083,9 +7083,9 @@
     }
 
     function plateShieldSvg(gold) {
-      const fill = gold ? "#e2b44a" : "#3d74c4";
-      const rim = gold ? "#fff6d2" : "#e7f2ff";
-      const edge = gold ? "#7a5814" : "#163056";
+      const fill = gold ? "#e2b44a" : "#c9ced6";
+      const rim = gold ? "#fff6d2" : "#f7f8fa";
+      const edge = gold ? "#7a5814" : "#5a6168";
       return `<svg class="plate-shield" viewBox="0 0 80 96" aria-hidden="true"><path d="M40 8 68 20v26c0 20-11 34-28 42C23 80 12 66 12 46V20Z" fill="${fill}" stroke="${edge}" stroke-width="5"/><path d="M40 16 60 26v18c0 15-8 26-20 32C28 70 20 59 20 44V26Z" fill="none" stroke="${rim}" stroke-width="2.5"/></svg>`;
     }
 
@@ -9767,7 +9767,7 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=8", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=9", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
