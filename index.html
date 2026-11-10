@@ -43,13 +43,13 @@
     .battle-screen {
       height: 100%;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) minmax(0, 12.5%);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 12.5%);
       /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
       grid-template-rows: auto minmax(0, 1.7fr) minmax(0, 2fr);
       grid-template-areas:
-        "gear hud log"
-        "gear arena log"
-        "gear hand log";
+        "hud log"
+        "arena log"
+        "hand log";
       padding: 10px 10px 4px;
       row-gap: 12px;
       column-gap: 10px;
@@ -60,11 +60,11 @@
         #0a0908;
     }
     .battle-screen.no-log {
-      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-        "gear hud"
-        "gear arena"
-        "gear hand";
+        "hud"
+        "arena"
+        "hand";
     }
     .game { display: contents; }
     .hud-top { grid-area: hud; min-width: 0; overflow: hidden; }
@@ -77,58 +77,43 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr);
-      border-radius: 14px;
+      border-radius: 10px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
+      border: 8px solid #e4c27a;
       background:
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
         var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
       box-shadow:
-        0 0 0 1px #0a0806,
-        0 0 0 3px rgba(232, 204, 140, 0.9),
-        0 0 0 5px #1a140e,
-        0 0 0 6px rgba(168, 128, 58, 0.7),
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        inset 0 0 0 1px rgba(255, 230, 180, 0.22),
-        inset 0 0 70px rgba(0, 0, 0, 0.28);
+        0 0 0 2px #5c3a12,
+        inset 0 0 0 2px #fff1c4,
+        0 14px 28px rgba(0, 0, 0, 0.55);
       isolation: isolate;
     }
-    /* 戦闘画面を金の飾りで囲む。中身（板・キャラ）は手前 */
-    .battle-frame {
-      position: absolute;
-      inset: 0;
-      z-index: 7;
-      pointer-events: none;
-    }
-    .battle-frame .c,
-    .battle-frame .m {
-      position: absolute;
-      background: center / contain no-repeat;
-    }
-    .battle-frame .c {
-      width: 64px;
-      height: 64px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff6dc'/%3E%3Cstop offset='.5' stop-color='%23e4c27a'/%3E%3Cstop offset='1' stop-color='%238d6230'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M5 40V14C5 8 9 5 15 5h25' fill='none' stroke='url(%23g)' stroke-width='2.8'/%3E%3Cpath d='M11 34V18c0-4 3-7 7-7h16' fill='none' stroke='%23f6e7c2' stroke-width='1'/%3E%3Cpath d='M5 5c13 2 17 11 11 23C14 16 10 10 5 5z' fill='url(%23g)'/%3E%3Cpath d='M5 5c2 13 11 17 23 11C16 14 10 10 5 5z' fill='url(%23g)'/%3E%3Ccircle cx='13' cy='13' r='2.4' fill='%23fff8e8'/%3E%3Cpath d='M27 5c1 6-2 9-5 5' fill='none' stroke='%23f0d7a0' stroke-width='1.3'/%3E%3Cpath d='M5 27c6 1 9-2 5-5' fill='none' stroke='%23f0d7a0' stroke-width='1.3'/%3E%3C/svg%3E");
-    }
-    .battle-frame .tl { top: 1px; left: 1px; }
-    .battle-frame .tr { top: 1px; right: 1px; transform: scaleX(-1); }
-    .battle-frame .bl { bottom: 1px; left: 1px; transform: scaleY(-1); }
-    .battle-frame .br { bottom: 1px; right: 1px; transform: scale(-1); }
-    .battle-frame .m {
-      width: 18px;
-      height: 12px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 14'%3E%3Cpath d='M11 1l9 6-9 6L2 7z' fill='%23e4c27a' stroke='%236e4c22' stroke-width='.8'/%3E%3Cpath d='M11 3.2l5.5 3.8L11 10.8 5.5 7z' fill='%23fff4d4'/%3E%3C/svg%3E");
-    }
-    .battle-frame .top { top: 3px; left: 50%; transform: translateX(-50%); }
-    .battle-frame .bottom { bottom: 3px; left: 50%; transform: translateX(-50%) rotate(180deg); }
-    .battle-frame .left { left: 2px; top: 50%; width: 12px; height: 18px; transform: translateY(-50%) rotate(-90deg); }
-    .battle-frame .right { right: 2px; top: 50%; width: 12px; height: 18px; transform: translateY(-50%) rotate(90deg); }
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
     .play-row { grid-area: 1 / 1; min-width: 0; overflow: hidden; position: relative; z-index: 5; }
     /* 手札は戦闘枠より手前。ホバーでプレイエリアへ重なってよい */
     .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 8; }
-    .gear-rail { grid-area: gear; min-width: 0; overflow: hidden; }
+    .hero-stack {
+      position: absolute;
+      top: 12px;
+      left: 8px;
+      z-index: 8;
+      width: min(300px, 42%);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .hero-stack .battle-plate {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      pointer-events: auto;
+    }
     .battle-log { grid-area: log; min-width: 0; overflow: auto; }
     .hud-top {
       display: grid;
@@ -399,21 +384,13 @@
     .battle-plate.hero-plate { --plate-accent: var(--gold); }
     .battle-plate.foe-plate { --plate-accent: #c89848; }
     .battle-plate .hint { pointer-events: auto; }
-    .enemy-field > .hero-plate,
     .enemy-field > .foe-plate {
       position: absolute;
-      top: 40px;
-      margin: 0;
-      z-index: 8;
-    }
-    .enemy-field > .hero-plate {
-      left: 8px;
-      right: auto;
-      width: min(280px, 46%);
-    }
-    .enemy-field > .foe-plate {
+      top: 12px;
       right: 8px;
       left: auto;
+      margin: 0;
+      z-index: 8;
     }
     .foe-plate .shield-badge { right: -8px; left: auto; }
     .battle-plate .hp-line .lbl .ico.heart { color: #ff6b5a; filter: drop-shadow(0 0 4px rgba(255, 90, 60, 0.6)); }
@@ -1180,10 +1157,10 @@
     .art-zoom-side {
       min-width: 0;
       min-height: 0;
-      height: calc(100vh - 88px);
-      max-height: calc(100vh - 88px);
-      overflow: hidden;
-      padding: 18px 16px 16px;
+      height: auto;
+      max-height: 100%;
+      overflow: auto;
+      padding: 14px 14px 12px;
       border-radius: 18px;
       border: 1px solid rgba(228, 177, 90, 0.7);
       background: linear-gradient(180deg, #2a2019, #140f0c);
@@ -1192,7 +1169,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .art-zoom-side h3 {
       margin: 0;
@@ -1201,42 +1178,29 @@
       letter-spacing: 0.12em;
       color: var(--gold);
     }
-    .art-zoom-side .art-zoom-frame {
+    .art-zoom-side .art-zoom-frame,
+    .art-zoom-side .art-zoom-card {
       flex: 1 1 auto;
       min-width: 0;
       min-height: 0;
       width: 100%;
+      margin: 0;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .art-zoom-side .art-zoom-img {
+    .art-zoom-side .art-zoom-img,
+    .art-zoom-side .art-zoom-card .card.preview {
       display: block;
       width: auto;
       height: auto;
       max-width: 100%;
-      max-height: 100%;
+      max-height: calc(100vh - 210px);
+      aspect-ratio: 2 / 3;
       object-fit: contain;
       border-radius: 12px;
       background: #120e0c;
       box-shadow: inset 0 0 0 1px rgba(255, 236, 200, 0.18);
-    }
-    .art-zoom-side .art-zoom-card {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex: 1 1 auto;
-      min-width: 0;
-      min-height: 0;
-      width: 100%;
-      margin: 0 auto 8px;
-    }
-    .art-zoom-side .art-zoom-card .card.preview {
-      width: auto;
-      max-width: min(420px, 100%);
-      height: 100%;
-      max-height: 100%;
-      aspect-ratio: 2 / 3;
     }
     .art-zoom-side .art-zoom-note {
       margin: 12px 0 0;
@@ -2432,11 +2396,10 @@
     }
     .vitals .hp-line b { font-size: 28px; letter-spacing: 0.02em; }
     .poison-mark { color: #b6e37a; letter-spacing: 0.14em; }
-    /* マナ：山札・捨て札の右。重ねない。装備の画面にはみ出さない */
     .deck-column {
       position: relative;
       height: 100%;
-      flex: 1 1 0;
+      flex: 0 0 auto;
       min-width: 0;
       display: flex;
       flex-direction: column;
@@ -2462,49 +2425,70 @@
       max-height: none;
       min-height: 0;
     }
-    .hand { position: relative; }
-    .mana-row {
-      position: relative;
-      z-index: 2;
-      flex: none;
-      align-self: center;
+    /* マナは山札の上。宝珠は光が回る */
+    .deck-stack .pile { position: relative; }
+    .deck-stack .mana-row {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      top: 0;
+      transform: translate(-50%, -42%);
       display: flex;
+      flex-flow: row wrap;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin: 0 2px 28px;
+      width: max-content;
+      max-width: 140%;
+      margin: 0;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 34px;
-      height: 34px;
+      width: 44px;
+      height: 44px;
       flex: 0 0 auto;
       border-radius: 50%;
       overflow: hidden;
       background:
-        radial-gradient(circle at 34% 30%, #fff8d2 0%, #ffe56a 26%, #f0b018 58%, #a86408 100%);
+        radial-gradient(circle at 32% 26%, #fffef6 0 8%, #fff1a8 16%, #f6c034 42%, #d48410 68%, #7a3e06 100%);
       box-shadow:
-        inset 0 -5px 7px rgba(110, 52, 0, 0.38),
-        inset 0 2px 3px rgba(255, 255, 230, 0.7),
-        0 0 10px rgba(255, 190, 50, 0.72);
+        inset 0 -8px 10px rgba(90, 36, 0, 0.5),
+        inset 0 3px 5px rgba(255, 255, 236, 0.9),
+        0 0 0 2px #fff6d4,
+        0 0 0 4px #c48a28,
+        0 0 0 6px #5c3810,
+        0 0 16px 3px rgba(255, 196, 60, 0.9);
+      animation: mana-pulse 2.2s ease-in-out infinite;
+      animation-delay: var(--sweep, 0s);
+    }
+    .mana-orb .mana-glint {
+      position: absolute;
+      inset: -30%;
+      background: conic-gradient(from 20deg, transparent 0 58%, rgba(255, 252, 230, 0.95) 72%, transparent 84%);
+      mix-blend-mode: screen;
+      animation: mana-spin 3.2s linear infinite;
+      animation-delay: var(--sweep, 0s);
     }
     .mana-orb::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, 0.92) 50%, transparent 68%);
+      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.95) 48%, transparent 66%);
       transform: translateX(-140%);
-      animation: mana-sweep 2.6s ease-in-out infinite;
+      animation: mana-sweep 2.8s ease-in-out infinite;
       animation-delay: var(--sweep, 0s);
     }
     .mana-orb.has-temp {
       background:
-        radial-gradient(circle at 34% 30%, #ffffff 0%, #f4f7fb 28%, #d5dde8 60%, #8e9aab 100%);
+        radial-gradient(circle at 32% 26%, #ffffff 0 10%, #f7fbff 22%, #d5e2f2 48%, #8ea0b8 74%, #4c5c70 100%);
       box-shadow:
-        inset 0 -5px 7px rgba(40, 50, 64, 0.35),
-        inset 0 2px 3px rgba(255, 255, 255, 0.85),
-        0 0 10px rgba(220, 230, 245, 0.7);
+        inset 0 -8px 10px rgba(30, 40, 54, 0.4),
+        inset 0 3px 5px rgba(255, 255, 255, 0.95),
+        0 0 0 2px #ffffff,
+        0 0 0 4px #b7c6d8,
+        0 0 0 6px #445060,
+        0 0 16px 3px rgba(220, 232, 248, 0.85);
     }
     .handbar {
       width: 100%;
@@ -2874,15 +2858,32 @@
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
     .gear-mark .ico { width: 48cqw; height: 48cqw; }
-    .gear-label {
-      color: var(--gold);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      text-align: center;
-      max-width: 100%;
-      line-height: 1.2;
+    .plate-gear {
+      pointer-events: auto;
+      width: 100%;
     }
+    .plate-gear .gear-board {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      height: auto;
+      min-height: 0;
+      flex: none;
+      overflow: visible;
+      container-type: normal;
+    }
+    .plate-gear .gear-slot { width: auto; flex: 1 1 0; }
+    .plate-gear .gear-frame {
+      width: 100%;
+      max-width: 52px;
+      height: auto;
+    }
+    .plate-gear .gear-label { display: none; }
     .gear-effect .item-use {
       display: block;
       width: 100%;
@@ -5369,8 +5370,15 @@
     }
     @keyframes mana-sweep {
       0% { transform: translateX(-140%); }
-      32% { transform: translateX(140%); }
+      38% { transform: translateX(140%); }
       100% { transform: translateX(140%); }
+    }
+    @keyframes mana-spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes mana-pulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.22); }
     }
     @media (max-width: 720px) {
       .hand .card { height: 100%; }
@@ -5379,7 +5387,7 @@
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
       .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 36px; height: 58px; }
+      .mana-orb { width: 28px; height: 28px; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5408,10 +5416,9 @@
       height: 100dvh;
       transform: none;
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto auto minmax(0, 1fr) minmax(118px, 30dvh);
+      grid-template-rows: auto minmax(0, 1fr) minmax(118px, 30dvh);
       grid-template-areas:
         "hud"
-        "gear"
         "arena"
         "hand";
       padding: max(6px, env(safe-area-inset-top)) 8px max(6px, env(safe-area-inset-bottom));
@@ -5448,42 +5455,9 @@
     html.phone .dungeon-progress { font-size: 13px; }
     html.phone .status-stars { font-size: 18px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
-    html.phone .gear-rail {
-      height: auto;
-      min-height: 62px;
-      width: 100%;
-      flex-direction: row;
-      align-items: center;
-      padding: 6px 8px;
-      gap: 6px;
-      overflow: visible;
-    }
-    html.phone .gear-rail h2 { display: none; }
-    html.phone .gear-rail .party-stack { margin: 0; flex-direction: row; }
-    html.phone .gear-board {
-      container-type: normal;
-      overflow: visible;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-between;
-      width: 100%;
-      min-width: 0;
-      max-width: none;
-      height: auto;
-      min-height: 58px;
-      flex: 1 1 auto;
-      gap: 4px;
-    }
-    html.phone .gear-slot { width: auto; flex: 1 1 0; }
-    html.phone .gear-frame { width: 44px; height: 44px; }
-    html.phone .gear-label { font-size: 9px; }
-    html.phone .battle-bands { border-radius: 12px; }
-    html.phone .battle-frame .c { width: 42px; height: 42px; }
-    html.phone .battle-frame .m { width: 14px; height: 9px; }
-    html.phone .enemy-field { grid-template-columns: minmax(0, 1fr) minmax(64px, 18%) minmax(0, 1fr); }
-    html.phone .enemy-field > .hero-plate,
-    html.phone .enemy-field > .foe-plate { top: 4px; }
-    html.phone .enemy-field > .hero-plate { width: min(168px, 46%); }
+    html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
+    html.phone .plate-gear .gear-frame { width: 28px; height: 28px; }
+    html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
     html.phone .foe-plate[data-rank="雑魚"],
     html.phone .foe-plate[data-rank="普通"],
     html.phone .foe-plate[data-rank="強敵"] { width: min(168px, 46%); }
@@ -5504,15 +5478,15 @@
       font-size: 14px;
       border-width: 3px;
     }
-    html.phone .mana-orb { width: 32px; height: 52px; }
-    /* iPhone横画面。高さがないので、装備は左の縦列、上は1行、下は手札 */
+    html.phone .mana-orb { width: 26px; height: 26px; }
+    /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
-      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr) minmax(96px, 36dvh);
       grid-template-areas:
-        "gear hud"
-        "gear arena"
-        "gear hand";
+        "hud"
+        "arena"
+        "hand";
       column-gap: 6px;
       row-gap: 4px;
       padding:
@@ -5538,30 +5512,8 @@
       flex-wrap: nowrap;
       gap: 4px;
     }
-    html.phone.land .gear-rail {
-      flex-direction: column;
-      align-items: center;
-      width: auto;
-      height: 100%;
-      min-height: 0;
-      padding: 4px 6px;
-    }
-    html.phone.land .gear-board {
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      width: 40px;
-      min-width: 40px;
-      max-width: 40px;
-      height: 100%;
-      min-height: 0;
-    }
-    html.phone.land .gear-slot { flex: 0 0 auto; width: 40px; }
-    html.phone.land .gear-frame { width: 36px; height: 36px; }
-    html.phone.land .gear-label { display: none; }
-    html.phone.land .battle-bands { border-radius: 10px; }
-    html.phone.land .enemy-field { grid-template-columns: minmax(0, 1fr) minmax(140px, 30%) minmax(0, 1fr); }
-    html.phone.land .enemy-field > .hero-plate { width: min(220px, 34%); }
+    html.phone.land .hero-stack { width: min(220px, 34%); }
+    html.phone.land .plate-gear .gear-frame { width: 24px; height: 24px; }
     html.phone.land .foe-plate[data-rank="雑魚"],
     html.phone.land .foe-plate[data-rank="普通"],
     html.phone.land .foe-plate[data-rank="強敵"] { width: min(220px, 34%); }
@@ -6545,14 +6497,15 @@
           : `<span class="gear-mark">${slot.icon}</span>`;
         const title = item && item.name ? gearTitle(item) : slot.label;
         const active = shown === slot.id;
-        return `<button type="button" class="gear-slot${item ? " filled" : ""}${active ? (gearOpen === slot.id ? " open" : " hot") : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(title)}</span></button>`;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${active ? (gearOpen === slot.id ? " open" : " hot") : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
       const weapons = `<div class="gear-pair">${sword}${shield}</div>`;
       const bracelets = `<div class="gear-pair">${slotButton({ id: "braceletL", label: "腕輪左", icon: braceletIcon() })}${slotButton({ id: "braceletR", label: "腕輪右", icon: braceletIcon() })}</div>`;
       const medal = slotButton({ id: "medal", label: "メダル", icon: medalIcon() });
-      return `<div class="gear-board">${weapons}${bracelets}${medal}</div>`;
+      const items = ["itemL", "itemR"].filter((id) => gear && gear[id]).map((id) => slotButton({ id, label: "アイテム", icon: itemIcon() })).join("");
+      return `<div class="gear-board">${weapons}${bracelets}${medal}${items}</div>`;
     }
 
     function gearSlotLabel(slotId) {
@@ -6707,7 +6660,7 @@
           box.dataset.popBound = "1";
           box.addEventListener("pointerleave", (event) => {
             const related = event.relatedTarget;
-            if (related instanceof Element && (related.closest(".gear-rail") || related.closest(".gear-effect"))) return;
+            if (related instanceof Element && (related.closest(".plate-gear") || related.closest(".gear-effect"))) return;
             if (gearOpen) return;
             if (!gearHover) return;
             gearHover = "";
@@ -6719,7 +6672,7 @@
     }
 
     function bindGearHover() {
-      const rail = root.querySelector(".gear-rail");
+      const rail = root.querySelector(".plate-gear");
       if (!rail || rail.dataset.gearBound === "1") return;
       rail.dataset.gearBound = "1";
       rail.addEventListener("pointerover", (event) => {
@@ -8836,8 +8789,8 @@
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
       const orbs = [];
-      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="--sweep:${(i * 0.42).toFixed(2)}s"></span>`);
-      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="--sweep:${((baseOn + i) * 0.42).toFixed(2)}s"></span>`);
+      for (let i = 0; i < baseOn; i += 1) orbs.push(`<span class="mana-orb" style="--sweep:${(i * 0.42).toFixed(2)}s"><i class="mana-glint"></i></span>`);
+      for (let i = 0; i < temp; i += 1) orbs.push(`<span class="mana-orb has-temp" style="--sweep:${((baseOn + i) * 0.42).toFixed(2)}s"><i class="mana-glint"></i></span>`);
       const total = baseOn + temp;
       return `<div class="mana-row" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}">${orbs.join("")}</div>`;
     }
@@ -9615,12 +9568,12 @@
       paintTitleNav();
     }
 
-    function pileMarkup(kind, count) {
+    function pileMarkup(kind, count, overlay) {
       const label = kind === "deck" ? "山札" : "捨て札";
       const empty = count === 0;
       const stack = count > 1 ? " stack" : "";
       const look = empty ? "empty" : kind === "deck" ? "back" : "back discard";
-      return `<div class="pile" data-pile="${kind}" aria-label="${label} ${count}"><div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></div>`;
+      return `<div class="pile" data-pile="${kind}" aria-label="${label} ${count}">${overlay || ""}<div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></div>`;
     }
 
     function cardKind(card) {
@@ -10872,7 +10825,6 @@
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
-        <aside class="gear-rail"><h2>装備</h2>${gearMarkup()}</aside>
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -10888,11 +10840,13 @@
             </div>
           </header>
           <div class="battle-bands" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
-          <div class="battle-frame" aria-hidden="true"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i><i class="m top"></i><i class="m bottom"></i><i class="m left"></i><i class="m right"></i></div>
           <div class="stage">
             <div class="enemy-field">
             ${traitNote()}
+            <div class="hero-stack">
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            <div class="plate-gear">${gearMarkup()}</div>
+            </div>
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
               ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind)}
@@ -10923,11 +10877,10 @@
               <div class="pile-pair">
                 <div class="deck-column">
                   <div class="deck-stack">
-                    ${pileMarkup("deck", deck.length)}
+                    ${pileMarkup("deck", deck.length, pips())}
                   </div>
                 </div>
                 ${pileMarkup("discard", discard.length)}
-                ${pips()}
               </div>
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
               ${endButtonMarkup()}
