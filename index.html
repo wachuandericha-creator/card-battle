@@ -6,7 +6,7 @@
   <title>わちゅえりカードゲーム</title>
   <style>
     :root {
-      --hand-scale: 0.78;
+      --hand-scale: 0.64;
       --card-ratio: 3 / 4;
       --edge-clear: 0px;
       --bg: #0a0908;
@@ -43,9 +43,8 @@
     .battle-screen {
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr) minmax(0, 12.5%);
-      /* 手札は戦闘枠に重ならない範囲で大きく。合計 3.7fr は維持 */
-      grid-template-rows: auto minmax(0, 2.05fr) minmax(0, 1.65fr);
+      grid-template-columns: minmax(168px, 18%) minmax(0, 1fr) minmax(0, 12.5%);
+      grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1.3fr);
       grid-template-areas:
         "road hud log"
         "road arena log"
@@ -60,7 +59,7 @@
         #0a0908;
     }
     .battle-screen.no-log {
-      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr);
+      grid-template-columns: minmax(168px, 18%) minmax(0, 1fr);
       grid-template-areas:
         "road hud"
         "road arena"
@@ -94,7 +93,7 @@
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
     .play-row { grid-area: 1 / 1; min-width: 0; overflow: hidden; position: relative; z-index: 5; }
     /* 手札は戦闘枠より手前。ホバーでプレイエリアへ重なってよい */
-    .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 8; margin-top: -48px; }
+    .handbar { grid-area: hand; min-width: 0; overflow: visible; z-index: 8; }
     .hero-stack {
       position: absolute;
       top: 12px;
@@ -142,9 +141,9 @@
       margin: 0 0 6px;
       padding: 4px 0 6px;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 18px;
+      font-size: 28px;
       font-weight: 900;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.22em;
       text-indent: 0.28em;
       text-align: center;
       color: #fff3c4;
@@ -196,13 +195,13 @@
       overflow: visible;
       color: #fff6d0;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 4px #e4c27a, 0 0 0 2px #6a4512;
+      box-shadow: inset 0 0 0 10px #e4c27a, 0 0 0 3px #6a4512;
     }
     .road-node.fixed {
       box-shadow: inset 0 0 0 4px #c43a32;
     }
     .road-node.now.fixed {
-      box-shadow: inset 0 0 0 4px #e4c27a, 0 0 0 2px #6a4512;
+      box-shadow: inset 0 0 0 10px #e4c27a, 0 0 0 3px #6a4512;
     }
     .road-node.boss { color: #ffb0a4; }
     .road-cap {
@@ -1094,28 +1093,26 @@
     .rare-show::after {
       content: "";
       position: absolute;
-      left: 50%;
-      top: 46%;
-      width: min(300px, 34vw);
-      aspect-ratio: 1;
-      border: 8px solid transparent;
-      border-top-color: #fff6d0;
-      border-right-color: #e4b15a;
-      border-radius: 10px;
+      inset: -4px;
+      border: 4px solid #e4c27a;
+      border-radius: 12px;
       pointer-events: none;
       z-index: 4;
-      transform: translate(-50%, -50%);
-      animation: rare-orbit 1.35s linear 0.75s infinite;
+      box-shadow: 0 0 10px rgba(228, 194, 122, 0.45);
     }
-    @keyframes rare-orbit { to { transform: translate(-50%, -50%) rotate(360deg); } }
+    .rare-show.rare-2::after { inset: -6px; border-width: 7px; }
+    .rare-show.rare-3::after { inset: -8px; border-width: 10px; }
+    .rare-show.rare-4::after { inset: -10px; border-width: 13px; }
+    .rare-show.rare-5::after,
+    .rare-show.rare-boss::after { inset: -12px; border-width: 16px; }
+    .rare-show.rare-boss::after { border-color: #ffb4a8; box-shadow: 0 0 12px rgba(255, 120, 90, 0.5); }
     @keyframes rare-flash {
       0% { filter: brightness(1); }
       28% { filter: brightness(2.5); }
       100% { filter: brightness(1); }
     }
-    .bless-tale p { margin: 0 0 10px; font-size: 18px; line-height: 1.7; text-align: left; }
-    .bless-tale .hint { text-decoration: underline; text-underline-offset: 4px; }
-    .event-prompt { margin: 8px 0 0; font-size: 28px; font-weight: 900; letter-spacing: 0.18em; }
+    .bless-tale p { margin: 0 0 10px; text-align: left; }
+    .event-prompt { margin: 14px 0 0; }
     .mana-read {
       border: 0;
       background: none;
@@ -4824,41 +4821,43 @@
       position: relative;
       z-index: 2;
     }
-    .menu.event .event-prompt {
-      margin-top: 8px;
-      padding: 8px 14px;
-      border-top: 0;
-      border-radius: 10px;
-      width: fit-content;
-      font-size: clamp(16px, 1.3vw, 20px);
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      color: #2a1408;
-      background: linear-gradient(180deg, #ffe7a8, #e4b15a);
-      text-shadow: none;
-    }
     .menu.event .event-choice > p,
-    .menu.event .event-choice > h2 {
+    .menu.event .event-choice > h2,
+    .menu.event .event-choice .event-tale p {
       width: 100%;
-      margin: 0;
+      margin: 0 0 10px;
       text-align: left;
-      font-size: clamp(17px, 1.45vw, 22px);
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(21px, 1.8vw, 28px);
       font-weight: 700;
       line-height: 1.85;
-      letter-spacing: 0.08em;
-      color: #fff8e8;
-      text-shadow: 0 2px 0 #1a120c;
-    }
-    .menu.event .event-choice > p.event-prompt {
-      width: fit-content;
-      margin-top: 8px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      color: #2a1408;
-      background: linear-gradient(180deg, #ffe7a8, #e4b15a);
+      letter-spacing: 0.06em;
+      color: #e4c27a;
+      text-decoration: underline;
+      text-underline-offset: 6px;
       text-shadow: none;
+      background: none;
+    }
+    .menu.event .event-prompt,
+    .menu.event .event-choice > p.event-prompt,
+    .menu.event .event-choice .event-tale p.event-prompt {
+      width: 100%;
+      margin: 16px 0 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(21px, 1.8vw, 28px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.85;
+      color: #fff6d0;
+      background: none;
+      text-decoration: none;
+      text-shadow:
+        0 0 6px #fff1c4,
+        0 0 14px #ffe08a,
+        0 0 28px rgba(228, 177, 90, 0.95);
     }
     .menu.event .gift-row,
     .menu.event .shop-row { width: 100%; justify-content: space-between; }
@@ -6406,8 +6405,8 @@
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=36",
         battleRatio: "3 / 4",
-        defeat: "girl-defeat.png?v=10",
-        victory: "girl-victory.jpg?v=18",
+        defeat: "girl-defeat.png?v=11",
+        victory: "girl-victory.jpg?v=19",
         bless: "blessing-goddess-f.jpg?v=2",
       },
     ];
@@ -6805,8 +6804,8 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=9", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=5", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=2", label: "ジョブ" };
-      if (name === DUNGEON.boss) return { src: "path-fight.jpg?v=5", label: "ボス", boss: true };
+      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=3", label: "ジョブ" };
+      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=1", label: "ボス戦", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
 
@@ -10119,8 +10118,8 @@
               ${sheetFig("girl-battle.png?v=36", "戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=18", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-defeat.png?v=11", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=19", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10162,12 +10161,13 @@
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=8", "探索")}
               ${sheetFig("path-bless.jpg?v=3", "祝福")}
-              ${sheetFig("path-fight.jpg?v=5", "ボス戦", "", "path-series")}
+              ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
+              ${sheetFig("path-boss.jpg?v=1", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=5", "物乞い")}
               ${sheetFig("path-shop.jpg?v=9", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
-              ${sheetFig("path-job.jpg?v=2", "ジョブ")}
+              ${sheetFig("path-job.jpg?v=3", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=6", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -10177,8 +10177,8 @@
               ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
               ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=5", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=8", "ジョブ", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=6", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-job.jpg?v=9", "ジョブ", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -10357,9 +10357,9 @@
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
         "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
         "探索": ["event-search.jpg?v=8", "よだれを垂らしながら、宝箱を見つけている"],
-        "キャンプ": ["event-rest.jpg?v=5", "横向きに丸くなって、頬を赤らめてかわいく寝ている。よだれ。左太ももにベルト。奥のミノタウロスは気づかず通り過ぎる"],
+        "キャンプ": ["event-rest.jpg?v=6", "焚き火のそばに剣と盾を立てかけて、横向きに丸くなって寝ている"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
-        "ジョブ": ["event-job.jpg?v=8", "壁の紋章から光を受けて、ジョブチェンジしている"],
+        "ジョブ": ["event-job.jpg?v=9", "壁の紋章から光を受けて、ジョブチェンジしている。左太ももにベルト"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
