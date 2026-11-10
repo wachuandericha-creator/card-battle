@@ -1686,7 +1686,7 @@
       padding: 4px;
       background: rgba(18, 14, 12, 0.55);
     }
-    .cast-token.mini img { width: 168px; height: 168px; object-fit: cover; border-radius: 12px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+    .cast-token.mini img { width: 168px; height: 168px; object-fit: contain; border-radius: 12px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
     .cast-token.mini span { font-size: 16px; letter-spacing: 0.1em; }
     .cast-token.mini.shown { border-color: #e4b15a; }
     .cast-hero {
@@ -3559,9 +3559,9 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=7"); }
-    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=7"); }
-    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=7"); }
+    .card .card-fit.r1 { --frame-img: url("frame-star1.png?v=8"); }
+    .card .card-fit.r2 { --frame-img: url("frame-star2.png?v=8"); }
+    .card .card-fit.r3 { --frame-img: url("frame-star3-attack.png?v=8"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
@@ -4408,12 +4408,14 @@
       position: relative;
       z-index: 1;
       margin: 0;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
+      margin-top: auto;
+      margin-bottom: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 12px 14px;
+      gap: 8px;
+      padding: 6px 12px;
       border-radius: 14px;
       border: 1px solid rgba(228, 177, 90, 0.55);
       background:
@@ -4429,14 +4431,14 @@
       border-radius: 999px;
       border: 1px solid rgba(255, 236, 190, 0.55);
       background: linear-gradient(180deg, rgba(255, 236, 190, 0.22), rgba(120, 80, 20, 0.35));
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 900;
       color: #fff8e6;
       letter-spacing: 0.22em;
       text-shadow: 0 1px 0 #5a3d12, 0 0 10px rgba(255, 220, 120, 0.4);
     }
     .title-board .board-stars b {
-      font-size: clamp(28px, 2.6vw, 36px);
+      font-size: clamp(18px, 1.5vw, 22px);
       color: #ffe9ae;
       text-shadow: 0 0 18px rgba(255, 200, 80, 0.45), 0 2px 0 #5a3d12;
       font-variant-numeric: tabular-nums;
@@ -4554,7 +4556,7 @@
         gap: 10px;
       }
       .title-board h2 { font-size: 16px; letter-spacing: 0.14em; }
-      .title-board .board-stars b { font-size: 22px; }
+      .title-board .board-stars b { font-size: 16px; }
       .title-board .board-goals li { font-size: 13px; padding: 8px 10px; }
       .title-board .board-foot { grid-template-columns: 1fr; }
     }
@@ -6134,12 +6136,12 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=9",
+        chibi: "job-girl.png?v=10",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=27",
+        battle: "girl-battle.png?v=28",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=10",
-        victory: "girl-victory.png?v=11",
+        victory: "girl-victory.png?v=12",
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
@@ -6514,7 +6516,7 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=4", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=9", label: "ジョブ" };
+      if (name === "出来事:ジョブ") return { src: "job-girl.png?v=10", label: "ジョブ" };
       if (name === DUNGEON.boss) return { src: "enemy-minotaur.png?v=4", label: "ボス", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -9285,7 +9287,7 @@
       const warriorDone = logged && DUNGEON_LIST.some((item) => clearNames(item.floors).includes("女の戦士"));
       const rows = [
         goal(warriorDone, "女の戦士で踏破", ""),
-        ...DUNGEON_LIST.map((item) => goal(logged && dungeonClearedFloors(item.floors), `${item.name}を踏破`, item.rank || "")),
+        ...DUNGEON_LIST.map((item) => goal(logged && dungeonClearedFloors(item.floors), `${item.name}を踏破`, "")),
       ].join("");
       const slot = logged ? readAccount().slots[loginWord] : null;
       const logins = slot && Array.isArray(slot.logins) ? slot.logins : [];
@@ -9752,14 +9754,14 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=27", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=28", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=10", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.png?v=11", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.png?v=12", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -9767,7 +9769,7 @@
               ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=9", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=10", "女の戦士の選択コマ（構え）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
@@ -10167,13 +10169,21 @@
     }
 
     const CARD_STYLE = [
-      ["style-star1", "★ 銅", "frame-star1.png?v=7"],
-      ["style-star2", "★★ 銀", "frame-star2.png?v=7"],
-      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=7"],
-      ["style-red", "差し色 赤", "frame-metal-red.png?v=2"],
-      ["style-blue", "差し色 青", "frame-metal-blue.png?v=2"],
-      ["style-green", "差し色 緑", "frame-metal-green.png?v=2"],
-      ["style-yellow", "差し色 黄", "frame-metal-yellow.png?v=2"],
+      ["style-star1", "★ 銅", "frame-star1.png?v=8"],
+      ["style-star2", "★★ 銀", "frame-star2.png?v=8"],
+      ["style-star3", "★★★ 金", "frame-star3-attack.png?v=8"],
+      ["style-leg-red-1", "レジェンド赤 銅", "frame-leg-red-1.png?v=1"],
+      ["style-leg-red-2", "レジェンド赤 銀", "frame-leg-red-2.png?v=1"],
+      ["style-leg-red-3", "レジェンド赤 金", "frame-leg-red-3.png?v=1"],
+      ["style-leg-blue-1", "レジェンド青 銅", "frame-leg-blue-1.png?v=1"],
+      ["style-leg-blue-2", "レジェンド青 銀", "frame-leg-blue-2.png?v=1"],
+      ["style-leg-blue-3", "レジェンド青 金", "frame-leg-blue-3.png?v=1"],
+      ["style-leg-yellow-1", "レジェンド黄 銅", "frame-leg-yellow-1.png?v=1"],
+      ["style-leg-yellow-2", "レジェンド黄 銀", "frame-leg-yellow-2.png?v=1"],
+      ["style-leg-yellow-3", "レジェンド黄 金", "frame-leg-yellow-3.png?v=1"],
+      ["style-leg-green-1", "レジェンド緑 銅", "frame-leg-green-1.png?v=1"],
+      ["style-leg-green-2", "レジェンド緑 銀", "frame-leg-green-2.png?v=1"],
+      ["style-leg-green-3", "レジェンド緑 金", "frame-leg-green-3.png?v=1"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
