@@ -1616,7 +1616,7 @@
       padding: 4px;
       background: rgba(18, 14, 12, 0.55);
     }
-    .cast-token.mini img { width: 112px; height: 132px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
+    .cast-token.mini img { width: 168px; height: 210px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
     .cast-token.mini span { font-size: 16px; letter-spacing: 0.1em; }
     .cast-token.mini.shown { border-color: #e4b15a; }
     .cast-hero {
@@ -4810,15 +4810,15 @@
       align-items: stretch;
     }
     .challenge-job .cast-action {
-      width: 100%;
-      max-width: none;
-      height: 100%;
-      max-height: none;
-      aspect-ratio: auto;
-      justify-self: stretch;
-      align-self: stretch;
-      object-fit: cover;
-      object-position: center top;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 100%;
+      aspect-ratio: 16 / 9;
+      justify-self: center;
+      align-self: center;
+      object-fit: contain;
+      object-position: center;
     }
     .challenge-job .cast-side {
       height: 100%;
@@ -4857,7 +4857,7 @@
       gap: 4px;
       justify-content: center;
     }
-    .challenge-job .cast-token.mini img { width: min(160px, 16vw); height: min(190px, 22vh); }
+    .challenge-job .cast-token.mini img { width: min(280px, 26vw); height: min(340px, 38vh); }
     .challenge-job .cast-token.mini span { font-size: 16px; }
     .challenge-dungeon .dungeon-preview {
       flex: 1 1 auto;
@@ -5836,8 +5836,8 @@
         name: "女の戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
-        chibi: "job-girl.png?v=6",
-        action: "girl-action.jpg?v=4",
+        chibi: "job-girl.png?v=7",
+        action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=24",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=9",
@@ -9253,10 +9253,10 @@
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
               ${sheetFig("girl-front.png?v=11", "女の戦士の立ち絵", "cut-ref")}
-              ${sheetFig("girl-action.jpg?v=4", "女の戦士の一枚絵", "land-ref", "span-2")}
+              ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=6", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=7", "女の戦士の選択コマ（正面デフォルメ）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
