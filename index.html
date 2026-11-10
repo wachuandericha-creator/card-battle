@@ -161,7 +161,7 @@
       grid-template-columns: 32px 42px minmax(0, 1fr);
       align-items: center;
       gap: 4px;
-      flex: 0 0 calc((100% - 36px) / 10);
+      flex: 1 0 44px;
       min-height: 0;
       color: rgba(240, 228, 204, 0.45);
       font-size: 13px;
@@ -1012,6 +1012,10 @@
     .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
     .reward-pick.gear-pick { width: min(250px, 24vw); padding: 0; border: 0; background: none; color: var(--cream); }
     .gear-offer { width: min(250px, 24vw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .gear-offer-card { width: min(240px, 100%); }
+    .gear-offer-info { width: 100%; text-align: center; }
+    .gear-offer-art { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #1a1410; }
+    .gear-offer-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .gear-offer .gear-effect { position: relative; left: auto; top: auto; width: 100%; max-width: none; max-height: none; pointer-events: none; }
     .rare-caption { margin: 8px 0 0; text-align: center; font-size: 22px; font-weight: 800; letter-spacing: 0.14em; color: #ffe27a; text-shadow: 0 0 8px rgba(255, 210, 120, 0.45); line-height: 1; }
     .rare-caption.boss { color: #ffb0a4; }
@@ -2538,22 +2542,25 @@
       position: absolute;
       z-index: 4;
       left: 50%;
-      top: auto;
-      bottom: calc(var(--pile-card-h, 64%) - 6px);
-      transform: translate(-50%, 0);
+      top: 2px;
+      bottom: calc(var(--pile-card-h, 64%) + 8px);
+      transform: translateX(-50%);
       display: flex;
       flex-flow: row nowrap;
       align-items: flex-end;
       justify-content: center;
-      gap: 10px;
+      gap: 0;
       width: max-content;
+      max-width: calc(100% - 8px);
       margin: 0;
+      overflow: hidden;
       pointer-events: none;
     }
     .mana-orb {
       position: relative;
-      width: 96px;
-      height: 112px;
+      width: 54px;
+      height: 100%;
+      max-height: 72px;
       flex: 0 0 auto;
       margin: 0;
       border: 0;
@@ -2601,12 +2608,12 @@
     }
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
     .handbar .end {
-      align-self: flex-end;
-      height: 72%;
-      max-height: 176px;
+      align-self: center;
+      height: 52px;
+      max-height: 52px;
       min-width: 0;
       min-height: 0;
-      margin: 0 8px 28px 0;
+      margin: 0 8px 0 0;
     }
     .pile-card {
       position: relative;
@@ -2794,21 +2801,25 @@
     .foe-pile:hover .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
     .foe-peek {
       position: absolute;
-      right: 10px;
-      top: 10px;
+      right: 8px;
+      bottom: 118px;
       z-index: 12;
-      max-width: min(72%, 640px);
-      padding: 10px 12px;
+      width: min(280px, 46%);
+      max-height: 42%;
+      overflow: auto;
+      padding: 12px 14px;
       border-radius: 14px;
-      background: rgba(14, 10, 8, 0.9);
-      border: 1px solid rgba(228, 177, 90, 0.7);
+      background: rgba(12, 8, 6, 0.96);
+      border: 2px solid #e4c27a;
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
       pointer-events: none;
     }
     .foe-peek[hidden] { display: none; }
-    .foe-peek h3 { margin: 0 0 6px; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
-    .foe-peek .deck-cards { gap: 8px; justify-content: center; }
-    .foe-peek .card.preview { width: 84px; height: auto; }
+    .foe-peek h3 { margin: 0 0 4px; font-size: 18px; color: var(--gold); letter-spacing: 0.12em; }
+    .foe-peek p { margin: 0 0 8px; color: #d9c7a4; font-size: 13px; line-height: 1.5; }
+    .foe-peek ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+    .foe-peek li { display: flex; gap: 8px; align-items: baseline; color: #f4ead6; font-size: 16px; }
+    .foe-peek li b { min-width: 1.4em; color: #7ec8ff; font-size: 18px; }
     .log-peek {
       position: fixed;
       z-index: 40;
@@ -3661,28 +3672,27 @@
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
-      width: 108px;
-      height: 78%;
-      min-width: 108px;
+      width: 148px;
+      height: 52px;
+      min-width: 148px;
       min-height: 0;
       max-width: none;
-      max-height: 168px;
+      max-height: 52px;
       aspect-ratio: auto;
       flex: none;
       align-self: center;
       margin: 0 12px;
-      border-radius: 16px;
-      border: 0;
-      background:
-        linear-gradient(180deg, #fff1c4 0%, #e2ad4a 42%, #8a5414 100%);
-      color: #2a1608;
+      border-radius: 999px;
+      border: 2px solid #e4c27a;
+      background: #1c120c;
+      color: #ffe7a4;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 22px;
+      font-size: 16px;
       font-weight: 900;
-      letter-spacing: 0.12em;
-      line-height: 1.15;
+      letter-spacing: 0.22em;
+      line-height: 1;
       cursor: pointer;
-      box-shadow: 0 7px 0 #5c3810, 0 12px 18px rgba(0, 0, 0, 0.45);
+      box-shadow: inset 0 0 0 1px #6b4518, 0 8px 16px rgba(0, 0, 0, 0.4);
     }
     .fly-card {
       position: fixed;
@@ -4599,8 +4609,8 @@
       grid-area: picture;
       width: auto;
       height: auto;
-      max-width: 86%;
-      max-height: 64%;
+      max-width: 96%;
+      max-height: 78%;
       aspect-ratio: 16 / 9;
       object-fit: contain;
       object-position: center;
@@ -4635,7 +4645,7 @@
       margin-top: 8px;
       padding-top: 16px;
       border-top: 1px solid rgba(228, 177, 90, 0.45);
-      font-size: clamp(20px, 1.7vw, 26px);
+      font-size: clamp(16px, 1.3vw, 20px);
       letter-spacing: 0.16em;
       color: #ffe7a4;
     }
@@ -4644,7 +4654,7 @@
       width: 100%;
       margin: 0;
       text-align: left;
-      font-size: clamp(22px, 2.1vw, 30px);
+      font-size: clamp(17px, 1.45vw, 22px);
       font-weight: 700;
       line-height: 1.85;
       letter-spacing: 0.08em;
@@ -4984,16 +4994,16 @@
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
     .cast-screen.character-focus {
-      padding-left: 0;
-      padding-right: 0;
+      padding-left: 12.5vw;
+      padding-right: 12.5vw;
       align-items: center;
     }
     .cast-screen.character-focus .cast-main {
-      width: max-content;
-      max-width: calc(100% - 8vw);
+      width: 100%;
+      max-width: none;
       margin-left: auto;
       margin-right: auto;
-      grid-template-columns: minmax(240px, 28vw) minmax(280px, 360px) minmax(220px, 260px);
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.9fr);
       gap: 0;
       align-items: stretch;
       justify-content: center;
@@ -5368,6 +5378,7 @@
         gap: 8px;
       }
       .dungeon-col { min-height: 0; height: 100%; }
+      .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(180px, 32vh) auto auto;
@@ -5678,8 +5689,8 @@
       .sprite .eye { top: 30px; width: 13px; height: 13px; }
       .sprite .eye.l { left: 28px; }
       .sprite .eye.r { right: 28px; }
-      .end { min-width: 128px; min-height: 128px; font-size: 24px; }
-      .mana-orb { width: 52px; height: 46px; margin: 0 3px; }
+      .end { width: 132px; height: 44px; min-width: 132px; min-height: 44px; max-height: 44px; font-size: 14px; border-radius: 999px; }
+      .mana-orb { width: 36px; height: 100%; max-height: 48px; margin: 0; }
       .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
       .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
       .meters { width: 180px; }
@@ -5762,17 +5773,19 @@
     html.phone .handbar { padding: 4px 4px 6px; gap: 4px; }
     html.phone .handbar .end,
     html.phone .end {
-      width: 76px;
-      height: 76px;
-      min-width: 76px;
-      min-height: 76px;
-      max-width: 76px;
-      max-height: 76px;
+      width: 108px;
+      height: 40px;
+      min-width: 108px;
+      min-height: 40px;
+      max-width: 108px;
+      max-height: 40px;
       margin: 0 2px 6px 0;
-      font-size: 14px;
-      border-width: 3px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      border-radius: 999px;
+      border-width: 2px;
     }
-    html.phone .mana-orb { width: 44px; height: 40px; margin: 0 3px; }
+    html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: minmax(0, 1fr);
@@ -5815,13 +5828,14 @@
     html.phone.land .battle-plate .shield-badge { width: 36px; height: 48px; }
     html.phone.land .handbar .end,
     html.phone.land .end {
-      width: 64px;
-      height: 64px;
-      min-width: 64px;
-      min-height: 64px;
-      max-width: 64px;
-      max-height: 64px;
-      font-size: 13px;
+      width: 96px;
+      height: 36px;
+      min-width: 96px;
+      min-height: 36px;
+      max-width: 96px;
+      max-height: 36px;
+      font-size: 11px;
+      border-radius: 999px;
     }
     html.phone.land .battle-log {
       left: 64px;
@@ -5832,7 +5846,7 @@
       height: auto;
       max-height: 58%;
     }
-    html.phone.land .mana-orb { width: 40px; height: 36px; margin: 0 2px; }
+    html.phone.land .mana-orb { width: 28px; height: 100%; max-height: 40px; margin: 0; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
       transform: none;
@@ -6103,7 +6117,7 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=8",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=25",
+        battle: "girl-battle.png?v=26",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=9",
         victory: "girl-victory.png?v=10",
@@ -6476,7 +6490,7 @@
     function roadFace(node) {
       const name = String(node || "");
       if (name === "出来事:祝福") return { label: "祝福", mark: "祝" };
-      if (name === "出来事:探索") return { src: "path-search.jpg?v=6", label: "探索" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=7", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=5", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=6", label: "お店" };
@@ -6488,18 +6502,22 @@
 
     function roadMapHtml() {
       if (!route || !route.length) return "";
-      const rows = route.map((node, i) => {
-        const face = roadFace(node);
-        const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const show = state !== "ahead" || face.boss;
-        const floor = route[0] === "出来事:祝福" ? i : i + 1;
-        const icon = show && face.src
-          ? `<img src="${face.src}" alt="">`
-          : `<i></i>`;
-        const caption = show ? face.label : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor === 0 ? "入口" : `${floor}F`}</span>${icon}<span class="road-name">${esc(caption)}</span></li>`;
-      }).join("");
-      return `<section class="road-map" aria-label="道のり"><h2>道</h2><ol>${rows}</ol></section>`;
+      const blessing = route[0] === "出来事:祝福";
+      const rows = route.map((node, i) => ({ node, i }))
+        .filter(({ node }) => node !== "出来事:祝福")
+        .reverse()
+        .map(({ node, i }) => {
+          const face = roadFace(node);
+          const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
+          const show = state !== "ahead" || face.boss;
+          const floor = blessing ? i : i + 1;
+          const icon = show && face.src
+            ? `<img src="${face.src}" alt="">`
+            : `<i></i>`;
+          const caption = show ? face.label : "";
+          return `<li class="road-node ${state}${face.boss ? " boss" : ""}"><span class="road-floor">${floor}F</span>${icon}<span class="road-name">${esc(caption)}</span></li>`;
+        }).join("");
+      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}</ol></section>`;
     }
 
     function enemyNow() {
@@ -8940,7 +8958,7 @@
       const fx = rareFx(lv);
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div>${rareCaption(gift.card)}<b>${esc(gift.card.name)}</b></div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div>${rareCaption(gift.card)}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
@@ -9709,7 +9727,7 @@
             <h3>女の戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=25", "戦闘（縁取り）", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=26", "戦闘（縁取り）", "cut-ref")}
               ${sheetFig("girl-battle-prev.png?v=1", "戦闘（前）", "cut-ref")}
               ${sheetFig("girl-battle-next.png?v=1", "戦闘（切り抜き直し）", "cut-ref")}
               ${sheetFig("girl-battle-next2.png?v=1", "戦闘（切り抜き直し2）", "cut-ref")}
@@ -9774,13 +9792,12 @@
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。連戦は赤枠。道システムの画面実装はこれから</p>
             <div class="ref-grid">
-              ${sheetFig("path-search.jpg?v=6", "探索")}
-              ${sheetFig("path-fight.jpg?v=5", "連戦（両手）", "", "path-series")}
-              ${sheetFig("path-fight-shield.jpg?v=1", "連戦（盾）", "", "path-series")}
+              ${sheetFig("path-search.jpg?v=7", "探索")}
+              ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=4", "物乞い")}
               ${sheetFig("path-shop.jpg?v=6", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
-              ${sheetFig("path-lost.jpg?v=4", "迷子")}
+              ${sheetFig("path-lost.jpg?v=5", "迷子")}
               ${sheetFig("path-unknown.jpg?v=5", "遭遇")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -10347,7 +10364,7 @@
     }
 
     function endButtonMarkup() {
-      return `<button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン<br>終了</button>`;
+      return `<button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>`;
     }
 
     let heroImage = null;
@@ -10625,7 +10642,7 @@
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=6" },
       camp: { name: "キャンプ", text: "体力が全快する。あとはまっすぐ進むと同じ。" },
-      search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg?v=6" },
+      search: { name: "探索", text: "カード、装備、アイテムのどれか。半分で戦闘。", image: "path-search.jpg?v=7" },
       unknown: { name: "未知との遭遇", text: "左の2つ以外の出来事が起きる。戦闘もある。", image: "path-unknown.jpg?v=5" },
     };
     // 道の候補。左の2つはここから引き、右は常に「未知との遭遇」
@@ -10965,7 +10982,7 @@
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const fx = rareFx(lv);
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div>${rareCaption(slot.card)}<b>${esc(slot.card.name)}</b><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div>${rareCaption(slot.card)}<span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
           return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}${gearOfferHtml(slot.gear)}<span>${esc(tag)}</span>${action}</div>`;
@@ -11161,13 +11178,10 @@
 
     function gearOfferHtml(item) {
       if (!item) return "";
-      return `<div class="gear-offer">${gearPopShell(item.slot || "sword", {
-        name: item.name || "",
-        rarity: gearRarityText(item),
-        image: item.image || "",
-        body: esc(gearEffectPlain(item)),
-        stats: gearStatChips(item),
-      })}${rareCaption(item)}</div>`;
+      const art = item.image
+        ? `<img src="${esc(item.image)}" alt="">`
+        : `<span class="gear-mark">${gearSlotIcon(item.slot || "sword")}</span>`;
+      return `<div class="gear-offer gear-offer-card"><div class="gear-offer-info"><span class="gear-effect-slot">${esc(gearSlotLabel(item.slot || "sword"))}</span><p class="gear-effect-name">${esc(item.name || "")}</p>${gearStatChips(item)}<p class="gear-effect-body">${esc(gearEffectPlain(item))}</p></div>${rareCaption(item)}<div class="gear-offer-art">${art}</div></div>`;
     }
 
     function eventNoteHtml() {
@@ -11425,7 +11439,7 @@
               </div>
               </div>
               ${foePileMarkup()}
-              <div class="foe-peek" hidden><h3>${esc(enemy.name)}の山札</h3>${foeDeckCards()}</div>
+              <div class="foe-peek" hidden><h3>敵の山札</h3><p>残りの中から、無作為に1枚使う。</p><ol>${sortedCards(sourcePattern()).map((card) => `<li><b>${esc(String(card.cost))}</b><span>${esc(card.name)}</span></li>`).join("") || "<li>なし</li>"}</ol></div>
             </div>
             ${stageFxMarkup(encounter, turnNow, fatalNow, hurtNow, hitNow, hitPow)}
             </div>
@@ -11463,7 +11477,7 @@
       fitHand();
       const roadNow = root.querySelector(".road-node.now");
       const roadList = root.querySelector(".road-map ol");
-      if (roadNow && roadList) roadList.scrollTop = Math.max(0, roadNow.offsetTop - roadList.clientHeight / 2);
+      if (roadNow && roadList) roadList.scrollTop = Math.max(0, roadNow.offsetTop - roadList.clientHeight + roadNow.offsetHeight + 8);
       if (dealNow) {
         startHandDeal();
       } else {
