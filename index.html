@@ -192,9 +192,21 @@
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
     .road-node.now {
+      z-index: 2;
+      overflow: visible;
       color: #fff6d0;
-      background: rgba(228, 177, 90, 0.18);
       border-radius: 8px;
+    }
+    .road-here {
+      position: absolute;
+      z-index: 3;
+      left: -7%;
+      top: -8%;
+      width: 114%;
+      height: 116%;
+      pointer-events: none;
+      transform: rotate(-6deg);
+      filter: drop-shadow(0 1px 0 rgba(80, 0, 0, 0.85));
     }
     .road-node.boss { color: #ffb0a4; }
     .road-node.boss img { box-shadow: 0 0 0 2px #c43a32; }
@@ -6688,7 +6700,7 @@
       return Math.max(1, battleIndex + 1 - floorStart());
     }
     function floorMax() { return dungeonFloors; }
-    function floorLabel() { return `最大${floorMax()}Ｆ　現在　${floorNo()}Ｆ`; }
+    function floorLabel() { return `最大${floorMax()}Ｆ`; }
     function insertAhead(node) {
       const at = Math.min(Math.max(battleIndex + 1, 0), route.length);
       route.splice(at, 0, node);
@@ -6724,11 +6736,14 @@
         const known = state !== "ahead" || roadFixed(node, i);
         const face = known ? roadFace(node) : { mark: "？", label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
-        const floor = node === "出来事:祝福" || num === 0 ? "祝" : `${num}F`;
+        const floor = `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i>${esc(face.mark || "")}</i>`;
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
+        const here = state === "now"
+          ? `<svg class="road-here" viewBox="0 0 120 120" aria-hidden="true"><path d="M22 70 C 10 46, 24 16, 54 12 C 86 8, 112 30, 110 58 C 108 90, 82 114, 50 110 C 22 106, 6 84, 16 60" fill="none" stroke="#ff241c" stroke-width="7" stroke-linecap="round"/><path d="M30 78 C 18 52, 36 22, 64 20 C 96 18, 114 46, 104 74 C 94 104, 60 116, 34 98" fill="none" stroke="#c40000" stroke-width="4" stroke-linecap="round" opacity="0.9"/></svg>`
+          : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}">${icon}${here}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
       const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
       return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
@@ -11774,9 +11789,7 @@
       startManaFires();
       paintGear();
       fitHand();
-      const roadNow = root.querySelector(".road-node.now");
-      const roadList = root.querySelector(".road-map ol");
-      if (roadNow && roadList) roadList.scrollTop = Math.max(0, roadNow.offsetTop - roadList.clientHeight + roadNow.offsetHeight + 8);
+      placeRoad();
       if (dealNow) {
         startHandDeal();
       } else {
