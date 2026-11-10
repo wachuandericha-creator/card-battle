@@ -1184,8 +1184,9 @@
     .album-screen .deck-cards { justify-content: center; gap: 14px; }
     .art-zoom-side {
       min-width: 0;
+      min-height: 0;
       max-height: calc(100vh - 48px);
-      overflow: auto;
+      overflow: hidden;
       padding: 22px 20px 20px;
       border-radius: 18px;
       border: 1px solid rgba(228, 177, 90, 0.7);
@@ -1205,9 +1206,14 @@
     }
     .art-zoom-side .art-zoom-img {
       display: block;
-      width: 100%;
-      height: calc(100vh - 220px);
-      max-height: none;
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 100%;
+      aspect-ratio: 2 / 3;
       object-fit: contain;
       border-radius: 12px;
       background: #120e0c;
@@ -1218,13 +1224,17 @@
       justify-content: center;
       align-items: center;
       flex: 1 1 auto;
+      min-width: 0;
       min-height: 0;
       width: 100%;
       margin: 0 auto 8px;
     }
     .art-zoom-side .art-zoom-card .card.preview {
-      width: min(420px, 100%);
-      max-height: calc(100vh - 220px);
+      width: auto;
+      max-width: min(420px, 100%);
+      height: 100%;
+      max-height: 100%;
+      aspect-ratio: 2 / 3;
     }
     .art-zoom-side .art-zoom-note {
       margin: 12px 0 0;
@@ -1256,8 +1266,11 @@
       .album-screen .panel {
         max-height: none;
       }
+      .art-zoom-side {
+        min-height: 0;
+      }
       .art-zoom-side .art-zoom-img {
-        height: calc(46vh - 140px);
+        max-height: calc(46vh - 120px);
       }
     }
     .nav-title {
