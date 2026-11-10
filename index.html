@@ -183,9 +183,11 @@
       display: grid;
       place-items: center;
       border: 1px solid rgba(228, 177, 90, 0.35);
-      font-size: 12px;
+      font-size: 54px;
+      font-weight: 900;
       font-style: normal;
-      color: #f0d078;
+      color: #ffe7a4;
+      text-shadow: 0 3px 0 #000;
     }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
@@ -211,23 +213,28 @@
     .road-floor {
       flex: 0 0 auto;
       color: #ffe7a4;
-      font-size: 16px;
+      font-size: 28px;
       font-weight: 900;
       letter-spacing: 0.02em;
+      text-shadow: 0 2px 0 #000, 0 0 8px #000;
     }
+    .road-node.now .road-floor { font-size: 36px; }
     .road-name {
       min-width: 0;
       overflow: hidden;
       color: #fff6e4;
-      font-size: 14px;
+      font-size: 22px;
+      font-weight: 900;
       white-space: nowrap;
       text-overflow: ellipsis;
+      text-shadow: 0 2px 0 #000;
     }
+    .road-node.now .road-name { font-size: 26px; }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-      align-items: center;
+      align-items: stretch;
       column-gap: 12px;
       min-width: 0;
       padding: 10px 18px;
@@ -277,17 +284,21 @@
     }
     .hud-actions {
       display: flex;
-      gap: 6px;
-      align-items: center;
+      gap: 8px;
+      align-items: stretch;
       justify-self: end;
+      align-self: stretch;
       min-width: 0;
+      height: 100%;
     }
     .hud-actions .small-btn {
-      height: 34px;
-      padding: 0 12px;
-      font-size: 13px;
+      height: 100%;
+      min-height: 56px;
+      padding: 0 20px;
+      font-size: 22px;
+      font-weight: 900;
       line-height: 1;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
       white-space: nowrap;
     }
     h1 {
@@ -2638,31 +2649,31 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
-      min-width: 112px;
-      padding: 8px 12px 10px;
+      gap: 0;
+      min-width: 128px;
+      padding: 8px 14px 10px;
       border-radius: 18px;
       border: 3px solid #ffe7a4;
       background: radial-gradient(circle at 50% 28%, #8a6220, #1a120c 72%);
       box-shadow: 0 0 0 3px #120e0b, 0 8px 16px rgba(0, 0, 0, 0.45);
     }
     .mana-read b {
-      font-size: 56px;
-      line-height: 0.85;
+      font-size: 64px;
+      line-height: 0.8;
       font-weight: 900;
       color: #fff8dc;
       text-shadow: 0 3px 0 #000, 0 0 14px rgba(255, 214, 100, 0.85);
     }
     .mana-read > span {
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 900;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.12em;
       color: #ffe7a4;
     }
-    .mana-pips { display: flex; gap: 6px; margin-top: 4px; }
+    .mana-pips { display: flex; gap: 7px; margin-top: 6px; }
     .mana-pip {
-      width: 16px;
-      height: 16px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #fff6c2, #e4b15a 46%, #8a5812);
       box-shadow: 0 0 8px rgba(255, 200, 80, 0.85);
@@ -2705,14 +2716,15 @@
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
     .handbar .end {
       align-self: center;
-      width: 148px;
-      height: 52px;
-      min-width: 148px;
-      min-height: 52px;
+      width: 220px;
+      height: 84px;
+      min-width: 220px;
+      min-height: 84px;
       max-width: none;
-      max-height: 52px;
+      max-height: 84px;
       margin: 0 8px 0 0;
       border-radius: 999px;
+      font-size: 26px;
     }
     .pile-card {
       position: relative;
@@ -3782,12 +3794,12 @@
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
     .end {
-      width: 148px;
-      height: 52px;
-      min-width: 148px;
-      min-height: 52px;
+      width: 220px;
+      height: 84px;
+      min-width: 220px;
+      min-height: 84px;
       max-width: none;
-      max-height: 52px;
+      max-height: 84px;
       aspect-ratio: auto;
       flex: none;
       align-self: center;
@@ -3797,9 +3809,9 @@
       background: #1c120c;
       color: #ffe7a4;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 16px;
+      font-size: 26px;
       font-weight: 900;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.14em;
       line-height: 1;
       cursor: pointer;
       box-shadow: inset 0 0 0 1px #6b4518, 0 8px 16px rgba(0, 0, 0, 0.4);
@@ -6287,11 +6299,11 @@
     let job = "戦士";
     let castPicked = false;
     let castHover = "";
-    let castLock = "女の戦士";
+    let castLock = "戦士";
     let castShown = "";
     const CAST = [
       {
-        name: "女の戦士",
+        name: "戦士",
         blurb: "剣と盾の近接職。パリィで受け流し、反撃で押し切る。",
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=13",
@@ -6303,7 +6315,7 @@
         bless: "blessing-goddess-f.jpg?v=1",
       },
     ];
-    let heroCast = "女の戦士";
+    let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
     function heroName() { return heroItem().name; }
     let jobsHad = ["戦士"];
@@ -6356,8 +6368,9 @@
 
     function clearNames(floors) {
       const raw = meta.cleared && meta.cleared[String(floors)];
-      if (raw === true) return ["女の戦士"];
-      if (Array.isArray(raw)) return raw.filter(Boolean);
+      const asNow = (name) => (name === "女の戦士" ? "戦士" : name);
+      if (raw === true) return ["戦士"];
+      if (Array.isArray(raw)) return [...new Set(raw.filter(Boolean).map(asNow))];
       return [];
     }
 
@@ -6386,7 +6399,7 @@
     function markDungeonCleared(floors) {
       if (!meta.cleared || typeof meta.cleared !== "object") meta.cleared = {};
       const names = clearNames(floors);
-      const who = heroCast || "女の戦士";
+      const who = heroCast || "戦士";
       if (!names.includes(who)) names.push(who);
       meta.cleared[String(floors)] = names;
     }
@@ -6423,7 +6436,7 @@
       return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
 
-    // ログ本文の名前に色を付ける。自分は青、敵は赤。長い名前から先に見る（「戦士」と「女の戦士」など）。
+    // ログ本文の名前に色を付ける。自分は青、敵は赤。長い名前から先に見る。
     function colorNames(text) {
       const me = heroName();
       const foe = enemy && enemy.name ? enemy.name : "";
@@ -6692,7 +6705,7 @@
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
         const known = state !== "ahead" || roadFixed(node, i);
-        const face = known ? roadFace(node) : { label: "道" };
+        const face = known ? roadFace(node) : { mark: "？", label: "" };
         const floor = node === "出来事:祝福" ? "祝" : `${blessing ? i : i + 1}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
@@ -9458,12 +9471,12 @@
     function pips() {
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
+      const cap = Math.max(baseOn, Number(player.baseMax) || 0, MANA);
       const total = baseOn + temp;
       const dots = [];
-      for (let i = 0; i < baseOn; i += 1) dots.push(`<i class="mana-pip"></i>`);
+      for (let i = 0; i < cap; i += 1) dots.push(`<i class="mana-pip${i < baseOn ? "" : " off"}"></i>`);
       for (let i = 0; i < temp; i += 1) dots.push(`<i class="mana-pip temp"></i>`);
-      if (!dots.length) dots.push(`<i class="mana-pip off"></i>`);
-      return `<div class="mana-read" aria-label="マナ ${total}${temp ? ` うち持ち越し${temp}` : ""}"><b>${total}</b><span>マナ</span><div class="mana-pips">${dots.join("")}</div></div>`;
+      return `<div class="mana-read" aria-label="マナ残り ${total}。枠 ${cap}${temp ? `。持ち越し ${temp}` : ""}"><span>マナ残り</span><b>${total}</b><div class="mana-pips">${dots.join("")}</div></div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
@@ -9473,9 +9486,9 @@
     function titleBoardHtml() {
       const logged = Boolean(loginWord);
       const goal = (done, label, rank) => `<li class="${done ? "done" : ""}"><span class="box" aria-hidden="true">${done ? "✓" : ""}</span><span>${esc(label)}</span>${rank ? `<span class="rank" aria-label="難易度">${esc(rank)}</span>` : ""}</li>`;
-      const warriorDone = logged && DUNGEON_LIST.some((item) => clearNames(item.floors).includes("女の戦士"));
+      const warriorDone = logged && DUNGEON_LIST.some((item) => clearNames(item.floors).includes("戦士"));
       const rows = [
-        goal(warriorDone, "女の戦士で踏破", ""),
+        goal(warriorDone, "戦士で踏破", ""),
         ...DUNGEON_LIST.map((item) => goal(logged && dungeonClearedFloors(item.floors), `${item.name}を踏破`, "")),
       ].join("");
       const slot = logged ? readAccount().slots[loginWord] : null;
@@ -9578,7 +9591,8 @@
     }
 
     function castByName(name) {
-      return CAST.find((item) => item.name === name) || CAST[0];
+      const want = name === "女の戦士" ? "戦士" : name;
+      return CAST.find((item) => item.name === want) || CAST[0];
     }
 
     function shownCastName() {
@@ -9988,7 +10002,7 @@
           <div class="panel">
             <h2>設定資料</h2>
             <p class="album-meta">画像を押すと右半分に拡大</p>
-            <h3>女の戦士</h3>
+            <h3>戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-battle.png?v=32", "戦闘（縁取り）", "cut-ref")}
@@ -10000,14 +10014,14 @@
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
-              ${sheetFig("girl-front.png?v=11", "女の戦士の立ち絵", "cut-ref")}
-              ${sheetFig("girl-action.jpg?v=5", "女の戦士の一枚絵", "land-ref", "span-2")}
+              ${sheetFig("girl-front.png?v=11", "戦士の立ち絵", "cut-ref")}
+              ${sheetFig("girl-action.jpg?v=5", "戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl.png?v=13", "女の戦士の選択コマ（かわいい）", "cut-ref")}
+              ${sheetFig("job-girl.png?v=13", "戦士の選択コマ（かわいい）", "cut-ref")}
             </div>
             <h3>タイトル</h3>
-            ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が女の戦士、右がモンスター軍団。")}
+            ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
             <h3>シールド</h3>
             <div class="ref-grid">
               ${sheetFig("shield-mark-steel.png?v=2", "青鋼の盾", "cut-ref")}
@@ -10077,7 +10091,7 @@
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
-            ${sheetBanner("blessing-goddess-f.jpg?v=1", "祝福（女の戦士）", "荘厳な女神が、ひざまずく女の戦士に祝福を授けている")}
+            ${sheetBanner("blessing-goddess-f.jpg?v=1", "祝福（戦士）", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=4", "スライム", "enemy-ref")}
@@ -10245,10 +10259,10 @@
         : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=1", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
-        "お店": ["shop-merchant.jpg?v=6", "ジト目のまま怒って、値段を負けてもらおうとしている女の戦士"],
-        "探索": ["event-search.jpg?v=5", "宝箱の蓋を彼女の側へ開け、光が漏れている女の戦士"],
+        "お店": ["shop-merchant.jpg?v=6", "ジト目のまま怒って、値段を負けてもらおうとしている戦士"],
+        "探索": ["event-search.jpg?v=5", "宝箱の蓋を彼女の側へ開け、光が漏れている戦士"],
         "キャンプ": ["event-rest.jpg?v=4", "左太ももにベルト。よだれを垂らしてかわいく寝ている。奥のミノタウロスは気づかず通り過ぎる"],
-        "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す女の戦士"],
+        "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=5", "紋章だけが光り、拳を上げてやる気を出している。顔は今のまま"],
       };
       const eventRow = eventPictures[floorKind];
@@ -12023,7 +12037,7 @@
         if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
         if (name === "character") {
           castHover = "";
-          castLock = castLock || "女の戦士";
+          castLock = castLock || "戦士";
           dungeonHover = "";
           screen = "character";
           render();
