@@ -4006,6 +4006,7 @@
         -1px -1px 0 #0a0806;
     }
     .card .fx.note .kw-line { display: block; text-align: center; }
+    .card .fx.note .kw-line + .kw-line { margin-top: 0.12em; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
     .card:has(.card-fit.r2),
     .card:has(.card-fit.r3) {
@@ -7371,7 +7372,7 @@
       捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る\n使ったらこの戦闘のデッキから廃棄", kind: "power", power: true, coward: true },
+      臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
       ライフフルネスアタック: { cost: 3, text: "10ダメージ\n体力が満タンなら+5", damage: 10, kind: "attack", fullBonus: 5 },
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
@@ -7402,9 +7403,9 @@
       アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×3ダメージ", kind: "attack", redTimes: 3 },
       反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、7ダメージ", kind: "attack", counter: 7 },
       応急手当: { cost: 1, text: "体力を4回復\nインスタント", heal: 4, instant: true, kind: "skill" },
-      ベッド: { cost: 2, text: "体力を10回復\nインスタント", heal: 10, instant: true, kind: "power", power: true },
-      ホテル: { cost: 3, text: "体力を18回復\nインスタント", heal: 18, instant: true, kind: "power", power: true },
-      ダッシュ: { cost: 1, text: "2枚引く\nクイック", quick: true, draw: 2, kind: "skill" },
+      ベッド: { cost: 2, text: "体力を10回復", heal: 10, instant: true, kind: "power", power: true },
+      ホテル: { cost: 3, text: "体力を18回復", heal: 18, instant: true, kind: "power", power: true },
+      ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
     // 敵のATKは板に出す。ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本3にこのATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
@@ -7507,7 +7508,10 @@
     const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
     const DURING_NOTE = "使ったら消える。次の戦闘で戻る。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
-    const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
+    const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
+    const ITEM_NOTE = "使った後廃棄される。";
+    const PERMANENT_NOTE = "使ったらこの戦闘中だけデッキから削除。";
+    const KEEP_NOTE = "ターン終了時に捨て札にいかない。";
     let phase = "player";
     let encounter = false;
     let floorCall = false;
@@ -9508,7 +9512,10 @@
       hand.splice(index, 1);
       if (card.quick) {
         resolveCard(card);
-        discard.push(card);
+        const pile = afterUsePile(card);
+        if (pile === "keep") hand.push(card);
+        else if (pile === "exile") battleExile.push(card);
+        else discard.push(card);
         note = "";
         pullFromBracelets();
         if (finishIfStuck()) return true;
@@ -9599,10 +9606,19 @@
       if (!card || !card.quick) flyCardToPlay(from);
     }
 
+    function isItemCard(card) {
+      return !!(card && (card.power || card.kind === "power"));
+    }
+
+    function afterUsePile(card) {
+      if (!card) return "discard";
+      if (card.keep) return "keep";
+      if (card.power || card.instant || card.during || card.permanent || card.kind === "power") return "exile";
+      return "discard";
+    }
+
     function goesToDiscard(card) {
-      if (!card) return false;
-      if (card.power || card.instant || card.during || card.kind === "power") return false;
-      return true;
+      return afterUsePile(card) === "discard";
     }
 
     let pendingPlayClearFly = [];
@@ -9787,7 +9803,8 @@
         if (!card) return;
         const made = makeFlyGhost(el);
         if (!made) return;
-        const mode = forceMode || (goesToDiscard(card) ? "discard" : "exile");
+        const mode = forceMode || (afterUsePile(card) === "keep" && card.resolved ? "stay" : goesToDiscard(card) ? "discard" : "exile");
+        if (mode === "stay") return;
         pendingPlayClearFly.push({ ...made, mode });
       });
     }
@@ -9863,12 +9880,19 @@
 
     function scrapPlay() {
       capturePlayClearFlights();
+      const stayed = [];
       while (inPlay.length) {
         const card = inPlay.shift();
-        if (card.power || card.instant || card.during) battleExile.push(card);
+        const pile = afterUsePile(card);
+        if (pile === "keep" && card.resolved) {
+          stayed.push(card);
+          continue;
+        }
+        if (pile === "exile") battleExile.push(card);
         else discard.push(card);
       }
-      resolveAt = 0;
+      inPlay = stayed;
+      resolveAt = stayed.length;
     }
 
     function flyPlayToHand(from, handIndex) {
