@@ -5676,7 +5676,10 @@
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
       --cast-keys-w: min(420px, 34vw);
-      --cast-hero-col: clamp(320px, 42vw, 540px);
+      --cast-hero-col: clamp(360px, 48vw, 620px);
+      --cast-job-block-w: calc(
+        var(--cast-hero-col) + var(--cast-job-panel-w) + var(--cast-keys-w) + 2 * clamp(12px, 1.8vw, 20px)
+      );
       padding-left: max(16px, 3vw);
       padding-right: max(16px, 3vw);
       align-items: center;
@@ -5687,19 +5690,16 @@
       margin-left: auto;
       margin-right: auto;
       justify-content: center;
-      width: min(
-        100%,
-        calc(var(--cast-hero-col) + var(--cast-job-panel-w) + var(--cast-keys-w) + 2 * clamp(12px, 1.8vw, 20px))
-      );
+      width: min(100%, var(--cast-job-block-w));
     }
     .cast-screen.character-focus .cast-main {
       position: relative;
       display: grid;
       grid-template-columns: var(--cast-hero-col) minmax(0, var(--cast-job-panel-w)) var(--cast-keys-w);
       gap: clamp(12px, 1.8vw, 20px);
-      width: max-content;
+      width: min(100%, var(--cast-job-block-w));
       max-width: 100%;
-      margin-left: max(0px, 3vw);
+      margin-left: auto;
       margin-right: auto;
       flex: 1 1 auto;
       min-height: 0;
@@ -5725,7 +5725,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 24%;
+      object-position: center 14%;
       filter: none;
     }
     .cast-screen.character-focus .cast-side {
