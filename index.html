@@ -6680,7 +6680,7 @@
         return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
       }
       if (key === "ブロック") {
-        const blk = Math.max(0, (CARDS.ブロック.block || 3) + foeLiveDef(foe));
+        const blk = CARDS.ブロック.block || 3;
         return { name: "ブロック", cost: 1, text: `ブロック${blk}`, block: blk };
       }
       return null;
@@ -7741,7 +7741,8 @@
     }
 
     function gainBlock(amount, card) {
-      const gain = Math.max(0, Math.floor(Number(amount) || 0));
+      const bonus = Number(player && player.def) || 0;
+      const gain = Math.max(0, Math.floor((Number(amount) || 0) + bonus));
       if (!gain) return;
       if (parryCount(player) > 0 && !player.guardThrough) {
         log(`${heroName()}は${card.name}。パリィ中はシールドを得られない。`, card);
@@ -7845,12 +7846,12 @@
       }
       const extra = Math.max(0, Number(player.expose) || 0);
       if (extra) player.expose = 0;
-      const cut = mitigate(raw + extra, player.def);
-      const result = applyDamage(player, cut.dealt);
+      const dealt = Math.max(0, raw + extra);
+      const result = applyDamage(player, dealt);
       if (result.hpLoss > 0) {
         player.hurtThis = true;
         fxHurt = true;
-        noteHit("player", result.hpLoss, cut.dealt, "blunt");
+        noteHit("player", result.hpLoss, dealt, "blunt");
         lastFoeBlow = { name, hpLoss: result.hpLoss };
         if (player.hp <= 0) {
           fxFatal = true;
@@ -7858,18 +7859,17 @@
         }
       }
       if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
-      log(hurtSentence(enemy.name, name, raw + extra, cut.reduced, result), card, true);
+      log(hurtSentence(enemy.name, name, raw + extra, 0, result), card, true);
       // バトルカウンター：ダメージを食らったら、いまのDEFだけ相手へ
       if (result.hpLoss > 0 && hasReflectDef() && enemy.hp > 0 && player.hp > 0) {
         const reflect = Math.max(0, Number(player.def) || 0);
         if (reflect > 0) {
-          const back = mitigate(reflect, enemyDef());
-          const hit = applyDamage(enemy, back.dealt);
-          if (back.dealt > 0 && (hit.hpLoss || hit.blocked)) {
+          const hit = applyDamage(enemy, reflect);
+          if (hit.hpLoss || hit.blocked) {
             slashFoe();
-            noteHit("enemy", hit.hpLoss, back.dealt);
+            noteHit("enemy", hit.hpLoss, reflect);
           }
-          log(`${gear.shield.name}。${enemy.name}に${back.dealt}ダメージ。`, card);
+          log(`${gear.shield.name}。${enemy.name}に${reflect}ダメージ。`, card);
         }
       }
     }
@@ -7972,15 +7972,13 @@
     }
 
     function strike(card, amount) {
-      const pierce = !!(gear && gear.sword && gear.sword.ignoreDef);
-      const defense = pierce ? 0 : enemyDef();
-      const cut = amount > 0 ? mitigate(amount, defense) : { reduced: 0, dealt: 0 };
-      const result = applyDamage(enemy, cut.dealt);
-      if (cut.dealt > 0 && (result.hpLoss || result.blocked)) {
+      const dealt = Math.max(0, amount);
+      const result = applyDamage(enemy, dealt);
+      if (dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
-        noteHit("enemy", result.hpLoss, cut.dealt);
+        noteHit("enemy", result.hpLoss, dealt);
       }
-      log(damageSentence(heroName(), card.name, cut.dealt, result), card);
+      log(damageSentence(heroName(), card.name, dealt, result), card);
       // ポイズンソード：アタックカードなら、シールドで防がれても毒
       const poisonHit = gear && gear.sword && Number(gear.sword.poisonHit) || 0;
       if (poisonHit > 0 && amount > 0 && cardKind(card) === "attack" && enemy.hp > 0) {
@@ -7989,7 +7987,7 @@
       }
       // フレイムソード／業火の剣：ダメージが通るたび炎上
       const burnHit = gear && gear.sword && Number(gear.sword.burnHit) || 0;
-      if (burnHit > 0 && cut.dealt > 0 && enemy.hp > 0) {
+      if (burnHit > 0 && dealt > 0 && enemy.hp > 0) {
         addBurn(enemy, burnHit);
         log(`${gear.sword.name}の炎。${enemy.name}は炎上+${enemy.burn}。`, card);
       }
@@ -8436,8 +8434,9 @@
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         takeEnemyHit(rollCrit(card, card.damage) + kick, card);
       } else if (card.block) {
-        enemy.block += card.block;
-        log(`${enemy.name}は${card.name}でブロック${card.block}。`, card, true);
+        const gain = Math.max(0, card.block + (Number(enemy.def) || 0));
+        if (gain) enemy.block += gain;
+        log(`${enemy.name}は${card.name}でブロック${gain}。`, card, true);
       } else if (card.poison) {
         if (addPoison(player, card.poison)) log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
         else log(`${enemy.name}は${card.name}。`, card, true);
@@ -10657,8 +10656,8 @@
       if (!card) return null;
       const base = foe ? (Number(card.block) || 0) : printedBlock(card);
       if (!base && !card.block && card.name !== "ブロック" && card.name !== "ブロック+") return null;
-      if (foe) return Math.max(0, base);
-      return Math.max(0, base + focusLeftFor(card, fromHand));
+      if (foe) return Math.max(0, base + (Number(enemy && enemy.def) || 0));
+      return Math.max(0, base + focusLeftFor(card, fromHand) + (Number(player && player.def) || 0));
     }
 
     function liveCardText(card, fromHand, foe) {
