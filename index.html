@@ -2086,9 +2086,11 @@
     }
     .fade-sandwich > .fade-line,
     .fade-sandwich > i.fade-line {
-      flex: 1 1 auto;
-      min-width: 8px;
-      height: 1px;
+      flex: 0 0 auto;
+      width: clamp(32px, 5vw, 56px);
+      max-width: 56px;
+      min-width: 0;
+      height: 2px;
       border: 0;
       margin: 0;
       padding: 0;
@@ -3388,16 +3390,18 @@
     }
     .gear-effect-head {
       display: grid;
-      grid-template-columns: 84px 1fr;
+      grid-template-columns: 92px 1fr;
       gap: 12px;
-      align-items: start;
+      align-items: center;
       margin: 0 0 10px;
     }
     .gear-effect-artcol {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      width: 92px;
     }
     .gear-effect-art {
       width: 84px;
@@ -3425,23 +3429,34 @@
       display: flex;
     }
     .gear-effect-art .gear-mark .ico { width: 34px; height: 34px; }
-    .gear-genre {
-      color: #e4b15a;
-      display: flex;
-    }
-    .gear-genre .ico { width: 28px; height: 28px; }
-    .gear-effect-meta { min-width: 0; text-align: right; }
-    .gear-effect-slot {
+    .gear-effect-genre {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      margin: 0 0 8px;
-      font-size: 15px;
+      width: 100%;
+      margin: 0;
+      font-size: 13px;
       font-weight: 800;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       color: #fff6e4;
+      text-align: center;
     }
-    .gear-effect-slot .ico { width: 22px; height: 22px; color: #d5dbe3; }
+    .gear-effect-genre .ico { width: 22px; height: 22px; color: #e4b15a; flex: none; }
+    .gear-effect-meta {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .gear-effect-titles {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: right;
+    }
     .gear-effect-name {
       margin: 0;
       font-size: 26px;
@@ -3472,21 +3487,28 @@
     }
     .gear-effect-stats {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 0 0 10px;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      margin: 0;
+      flex: 0 0 auto;
     }
     .gear-effect-stats span {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #fff6d8;
-      background: rgba(255, 220, 150, 0.1);
-      border: 1px solid rgba(228, 177, 90, 0.45);
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #fff8ec;
+      background: linear-gradient(180deg, rgba(255, 230, 170, 0.14), rgba(0, 0, 0, 0.35));
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 236, 200, 0.18),
+        0 0 12px rgba(255, 180, 80, 0.12);
     }
     .gear-effect-stats .atk { color: #ffc28a; }
     .gear-effect-stats .def { color: #d5dbe3; }
@@ -3511,9 +3533,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
     }
+    .gear-effect.center-boon .gear-effect-artcol { width: auto; }
     .gear-effect.center-boon .gear-effect-art { width: 148px; height: 148px; }
-    .gear-effect.center-boon .gear-effect-meta,
+    .gear-effect.center-boon .gear-effect-meta {
+      flex-direction: column;
+      align-items: center;
+    }
+    .gear-effect.center-boon .gear-effect-titles,
     .gear-effect.center-boon .gear-effect-name,
     .gear-effect.center-boon .gear-effect-stars { text-align: center; }
     .gear-effect-hint {
@@ -5119,11 +5147,10 @@
       pointer-events: none;
     }
     .event-floor-call .fade-sandwich {
-      width: min(94vw, 980px);
-      padding: 0 3vw;
-    }
-    .event-floor-call .fade-line {
-      height: 2px;
+      width: auto;
+      max-width: none;
+      padding: 0;
+      justify-content: center;
     }
     .event-floor-call b {
       flex: 0 0 auto;
@@ -6590,10 +6617,11 @@
     }
     .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
     .floor-call .fade-sandwich {
-      width: min(94vw, 980px);
-      padding: 0 3vw;
+      width: auto;
+      max-width: none;
+      padding: 0;
+      justify-content: center;
     }
-    .floor-call .fade-line { height: 2px; }
     .floor-call b {
       flex: 0 0 auto;
       font-size: min(34vw, 420px);
@@ -8040,13 +8068,16 @@
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
       const name = o.name ? `<p class="gear-effect-name">${esc(o.name)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const genre = boon ? "" : `<p class="gear-effect-slot"><span>${esc(gearSlotLabel(slotId))}</span></p>`;
+      const genre = boon
+        ? ""
+        : `<p class="gear-effect-genre">${gearSlotIcon(slotId)}<span>${esc(gearSlotLabel(slotId))}</span></p>`;
+      const stats = o.item ? gearStatChips(o.item) : "";
       const bodyClass = o.empty ? "gear-effect-body empty" : "gear-effect-body";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
       const body = o.body ? `<p class="${bodyClass}">${o.body}</p>` : "";
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${name}${stars}</div></div>${genre}${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}</div>${stats}</div></div>${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -8054,6 +8085,7 @@
       if (slotId === "medal" && !gear.medal) {
         const look = (Number(gear.medals) || 0) > 0 ? GEAR_ITEMS.find((item) => item.id === "minotaur-medal") : null;
         return gearPopShell(slotId, look ? {
+          item: look,
           name: look.name,
           image: look.image || "",
           rarity: gearRarityText(look),
@@ -8079,6 +8111,7 @@
           ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>`
           : "";
         return gearPopShell(slotId, {
+          item,
           name: item.name || "アイテム",
           image: item.image || "",
           rarity: gearRarityText(item),
@@ -8097,6 +8130,7 @@
         });
       }
       return gearPopShell(slotId, {
+        item,
         name: item.name || gearSlotLabel(slotId),
         image: item.image || "",
         rarity: gearRarityText(item),
@@ -10424,6 +10458,7 @@
       if (!item) return "";
       if (gift.kind === "gear") {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearPopShell(item.slot || "sword", {
+          item,
           name: item.name,
           image: item.image || "",
           rarity: gearRarityText(item),
@@ -10922,7 +10957,8 @@
       const old = root.querySelector(".gear-effect.cast-pop");
       if (old) old.remove();
       if (!item) return;
-      root.insertAdjacentHTML("beforeend", gearPopShell(item.slot, {
+      root.insertAdjacentHTML("beforeend", gearPopShell(item.slot || "sword", {
+        item,
         name: item.name,
         image: item.image || "",
         rarity: gearRarityText(item),
@@ -12704,6 +12740,7 @@
         if (slot.kind === "gear" && slot.gear) {
           const item = slot.gear;
           const face = gearPopShell(item.slot || "sword", {
+            item,
             name: item.name || "",
             image: item.image || "",
             rarity: gearRarityText(item),
@@ -12950,6 +12987,7 @@
     function gearOfferHtml(item) {
       if (!item) return "";
       return gearPopShell(item.slot || "sword", {
+        item,
         name: item.name || "",
         image: item.image || "",
         rarity: gearRarityText(item),
