@@ -5441,55 +5441,75 @@
       box-sizing: border-box;
       padding: 0 clamp(6px, 2vw, 20px) 10px;
     }
-    /* 祝福：説明→挿絵→報酬の縦1板。挿絵は左右分割ではなく板の中央 */
+    /* 祝福：説明文と報酬を上下の等しい帯にし、挿絵はその一枚の板の中心 */
     .menu.event.bless .event-choice.bless-choice {
       flex: 1 1 auto;
       min-height: 0;
-      width: min(100%, 1080px);
+      width: min(100%, 1180px);
       height: 100%;
       max-height: none;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
       align-items: stretch;
-      justify-content: flex-start;
-      gap: 10px;
-      padding: 2px clamp(4px, 3vw, 32px) 8px;
+      justify-items: stretch;
+      gap: 8px;
+      padding: 0 8px 4px;
       box-sizing: border-box;
       grid-area: unset;
     }
     .menu.event.bless .bless-choice .event-split {
-      flex: 0 0 auto;
+      align-self: start;
+      justify-self: stretch;
       width: 100%;
+      min-height: 0;
     }
     .menu.event.bless .bless-art-slot {
-      flex: 1 1 auto;
+      align-self: center;
+      justify-self: center;
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: min(28vh, 260px);
-      margin: 4px 0 6px;
+      height: 100%;
+      min-height: 0;
+      margin: 0;
       pointer-events: none;
     }
     .menu.event.bless .bless-art-slot .bless-picture {
       display: block;
       width: auto;
-      height: auto;
-      max-width: min(100%, 620px);
-      max-height: min(46vh, 440px);
+      height: 100%;
+      max-width: min(100%, 860px);
+      max-height: 100%;
       margin: 0 auto;
       object-fit: contain;
       object-position: center;
     }
     .menu.event.bless .gift-row {
-      align-self: center;
+      align-self: end;
+      justify-self: stretch;
       width: 100%;
       justify-content: center;
-      flex: 0 0 auto;
-      margin-top: auto;
-      padding-top: 8px;
+      flex-wrap: nowrap;
+      margin: 0;
+      padding: 0;
+      max-height: 100%;
+      gap: 12px;
     }
+    .menu.event.bless .gift-btn {
+      min-width: 0;
+      max-width: none;
+      flex: 1 1 0;
+      padding: 8px 10px 10px;
+      gap: 4px;
+    }
+    .menu.event.bless .gift-label { font-size: 22px; line-height: 1.15; }
+    .menu.event.bless .gift-btn .gear-effect { width: 100%; max-width: none; }
+    .menu.event.bless .gear-effect-head { margin-bottom: 4px; }
+    .menu.event.bless .gear-effect-body { margin-top: 4px; padding: 6px 8px; }
+    .menu.event.bless .gear-effect.center-boon .gear-effect-art { width: 112px; height: 112px; }
     .menu.event.search {
       grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.72fr);
     }
@@ -5519,7 +5539,7 @@
       }
       .menu.event.shop .shop-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .menu.event .event-picture { height: auto; max-height: 36vh; }
-      .menu.event.bless .bless-art-slot .bless-picture { max-height: min(34vh, 300px); }
+      .menu.event.bless .bless-art-slot .bless-picture { max-height: 100%; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.event,
