@@ -3747,8 +3747,7 @@
         1px -1px 0 #0a0806,
         -1px -1px 0 #0a0806;
     }
-    .card-fit.r2 .nameplate .name { color: #d7dee8; }
-    .card-fit.r3 .nameplate .name { color: #ffe14a; }
+    .card .fx.note .kw-line { display: block; text-align: center; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
     .card:has(.card-fit.r2),
     .card:has(.card-fit.r3) {
@@ -3962,26 +3961,6 @@
       color: #14110e;
       -webkit-text-stroke: 0;
       text-shadow: none;
-    }
-    .card .card-fit.r2 .nameplate .name {
-      color: #d7dee8;
-      -webkit-text-stroke: 0.9px #0a0806;
-      paint-order: stroke fill;
-      text-shadow:
-        1px 0 0 #0a0806,
-        -1px 0 0 #0a0806,
-        0 1px 0 #0a0806,
-        0 -1px 0 #0a0806;
-    }
-    .card .card-fit.r3 .nameplate .name {
-      color: #ffe14a;
-      -webkit-text-stroke: 0.9px #0a0806;
-      paint-order: stroke fill;
-      text-shadow:
-        1px 0 0 #0a0806,
-        -1px 0 0 #0a0806,
-        0 1px 0 #0a0806,
-        0 -1px 0 #0a0806;
     }
     .card .card-fit .text {
       position: absolute;
@@ -6593,9 +6572,9 @@
       アタック: "card-attack-f.jpg?v=9",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=10",
-      パリィ: "card-parry.jpg?v=8",
+      パリィ: "card-parry.jpg?v=9",
       捨て身の一撃: "",
-      怒り: "",
+      怒り: "card-anger.jpg?v=2",
       パリィスラッシュ: "",
       臆病者の構え: "",
       ライフフルネスアタック: "",
@@ -6634,7 +6613,7 @@
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。" },
       捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
-      怒り: { cost: 0, text: "この戦闘中 ATK+1 DEF-2", kind: "skill", rage: true },
+      怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る\n使ったらこの戦闘のデッキから廃棄", kind: "power", power: true, coward: true },
       ライフフルネスアタック: { cost: 3, text: "10ダメージ\n体力が満タンなら+5", damage: 10, kind: "attack", fullBonus: 5 },
@@ -6770,6 +6749,7 @@
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
+    const DURING_NOTE = "使ったら消える。次の戦闘で戻る。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
     const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
     let phase = "player";
@@ -8501,7 +8481,7 @@
         player.atkMod = (Number(player.atkMod) || 0) + 1;
         player.defMod = (Number(player.defMod) || 0) - 2;
         syncGearStats();
-        log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。戦闘が終わると戻る。`, card);
+        log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。このカードは次の戦闘まで消える。`, card);
         return;
       }
       if (card.poise) {
@@ -8729,7 +8709,7 @@
 
     function goesToDiscard(card) {
       if (!card) return false;
-      if (card.power || card.instant || card.kind === "power") return false;
+      if (card.power || card.instant || card.during || card.kind === "power") return false;
       return true;
     }
 
@@ -8993,7 +8973,7 @@
       capturePlayClearFlights();
       while (inPlay.length) {
         const card = inPlay.shift();
-        if (card.power || card.instant) battleExile.push(card);
+        if (card.power || card.instant || card.during) battleExile.push(card);
         else discard.push(card);
       }
       resolveAt = 0;
@@ -11618,6 +11598,7 @@
         }
       }
       let noteText = esc(live ? liveCardText(card, fromHand, foe) : (card.text || "")).replaceAll("\n", "<br>");
+      if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, `<span class="kw-line hint">戦闘中<i>${esc(DURING_NOTE)}</i></span>`);
       if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
       if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
       if (card.burn) noteText = noteText.replaceAll("炎上", `<span class="hint">炎上<i>${esc(BURN_NOTE)}</i></span>`);
@@ -11999,6 +11980,7 @@
       if (card.press) next.press = true;
       if (card.power) next.power = true;
       if (card.rage) next.rage = true;
+      if (card.during) next.during = true;
       if (card.expose) next.expose = card.expose;
       if (card.fullBonus) next.fullBonus = card.fullBonus;
       if (card.safeBonus) next.safeBonus = card.safeBonus;
