@@ -5314,10 +5314,11 @@
     .menu.event .event-where,
     .menu.event .event-prompt {
       color: #ffe08a;
+      font-size: clamp(20px, 1.72vw, 26px);
     }
     .menu.event .event-play p {
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(18px, 1.5vw, 23px);
+      font-size: clamp(20px, 1.72vw, 26px);
       font-weight: 700;
       line-height: 1.72;
       letter-spacing: 0.05em;
@@ -13197,7 +13198,7 @@
 
     function eventNoteHtml() {
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>これから恐ろしい困難が待ち受けているとも知らない挑戦者に、女神は優しく微笑んだ。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const story = floorNote ? eventStoryHtml(floorNote) : "";
