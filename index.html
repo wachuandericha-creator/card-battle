@@ -7431,7 +7431,7 @@
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
-      ライフフルネスアタック: { cost: 2, stars: 2, text: "7ダメージ\n体力が満タンなら+7", damage: 7, kind: "attack", fullBonus: 7 },
+      ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で7ダメージ", damage: 7, kind: "attack", fullBonus: 7 },
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
@@ -12898,6 +12898,8 @@
         } else if (card.counter) {
           text = text.replace(/プレイエリアにアタックがないとき、\d+ダメージ/u, `プレイエリアにアタックがないとき、${dmg}ダメージ`);
           if (!/ダメージ/u.test(text)) text = `${dmg}ダメージ`;
+        } else if (card.fullBonus) {
+          // 本体は剣アイコン。本文の数字は追加分のままにする
         } else {
           text = text.replace(/\d+ダメージ/u, `${dmg}ダメージ`);
         }
