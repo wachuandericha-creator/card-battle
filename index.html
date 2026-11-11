@@ -3404,9 +3404,10 @@
       flex-wrap: nowrap;
       align-items: center;
       justify-content: flex-end;
-      gap: 8px;
+      gap: 4px;
       width: 100%;
       min-height: 32px;
+      margin-top: 3px;
       white-space: nowrap;
     }
     .gear-effect-chiprow .gear-effect-stats {
@@ -3422,8 +3423,9 @@
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 28px;
+      width: 24px;
       height: 32px;
+      margin-right: 1px;
       color: rgba(232, 196, 118, 0.95);
       filter: drop-shadow(0 0 6px rgba(255, 200, 100, 0.25));
     }
@@ -3480,7 +3482,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 5px;
+      gap: 6px;
       text-align: right;
     }
     .gear-effect-name {
@@ -3499,11 +3501,12 @@
     }
     .gear-effect-stars {
       margin: 0;
+      padding: 0 0 1px;
       font-size: 18px;
       letter-spacing: 0.08em;
       color: #ffe27a;
       text-shadow: 0 0 8px rgba(255, 215, 120, 0.55);
-      line-height: 1;
+      line-height: 1.25;
     }
     .gear-effect-stars.boss {
       display: inline-block;
@@ -3568,11 +3571,6 @@
       font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.14em;
-    }
-    .gear-effect-body.empty-trait {
-      min-height: 2.15em;
-      padding-top: 8px;
-      padding-bottom: 8px;
     }
     .gear-effect.center-boon .gear-effect-inner { text-align: center; }
     .gear-effect.center-boon .gear-effect-head {
@@ -8169,7 +8167,7 @@
         }
         if (traitAtk) return { show: true, text: traitAtk, extra: "" };
         if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
-        return { show: true, text: "", extra: "empty-trait" };
+        return { show: false, text: "", extra: "" };
       }
       const t = String(o.body ?? "").trim();
       return { show: !!t, text: t, extra: "" };
@@ -8183,7 +8181,7 @@
 
     function gearChipRowMinPx(item, boon) {
       if (boon) return 0;
-      let w = 36;
+      let w = 30;
       if (!item) return w;
       let chips = 0;
       if (item.atk && !gearAtkInTrait(item)) chips += 1;
