@@ -2496,8 +2496,6 @@
     .hero-guard .ring,
     .hero-guard .streak,
     .hero-guard .spark,
-    .hero-guard .fissure,
-    .hero-guard .glass,
     .hero-guard .guard-word {
       position: absolute;
       pointer-events: none;
@@ -2513,7 +2511,6 @@
       mix-blend-mode: screen;
       animation: guard-veil 1.7s ease-out forwards;
     }
-    .hero-guard.break .veil { animation: guard-veil-break 1.9s ease-out forwards; }
     .hero-guard .flash {
       left: 50%;
       top: 42%;
@@ -2524,10 +2521,6 @@
       mix-blend-mode: screen;
       transform: translate(-50%, -50%);
       animation: guard-flash 1.7s ease-out forwards;
-    }
-    .hero-guard.break .flash {
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 196, 120, 0.55) 32%, transparent 68%);
-      animation-duration: 1.9s;
     }
     .hero-guard .ring {
       left: 50%;
@@ -2543,10 +2536,6 @@
       border-width: 2px;
       animation-delay: 0.14s;
       animation-duration: 1.28s;
-    }
-    .hero-guard.break .ring {
-      border-color: rgba(255, 220, 170, 0.95);
-      box-shadow: 0 0 18px rgba(255, 150, 60, 0.85);
     }
     .hero-guard .streak {
       left: 48%;
@@ -2578,41 +2567,6 @@
     .hero-guard .spark.s4 { --sx: 64px; --sy: 46px; animation-delay: 0.02s; }
     .hero-guard .spark.s5 { --sx: -104px; --sy: -18px; width: 5px; height: 5px; animation-delay: 0.1s; }
     .hero-guard .spark.s6 { --sx: 18px; --sy: -118px; animation-delay: 0.06s; }
-    .hero-guard.break .spark {
-      background: #fff8ee;
-      box-shadow: 0 0 10px #fff, 0 0 16px rgba(255, 160, 60, 0.9);
-      animation-delay: 0.28s;
-    }
-    .hero-guard .fissure {
-      left: 50%;
-      top: 14%;
-      width: 4px;
-      height: 68%;
-      background: linear-gradient(transparent, #fff 10%, #ffe4b8 38%, #ff8a32 72%, transparent);
-      box-shadow: 0 0 12px #fff, 0 0 22px rgba(255, 140, 40, 0.85);
-      transform-origin: 50% 20%;
-      animation: fissure-flash 1.9s ease-out forwards;
-    }
-    .hero-guard .fissure.a { transform: translateX(-50%) rotate(-12deg); }
-    .hero-guard .fissure.b { top: 26%; height: 46%; transform: translateX(-50%) rotate(28deg); animation-delay: 0.04s; }
-    .hero-guard .fissure.c { top: 32%; height: 40%; width: 2px; transform: translateX(-50%) rotate(-38deg); animation-delay: 0.08s; }
-    .hero-guard .fissure.d { top: 20%; height: 34%; transform: translateX(-20%) rotate(64deg); animation-delay: 0.06s; }
-    .hero-guard .glass {
-      left: 50%;
-      top: 42%;
-      width: 16px;
-      height: 20px;
-      background: linear-gradient(150deg, rgba(255, 255, 255, 0.96), rgba(255, 206, 140, 0.55) 58%, rgba(255, 255, 255, 0.12));
-      clip-path: polygon(22% 0, 100% 26%, 70% 100%, 0 70%);
-      filter: drop-shadow(0 0 6px rgba(255, 214, 160, 0.85));
-      animation: glass-burst 1.2s cubic-bezier(0.18, 0.7, 0.28, 1) forwards;
-    }
-    .hero-guard .glass.g1 { --sx: -74px; --sy: 96px; --rot: -48deg; }
-    .hero-guard .glass.g2 { --sx: 82px; --sy: 78px; --rot: 42deg; width: 12px; height: 16px; animation-delay: 0.04s; }
-    .hero-guard .glass.g3 { --sx: -24px; --sy: 124px; --rot: 16deg; width: 10px; height: 14px; animation-delay: 0.08s; }
-    .hero-guard .glass.g4 { --sx: 30px; --sy: 108px; --rot: -22deg; animation-delay: 0.02s; }
-    .hero-guard .glass.g5 { --sx: -108px; --sy: 36px; --rot: -70deg; width: 11px; height: 15px; animation-delay: 0.1s; }
-    .hero-guard .glass.g6 { --sx: 112px; --sy: 18px; --rot: 64deg; width: 9px; height: 13px; animation-delay: 0.06s; }
     .hero-guard .guard-word {
       left: 50%;
       top: -4%;
@@ -2625,13 +2579,7 @@
       text-shadow: 0 4px 0 #16324f, 0 0 18px rgba(170, 214, 255, 0.95);
       animation: guard-word 1.7s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .hero-guard.break .guard-word {
-      color: #fff6e4;
-      text-shadow: 0 4px 0 #5c2610, 0 0 18px rgba(255, 150, 60, 0.95);
-      animation-duration: 1.9s;
-    }
     .hero-shoulder.held .hero-fig { animation: guard-rim 1.7s ease-out both; }
-    .hero-shoulder.cracked .hero-fig { animation: guard-crack-body 1.9s ease-out both; }
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
@@ -7088,13 +7036,6 @@
       72% { opacity: 0.7; }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.08); }
     }
-    @keyframes guard-veil-break {
-      0% { opacity: 0; transform: translate(-50%, -42%) scale(0.45); filter: none; }
-      12% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
-      24% { opacity: 1; filter: brightness(1.6) sepia(0.45); }
-      36% { opacity: 0; filter: brightness(2.1) sepia(0.6); transform: translate(-50%, -50%) scale(1.16); }
-      100% { opacity: 0; }
-    }
     @keyframes guard-flash {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
       12% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -7116,17 +7057,6 @@
       18% { opacity: 1; }
       100% { opacity: 0; transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0.45); }
     }
-    @keyframes fissure-flash {
-      0%, 16% { opacity: 0; }
-      26% { opacity: 1; }
-      48% { opacity: 0.72; }
-      100% { opacity: 0; }
-    }
-    @keyframes glass-burst {
-      0%, 22% { opacity: 0; transform: translate(-50%, -50%) scale(0.35) rotate(0deg); }
-      32% { opacity: 1; }
-      100% { opacity: 0; transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) rotate(var(--rot)) scale(0.85); }
-    }
     @keyframes guard-word {
       0% { opacity: 0; transform: translate(-50%, 16px) scale(0.55); }
       12% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
@@ -7137,16 +7067,10 @@
       0%, 100% { filter: none; }
       16%, 58% { filter: brightness(1.28) drop-shadow(0 0 16px rgba(180, 220, 255, 0.95)); }
     }
-    @keyframes guard-crack-body {
-      0% { filter: none; }
-      14% { filter: brightness(1.3) drop-shadow(0 0 14px rgba(180, 220, 255, 0.85)); }
-      30% { filter: brightness(1.55) drop-shadow(0 0 18px rgba(255, 140, 50, 0.95)); }
-      100% { filter: none; }
-    }
     @media (prefers-reduced-motion: reduce) {
       .hero-guard, .hero-guard * { animation: none; }
       .hero-guard .guard-word, .hero-guard .veil { opacity: 1; }
-      .hero-shoulder.held .hero-fig, .hero-shoulder.cracked .hero-fig { animation: none; }
+      .hero-shoulder.held .hero-fig { animation: none; }
     }
     @property --hot-x {
       syntax: "<percentage>";
@@ -8800,10 +8724,6 @@
       return `<div class="hero-guard hold" aria-label="ダメージなし"><i class="veil"></i><i class="flash"></i><i class="ring a"></i><i class="ring b"></i><i class="streak a"></i><i class="streak b"></i><i class="streak c"></i>${guardSparks()}<b class="guard-word">防</b></div>`;
     }
 
-    function breakGuard() {
-      return `<div class="hero-guard break" aria-hidden="true"><i class="veil"></i><i class="flash"></i><i class="ring a"></i><i class="fissure a"></i><i class="fissure b"></i><i class="fissure c"></i><i class="fissure d"></i><i class="glass g1"></i><i class="glass g2"></i><i class="glass g3"></i><i class="glass g4"></i><i class="glass g5"></i><i class="glass g6"></i>${guardSparks()}<b class="guard-word">割</b></div>`;
-    }
-
     function heartIcon() {
       return `<svg class="ico heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 20.4 10.7 19.2C5.5 14.6 2.2 11.6 2.2 8 2.2 5 4.6 2.6 7.6 2.6c1.7 0 3.4.8 4.4 2.1 1-1.3 2.7-2.1 4.4-2.1 3 0 5.4 2.4 5.4 5.4 0 3.6-3.3 6.6-8.5 11.2L12 20.4z"/></svg>`;
     }
@@ -9244,7 +9164,7 @@
             fatalHold = true;
           }
         }
-        if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
+        if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
       } else if (result.hpLoss || result.blocked) {
         noteHit("enemy", result.hpLoss, stacks, "poison");
       }
@@ -9276,7 +9196,7 @@
           fatalHold = true;
         }
       }
-      if (result.blocked > 0) fxGuard = result.hpLoss > 0 ? "break" : "hold";
+      if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
       log(hurtSentence(enemy.name, name, raw + extra, 0, result), card, true);
       // バトルカウンター：ダメージを食らったら、いまのDEFだけ相手へ
       if (result.hpLoss > 0 && hasReflectDef() && enemy.hp > 0 && player.hp > 0) {
@@ -10173,7 +10093,7 @@
         const slashCount = fxSlashes.length;
         const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "break" ? 2000 : guardKind === "hold" ? 1750 : 0, poisonWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
         return;
       }
@@ -10182,7 +10102,7 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "break" ? 2000 : guardKind === "hold" ? 1750 : 0, poisonWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -10301,7 +10221,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "break" ? 2000 : guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -12812,13 +12732,9 @@
         ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
-      const guardHtml = guard === "hold"
-        ? holdGuard()
-        : guard === "break"
-          ? breakGuard()
-          : "";
+      const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${guard === "break" ? " cracked" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
