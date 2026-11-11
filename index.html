@@ -31,7 +31,7 @@
       --muted: #a89880;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
     body {
       font-family: "Yu Gothic UI", "Meiryo", "Segoe UI", sans-serif;
       color: var(--cream);
@@ -52,7 +52,7 @@
       padding: 10px 10px 4px;
       row-gap: 0;
       column-gap: 10px;
-      overflow: visible;
+      overflow: hidden;
       background:
         radial-gradient(ellipse at 50% 8%, rgba(70, 48, 22, 0.22), transparent 52%),
         radial-gradient(ellipse at 50% 100%, rgba(8, 6, 5, 0.95), #050403 72%),
@@ -295,9 +295,11 @@
       pointer-events: none;
     }
     .hud-actions {
+      grid-column: 3;
       display: flex;
       gap: 8px;
       align-items: stretch;
+      justify-content: flex-end;
       justify-self: end;
       align-self: stretch;
       min-width: 0;
@@ -2898,7 +2900,9 @@
       min-height: 0;
       max-width: 100%;
       height: auto;
-      overflow: auto;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
       overflow-wrap: anywhere;
       margin: 0 2px 0 0;
       padding: 16px 12px;
@@ -4233,7 +4237,7 @@
       color: var(--cream);
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
-    #game { height: 100%; overflow: visible; }
+    #game { height: 100%; overflow: hidden; }
     /* 画面は端まで使う。余白の外枠は無い */
     .end-screen {
       height: 100%;
@@ -6520,6 +6524,8 @@
     let intentArrive = false;
     let foeLeaveGhost = null;
     let foeDrawPending = false;
+    let foeDeckEmpty = false;
+    let foeAngerShow = false;
     let eventFloorCall = false;
     let note = "";
     let banner = "";
@@ -7681,12 +7687,15 @@
       chooseNextIntent();
     }
 
+    function foeAngerCard() {
+      return { name: "怒り", cost: 0, text: "この戦闘中 ATK+1 DEF-1", kind: "skill", rage: true };
+    }
+
     function advanceEnemyLoop() {
       if (enemyLoop.length && intentIndex < enemyLoop.length) foeDiscard.push({ ...enemyLoop[intentIndex] });
       intentIndex += 1;
-      if (enemyLoop.length && intentIndex >= enemyLoop.length) {
-        gainEnemyAnger();
-        recycleEnemyDeck();
+      if (!enemyLoop.length || intentIndex >= enemyLoop.length) {
+        foeDeckEmpty = true;
         return;
       }
       chooseNextIntent();
@@ -8491,6 +8500,49 @@
       setTimeout(finish, 520);
     }
 
+    function flyDiscardIntoDeck(done) {
+      const fromEl = document.querySelector(".foe-discard .pile-card");
+      const toEl = document.querySelector(".foe-pile .pile-card");
+      if (!fromEl || !toEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        done();
+        return;
+      }
+      const from = fromEl.getBoundingClientRect();
+      const to = toEl.getBoundingClientRect();
+      if (!from.width || !to.width) {
+        done();
+        return;
+      }
+      const ghost = fromEl.cloneNode(true);
+      ghost.classList.add("fly-card");
+      ghost.style.position = "fixed";
+      ghost.style.zIndex = "70";
+      ghost.style.left = `${from.left}px`;
+      ghost.style.top = `${from.top}px`;
+      ghost.style.width = `${from.width}px`;
+      ghost.style.height = `${from.height}px`;
+      ghost.style.margin = "0";
+      ghost.style.transition = "none";
+      document.body.appendChild(ghost);
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      let landed = false;
+      const finish = () => {
+        if (landed) return;
+        landed = true;
+        ghost.remove();
+        done();
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.7s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transform = `translate(${dx}px, ${dy}px)`;
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 820);
+    }
+
     function launchFoeTurnTravel() {
       const leave = foeLeaveGhost;
       const draw = foeDrawPending;
@@ -8727,6 +8779,48 @@
       }
     }
 
+    function leaveFoeCard() {
+      timer = null;
+      if (outcome) return;
+      captureFoeLeave();
+      advanceEnemyLoop();
+      intentShown = false;
+      foeDrawPending = false;
+      foeAngerShow = false;
+      render();
+      timer = setTimeout(finishResolve, 720);
+    }
+
+    function drawFoeFromDeck() {
+      if (phase !== "player" || outcome) return;
+      foeAngerShow = false;
+      intentShown = true;
+      foeDrawPending = true;
+      render();
+    }
+
+    function presentNextFoeCard() {
+      timer = null;
+      if (phase !== "player" || outcome) return;
+      if (foeDeckEmpty) {
+        foeDeckEmpty = false;
+        foeAngerShow = true;
+        intentShown = true;
+        foeDrawPending = true;
+        gainEnemyAnger();
+        render();
+        timer = setTimeout(() => {
+          if (phase !== "player" || outcome) return;
+          flyDiscardIntoDeck(() => {
+            recycleEnemyDeck();
+            drawFoeFromDeck();
+          });
+        }, 1100);
+        return;
+      }
+      drawFoeFromDeck();
+    }
+
     function finishResolve() {
       timer = null;
       scrapPlay();
@@ -8761,13 +8855,9 @@
         }
       } else {
         logTurn("enemy");
-        captureFoeLeave();
-        const card = intentAt(0);
-        // 敵のシールドは、自分の攻撃が終わったあとの敵の番の始まりで消える
         dropShield(enemy);
+        const card = intentAt(0);
         enemyUseCard(card);
-        advanceEnemyLoop();
-        foeDrawPending = player.hp > 0;
         if (player.hp > 0 && enemyNow().rally && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
           enemy.rallied = true;
           const extra = shuffle(sourcePattern()).slice(0, 2);
@@ -8778,7 +8868,6 @@
           }
         }
         if (player.hp <= 0) {
-          foeDrawPending = false;
           const saved = cheatDeath();
           if (saved === "retry") return;
           if (!saved) {
@@ -8787,6 +8876,13 @@
             return;
           }
         }
+        const guardKind = fxGuard;
+        const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
+        const slashCount = fxSlashes.length;
+        render();
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0);
+        timer = setTimeout(leaveFoeCard, wait);
+        return;
       }
       const guardKind = fxGuard;
       const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
@@ -8868,8 +8964,11 @@
       slashSeq = 0;
       if (!quiet) turnCall = "player";
       phase = "player";
+      intentShown = false;
+      foeAngerShow = false;
       if (finishIfStuck()) return;
       render();
+      timer = setTimeout(presentNextFoeCard, quiet ? 280 : 1150);
     }
 
     function finish(kind) {
@@ -9355,7 +9454,7 @@
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
       rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
-      if (rewardPaths.length && (rewardPaths[0] !== "camp" || rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
+      if (rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
       pathEventTitle = data.pathEventTitle || "探索";
       bonusCard = data.bonusCard || null;
@@ -9444,8 +9543,6 @@
     function openFight() {
       timer = null;
       if (phase !== "intro" || outcome) return;
-      intentShown = true;
-      foeDrawPending = true;
       startPlayerTurn(true);
     }
 
@@ -11190,7 +11287,7 @@
         const held = resolving && i < active;
         return playFace(card, on, true, false, i, { held });
       }).join("");
-      const foe = intentShown ? intentAt(0) : null;
+      const foe = foeAngerShow ? foeAngerCard() : (intentShown ? intentAt(0) : null);
       const foeHot = resolving && active === inPlay.length;
       const foeCard = foe ? playFace(foe, foeHot, true, true, null, { awaitDraw: foeDrawPending && !foeHot }) : "";
       return `<div class="use-board" aria-label="プレイエリア">
@@ -11623,7 +11720,8 @@
     }
 
     function rollPaths() {
-      return ["camp", "straight", shuffle(PATH_RIGHT.slice())[0]];
+      const pool = shuffle(["camp"].concat(PATH_RIGHT));
+      return [pool[0], "straight", pool[1]];
     }
 
     function resolveLost(shown) {
@@ -11971,9 +12069,16 @@
       enterNode(hp);
     }
 
+    function nextFixedFloor() {
+      for (let i = battleIndex + 1; i < route.length; i++) {
+        if (roadFixed(route[i], i) && floorAt[i] != null) return Number(floorAt[i]);
+      }
+      return dungeonFloors;
+    }
+
     function nextFloorNumber() {
-      const now = floorAt[battleIndex] != null ? floorAt[battleIndex] : floorNo();
-      return Math.min(dungeonFloors, Math.max(1, now) + 1);
+      const now = floorAt[battleIndex] != null ? Number(floorAt[battleIndex]) : floorNo();
+      return Math.min(dungeonFloors, nextFixedFloor(), now + 1);
     }
 
     function dungeonEnemy() {
