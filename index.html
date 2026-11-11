@@ -1783,7 +1783,19 @@
       cursor: pointer;
     }
     .cast-deck .card .text,
-    .cast-deck .card .rarity { visibility: visible; }
+    .cast-deck .card .rarity { visibility: hidden; }
+    .cast-deck .card-fit::after {
+      content: "";
+      position: absolute;
+      left: 6.5%;
+      right: 6.5%;
+      bottom: 4.5%;
+      height: 40%;
+      background: #140f0c;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .cast-deck .card .text { background: transparent; }
     .cast-card-pop {
       position: fixed;
       z-index: 80;
@@ -5299,49 +5311,17 @@
       filter: none;
       pointer-events: none;
     }
-    .cast-screen.character-focus .cast-stage {
-      position: relative;
-      z-index: 2;
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-    .cast-deck-stage {
-      width: 100%;
-      flex: 1 1 auto;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .cast-deck-stage h2 {
-      margin: 0 0 8px;
-      text-align: center;
-      color: #f0c36a;
-      font-size: 18px;
-      letter-spacing: 0.16em;
-    }
-    .cast-screen.character-focus .cast-deck {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-    }
-    .cast-screen.character-focus .cast-deck .card.preview { width: 100%; height: auto; }
     .cast-screen.character-focus .cast-keys {
       justify-self: end;
-      align-self: flex-end;
       width: min(320px, 100%);
     }
     .cast-mid {
       display: flex;
-      justify-content: flex-start;
+      justify-content: space-between;
       align-items: flex-start;
-      gap: 16px;
+      gap: 12px;
     }
-    .cast-vitals { flex: 0 1 auto; min-width: 140px; display: flex; flex-direction: column; gap: 4px; margin: 0; }
+    .cast-vitals { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 6px; margin: 8px 0 4px; }
     .cast-gear-col { flex: 0 0 auto; }
     .cast-gear-col h2 { margin-top: 0; }
     .cast-gear-col .cast-gear { flex-direction: column; align-items: flex-end; }
@@ -5372,21 +5352,16 @@
     .cast-vitals .hp-line .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
     .cast-vitals .hp-line .ico.shield { color: #d7dde6; filter: drop-shadow(0 0 5px rgba(220, 226, 232, 0.45)); }
     .cast-vitals .hp-line .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
-    .cast-screen.character-focus .cast-side {
+    .cast-screen.character-focus .cast-side,
+    .cast-screen.character-focus .cast-keys {
       position: relative;
       z-index: 2;
       height: 100%;
       min-height: 0;
       align-self: stretch;
     }
+    .cast-screen.character-focus .cast-side .cast-plaque,
     .cast-screen.character-focus .cast-keys {
-      position: relative;
-      z-index: 2;
-      height: auto;
-      flex: 0 0 auto;
-      align-self: flex-end;
-    }
-    .cast-screen.character-focus .cast-side .cast-plaque {
       height: 100%;
       max-height: 100%;
       overflow: auto;
@@ -5409,7 +5384,6 @@
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 13px; letter-spacing: 0.04em; }
     .cast-screen.dungeon-screen {
       width: 100%;
-      padding: 12px 16px 88px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(300px, 34%);
       grid-template-rows: auto minmax(0, 1fr) auto;
@@ -5422,16 +5396,6 @@
       gap: 10px 18px;
       padding-right: 22px;
     }
-    .dungeon-screen > .cast-actions {
-      position: fixed;
-      grid-area: title;
-      width: max-content;
-      height: 76px;
-      justify-self: center;
-      align-self: end;
-      pointer-events: none;
-    }
-    .dungeon-screen > .cast-actions > button { pointer-events: auto; }
     .dungeon-screen .cast-title { grid-area: title; }
     .dungeon-screen .dungeon-preview {
       grid-area: preview;
@@ -5686,7 +5650,7 @@
       min-width: 0;
       min-height: 0;
       height: 100%;
-      filter: brightness(0.78) saturate(0.9);
+      filter: brightness(0.38) saturate(0.7);
       transition: filter 0.22s ease;
     }
     .dungeon-col.active .dungeon-shot { filter: none; }
@@ -7317,6 +7281,8 @@
       if (slotId === "shield") return "盾";
       if (slotId === "braceletL" || slotId === "braceletR" || slotId === "braceletAny") return "アクセサリー";
       if (slotId === "medal") return "メダル";
+      if (slotId === "hp") return "体力";
+      if (slotId === "mana") return "マナ";
       if (slotId === "itemL" || slotId === "itemR") return "アイテム";
       return "装備";
     }
@@ -9472,13 +9438,18 @@
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(gift.card)}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
-      if (gift.kind === "maxhp" || gift.kind === "spd" || gift.kind === "mana") {
+      if (gift.kind === "spd") {
+        return `<div class="${cls}"><div class="bless-boon"><b>SPD</b><strong>+1</strong><p>毎ターンのドローが増える</p></div></div>`;
+      }
+      if (gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
-          ? ["最大HP", "+10", "この攻略のあいだ増える"]
-          : gift.kind === "spd"
-            ? ["SPD", "+1", "毎ターンのドローが増える"]
-            : ["マナ", "+1", "毎ターンのマナが増える"];
-        return `<div class="${cls}"><div class="bless-boon"><b>${boon[0]}</b><strong>${boon[1]}</strong><p>${boon[2]}</p></div></div>`;
+          ? { slot: "hp", name: "最大HP +10", image: "reward-hp.jpg?v=1", body: "この攻略のあいだ、最大HPが10増える。" }
+          : { slot: "mana", name: "マナ +1", image: "reward-mana.jpg?v=1", body: "この攻略のあいだ、毎ターンのマナが1増える。" };
+        return `<div class="${cls}">${gearPopShell(boon.slot, {
+          name: boon.name,
+          image: boon.image,
+          body: esc(boon.body),
+        })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
@@ -9977,20 +9948,16 @@
                 </div>
               </div>
             </div>
+            <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
+            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
         </div>
-        <div class="cast-stage">
-          <section class="cast-deck-stage">
-            <h2><span>初期デッキ</span> ${starterDeckCount()}枚</h2>
-            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
-          </section>
-          <aside class="cast-keys" aria-label="パリィ">
-            <h2>パリィ</h2>
-            <p>次の攻撃を１回無効にする。重複不可。</p>
-            <p>ターン終了時に消失。</p>
-            <p>パリィがある間、シールドを追加で得ることはできない。</p>
-          </aside>
-        </div>`;
+        <aside class="cast-keys" aria-label="パリィ">
+          <h2>パリィ</h2>
+          <p>次の攻撃を１回無効にする。重複不可。</p>
+          <p>ターン終了時に消失。</p>
+          <p>パリィがある間、シールドを追加で得ることはできない。</p>
+        </aside>`;
     }
 
     function challengeReady() {
@@ -10096,7 +10063,7 @@
     }
 
     function shownDungeonName() {
-      return dungeonHover || dungeonLock || (DUNGEON_LIST[0] && DUNGEON_LIST[0].name) || "";
+      return dungeonHover || dungeonLock;
     }
 
     function dungeonChainHtml(count) {
@@ -10370,6 +10337,8 @@
               ${sheetFig("gear-reuse-bracelet.jpg?v=7", "再利用の腕輪")}
               ${sheetFig("gear-bracelet.jpg?v=4", "ミノタウロスの腕輪")}
               ${sheetFig("gear-medal.jpg?v=3", "メダル")}
+              ${sheetFig("reward-mana.jpg?v=1", "報酬のマナ")}
+              ${sheetFig("reward-hp.jpg?v=1", "報酬の最大HP")}
             </div>
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。三択は同じ黄色。左が休憩、真ん中が戦闘、右がそのほか</p>
