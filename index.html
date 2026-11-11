@@ -3922,6 +3922,16 @@
     .card .card-fit.k-foe { --frame-img: url("frame-metal-navy.png?v=2"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    /* アタック：左は剣先を入れ、右は盾の縁が少し見切れ、上は頭が欠けない */
+    .card .card-fit .art img[src*="card-attack-f"] {
+      position: absolute;
+      left: 0;
+      top: -1.1%;
+      width: 109.9%;
+      height: 114.9%;
+      max-width: none;
+      object-fit: fill;
+    }
     .card .card-fit .art {
       position: absolute;
       left: 7.4cqw;
@@ -5667,8 +5677,10 @@
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
     .cast-screen.character-focus .cast-roster {
+      position: relative;
       width: 100%;
       max-width: none;
+      justify-content: center;
     }
     .cast-screen.character-focus {
       --cast-job-card-w: 132px;
@@ -5676,24 +5688,22 @@
       --cast-job-deck-cols: 5;
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
-      --cast-keys-w: 460px;
-      --cast-job-center-gap: clamp(28px, 5vw, 72px);
+      --cast-keys-w: min(420px, 34vw);
+      /* ちびコマ幅（168px画像＋枠）に合わせた中央スロット */
+      --cast-job-chibi-slot: clamp(184px, 17vw, 228px);
       padding-left: 12.5vw;
       padding-right: 12.5vw;
       align-items: center;
     }
-  /* ちびが画面中央＝左右の板のあいだも中央。余った絵は左右対称に見える */
+    /* 板の内側端を画面50%±スロット/2に固定（左右板幅が違ってもちび中央と一致） */
     .cast-screen.character-focus .cast-main {
       position: relative;
       width: 100%;
       max-width: none;
       margin-left: auto;
       margin-right: auto;
-      display: grid;
-      grid-template-columns: 1fr auto var(--cast-job-center-gap) auto 1fr;
-      gap: 0;
-      align-items: stretch;
-      justify-content: center;
+      flex: 1 1 auto;
+      min-height: 0;
       overflow: hidden;
     }
     .cast-screen.character-focus .cast-wash {
@@ -5703,18 +5713,27 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      object-position: center;
+      object-position: center 44%;
       filter: none;
       pointer-events: none;
     }
     .cast-screen.character-focus .cast-side {
-      grid-column: 2;
-      justify-self: end;
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      bottom: 0;
+      right: calc(50% + var(--cast-job-chibi-slot) / 2);
+      width: min(var(--cast-job-panel-w), calc(50% - var(--cast-job-chibi-slot) / 2 - 12px));
+      max-width: var(--cast-job-panel-w);
     }
     .cast-screen.character-focus .cast-keys {
-      grid-column: 4;
-      justify-self: start;
-      width: min(var(--cast-keys-w), 100%);
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      bottom: 0;
+      left: calc(50% + var(--cast-job-chibi-slot) / 2);
+      width: min(var(--cast-keys-w), calc(50% - var(--cast-job-chibi-slot) / 2 - 12px));
+      max-width: var(--cast-keys-w);
     }
     .cast-mid {
       display: flex;
@@ -5755,11 +5774,8 @@
     .cast-vitals .hp-line .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
     .cast-screen.character-focus .cast-side,
     .cast-screen.character-focus .cast-keys {
-      position: relative;
-      z-index: 2;
       height: 100%;
       min-height: 0;
-      align-self: stretch;
     }
     .cast-screen.character-focus .cast-side .cast-plaque,
     .cast-screen.character-focus .cast-keys {
@@ -5770,10 +5786,6 @@
         radial-gradient(120% 80% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 55%),
         rgba(16, 11, 9, 0.72);
       backdrop-filter: blur(2px);
-    }
-    .cast-screen.character-focus .cast-side {
-      width: min(var(--cast-job-panel-w), 100%);
-      max-width: 100%;
     }
     .cast-screen.character-focus .cast-side .cast-plaque {
       display: flex;
@@ -6303,18 +6315,20 @@
       .dungeon-col { min-height: 0; height: 100%; }
       .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(0, auto) auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
         width: 100%;
         max-width: none;
-        gap: 10px;
+        min-height: min(52vh, 480px);
       }
       .cast-screen.character-focus .cast-side,
       .cast-screen.character-focus .cast-keys {
-        grid-column: 1;
-        justify-self: stretch;
+        position: static;
         width: 100%;
         max-width: none;
+        height: auto;
+        min-height: 0;
       }
       .cast-main { grid-template-columns: minmax(0, 1fr); }
       .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
