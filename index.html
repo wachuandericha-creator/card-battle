@@ -3868,14 +3868,8 @@
     .card .card-fit .genre { z-index: 6; }
     .card .card-fit .nameplate,
     .card .card-fit .text { z-index: 5; }
-    .card .card-fit .rarity {
-      right: 10.4cqw;
-      bottom: 9.6cqw;
-      z-index: 6;
-      font-size: 5cqw;
-      color: #1c1816;
-      text-shadow: none;
-    }
+    .card .card-fit .rarity,
+    .card .rarity { display: none; }
     .card .card-fit.r2 .rarity { color: #5f6b78; }
     .card .card-fit.r3 .rarity { color: #9a6a12; }
     .card .card-fit.rboss .rarity { color: #9a1f14; }
@@ -5457,58 +5451,39 @@
     .cast-screen.dungeon-screen {
       width: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(300px, 34%);
-      grid-template-rows: auto minmax(0, 1fr) auto;
-      grid-template-areas:
-        "title title"
-        "preview rail"
-        "columns columns";
+      grid-template-rows: auto minmax(0, 1.55fr) auto auto auto auto minmax(168px, 0.95fr);
       align-items: stretch;
-      justify-items: stretch;
-      gap: 10px 18px;
+      justify-items: center;
+      gap: 8px;
       padding-right: 22px;
     }
-    .dungeon-screen .cast-title { grid-area: title; }
+    .dungeon-screen .cast-title { grid-row: 1; }
     .dungeon-screen .dungeon-preview {
-      grid-area: preview;
+      grid-row: 2;
       height: 100%;
       min-height: 0;
-      width: 100%;
+      width: min(1280px, 100%);
       border-radius: 16px;
     }
-    .dungeon-screen .dungeon-rail {
-      grid-area: rail;
-      min-width: 0;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: flex-start;
-      gap: 8px;
-      overflow: auto;
-    }
-    .dungeon-screen .dungeon-rail .dungeon-note { width: 100%; text-align: right; }
-    .dungeon-screen .clear-label {
-      margin-top: 6px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(228, 177, 90, 0.4);
-    }
-    .dungeon-screen .dungeon-clear-slot .dungeon-note { font-size: 13px; opacity: 0.85; }
+    .dungeon-screen .foe-label { grid-row: 3; }
+    .dungeon-screen .dungeon-foes { grid-row: 4; }
+    .dungeon-screen .clear-label { grid-row: 5; }
+    .dungeon-screen .dungeon-clear-slot { grid-row: 6; }
     .dungeon-screen .dungeon-columns {
-      grid-area: columns;
-      height: min(168px, 22vh);
+      grid-row: 7;
+      height: 100%;
       width: min(1180px, 100%);
       min-height: 0;
       justify-self: center;
     }
     .dungeon-screen .dungeon-foes figure,
-    .dungeon-screen .dungeon-clears figure { width: 140px; font-size: 13px; line-height: 1.25; }
+    .dungeon-screen .dungeon-clears figure { width: 112px; font-size: 15px; }
     .dungeon-screen .dungeon-foes img,
-    .dungeon-screen .dungeon-clears img { width: 96px; height: 96px; }
+    .dungeon-screen .dungeon-clears img { width: 100px; height: 100px; }
     .dungeon-foes, .dungeon-clears {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: center;
       gap: 10px;
       width: 100%;
       margin: 0;
@@ -5639,6 +5614,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
     }
     .dungeon-preview img[hidden] { display: none; }
     .dungeon-caption {
@@ -5741,6 +5717,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center center;
       pointer-events: none;
     }
     .dungeon-facts {
@@ -5779,10 +5756,14 @@
     }
     .dungeon-col .chain-art {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      left: 50%;
+      top: 46%;
+      width: 58%;
+      height: 70%;
+      inset: auto;
+      transform: translate(-50%, -50%);
+      object-fit: contain;
+      object-position: center center;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
     }
     .dungeon-pick .cast-actions {
@@ -6949,8 +6930,9 @@
       floorAt = route.map((_, i) => Math.min(dungeonFloors, blessing ? i : i + 1));
     }
     function floorNo() {
-      const n = floorAt[battleIndex];
-      if (n > 0) return n;
+      if (floorAt && battleIndex >= 0 && battleIndex < floorAt.length && floorAt[battleIndex] != null && !Number.isNaN(Number(floorAt[battleIndex]))) {
+        return Number(floorAt[battleIndex]);
+      }
       return Math.max(1, battleIndex + 1 - floorStart());
     }
     function floorMax() { return dungeonFloors; }
@@ -7083,8 +7065,7 @@
 
     function gearTitle(item, fallback) {
       if (!item || !item.name) return fallback || "";
-      const mark = gearRarityText(item);
-      return mark ? `${item.name} ${mark}` : item.name;
+      return item.name;
     }
 
     function emptyGear() {
@@ -7358,6 +7339,7 @@
       if (slotId === "medal") return "メダル";
       if (slotId === "hp") return "体力";
       if (slotId === "mana") return "マナ";
+      if (slotId === "spd") return "SPD";
       if (slotId === "itemL" || slotId === "itemR") return "アイテム";
       return "装備";
     }
@@ -7372,7 +7354,6 @@
 
     function gearEffectPlain(item) {
       let text = String((item && item.effect) || "");
-      text = text.replace(/^(?:★+|ボス)[　\s]*/u, "");
       return text.trim();
     }
 
@@ -7408,7 +7389,6 @@
         const look = (Number(gear.medals) || 0) > 0 ? GEAR_ITEMS.find((item) => item.id === "minotaur-medal") : null;
         return gearPopShell(slotId, look ? {
           name: look.name,
-          rarity: gearRarityText(look),
           image: look.image || "",
           body: esc(gearEffectPlain(look)),
           stats: gearStatChips(look),
@@ -7434,7 +7414,6 @@
           : "";
         return gearPopShell(slotId, {
           name: item.name || "アイテム",
-          rarity: gearRarityText(item),
           image: item.image || "",
           body: esc(gearEffectPlain(item) || item.effect || ""),
           hint,
@@ -7453,7 +7432,6 @@
       }
       return gearPopShell(slotId, {
         name: item.name || gearSlotLabel(slotId),
-        rarity: gearRarityText(item),
         image: item.image || "",
         body: esc(gearEffectPlain(item) || item.effect || item.name || ""),
         stats: gearStatChips(item),
@@ -9624,27 +9602,24 @@
       const fx = rareFx(lv);
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(gift.card)}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
-      if (gift.kind === "spd") {
-        return `<div class="${cls}"><div class="bless-boon"><b>SPD</b><strong>+1</strong><p>毎ターンのドローが増える</p></div></div>`;
-      }
-      if (gift.kind === "maxhp" || gift.kind === "mana") {
+      if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
-          ? { slot: "hp", name: "最大HP +10", image: "reward-hp.jpg?v=1", body: "この攻略のあいだ、最大HPが10増える。" }
-          : { slot: "mana", name: "マナ +1", image: "reward-mana.jpg?v=1", body: "この攻略のあいだ、毎ターンのマナが1増える。" };
+          ? { slot: "hp", name: "最大HP+10", image: "reward-hp.jpg?v=1" }
+          : gift.kind === "mana"
+            ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
+            : { slot: "spd", name: "SPD+1", image: "reward-spd.jpg?v=1" };
         return `<div class="${cls}">${gearPopShell(boon.slot, {
           name: boon.name,
           image: boon.image,
-          body: esc(boon.body),
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
       if (gift.kind === "gear") {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${gearPopShell(item.slot || "sword", {
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearPopShell(item.slot || "sword", {
           name: item.name,
-          rarity: gearRarityText(item),
           image: item.image || "",
           body: esc(gearEffectPlain(item)),
           stats: gearStatChips(item),
@@ -10122,7 +10097,6 @@
       if (!item) return;
       root.insertAdjacentHTML("beforeend", gearPopShell(item.slot, {
         name: item.name,
-        rarity: gearRarityText(item),
         image: item.image || "",
         body: esc(gearEffectPlain(item)),
         stats: gearStatChips(item),
@@ -10422,12 +10396,10 @@
               <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
             </div>
           </div>
-          <aside class="dungeon-rail">
-            <p class="dungeon-note foe-label">登場する敵</p>
-            <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
-            <p class="dungeon-note clear-label">踏破したキャラ</p>
-            <div class="dungeon-clear-slot"></div>
-          </aside>
+          <p class="dungeon-note foe-label">登場する敵</p>
+          <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
+          <p class="dungeon-note clear-label">踏破したキャラ</p>
+          <div class="dungeon-clear-slot"></div>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
@@ -10569,6 +10541,7 @@
               ${sheetFig("gear-medal.jpg?v=3", "メダル")}
               ${sheetFig("reward-mana.jpg?v=1", "報酬のマナ")}
               ${sheetFig("reward-hp.jpg?v=1", "報酬の最大HP")}
+              ${sheetFig("reward-spd.jpg?v=1", "報酬のSPD")}
             </div>
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
@@ -12056,20 +12029,14 @@
       return true;
     }
 
-    function rareCaption(entity) {
-      if (!entity) return "";
-      if (entity.boss) return `<p class="rare-caption boss">ボス</p>`;
-      const n = Math.max(0, Math.floor(Number(entity.stars) || 0));
-      if (!n) return "";
-      return `<p class="rare-caption">${"★".repeat(Math.min(5, n))}</p>`;
-    }
+    function rareCaption() { return ""; }
 
     function gearOfferHtml(item) {
       if (!item) return "";
       const art = item.image
         ? `<img src="${esc(item.image)}" alt="">`
         : `<span class="gear-mark">${gearSlotIcon(item.slot || "sword")}</span>`;
-      return `<div class="gear-offer gear-offer-card"><div class="gear-offer-info"><span class="gear-effect-slot">${esc(gearSlotLabel(item.slot || "sword"))}</span><p class="gear-effect-name">${esc(item.name || "")}</p>${gearStatChips(item)}${gearCompareHtml(item)}<p class="gear-effect-body">${esc(gearEffectPlain(item))}</p></div>${rareCaption(item)}<div class="gear-offer-art">${art}</div></div>`;
+      return `<div class="gear-offer gear-offer-card"><div class="gear-offer-info"><span class="gear-effect-slot">${esc(gearSlotLabel(item.slot || "sword"))}</span><p class="gear-effect-name">${esc(item.name || "")}</p>${gearStatChips(item)}${gearCompareHtml(item)}<p class="gear-effect-body">${esc(gearEffectPlain(item))}</p></div><div class="gear-offer-art">${art}</div></div>`;
     }
 
     function gearCompareHtml(item) {
