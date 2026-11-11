@@ -3988,15 +3988,15 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=5"); }
-    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=5"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=5"); }
-    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=3"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=6"); }
+    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=6"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=6"); }
+    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=4"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
-    .card .card-fit.k-foe { --frame-img: url("frame-metal-navy.png?v=2"); }
+    .card .card-fit.k-foe { --frame-img: url("frame-metal-navy.png?v=3"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
@@ -5951,7 +5951,8 @@
       grid-template-rows: auto minmax(0, 1fr);
       align-content: start;
       align-items: stretch;
-      width: auto;
+      justify-items: center;
+      width: 100%;
       min-width: 0;
     }
     .cast-screen.character-focus .cast-stat-col h2,
@@ -6018,7 +6019,7 @@
     .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals {
       width: min(100%, 104px);
       max-width: 104px;
-      justify-self: start;
+      justify-self: center;
       align-self: start;
       flex: 0 0 auto;
     }
@@ -11268,7 +11269,12 @@
 
     function bindDeckHover() {
       const deck = root.querySelector(".cast-deck");
-      if (!deck || deck.dataset.deckBound === "1") return;
+      if (!deck) return;
+      if (deck.closest(".cast-screen.character-focus")) {
+        hideCastCardPop();
+        return;
+      }
+      if (deck.dataset.deckBound === "1") return;
       deck.dataset.deckBound = "1";
       deck.addEventListener("pointerover", (event) => {
         const button = event.target instanceof Element ? event.target.closest(".deck-card") : null;
@@ -12024,11 +12030,11 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-metal-red.png?v=5"],
-      ["style-blue", "ブロック", "frame-metal-blue.png?v=5"],
-      ["style-yellow", "スキル", "frame-metal-yellow.png?v=5"],
-      ["style-green", "アイテム", "frame-metal-green.png?v=3"],
-      ["style-navy", "紺", "frame-metal-navy.png?v=2"],
+      ["style-red", "アタック", "frame-metal-red.png?v=6"],
+      ["style-blue", "ブロック", "frame-metal-blue.png?v=6"],
+      ["style-yellow", "スキル", "frame-metal-yellow.png?v=6"],
+      ["style-green", "アイテム", "frame-metal-green.png?v=4"],
+      ["style-navy", "紺", "frame-metal-navy.png?v=3"],
     ];
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
