@@ -6037,8 +6037,8 @@
     .cast-screen.character-focus .cast-stat-board .hp-line b { font-size: clamp(22px, 2vw, 28px); }
     /* 初期ステ：表の内側だけコンパクト（cast-deck／cast-deck-block には触れない） */
     .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals {
-      width: min(100%, 104px);
-      max-width: 104px;
+      width: min(100%, 90px);
+      max-width: 90px;
       justify-self: center;
       align-self: start;
       flex: 0 0 auto;
@@ -7075,7 +7075,7 @@
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
       捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
@@ -7125,10 +7125,11 @@
         rank: "雑魚",
         hp: 22,
         pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
           { name: "シールドアタック", cost: 2, text: "自分のシールドの数だけダメージ", press: true },
           { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
           { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
-          { name: "ハードブロック", cost: 2, text: "ブロック7", block: 7, kind: "block" },
         ],
       },
       {
@@ -7212,7 +7213,7 @@
     let enemyLoop = [];
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
+    const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
     const DURING_NOTE = "使ったら消える。次の戦闘で戻る。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
     const QUICK_NOTE = "クイックは、プレイエリアに置かず、すぐに効果が発動する。";
@@ -8755,8 +8756,11 @@
         log(`${heroName()}は${card.name}。パリィは重複しない。`, card);
         return;
       }
+      const hadShield = Math.max(0, Number(player.block) || 0);
+      if (hadShield) player.block = 0;
       player.parry = now + 1;
-      const detail = ultimate === "パリィが重複する" ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
+      let detail = ultimate === "パリィが重複する" ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
+      if (hadShield) detail += `所持していたシールド${hadShield}を失った。`;
       log(`${heroName()}は${card.name}。${detail}`, card);
     }
 
@@ -11234,6 +11238,7 @@
           <h2>パリィ</h2>
           <p>次の攻撃を１回無効にする。重複不可。</p>
           <p>ターン終了時に消失。</p>
+          <p>パリィを得ると、いま持っているシールドはすべてなくなる。</p>
           <p>パリィがある間、シールドを追加で得ることはできない。</p>
         </aside>`;
     }
