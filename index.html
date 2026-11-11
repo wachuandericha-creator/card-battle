@@ -1210,6 +1210,7 @@
     .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
     .overlay .panel.wide.shop-panel { width: min(1060px, calc(100vw - 40px)); }
     .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
+    .overlay.deck-view { z-index: 70; }
     .overlay.deck-view .panel {
       width: min(1480px, calc(100vw - 20px));
       height: min(920px, calc(100vh - 16px));
@@ -3256,14 +3257,20 @@
     }
     .gear-effect-head {
       display: grid;
-      grid-template-columns: 72px 1fr;
+      grid-template-columns: 84px 1fr;
       gap: 12px;
+      align-items: start;
+      margin: 0 0 10px;
+    }
+    .gear-effect-artcol {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      margin: 0 0 12px;
+      gap: 6px;
     }
     .gear-effect-art {
-      width: 72px;
-      height: 72px;
+      width: 84px;
+      height: 84px;
       border-radius: 12px;
       overflow: hidden;
       display: grid;
@@ -3287,19 +3294,23 @@
       display: flex;
     }
     .gear-effect-art .gear-mark .ico { width: 34px; height: 34px; }
-    .gear-effect-meta { min-width: 0; }
-    .gear-effect-slot {
-      display: inline-block;
-      margin: 0 0 4px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      color: #1a120c;
-      background: linear-gradient(180deg, #f0d48a, #c9963a);
-      box-shadow: 0 0 0 1px rgba(8, 6, 5, 0.55);
+    .gear-genre {
+      color: #e4b15a;
+      display: flex;
     }
+    .gear-genre .ico { width: 28px; height: 28px; }
+    .gear-effect-meta { min-width: 0; text-align: right; }
+    .gear-effect-slot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #fff6e4;
+    }
+    .gear-effect-slot .ico { width: 22px; height: 22px; color: #d5dbe3; }
     .gear-effect-name {
       margin: 0;
       font-size: 17px;
@@ -3364,6 +3375,16 @@
       font-style: normal;
       text-align: center;
     }
+    .gear-effect.center-boon .gear-effect-inner { text-align: center; }
+    .gear-effect.center-boon .gear-effect-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .gear-effect.center-boon .gear-effect-art { width: 148px; height: 148px; }
+    .gear-effect.center-boon .gear-effect-meta,
+    .gear-effect.center-boon .gear-effect-name,
+    .gear-effect.center-boon .gear-effect-stars { text-align: center; }
     .gear-effect-hint {
       margin: 8px 0 0;
       font-size: 12px;
@@ -4838,40 +4859,42 @@
       position: fixed;
       z-index: 40;
       left: 0;
-      top: 64px;
-      bottom: 12px;
+      top: 50%;
+      transform: translateY(-50%);
       display: flex;
-      align-items: stretch;
+      align-items: center;
       gap: 8px;
       pointer-events: none;
     }
-    .event-drawers .drawer-tabs,
+    .event-drawers .map-tab,
     .event-drawers .drawer-panel { pointer-events: auto; }
-    .event-drawers .drawer-tabs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-self: flex-start;
-    }
-    .event-drawers .drawer-tab {
-      writing-mode: vertical-rl;
-      min-height: 132px;
+    .event-drawers .map-tab {
+      width: 42px;
+      height: 84px;
       margin: 0;
-      padding: 16px 10px;
+      padding: 0;
       border: 0;
       border-radius: 0 14px 14px 0;
       background: linear-gradient(180deg, #4a3824, #24180f);
       color: #fff3c4;
       font-weight: 900;
-      font-size: 16px;
-      letter-spacing: 0.18em;
+      font-size: 26px;
       box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.45);
       cursor: pointer;
     }
-    .event-drawers .drawer-tab.on { background: linear-gradient(180deg, #e4b15a, #8a5a18); color: #2a2118; }
+    .event-drawers .map-tab.on { background: linear-gradient(180deg, #e4b15a, #8a5a18); color: #2a2118; }
+    .event-hud {
+      position: fixed;
+      top: 10px;
+      right: 14px;
+      z-index: 60;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
     .event-drawers .drawer-panel {
       width: min(300px, 46vw);
-      height: 100%;
+      height: min(70vh, 640px);
       min-height: 0;
       overflow: auto;
       border-radius: 16px;
@@ -4966,7 +4989,6 @@
     .menu.event .event-choice > p,
     .menu.event .event-choice > h2,
     .menu.event .event-choice .event-story p,
-    .menu.event .event-choice .event-play p,
     .menu.event .event-choice .event-where {
       width: 100%;
       margin: 0 0 10px;
@@ -4990,6 +5012,10 @@
       font-size: clamp(28px, 2.4vw, 36px);
       font-weight: 800;
       color: #ffe08a;
+      background: rgba(48, 32, 12, 0.72);
+      border-left: 6px solid #e4b15a;
+      border-radius: 10px;
+      padding: 10px 14px;
     }
     .menu.event .event-split.both .event-play,
     .menu.event .event-split:not(.both):has(.event-story) + .event-where {
@@ -5507,26 +5533,43 @@
     .cast-screen.dungeon-screen {
       width: 100%;
       display: grid;
-      grid-template-rows: auto minmax(0, 1.55fr) auto auto auto auto minmax(168px, 0.95fr);
+      grid-template-rows: auto minmax(0, 1.35fr) minmax(168px, 0.72fr) auto;
       align-items: stretch;
       justify-items: center;
       gap: 8px;
       padding-right: 22px;
     }
     .dungeon-screen .cast-title { grid-row: 1; }
-    .dungeon-screen .dungeon-preview {
+    .dungeon-screen .dungeon-top {
       grid-row: 2;
+      width: min(1280px, 100%);
       height: 100%;
       min-height: 0;
-      width: min(1280px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(220px, 0.62fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+    .dungeon-screen .dungeon-preview {
+      height: 100%;
+      min-height: 0;
+      width: 100%;
       border-radius: 16px;
     }
-    .dungeon-screen .foe-label { grid-row: 3; }
-    .dungeon-screen .dungeon-foes { grid-row: 4; }
-    .dungeon-screen .clear-label { grid-row: 5; }
-    .dungeon-screen .dungeon-clear-slot { grid-row: 6; }
+    .dungeon-side {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      text-align: right;
+      overflow: auto;
+    }
+    .dungeon-side .dungeon-foes,
+    .dungeon-side .dungeon-clears,
+    .dungeon-side .dungeon-clear-slot { justify-content: flex-end; width: 100%; }
     .dungeon-screen .dungeon-columns {
-      grid-row: 7;
+      grid-row: 3;
       height: 100%;
       width: min(1180px, 100%);
       min-height: 0;
@@ -5754,11 +5797,15 @@
       min-width: 0;
       min-height: 0;
       height: 100%;
+      overflow: hidden;
+      transition: filter 0.22s ease;
+    }
+    .dungeon-shot > img {
       filter: brightness(0.38) saturate(0.7);
       transition: filter 0.22s ease;
     }
-    .dungeon-col.active .dungeon-shot { filter: none; }
-    .dungeon-col.sealed.active .dungeon-shot { filter: brightness(0.72) saturate(0.85); }
+    .dungeon-col.active .dungeon-shot > img { filter: none; }
+    .dungeon-col.sealed.active .dungeon-shot > img { filter: brightness(0.72) saturate(0.85); }
     .dungeon-col.active {
       border-color: #f0c36a;
       box-shadow: 0 0 0 2px rgba(36, 24, 12, 0.85), 0 0 28px rgba(240, 195, 106, 0.45);
@@ -5809,18 +5856,23 @@
       inset: 0;
       z-index: 4;
       pointer-events: none;
+      overflow: hidden;
     }
     .dungeon-col .chain-art {
       position: absolute;
+      width: 170%;
+      height: 170%;
+      max-width: none;
       left: 50%;
-      top: 46%;
-      width: 58%;
-      height: 70%;
-      inset: auto;
+      top: 50%;
       transform: translate(-50%, -50%);
-      object-fit: contain;
-      object-position: center center;
+      object-fit: fill;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
+    }
+    .dungeon-col .chain-art.one {
+      left: -21%;
+      top: -18%;
+      transform: none;
     }
     .dungeon-pick .cast-actions {
       z-index: 6;
@@ -7101,7 +7153,7 @@
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=6" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常を無視する", image: "gear-eagle-shield.jpg?v=6" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
@@ -7416,6 +7468,23 @@
       return text.trim();
     }
 
+    function gearSpecialText(item) {
+      if (!item) return "";
+      if (item.statusImmune) return "状態異常にならない";
+      if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
+      if (item.reflectDef) return "ダメージを食らうと、相手にいまのDEFだけダメージ";
+      if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
+      if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
+      if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
+      if (item.halfMana) return "自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える";
+      let text = String(item.effect || "");
+      text = text.replace(/★+/g, "").replace(/ボス/g, "");
+      text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
+      text = text.replace(/アクセサリー枠[。.]?/g, "").replace(/アクセサリー[。.]?/g, "");
+      text = text.replace(/[。.\s　]+/g, " ").trim();
+      return text;
+    }
+
     function gearStatChips(item) {
       if (!item) return "";
       const chips = [];
@@ -7427,6 +7496,7 @@
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
+      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd";
       const rarity = o.rarity || "";
       const starsClass = rarity === "ボス" ? "gear-effect-stars boss" : "gear-effect-stars";
       const art = o.image
@@ -7434,12 +7504,14 @@
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
       const name = o.name ? `<p class="gear-effect-name">${esc(o.name)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
+      const genre = boon ? "" : `<p class="gear-effect-slot">${gearSlotIcon(slotId)}<span>${esc(gearSlotLabel(slotId))}</span></p>`;
+      const under = boon ? "" : `<span class="gear-genre">${gearSlotIcon(slotId)}</span>`;
       const bodyClass = o.empty ? "gear-effect-body empty" : "gear-effect-body";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
       const body = o.body ? `<p class="${bodyClass}">${o.body}</p>` : "";
-      return `<div class="gear-effect${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-art">${art}</div><div class="gear-effect-meta"><span class="gear-effect-slot">${esc(gearSlotLabel(slotId))}</span>${name}${stars}</div></div>${o.stats || ""}${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${under}</div><div class="gear-effect-meta">${name}${stars}</div></div>${genre}${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -7449,8 +7521,8 @@
         return gearPopShell(slotId, look ? {
           name: look.name,
           image: look.image || "",
-          body: esc(gearEffectPlain(look)),
-          stats: gearStatChips(look),
+          rarity: gearRarityText(look),
+          body: esc(gearSpecialText(look)),
         } : {
           name: "メダル",
           body: "ボスを倒すと確定でもらえる。",
@@ -7474,11 +7546,11 @@
         return gearPopShell(slotId, {
           name: item.name || "アイテム",
           image: item.image || "",
-          body: esc(gearEffectPlain(item) || item.effect || ""),
+          rarity: gearRarityText(item),
+          body: esc(gearSpecialText(item)),
           hint,
           button,
           action: !!button,
-          stats: gearStatChips(item),
         });
       }
       const item = gear[slotId];
@@ -7492,8 +7564,8 @@
       return gearPopShell(slotId, {
         name: item.name || gearSlotLabel(slotId),
         image: item.image || "",
-        body: esc(gearEffectPlain(item) || item.effect || item.name || ""),
-        stats: gearStatChips(item),
+        rarity: gearRarityText(item),
+        body: esc(gearSpecialText(item)),
       });
     }
 
@@ -9673,36 +9745,55 @@
       return `${pick.card.name}を1枚受け取った。`;
     }
 
+    function playPickCenter(selector, done) {
+      const el = document.querySelector(selector);
+      const finish = typeof done === "function" ? done : function () {};
+      if (!(el instanceof HTMLElement) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        finish();
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      const ghost = el.cloneNode(true);
+      ghost.classList.add("pick-glow");
+      ghost.style.position = "fixed";
+      ghost.style.left = r.left + "px";
+      ghost.style.top = r.top + "px";
+      ghost.style.width = r.width + "px";
+      ghost.style.height = r.height + "px";
+      ghost.style.margin = "0";
+      ghost.style.zIndex = "80";
+      ghost.style.pointerEvents = "none";
+      ghost.style.transition = "left .42s ease, top .42s ease, transform .42s ease, box-shadow .42s ease, opacity .32s ease .48s";
+      document.body.appendChild(ghost);
+      requestAnimationFrame(() => {
+        ghost.style.left = ((window.innerWidth - r.width) / 2) + "px";
+        ghost.style.top = ((window.innerHeight - r.height) / 2) + "px";
+        ghost.style.transform = "scale(1.06)";
+        ghost.style.boxShadow = "0 0 36px 10px rgba(255, 214, 120, 0.9)";
+      });
+      setTimeout(() => { ghost.style.opacity = "0"; }, 500);
+      setTimeout(() => { ghost.remove(); finish(); }, 860);
+    }
+
     function takeBless(index) {
       if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
       const pick = blessPicks[index];
       if (!pick) return;
-      let got = "";
-      if (pick.kind === "maxhp") {
-        runBonus.hp = (Number(runBonus.hp) || 0) + 10;
-        floorHp = runMaxHp();
-        got = "最大HPが10増えた。";
-      } else if (pick.kind === "spd") {
-        runBonus.spd = (Number(runBonus.spd) || 0) + 1;
-        got = "SPDが1増えた。";
-      } else if (pick.kind === "mana") {
-        runBonus.mana = (Number(runBonus.mana) || 0) + 1;
-        got = "マナが1増えた。";
-      } else {
-        got = takeGift(pick);
-        if (!got) return;
-      }
-      floorNote = got || "";
-      floorPrompt = "";
-      blessPicks = [];
-      floorPhase = "show";
-      const token = ++blessAuto;
-      render();
-      setTimeout(() => {
-        if (token !== blessAuto) return;
-        if (screen !== "floor" || floorKind !== "挑戦者に祝福を" || floorPhase !== "show") return;
+      playPickCenter(`[data-action="bless-pick"][data-bless="${index}"]`, () => {
+        if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
+        if (pick.kind === "maxhp") {
+          runBonus.hp = (Number(runBonus.hp) || 0) + 10;
+          floorHp = runMaxHp();
+        } else if (pick.kind === "spd") {
+          runBonus.spd = (Number(runBonus.spd) || 0) + 1;
+        } else if (pick.kind === "mana") {
+          runBonus.mana = (Number(runBonus.mana) || 0) + 1;
+        } else if (!takeGift(pick)) {
+          return;
+        }
+        blessPicks = [];
         finishEvent();
-      }, 1400);
+      });
     }
 
     function cardBuildName(name) {
@@ -9771,8 +9862,8 @@
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearPopShell(item.slot || "sword", {
           name: item.name,
           image: item.image || "",
-          body: esc(gearEffectPlain(item)),
-          stats: gearStatChips(item),
+          rarity: gearRarityText(item),
+          body: esc(gearSpecialText(item)),
         })}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
@@ -9857,8 +9948,8 @@
         if (Math.random() < 0.5) {
           floorKind = "物乞いに遭遇";
           beggarGift = [];
-          floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
-          floorPrompt = "廃棄するカードを1枚選んで決定する。無視して進んでも、物乞いが襲ってくる。";
+          floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。渡す品によっては、目が据わりそうだ。";
+          floorPrompt = "カードを1枚渡して決定する。★2以下だと襲ってくる。それより珍しいカードなら道を開ける。無視して進むと、戦わずに過ぎる。";
         } else {
           floorKind = "挑戦者に祝福を";
           floorPhase = "bless";
@@ -9876,8 +9967,8 @@
         floorKind = "物乞いに遭遇";
         beggarGift = [];
         beggarPick = -1;
-        floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
-        floorPrompt = "廃棄するカードを1枚選んで決定する。無視して進んでも、物乞いが襲ってくる。";
+        floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。渡す品によっては、目が据わりそうだ。";
+        floorPrompt = "カードを1枚渡して決定する。★2以下だと襲ってくる。それより珍しいカードなら道を開ける。無視して進むと、戦わずに過ぎる。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
         floorNote = "光る紋章の前に立つと、別の戦い方が見えてきた。";
@@ -9913,16 +10004,23 @@
       if (!card) return;
       const gift = keepCard(card);
       removed.push(gift);
-      beggarGift = [gift];
       beggarCut = true;
-      beginBeggarFight();
+      if ((Number(card.stars) || 1) <= 2) {
+        beggarGift = [gift];
+        beginBeggarFight();
+        return;
+      }
+      beggarGift = [];
+      floorNote = "物乞いはカードを受け取ると、道を開けた。";
+      floorPrompt = "";
+      finishEvent();
     }
 
     function skipBeggar() {
       if (floorKind !== "物乞いに遭遇") return;
       beggarGift = [];
       beggarCut = true;
-      beginBeggarFight();
+      finishEvent();
     }
 
     function takeSearchGear() {
@@ -10248,8 +10346,8 @@
       root.insertAdjacentHTML("beforeend", gearPopShell(item.slot, {
         name: item.name,
         image: item.image || "",
-        body: esc(gearEffectPlain(item)),
-        stats: gearStatChips(item),
+        rarity: gearRarityText(item),
+        body: esc(gearSpecialText(item)),
       }).replace('class="gear-effect', 'class="gear-effect cast-pop'));
       const box = root.querySelector(".gear-effect.cast-pop");
       if (!box) return;
@@ -10425,7 +10523,8 @@
       const n = Math.max(0, Math.min(2, Number(count) || 0));
       if (n <= 0) return "";
       const src = n >= 2 ? "chain-lock.png?v=1" : "chain-one.png?v=3";
-      return `<div class="chain-wrap" aria-hidden="true"><img class="chain-art" src="${src}" alt=""></div>`;
+      const one = n >= 2 ? "" : " one";
+      return `<div class="chain-wrap" aria-hidden="true"><img class="chain-art${one}" src="${src}" alt=""></div>`;
     }
 
     function paintDungeon() {
@@ -10539,6 +10638,7 @@
       root.innerHTML = `
         <div class="cast-screen dungeon-screen">
           <h1 class="cast-title">ダンジョンを選択してください</h1>
+          <div class="dungeon-top">
           <div class="dungeon-preview">
             <img alt="" hidden>
             <div class="dungeon-caption" hidden>
@@ -10546,10 +10646,13 @@
               <p class="preview-meta"><span class="preview-rank"></span><span class="preview-floor"></span></p>
             </div>
           </div>
-          <p class="dungeon-note foe-label">登場する敵</p>
-          <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
-          <p class="dungeon-note clear-label">踏破したキャラ</p>
-          <div class="dungeon-clear-slot"></div>
+          <aside class="dungeon-side">
+            <p class="dungeon-note foe-label">登場する敵</p>
+            <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
+            <p class="dungeon-note clear-label">踏破したキャラ</p>
+            <div class="dungeon-clear-slot"></div>
+          </aside>
+          </div>
           <div class="dungeon-columns">${columns}</div>
           <div class="cast-actions">
             <button type="button" class="cast-back" data-action="character">もどる</button>
@@ -10888,7 +10991,7 @@
 
     function renderFloor() {
       if (floorPhase === "paths") {
-        root.innerHTML = `<div class="menu event">${eventToolsHtml()}<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>`;
+        root.innerHTML = `<div class="menu event">${eventToolsHtml()}<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>${deckOverlay()}`;
         runEntrance = false;
         return;
       }
@@ -10943,7 +11046,7 @@
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
       const picture = art && !shopMode ? art : "";
-        root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${eventToolsHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>`;
+        root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${eventToolsHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>${deckOverlay()}`;
       runEntrance = false;
     }
 
@@ -10999,7 +11102,7 @@
 
     function paintTitleNav() {
       root.querySelectorAll(".nav-title").forEach((el) => el.remove());
-      if (screen === "title" || screen === "battle") return;
+      if (screen === "title" || screen === "battle" || screen === "floor") return;
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "nav-title";
@@ -11546,12 +11649,9 @@
     }
 
     function eventToolsHtml() {
-      const cards = runDeck();
       const mapPanel = eventMapOpen ? `<section class="drawer-panel">${roadMapHtml()}</section>` : "";
-      const deckPanel = eventDeckOpen
-        ? `<section class="drawer-panel deck-drawer"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div></section>`
-        : "";
-      return `<div class="event-drawers"><div class="drawer-tabs"><button type="button" class="drawer-tab${eventMapOpen ? " on" : ""}" data-action="toggle-map">マップ</button><button type="button" class="drawer-tab${eventDeckOpen ? " on" : ""}" data-action="toggle-deck">マイデッキ</button></div>${mapPanel}${deckPanel}</div>`;
+      const mark = eventMapOpen ? "◀" : "▶";
+      return `<div class="event-drawers"><button type="button" class="map-tab${eventMapOpen ? " on" : ""}" data-action="toggle-map" aria-label="マップ">${mark}</button>${mapPanel}</div><div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button></div>`;
     }
 
     function deckOverlay() {
@@ -11834,26 +11934,29 @@
       if (rewardStep !== "boss") return;
       const pick = bossPicks[index];
       if (!pick) return;
-      const flight = pick.kind === "card" && pick.card
-        ? captureRewardCardFlight(`[data-action="reward-boss"][data-reward="${index}"] .card`)
-        : null;
-      if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
-      if (pick.kind === "gear" && pick.gear) {
-        if (!gear || !gear.sword) gear = starterGear();
-        if (offerWeapon(pick.gear, { source: "boss" })) {
-          if (flight) flight.ghost.remove();
-          persistSave(true);
-          render();
-          return;
+      playPickCenter(`[data-action="reward-boss"][data-reward="${index}"]`, () => {
+        if (rewardStep !== "boss") return;
+        const flight = pick.kind === "card" && pick.card
+          ? captureRewardCardFlight(`[data-action="reward-boss"][data-reward="${index}"] .card`)
+          : null;
+        if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
+        if (pick.kind === "gear" && pick.gear) {
+          if (!gear || !gear.sword) gear = starterGear();
+          if (offerWeapon(pick.gear, { source: "boss" })) {
+            if (flight) flight.ghost.remove();
+            persistSave(true);
+            render();
+            return;
+          }
+          giveGear(pick.gear);
         }
-        giveGear(pick.gear);
-      }
-      bossPicks = [];
-      rewardPaths = rollPaths();
-      rewardStep = "paths";
-      persistSave(true);
-      render();
-      flyRewardCardToDeck(flight);
+        bossPicks = [];
+        rewardPaths = rollPaths();
+        rewardStep = "paths";
+        persistSave(true);
+        render();
+        flyRewardCardToDeck(flight);
+      });
     }
 
     // 報酬を選んだあと、もらった★がステータスの★へ飛んで吸い込まれ、届くたびに数が増える
@@ -12033,15 +12136,18 @@
       if (rewardStep !== "cards") return;
       const card = rewardPicks[index];
       if (!card) return;
-      const flight = captureRewardCardFlight(`[data-action="reward-card"][data-reward="${index}"] .card`);
-      const from = starStartPoints();
-      stolen.push(keepCard(card));
-      rewardPaths = rollPaths();
-      rewardStep = "paths";
-      persistSave(true);
-      render();
-      flyStarsHome(from);
-      flyRewardCardToDeck(flight);
+      playPickCenter(`[data-action="reward-card"][data-reward="${index}"]`, () => {
+        if (rewardStep !== "cards") return;
+        const flight = captureRewardCardFlight(`[data-action="reward-card"][data-reward="${index}"] .card`);
+        const from = starStartPoints();
+        stolen.push(keepCard(card));
+        rewardPaths = rollPaths();
+        rewardStep = "paths";
+        persistSave(true);
+        render();
+        flyStarsHome(from);
+        flyRewardCardToDeck(flight);
+      });
     }
 
     function finishEvent() {
@@ -12096,7 +12202,7 @@
         return;
       }
       const next = route[at];
-      const locked = next === DUNGEON.boss || roadFixed(next, at);
+      const locked = next === DUNGEON.boss || (Number(floorAt[at]) === 10 && next === "出来事:お店");
       if (locked) {
         route.splice(at, 0, node);
         floorAt.splice(at, 0, mark);
@@ -12200,10 +12306,12 @@
 
     function gearOfferHtml(item) {
       if (!item) return "";
-      const art = item.image
-        ? `<img src="${esc(item.image)}" alt="">`
-        : `<span class="gear-mark">${gearSlotIcon(item.slot || "sword")}</span>`;
-      return `<div class="gear-offer gear-offer-card"><div class="gear-offer-info"><span class="gear-effect-slot">${esc(gearSlotLabel(item.slot || "sword"))}</span><p class="gear-effect-name">${esc(item.name || "")}</p>${gearStatChips(item)}${gearCompareHtml(item)}<p class="gear-effect-body">${esc(gearEffectPlain(item))}</p></div><div class="gear-offer-art">${art}</div></div>`;
+      return gearPopShell(item.slot || "sword", {
+        name: item.name || "",
+        image: item.image || "",
+        rarity: gearRarityText(item),
+        body: esc(gearSpecialText(item)),
+      });
     }
 
     function gearCompareHtml(item) {
