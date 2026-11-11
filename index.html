@@ -5727,20 +5727,63 @@
       padding: 10px 14px 12px;
       overflow: hidden;
     }
-    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2vw, 40px); margin-bottom: 2px; }
-    .cast-screen.character-focus .cast-blurb { margin: 0; font-size: 16px; line-height: 1.35; }
-    .cast-screen.character-focus .cast-mid { gap: 8px; align-items: center; }
-    .cast-screen.character-focus .cast-vitals { gap: 2px; margin: 2px 0; }
-    .cast-screen.character-focus .cast-vitals .hp-line b { font-size: 20px; }
-    .cast-screen.character-focus .cast-plaque h2 { margin: 6px 0 4px; font-size: 14px; }
+    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2vw, 40px); margin-bottom: 6px; }
+    .cast-screen.character-focus .cast-mid {
+      gap: 12px;
+      align-items: stretch;
+      justify-content: space-between;
+      flex: 0 0 auto;
+      min-height: 168px;
+    }
+    .cast-screen.character-focus .cast-vitals {
+      gap: 6px;
+      margin: 0;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: center;
+    }
+    .cast-screen.character-focus .cast-vitals .hp-line {
+      grid-template-columns: 108px auto;
+      gap: 10px;
+    }
+    .cast-screen.character-focus .cast-vitals .hp-line .lbl { font-size: 15px; gap: 8px; }
+    .cast-screen.character-focus .cast-vitals .hp-line .ico { width: 28px; height: 28px; }
+    .cast-screen.character-focus .cast-vitals .hp-line b { font-size: clamp(26px, 2.4vw, 34px); }
+    .cast-screen.character-focus .cast-plaque h2 { margin: 8px 0 6px; font-size: 15px; }
+    .cast-screen.character-focus .cast-gear-col {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 200px;
+    }
     .cast-screen.character-focus .cast-gear-col .cast-gear {
       flex-direction: row;
       align-items: flex-start;
-      gap: 8px;
+      justify-content: flex-end;
+      gap: 14px;
+      flex: 1 1 auto;
     }
-    .cast-screen.character-focus .cast-gear .cast-gear-slot { width: 76px; }
-    .cast-screen.character-focus .cast-gear .cast-gear-slot .gear-frame { width: 56px; height: 56px; }
-    .cast-screen.character-focus .cast-gear-name { font-size: 12px; line-height: 1.2; }
+    .cast-screen.character-focus .cast-gear .cast-gear-slot { width: 96px; }
+    .cast-screen.character-focus .cast-gear .cast-gear-slot .gear-frame { width: 88px; height: 88px; }
+    .cast-screen.character-focus .cast-gear-name { font-size: 13px; line-height: 1.25; margin-top: 6px; }
+    .cast-screen.character-focus .cast-keys.cast-job-desc {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 22px;
+    }
+    .cast-screen.character-focus .cast-keys.cast-job-desc .cast-blurb {
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: none;
+      font-size: clamp(17px, 1.35vw, 22px);
+      line-height: 1.65;
+      font-weight: 700;
+      color: #fff1d8;
+      letter-spacing: 0.06em;
+    }
     .cast-screen.character-focus .cast-deck {
       flex: 1 1 auto;
       min-height: 0;
@@ -5760,13 +5803,6 @@
     .cast-screen.character-focus .cast-deck .deck-card {
       height: auto;
       align-self: start;
-    }
-    .cast-screen.character-focus .cast-blurb {
-      font-size: 15px;
-      line-height: 1.45;
-      padding: 6px 10px;
-      max-width: 100%;
-      box-sizing: border-box;
     }
     .cast-screen.character-focus .cast-side { min-width: 0; overflow: hidden; }
     .cast-screen.character-focus .stat-chips { min-width: 0; }
@@ -10630,6 +10666,12 @@
         </div>`;
     }
 
+    function cardGenreRank(card) {
+      const kind = cardKind(card);
+      const order = { attack: 0, block: 1, skill: 2, power: 3, foe: 4 };
+      return order[kind] ?? 5;
+    }
+
     function starterDeckCards() {
       const cards = [];
       for (const [name, count] of CARD_POOL) {
@@ -10639,6 +10681,9 @@
         }
       }
       cards.sort((a, b) => {
+        const ga = cardGenreRank(a);
+        const gb = cardGenreRank(b);
+        if (ga !== gb) return ga - gb;
         const ca = Number(a.cost) || 0;
         const cb = Number(b.cost) || 0;
         if (ca !== cb) return ca - cb;
@@ -10708,16 +10753,20 @@
       });
     }
 
+    function castBlurbParagraphs(text) {
+      if (!text) return "";
+      const parts = String(text).split(/。/).map((s) => s.trim()).filter(Boolean);
+      if (!parts.length) return `<p class="cast-blurb">${esc(text)}</p>`;
+      return parts.map((part, i) => `<p class="cast-blurb">${esc(part)}${i < parts.length - 1 ? "。" : ""}</p>`).join("");
+    }
+
     function castMainMarkup(item) {
-      const blurb = item.blurb
-        ? `<p class="cast-blurb">${esc(item.blurb)}</p>`
-        : "";
+      const desc = item.blurb ? castBlurbParagraphs(item.blurb) : "";
       return `
         <img class="cast-wash" src="${item.action}" alt="${esc(item.name)}の一枚絵">
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
-            ${blurb}
             <div class="cast-mid">
               <div class="cast-vitals" aria-label="初期ステータス">
                 <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>30</b></span></div>
@@ -10737,12 +10786,7 @@
             <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
         </div>
-        <aside class="cast-keys" aria-label="パリィ">
-          <h2>パリィ</h2>
-          <p>次の攻撃を１回無効にする。重複不可。</p>
-          <p>ターン終了時に消失。</p>
-          <p>パリィがある間、シールドを追加で得ることはできない。</p>
-        </aside>`;
+        <aside class="cast-keys cast-job-desc" aria-label="特徴">${desc}</aside>`;
     }
 
     function challengeReady() {
