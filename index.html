@@ -7426,7 +7426,7 @@
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
       捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
@@ -7513,7 +7513,7 @@
       },
       {
         name: "ミノタウロス",
-        image: "enemy-minotaur.png?v=6",
+        image: "enemy-minotaur.png?v=7",
         tier: 3,
         rank: "強敵",
         hp: 50,
@@ -7579,7 +7579,7 @@
     let enemyLoop = [];
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "次の攻撃を１回無効にする。重複不可。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。奥義「パリィが重複する」のときは重なる。";
+    const PARRY_NOTE = "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。";
     const DURING_NOTE = "使ったら消える。次の戦闘で戻る。";
     const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
@@ -9183,10 +9183,6 @@
     function gainParry(card, add) {
       const n = Math.max(1, Number(add) || 1);
       const now = parryCount(player);
-      if (n === 1 && now > 0 && ultimate !== "パリィが重複する") {
-        log(`${heroName()}は${card.name}。パリィは重複しない。`, card);
-        return false;
-      }
       const hadShield = Math.max(0, Number(player.block) || 0);
       if (hadShield) player.block = 0;
       player.parry = now + n;
@@ -11584,7 +11580,7 @@
       const low = maxHp > 0 && shownHp / maxHp <= 0.3 ? " low" : "";
       const parryN = who === "player" && typeof player !== "undefined" && player ? parryCount(player) : 0;
       const parried = parryN > 0;
-      const parryStacks = ultimate === "パリィが重複する" && parryN >= 2;
+      const parryStacks = parryN >= 2;
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
       const fresh = Boolean(extra && extra.shieldFlash && block > 0);
       const parryFresh = Boolean(extra && extra.parryFlash);
@@ -11852,11 +11848,11 @@
         </div>
         <aside class="cast-keys" aria-label="パリィ">
           <h2>パリィ</h2>
-          <p>次の攻撃を１回無効にする。重複不可。</p>
+          <p>次の攻撃を１回無効にする。重なる。</p>
           <p>ターン終了時に消失。</p>
           <p>パリィを得ると、いま持っているシールドはすべてなくなる。表示は銀の盾から金の盾へ変わる。</p>
           <p>パリィがある間、シールドを追加で得ることはできない。</p>
-          <p>奥義で重なれるとき、2枚目以降は金の盾に2から数字が載る。</p>
+          <p>2枚目以降は金の盾に2から数字が載る。</p>
         </aside>`;
     }
 
@@ -12328,10 +12324,10 @@
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=7", "スライム", "enemy-ref")}
               ${sheetFig("enemy-goblin.png?v=4", "ゴブリン", "enemy-ref")}
-              ${sheetFig("enemy-minotaur.png?v=6", "ミノタウロス", "enemy-ref")}
+              ${sheetFig("enemy-minotaur.png?v=7", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=3", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.png?v=2", "物乞い", "enemy-ref")}
-              ${sheetFig("enemy-hades.png?v=2", "ハデス", "enemy-ref")}
+              ${sheetFig("enemy-hades.png?v=3", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
