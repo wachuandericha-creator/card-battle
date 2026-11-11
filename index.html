@@ -2538,15 +2538,8 @@
     }
     .play-side.foe .play-card.on .card.preview {
       box-shadow: 0 0 0 4px #e24b3a, 0 16px 22px rgba(0, 0, 0, 0.45);
-      animation: foe-card-shake 0.18s linear infinite;
     }
-    .play-card.arriving .card.preview {
-      animation: intent-place 0.55s cubic-bezier(0.16, 0.9, 0.28, 1) both;
-    }
-    @keyframes foe-card-shake {
-      0%, 100% { transform: translateY(-36px) scale(1.04) rotate(-1.4deg); }
-      50% { transform: translateY(-36px) scale(1.04) rotate(1.4deg); }
-    }
+    .play-card.await-draw .card.preview { visibility: hidden; }
     @keyframes intent-place {
       0% { opacity: 0; transform: translateY(-48px) scale(0.86); }
       100% { opacity: 1; transform: none; }
@@ -4859,7 +4852,24 @@
     .shop-gear-card b { font-size: 20px; color: #fff6e4; line-height: 1.3; }
     .shop-gear-card p { margin: 0; font-size: 16px; line-height: 1.45; font-weight: 700; color: #ffe7a8; }
     .shop-have { margin: 0 0 8px; font-size: 28px; font-weight: 900; color: #ffe08a; }
-    .menu.event > h1 { grid-area: title; text-align: center; margin: 36px 0 0; }
+    .menu.event > h1 { grid-area: title; text-align: center; margin: 28px 0 0; }
+    .menu.event > h1 small { display: block; margin-top: 4px; font-size: 26px; letter-spacing: 0.14em; color: #ffe08a; }
+    .event-floor-call {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .event-floor-call b {
+      font-size: min(16vw, 168px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #f0c36a;
+      text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82);
+      animation: turn-word 1.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+    }
     .menu.event .event-picture {
       grid-area: picture;
       width: auto;
@@ -6474,6 +6484,9 @@
     let floorCall = false;
     let intentShown = true;
     let intentArrive = false;
+    let foeLeaveGhost = null;
+    let foeDrawPending = false;
+    let eventFloorCall = false;
     let note = "";
     let banner = "";
     let outcome = null;
@@ -8390,6 +8403,112 @@
       return { ghost, from: rect };
     }
 
+    function captureFoeLeave() {
+      foeLeaveGhost = null;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const el = document.querySelector(".play-side.foe .play-card .card");
+      if (!el) return;
+      foeLeaveGhost = makeFlyGhost(el);
+    }
+
+    function showFoePlay(play) {
+      if (!play) return;
+      const wrap = play.closest(".play-card");
+      if (wrap) wrap.classList.remove("await-draw");
+    }
+
+    function flyFoeFromDeck(play) {
+      if (!play || !play.isConnected) return;
+      const deck = document.querySelector(".foe-pile .pile-card");
+      if (!deck) {
+        showFoePlay(play);
+        return;
+      }
+      const from = deck.getBoundingClientRect();
+      const to = play.getBoundingClientRect();
+      if (!from.width || !to.width) {
+        showFoePlay(play);
+        return;
+      }
+      const ghost = deck.cloneNode(true);
+      ghost.classList.add("fly-card");
+      ghost.style.position = "fixed";
+      ghost.style.zIndex = "70";
+      ghost.style.left = `${from.left}px`;
+      ghost.style.top = `${from.top}px`;
+      ghost.style.width = `${from.width}px`;
+      ghost.style.height = `${from.height}px`;
+      ghost.style.margin = "0";
+      ghost.style.transition = "none";
+      document.body.appendChild(ghost);
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      const scale = to.height / from.height;
+      const finish = () => {
+        if (ghost.dataset.landed) return;
+        ghost.dataset.landed = "1";
+        ghost.remove();
+        showFoePlay(play);
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.45s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 520);
+    }
+
+    function launchFoeTurnTravel() {
+      const leave = foeLeaveGhost;
+      const draw = foeDrawPending;
+      foeLeaveGhost = null;
+      foeDrawPending = false;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        showFoePlay(document.querySelector(".play-side.foe .play-card .card"));
+        if (leave) leave.ghost.remove();
+        return;
+      }
+      if (!leave && !draw) return;
+      const play = document.querySelector(".play-side.foe .play-card .card");
+      const goDraw = () => {
+        if (!draw) return;
+        flyFoeFromDeck(play);
+      };
+      if (!leave) {
+        goDraw();
+        return;
+      }
+      const dest = document.querySelector(".foe-discard .pile-card");
+      if (!dest) {
+        leave.ghost.remove();
+        goDraw();
+        return;
+      }
+      const to = dest.getBoundingClientRect();
+      const from = leave.from;
+      const ghost = leave.ghost;
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      const scale = Math.max(0.22, to.height / Math.max(1, from.height));
+      const finish = () => {
+        if (ghost.dataset.landed) return;
+        ghost.dataset.landed = "1";
+        ghost.remove();
+        goDraw();
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.48s cubic-bezier(0.22, 0.7, 0.18, 1), opacity 0.42s ease 80ms";
+          ghost.style.transform = `translate(${dx}px, ${dy}px) rotate(-18deg) scale(${scale})`;
+          ghost.style.opacity = "0.2";
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 560);
+    }
+
     // プレイエリアの自分のカード：捨て札へ／廃棄へ飛ばす準備（次の描画のあとで動かす）
     // forceMode があれば全枚その行き先（頭突きの一括廃棄など）
     function capturePlayClearFlights(cards, forceMode) {
@@ -8611,11 +8730,13 @@
         }
       } else {
         logTurn("enemy");
+        captureFoeLeave();
         const card = intentAt(0);
         // 敵のシールドは、自分の攻撃が終わったあとの敵の番の始まりで消える
         dropShield(enemy);
         enemyUseCard(card);
         advanceEnemyLoop();
+        foeDrawPending = player.hp > 0;
         if (player.hp > 0 && enemyNow().rally && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
           enemy.rallied = true;
           const extra = shuffle(sourcePattern()).slice(0, 2);
@@ -8626,6 +8747,7 @@
           }
         }
         if (player.hp <= 0) {
+          foeDrawPending = false;
           const saved = cheatDeath();
           if (saved === "retry") return;
           if (!saved) {
@@ -9292,7 +9414,7 @@
       timer = null;
       if (phase !== "intro" || outcome) return;
       intentShown = true;
-      intentArrive = true;
+      foeDrawPending = true;
       startPlayerTurn(true);
     }
 
@@ -9562,6 +9684,7 @@
       floorNote = "";
       floorPrompt = "";
       floorPhase = "show";
+      eventFloorCall = true;
       floorGift = null;
       blessPicks = [];
       beggarCut = false;
@@ -10643,7 +10766,7 @@
 
     function renderFloor() {
       if (floorPhase === "paths") {
-        root.innerHTML = `<div class="menu event paths-open">${roadMapHtml()}<h1>道を選ぶ</h1><div class="event-choice"><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+        root.innerHTML = `<div class="menu event paths-open">${roadMapHtml()}<h1>道を選ぶ<small>現在 ${floorNo()}Ｆ</small></h1><div class="event-choice"><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
         runEntrance = false;
         return;
       }
@@ -10692,11 +10815,13 @@
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
-      const title = `<h1>${esc(floorKind)}</h1>`;
+      const floorFlash = eventFloorCall ? `<div class="event-floor-call" aria-hidden="true"><b>現在 ${floorNo()}Ｆ</b></div>` : "";
+      eventFloorCall = false;
+      const title = `<h1>${esc(floorKind)}<small>現在 ${floorNo()}Ｆ</small></h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
       const picture = art && !shopMode ? art : "";
-      root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${roadMapHtml()}${title}${picture}<div class="event-choice">${choice}</div></div>`;
+      root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${roadMapHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>`;
       runEntrance = false;
     }
 
@@ -11024,7 +11149,7 @@
       if (recall) bits.push("can-recall");
       if (on) bits.push("on");
       if (extra && extra.held) bits.push("held");
-      if (extra && extra.arrive) bits.push("arriving");
+      if (extra && extra.awaitDraw) bits.push("await-draw");
       const attrs = recall ? ` data-unplay="${recallIndex}" class="${bits.join(" ")}"` : ` class="${bits.join(" ")}"`;
       const label = recall
         ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す`
@@ -11042,9 +11167,7 @@
       }).join("");
       const foe = intentShown ? intentAt(0) : null;
       const foeHot = resolving && active === inPlay.length;
-      const arrive = intentArrive && !foeHot;
-      intentArrive = false;
-      const foeCard = foe ? playFace(foe, foeHot, true, true, null, { arrive }) : "";
+      const foeCard = foe ? playFace(foe, foeHot, true, true, null, { awaitDraw: foeDrawPending && !foeHot }) : "";
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
           <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
@@ -12275,6 +12398,7 @@
         requestAnimationFrame(fitHand);
       }
       launchPendingPlayClearFly();
+      launchFoeTurnTravel();
     }
 
     // 手札の重なりを固めてからドローを再生する（冒頭のつまり対策）
