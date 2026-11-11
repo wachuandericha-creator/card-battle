@@ -1406,20 +1406,7 @@
     .album-top h3 { margin: 0 0 8px; text-align: center; font-size: 18px; letter-spacing: 0.12em; }
     .album-top .ref-grid,
     .album-top .blank-grid { margin: 0; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); }
-    .album-top .ref-grid .card.preview,
-    .album-top .blank-grid .card.preview { width: 100%; }
-    .album-top .gloss-examples {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 0;
-    }
-    .album-top .gloss-examples .card.preview {
-      width: 100px;
-      max-width: 100px;
-      flex: 0 0 auto;
-    }
+    .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
       width: auto;
@@ -4155,15 +4142,15 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-metal-red-gloss.png?v=1"); }
-    .card .card-fit.k-block { --frame-img: url("frame-metal-blue-gloss.png?v=1"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow-gloss.png?v=1"); }
-    .card .card-fit.k-power { --frame-img: url("frame-metal-green-gloss.png?v=1"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
+    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
+    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
+    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
-    .card .card-fit.k-foe { --frame-img: url("frame-metal-navy-gloss.png?v=1"); }
+    .card .card-fit.k-foe { --frame-img: url("frame-metal-navy.png?v=4"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
@@ -12209,7 +12196,10 @@
       if (face) {
         return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`, false);
       }
-      const style = CARD_STYLE.find((item) => item[0] === name);
+      const style = CARD_STYLE.find((item) => item[0] === name)
+        || CARD_STYLE_GLOSS.find((item) => item[0] === name)
+        || CARD_STYLE_PLATE_SILVER.find((item) => item[0] === name)
+        || CARD_STYLE_PLATE_GOLD.find((item) => item[0] === name);
       if (style) {
         const title = styleLabel(style[0], style[1]);
         return zoomSidePanel(title, `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(title)}"></div>`, false);
@@ -12404,9 +12394,15 @@
               <section>
                 <h3>カードスタイル</h3>
                 <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
-                <h3>光沢枠（採用）の例</h3>
-                <p class="album-meta">名札を濃くして上に光沢を足した枠を、ゲーム内のカードにも採用。下はジャンル別の例（5枚）。</p>
-                <div class="deck-cards gloss-examples">${glossExampleCardsMarkup()}</div>
+                <h3>光沢案</h3>
+                <p class="album-meta">名札を濃くして、上に光沢を足した案。今のカードには使っていない</p>
+                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_GLOSS)}</div>
+                <h3>名札・銀</h3>
+                <p class="album-meta">枠はジャンルの色のまま。名札だけ銀。今のカードには使っていない</p>
+                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_PLATE_SILVER)}</div>
+                <h3>名札・金</h3>
+                <p class="album-meta">枠はジャンルの色のまま。名札だけ金。今のカードには使っていない</p>
+                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_PLATE_GOLD)}</div>
               </section>
               <section>
                 <h3>裏面</h3>
@@ -12739,25 +12735,37 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-metal-red-gloss.png?v=1"],
-      ["style-blue", "ブロック", "frame-metal-blue-gloss.png?v=1"],
-      ["style-yellow", "スキル", "frame-metal-yellow-gloss.png?v=1"],
-      ["style-green", "アイテム", "frame-metal-green-gloss.png?v=1"],
-      ["style-navy", "紺", "frame-metal-navy-gloss.png?v=1"],
+      ["style-red", "アタック", "frame-metal-red.png?v=7"],
+      ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
+      ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
+      ["style-green", "アイテム", "frame-metal-green.png?v=5"],
+      ["style-navy", "紺", "frame-metal-navy.png?v=4"],
     ];
-    const GLOSS_EXAMPLE_NAMES = ["アタック", "ブロック", "チャージアタック", "怒り", "臆病者の構え"];
-    function glossExampleCard(name) {
-      const def = CARDS[name] || WARRIOR[name] || COMMON[name] || {};
-      return { name, ...def };
-    }
-    function glossExampleCardsMarkup() {
-      return GLOSS_EXAMPLE_NAMES.map((name) => {
-        const card = glossExampleCard(name);
-        const on = albumZoom === name;
-        return `<button type="button" class="card preview ${cardKind(card)} album-card${on ? " on" : ""}" data-art-zoom="${esc(name)}" aria-label="${esc(name)}のカードを拡大" aria-pressed="${on ? "true" : "false"}">${cardFace(card, false)}</button>`;
-      }).join("");
-    }
+    const CARD_STYLE_GLOSS = [
+      ["style-red-gloss", "アタック", "frame-metal-red-gloss.png?v=1"],
+      ["style-blue-gloss", "ブロック", "frame-metal-blue-gloss.png?v=1"],
+      ["style-yellow-gloss", "スキル", "frame-metal-yellow-gloss.png?v=1"],
+      ["style-green-gloss", "アイテム", "frame-metal-green-gloss.png?v=1"],
+      ["style-navy-gloss", "紺", "frame-metal-navy-gloss.png?v=1"],
+    ];
+    const CARD_STYLE_PLATE_SILVER = [
+      ["style-red-plate-silver", "アタック", "frame-metal-red-plate-silver.png?v=1"],
+      ["style-blue-plate-silver", "ブロック", "frame-metal-blue-plate-silver.png?v=1"],
+      ["style-yellow-plate-silver", "スキル", "frame-metal-yellow-plate-silver.png?v=1"],
+      ["style-green-plate-silver", "アイテム", "frame-metal-green-plate-silver.png?v=1"],
+      ["style-navy-plate-silver", "紺", "frame-metal-navy-plate-silver.png?v=1"],
+    ];
+    const CARD_STYLE_PLATE_GOLD = [
+      ["style-red-plate-gold", "アタック", "frame-metal-red-plate-gold.png?v=1"],
+      ["style-blue-plate-gold", "ブロック", "frame-metal-blue-plate-gold.png?v=1"],
+      ["style-yellow-plate-gold", "スキル", "frame-metal-yellow-plate-gold.png?v=1"],
+      ["style-green-plate-gold", "アイテム", "frame-metal-green-plate-gold.png?v=1"],
+      ["style-navy-plate-gold", "紺", "frame-metal-navy-plate-gold.png?v=1"],
+    ];
     function styleLabel(id, name) {
+      if (id.indexOf("plate-silver") >= 0) return `銀の名札・${name}`;
+      if (id.indexOf("plate-gold") >= 0) return `金の名札・${name}`;
+      if (id.indexOf("gloss") >= 0) return `光沢案の${name}`;
       return name;
     }
     const ALBUM_FACE = [
