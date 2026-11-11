@@ -3401,14 +3401,21 @@
     .gear-effect-chiprow {
       display: flex;
       flex-direction: row;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: flex-end;
       gap: 8px;
       width: 100%;
       min-height: 32px;
+      white-space: nowrap;
     }
     .gear-effect-chiprow .gear-effect-stats {
       display: contents;
+    }
+    .gear-effect-chiprow > span.atk,
+    .gear-effect-chiprow > span.def {
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
     .gear-effect-slotico {
       display: flex;
@@ -8172,10 +8179,23 @@
       return raw;
     }
 
-    function gearPopWidthPx(label) {
+    function gearChipRowMinPx(item, boon) {
+      if (boon) return 0;
+      let w = 36;
+      if (!item) return w;
+      let chips = 0;
+      if (item.atk && !gearAtkInTrait(item)) chips += 1;
+      if (item.def) chips += 1;
+      w += chips * 78 + Math.max(0, chips - 1) * 6;
+      return w;
+    }
+
+    function gearPopWidthPx(label, item, boon) {
       const chars = [...String(label || "")].length;
-      const meta = Math.max(88, Math.min(232, 18 + chars * 15));
-      return Math.min(348, Math.max(168, 84 + 10 + meta + 22));
+      const nameW = Math.max(88, Math.min(240, 18 + chars * 15));
+      const chipW = gearChipRowMinPx(item, boon);
+      const meta = Math.max(nameW, chipW);
+      return Math.min(380, Math.max(180, 84 + 12 + meta + 24));
     }
 
     function gearPopShell(slotId, opts) {
@@ -8207,7 +8227,7 @@
         body = `<p class="${bodyClass}">${bodyLine.text ? esc(bodyLine.text) : ""}</p>`;
       }
       const emb = embedded ? " gear-effect-embedded" : "";
-      const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName)}px"`;
+      const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
       return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
