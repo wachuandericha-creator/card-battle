@@ -6929,7 +6929,7 @@
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, text: "パリィをすべて消費\n消費した数×15ダメージ", kind: "attack", finisher: true },
-      シールドアタック: { cost: 2, text: "ブロックの数だけダメージ", kind: "attack", press: true },
+      シールドアタック: { cost: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
@@ -6969,7 +6969,7 @@
         rank: "雑魚",
         hp: 22,
         pattern: [
-          { name: "シールドアタック", cost: 2, text: "ブロックの数だけダメージ\nブロックがなければ0", press: true },
+          { name: "シールドアタック", cost: 2, text: "自分のシールドの数だけダメージ", press: true },
           { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
           { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
           { name: "ハードブロック", cost: 2, text: "ブロック7", block: 7, kind: "block" },
@@ -11883,7 +11883,10 @@
       if (!card || !usesStrike(card)) return null;
       const atk = foe ? 0 : (player && player.atk) || 0;
       const focus = foe ? 0 : focusLeftFor(card, fromHand);
-      if (card.press) return [Math.max(0, (player && player.block) || 0)];
+      if (card.press) {
+        const shield = foe ? (enemy && enemy.block) || 0 : (player && player.block) || 0;
+        return [Math.max(0, shield)];
+      }
       if (card.finisher) return [parryCount(player) * 15];
       if (card.counter) {
         const reds = (inPlay || []).filter((item) => cardKind(item) === "attack").length;
@@ -11941,7 +11944,7 @@
             text = text.replace(/\d+ダメージを\d+回/u, `${hits.join("+")}ダメージ`);
           }
         } else if (card.press) {
-          text = text.replace(/ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
+          text = text.replace(/自分のシールドの数だけダメージ|ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
         } else if (card.finisher) {
           text = text.replace(/パリィをすべて消費\n消費した数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
         } else if (card.redTimes) {
