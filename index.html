@@ -1932,6 +1932,13 @@
       pointer-events: none;
       filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.7));
     }
+    .cast-card-pop.cast-card-pop--enlarge {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, 72vw);
+      pointer-events: auto;
+    }
     .cast-card-pop .card.preview { width: 100%; height: auto; }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
     .cast-roster {
@@ -4063,6 +4070,13 @@
       text-decoration: none;
       color: #9a3412;
     }
+    .card .text .hint[data-word="毒"] { color: #7b3fb0; }
+    .card .text .hint[data-word="炎上"] { color: #c0392b; }
+    .card .text .hint[data-word="パリィ"] { color: #2f6fbe; }
+    .card .text .hint[data-word="クイック"],
+    .card .text .hint[data-word="戦闘中"],
+    .card .text .hint[data-word="永続"] { color: #a67c00; }
+    .card .text .hint[data-word="アイテム"] { color: #2f7a45; }
     /* 注釈の本文はカードの中には出さない（カードの外の .kw-tip に写す） */
     .hint i { display: none; }
     .kw-tip {
@@ -6375,7 +6389,7 @@
       z-index: 1;
     }
     .cast-screen.character-focus .cast-deck .deck-card:hover {
-      z-index: 3;
+      z-index: 1;
     }
     .cast-screen.character-focus .cast-deck .card,
     .cast-screen.character-focus .cast-deck .card:hover,
@@ -9505,9 +9519,54 @@
         return;
       }
       if (card.finisher) {
-        const stacks = parryCount(player);
-        player.parry = 0;
-        strike(card, stacks * 15);
+        const hist = Array.isArray(player.parryHist) ? player.parryHist : [];
+        const turns = hist.reduce((sum, ok) => sum + (ok ? 1 : 0), 0);
+        strike(card, turns * 15);
+        return;
+      }
+      if (card.parryAdd) {
+        gainParry(card, card.parryAdd);
+        return;
+      }
+      if (card.knife) {
+        player.knifeReflect = true;
+        gainParry(card);
+        return;
+      }
+      if (card.masterOnce) {
+        if (player.masterOnce) {
+          log(`${heroName()}は${card.name}。この戦闘では、もう使えない。`, card);
+          return;
+        }
+        player.masterOnce = true;
+        const gain = restoreHp(card.heal || 10);
+        log(gain ? `${heroName()}は${card.name}で${gain}回復。` : `${heroName()}は${card.name}。体力は満タン。`, card);
+        gainParry(card);
+        return;
+      }
+      if (card.magicParry) {
+        player.magicParry = true;
+        log(`${heroName()}は${card.name}。この戦闘中、パリィ中は状態異常にならない。`, card);
+        return;
+      }
+      if (card.pride) {
+        player.pride = true;
+        log(`${heroName()}は${card.name}。この戦闘中、パリィに成功するたびATK+1。`, card);
+        return;
+      }
+      if (card.shave) {
+        player.shave = Number(card.shave) || 3;
+        log(`${heroName()}は${card.name}。この戦闘中、パリィに成功するたび相手のDEF-${player.shave}。`, card);
+        return;
+      }
+      if (card.step) {
+        if (!player.parryLast) {
+          log(`${heroName()}は${card.name}。前のターンはパリィが成功していない。`, card);
+          return;
+        }
+        const before = hand.length;
+        draw(2);
+        log(`${heroName()}は${card.name}で${hand.length - before}枚引いた。`, card);
         return;
       }
       if (card.focus) {
@@ -9575,6 +9634,10 @@
         if (card.kick && enemy.block > 0) bonus += card.kick;
         const atk = player.atk || 0;
         strike(card, rollCrit(card, card.damage) + added + atk + bonus);
+        if (card.doubleNext) {
+          player.doubleNext = true;
+          log(`${heroName()}は次に受ける攻撃が2倍。`, card);
+        }
       }
       if (card.burn && !card.burnFirst) {
         addBurn(enemy, card.burn);
@@ -9599,6 +9662,7 @@
       if (card.headbutt && !inPlay.length) return false;
       if (card.halfOnly && !hpHalf(player)) return false;
       if (card.fullOnly && player.hp < player.maxHp) return false;
+      if (card.step && !player.parryLast) return false;
       return true;
     }
 
@@ -9619,6 +9683,11 @@
       }
       if (card.fullOnly && player.hp < player.maxHp) {
         note = "体力が満タンのときだけ使える";
+        render();
+        return false;
+      }
+      if (card.step && !player.parryLast) {
+        note = "前のターンにパリィが成功したときだけ使える";
         render();
         return false;
       }
@@ -9728,7 +9797,7 @@
     function afterUsePile(card) {
       if (!card) return "discard";
       if (card.keep) return "keep";
-      if (card.power || card.instant || card.during || card.permanent || card.kind === "power") return "exile";
+      if (card.masterOnce || card.power || card.instant || card.during || card.permanent || card.kind === "power") return "exile";
       return "discard";
     }
 
@@ -10326,6 +10395,15 @@
       logTurn("player");
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
+      if (turn > 1) {
+        const ok = !!player.parryHitThis;
+        player.parryLast = ok;
+        const hist = Array.isArray(player.parryHist) ? player.parryHist.slice() : [];
+        hist.push(ok ? 1 : 0);
+        player.parryHist = hist.slice(-3);
+      }
+      player.parryHitThis = false;
+      player.knifeReflect = false;
       if (parryCount(player) > 0) {
         player.parry = 0;
         log(`${heroName()}のパリィが、ターンの終わりに消失した。`);
@@ -10773,6 +10851,15 @@
         player.guardThrough = !!player.guardThrough;
         player.extraDraw = Math.max(0, Number(player.extraDraw) || 0);
         player.poison = poisonStacks(player);
+        if (!Array.isArray(player.parryHist)) player.parryHist = [];
+        player.parryHitThis = !!player.parryHitThis;
+        player.parryLast = !!player.parryLast;
+        player.knifeReflect = !!player.knifeReflect;
+        player.doubleNext = !!player.doubleNext;
+        player.magicParry = !!player.magicParry;
+        player.pride = !!player.pride;
+        player.shave = Math.max(0, Number(player.shave) || 0);
+        player.masterOnce = !!player.masterOnce;
       }
       if (enemy) {
         enemy.hit = false;
@@ -10783,7 +10870,8 @@
         enemy.name = enemyKey(enemy.name);
         const foe = enemyByName(enemy.name);
         enemy.atk = hiddenAtk(foe) + enemy.anger;
-        enemy.def = hiddenDef(foe) - enemy.anger;
+        enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
+        syncEnemyDef();
         if (enemy.maxHp !== foe.hp) {
           enemy.maxHp = foe.hp;
           if (enemy.hp > foe.hp) enemy.hp = foe.hp;
@@ -10831,7 +10919,8 @@
         enemy.image = foe.image;
         enemy.anger = Math.max(0, Number(enemy.anger) || 0);
         enemy.atk = hiddenAtk(foe) + enemy.anger;
-        enemy.def = hiddenDef(foe) - enemy.anger;
+        enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
+        syncEnemyDef();
       }
       restoreEnemyLoop(data);
       invalidateFoeAct();
@@ -10872,11 +10961,11 @@
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
       battleStartHp = hp;
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0 };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0, parryHist: [], parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, rallied: false, hit: false };
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -11798,7 +11887,7 @@
       bindCastGearHover();
     }
 
-    function showCastCard(button) {
+    function showCastCard(button, enlarge = false) {
       const name = button.dataset.card || "";
       const old = root.querySelector(".cast-card-pop");
       if (old && old.dataset.card === name) return;
@@ -11807,10 +11896,11 @@
       if (!def) return;
       const card = { name, ...def };
       const pop = document.createElement("div");
-      pop.className = "cast-card-pop";
+      pop.className = `cast-card-pop${enlarge ? " cast-card-pop--enlarge" : ""}`;
       pop.dataset.card = name;
       pop.innerHTML = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
       root.appendChild(pop);
+      if (enlarge) return;
       const rect = button.getBoundingClientRect();
       const width = pop.offsetWidth || 440;
       const height = pop.offsetHeight || Math.round(width * (4 / 3));
@@ -11832,6 +11922,31 @@
       if (!deck) return;
       if (deck.dataset.deckBound === "1") return;
       deck.dataset.deckBound = "1";
+      const focus = deck.closest(".cast-screen.character-focus");
+      if (focus) {
+        if (!root.dataset.castDeckDismissBound) {
+          root.dataset.castDeckDismissBound = "1";
+          root.addEventListener("click", (event) => {
+            const pop = root.querySelector(".cast-card-pop");
+            if (!pop) return;
+            const el = event.target;
+            if (el instanceof Element && (el.closest(".cast-card-pop") || el.closest(".cast-deck .deck-card"))) return;
+            hideCastCardPop();
+          });
+        }
+        deck.addEventListener("click", (event) => {
+          const button = event.target instanceof Element ? event.target.closest(".deck-card") : null;
+          if (!button || !deck.contains(button)) return;
+          event.stopPropagation();
+          const pop = root.querySelector(".cast-card-pop");
+          if (pop && pop.dataset.card === (button.dataset.card || "")) {
+            hideCastCardPop();
+            return;
+          }
+          showCastCard(button, true);
+        });
+        return;
+      }
       deck.addEventListener("pointerover", (event) => {
         const button = event.target instanceof Element ? event.target.closest(".deck-card") : null;
         if (!button || !deck.contains(button)) return;
@@ -12037,7 +12152,7 @@
       const push = (name, data, klass) => {
         if (!name || seen.has(name)) return;
         seen.add(name);
-        list.push({ name, klass, stars: data.stars || 1, ...data });
+        list.push({ name, klass, ...data, stars: data.unrated ? 0 : (data.stars || 1) });
       };
       for (const [name, data] of Object.entries(CARDS)) push(name, data, "基本");
       for (const [name, data] of Object.entries(WARRIOR)) push(name, data, "戦士");
@@ -12675,7 +12790,11 @@
         const shield = foe ? (enemy && enemy.block) || 0 : (player && player.block) || 0;
         return [Math.max(0, shield)];
       }
-      if (card.finisher) return [parryCount(player) * 15];
+      if (card.finisher) {
+        const hist = (player && player.parryHist) || [];
+        const turns = hist.reduce((sum, ok) => sum + (ok ? 1 : 0), 0);
+        return [turns * 15];
+      }
       if (card.counter) {
         const reds = (inPlay || []).filter((item) => cardKind(item) === "attack").length;
         return reds ? null : [card.counter];
@@ -12737,7 +12856,7 @@
         } else if (card.press) {
           text = text.replace(/自分のシールドの数だけダメージ|ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
         } else if (card.finisher) {
-          text = text.replace(/パリィをすべて消費\n消費した数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
+          text = text.replace(/直前3ターンで、パリィが成功したターンの数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
         } else if (card.redTimes) {
           text = text.replace(/プレイエリアの赤いカードの数×\d+ダメージ/u, `${dmg}ダメージ`);
         } else if (card.counter) {
@@ -13224,6 +13343,15 @@
       if (card.guardBreak) next.guardBreak = true;
       if (card.fullOnly) next.fullOnly = true;
       if (card.finisher) next.finisher = true;
+      if (card.knife) next.knife = true;
+      if (card.parryAdd) next.parryAdd = card.parryAdd;
+      if (card.doubleNext) next.doubleNext = true;
+      if (card.masterOnce) next.masterOnce = true;
+      if (card.magicParry) next.magicParry = true;
+      if (card.pride) next.pride = true;
+      if (card.shave) next.shave = card.shave;
+      if (card.step) next.step = true;
+      if (card.unrated) next.unrated = true;
       if (card.coward) next.coward = true;
       if (card.note) next.note = card.note;
       if (card.hits) next.hits = card.hits;
@@ -13240,7 +13368,7 @@
       if (card.halfOnly) next.halfOnly = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
-      next.stars = card.stars || 1;
+      next.stars = card.unrated ? 0 : (card.stars || 1);
       return next;
     }
 
