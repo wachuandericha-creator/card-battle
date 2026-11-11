@@ -760,20 +760,17 @@
     .battle-plate .shield-badge b {
       position: relative;
       z-index: 1;
-      margin-top: -16px;
-      font-size: 28px;
+      margin-top: -8px;
+      font-size: 46px;
       font-weight: 900;
       line-height: 1;
       font-variant-numeric: tabular-nums;
       color: #ffffff;
-      -webkit-text-stroke: 1px rgba(8, 16, 28, 0.55);
+      -webkit-text-stroke: 4px #071018;
+      paint-order: stroke fill;
       text-shadow:
-        0 0 2px #0a1520,
-        0 2px 0 #0a1520,
-        0 -1px 0 #0a1520,
-        1px 0 0 #0a1520,
-        -1px 0 0 #0a1520,
-        0 0 10px rgba(0, 0, 0, 0.75);
+        0 3px 0 #071018,
+        0 0 2px #071018;
       letter-spacing: 0;
     }
     .battle-plate .hp-line {
@@ -2732,8 +2729,8 @@
     }
     .mana-read {
       position: relative;
-      width: 96px;
-      height: 96px;
+      width: 112px;
+      height: 112px;
       display: grid;
       place-items: center;
       padding: 0;
@@ -2742,19 +2739,20 @@
       filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
     }
     .mana-read b {
-      width: 84px;
-      height: 84px;
+      width: 96px;
+      height: 96px;
       display: grid;
       place-items: center;
       border-radius: 50%;
-      font-size: 52px;
+      font-size: 64px;
       line-height: 1;
       font-weight: 900;
-      color: #fff;
-      -webkit-text-stroke: 2px #1a0806;
-      text-shadow: 0 2px 0 #1a0806, 0 0 8px #1a0806;
+      color: #fffdf6;
+      -webkit-text-stroke: 5px #140806;
+      paint-order: stroke fill;
+      text-shadow: 0 3px 0 #140806, 0 0 2px #140806;
       background:
-        radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
+        radial-gradient(circle at 50% 42%, #2a0c08 0 34%, #ffb15a 42%, #e23a18 58%, #7a140c 78%, #2a0a08 100%);
       box-shadow:
         inset 0 0 0 3px rgba(255, 220, 160, 0.35),
         inset 0 -12px 16px rgba(0, 0, 0, 0.45),
@@ -4849,12 +4847,30 @@
       overflow: hidden;
     }
     .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
-    .menu.event.shop {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        "title"
-        "choice";
+    .menu.event.shop .event-choice {
+      justify-content: flex-start;
+      overflow: hidden;
+      min-height: 0;
+      padding: 8px 12px 12px;
     }
+    .menu.event.shop .shop-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      min-height: 0;
+      gap: 10px;
+    }
+    .menu.event.shop .shop-slot {
+      width: auto;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: rgba(32, 22, 14, 0.94);
+    }
+    .menu.event.shop .shop-slot .card.preview { width: min(100%, 180px); }
+    .menu.event.shop .shop-slot .gear-effect { width: 100%; }
+    .menu.event.shop .shop-slot .gear-effect-art { width: 64px; height: 64px; }
+    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 64px 1fr; }
     .event-drawers {
       position: fixed;
       z-index: 40;
@@ -4918,12 +4934,12 @@
       color: #fff3c4;
     }
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
-    .menu.event.shop .event-choice { justify-content: flex-start; overflow: auto; padding: 8px 12px 12px; }
+    .menu.event.shop .event-choice { justify-content: flex-start; overflow: hidden; padding: 8px 12px 12px; }
     .menu.event.shop .shop-row {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       width: 100%;
-      gap: 14px;
+      gap: 10px;
     }
     .menu.event.shop .shop-slot { width: auto; min-width: 0; background: rgba(32, 22, 14, 0.94); }
     .menu.event.shop .shop-slot .card.preview { width: 100%; }
@@ -5045,9 +5061,6 @@
         grid-template-areas: "title" "picture" "choice";
         height: 100%;
         overflow: hidden;
-      }
-      .menu.event.shop {
-        grid-template-areas: "title" "choice";
       }
       .menu.event.shop .shop-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .menu.event .event-picture { height: auto; max-height: 36vh; }
@@ -6390,7 +6403,7 @@
       アタック: "card-attack-f.jpg?v=9",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=10",
-      パリィ: "card-parry.jpg?v=5",
+      パリィ: "card-parry.jpg?v=6",
       捨て身の一撃: "",
       怒り: "",
       パリィスラッシュ: "",
@@ -6664,7 +6677,7 @@
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=12",
-        victory: "girl-victory.jpg?v=21",
+        victory: "girl-victory.jpg?v=22",
         bless: "event-bless.jpg?v=2",
       },
     ];
@@ -7039,6 +7052,24 @@
       const blessing = route[0] === "出来事:祝福";
       dungeonFloors = floors || dungeonFloors || floorsOf(dungeonName);
       floorAt = route.map((_, i) => Math.min(dungeonFloors, blessing ? i : i + 1));
+      clampBlessingNext();
+    }
+
+    // 祝福0の次が2に飛ぶ古い番号を、1から数え直す。10のお店と最後のボスは元の階に戻す。
+    function clampBlessingNext() {
+      if (!route.length || route[0] !== "出来事:祝福" || floorAt.length !== route.length) return;
+      floorAt[0] = 0;
+      const jump = Number(floorAt[1]) - 1;
+      if (!(jump > 0)) return;
+      const shop = route.findIndex((node, i) => i > 1 && node === "出来事:お店" && Number(floorAt[i]) >= 10);
+      for (let i = 1; i < floorAt.length; i++) floorAt[i] = Math.max(1, Number(floorAt[i]) - jump);
+      if (shop > 0 && floorAt[shop] < 10) {
+        const back = 10 - floorAt[shop];
+        floorAt[shop] = 10;
+        for (let i = shop + 1; i < floorAt.length; i++) floorAt[i] = Math.min(dungeonFloors, Number(floorAt[i]) + back);
+      }
+      const boss = route.lastIndexOf(DUNGEON.boss);
+      if (boss > 0) floorAt[boss] = dungeonFloors;
     }
     function floorNo() {
       if (floorAt && battleIndex >= 0 && battleIndex < floorAt.length && floorAt[battleIndex] != null && !Number.isNaN(Number(floorAt[battleIndex]))) {
@@ -7058,7 +7089,7 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=6", label: "祝福" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=7", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=8", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
@@ -7075,7 +7106,7 @@
       const num = floorAt[index] != null ? floorAt[index] : index;
       if (name === "出来事:祝福" || name === "出来事:ジョブ" || name === DUNGEON.boss) return true;
       if (num === 10 && name === "出来事:お店") return true;
-      return index === 1 && route[0] === "出来事:祝福";
+      return false;
     }
 
     function roadMapHtml() {
@@ -8380,7 +8411,7 @@
       const card = hand[index];
       if (!card) return false;
       if (player.energy < card.cost) {
-        note = "なにをやっている！　マナが足りないぞ!!";
+        note = "";
         fxNoMana = true;
         render();
         return false;
@@ -9505,6 +9536,7 @@
       if (Array.isArray(data.floorAt) && data.floorAt.length === route.length) {
         dungeonFloors = Number(data.dungeonFloors) || floorsOf(dungeonName);
         floorAt = data.floorAt.map((n) => Number(n) || 0);
+        clampBlessingNext();
       } else {
         rememberFloors(Number(data.dungeonFloors) || floorsOf(dungeonName));
       }
@@ -9900,7 +9932,7 @@
       floorNote = "";
       floorPrompt = "";
       floorPhase = "show";
-      eventFloorCall = true;
+      eventFloorCall = false;
       floorGift = null;
       blessPicks = [];
       beggarCut = false;
@@ -10756,7 +10788,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=21", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=22", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10800,7 +10832,7 @@
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=8", "探索")}
-              ${sheetFig("path-bless.jpg?v=6", "祝福")}
+              ${sheetFig("path-bless.jpg?v=7", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-boss.jpg?v=1", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=5", "物乞い")}
@@ -10814,13 +10846,13 @@
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-search.jpg?v=12", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=13", "探索", "land-ref", "span-2")}
               ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
               ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=8", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=9", "休憩", "land-ref", "span-2")}
               ${sheetFig("event-job.jpg?v=13", "ジョブ", "land-ref", "span-2")}
-              ${sheetFig("event-train.jpg?v=4", "修行", "land-ref", "span-2")}
+              ${sheetFig("event-train.jpg?v=5", "修行", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -11017,11 +11049,11 @@
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
         "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
-        "探索": ["event-search.jpg?v=12", "今まさに宝箱を開けようとして、目がキラキラし、よだれを垂らしている"],
-        "休憩": ["event-rest.jpg?v=8", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
+        "探索": ["event-search.jpg?v=13", "宝箱の蓋は戦士のほうへ開く"],
+        "休憩": ["event-rest.jpg?v=9", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
-        "修行": ["event-train.jpg?v=4", "上から見下ろし、汗をかいて左手でガッツポーズ"],
+        "修行": ["event-train.jpg?v=5", "カメラは上を過ぎ、顔は少しやわらかい"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -11045,7 +11077,7 @@
       const title = `<h1>${esc(floorKind)}<small>現在 ${floorNo()}Ｆ</small></h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
-      const picture = art && !shopMode ? art : "";
+      const picture = art || "";
         root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${eventToolsHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>${deckOverlay()}`;
       runEntrance = false;
     }
@@ -11401,8 +11433,9 @@
       </div>`;
     }
 
-    function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow) {
+    function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow, noManaNow) {
       const calls = [];
+      if (noManaNow) calls.push(`<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`);
       if (floorCall) calls.push(`<div class="turn-call floor-call" aria-hidden="true"><b>${floorNo()}Ｆ</b></div>`);
       else if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars">${esc(foeStarText())}</span></div>`);
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
@@ -11703,7 +11736,7 @@
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=6" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=3" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=6" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=7" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
@@ -12062,20 +12095,24 @@
         const sold = slot.sold ? " sold" : "";
         const limited = slot.limited ? " limited" : "";
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
-        const fx = rareFx(lv);
+        const fx = "";
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div>${rareCaption(slot.card)}<span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
           const item = slot.gear;
-          const art = item.image ? `<img src="${esc(item.image)}" alt="">` : "";
-          const face = `<div class="shop-gear-card">${art}<b>${esc(item.name || "")}</b><p>${esc(gearEffectPlain(item))}</p></div>`;
-          return `<div class="shop-slot${sold}${limited}${rareClass(lv)}"${rareStyle(lv, index)}>${fx}${ribbon}${face}${rareCaption(item)}<span>${esc(tag)}</span>${action}</div>`;
+          const face = gearPopShell(item.slot || "sword", {
+            name: item.name || "",
+            image: item.image || "",
+            rarity: gearRarityText(item),
+            body: esc(gearSpecialText(item)),
+          });
+          return `<div class="shop-slot${sold}${limited}">${ribbon}${face}<span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
-      const head = heading ? `<h2>${esc(heading)}</h2><p>所持 ★${have}</p><p>品は4つ。カード2つ、装備2つ。値段はレアリティと同じ（★の数）。</p>` : `<p class="shop-have">所持 ★${have}</p>`;
-      return `${hot ? rareScreen(levels) : ""}${head}<div class="shop-row${rareJack(levels)}">${slots}</div>`;
+      const head = heading ? `<h2>${esc(heading)}</h2><p>所持 ★${have}</p><p>品は4つ。カード2つ、装備2つ。</p>` : `<p class="shop-have">所持 ★${have}</p>`;
+      return `${head}<div class="shop-row">${slots}</div>`;
     }
 
     function flyRewardCardToDeck(made) {
@@ -12184,6 +12221,7 @@
 
     function nextFloorNumber() {
       const now = floorAt[battleIndex] != null ? Number(floorAt[battleIndex]) : floorNo();
+      if (route[0] === "出来事:祝福" && Number(now) === 0) return 1;
       return Math.min(dungeonFloors, nextFixedFloor(), now + 1);
     }
 
@@ -12199,6 +12237,7 @@
         route.push(node);
         floorAt.push(mark);
         battleTotal = route.length;
+        clampBlessingNext();
         return;
       }
       const next = route[at];
@@ -12207,10 +12246,12 @@
         route.splice(at, 0, node);
         floorAt.splice(at, 0, mark);
         battleTotal = route.length;
+        clampBlessingNext();
         return;
       }
       route[at] = node;
       floorAt[at] = mark;
+      clampBlessingNext();
     }
 
     function applyPath(id) {
@@ -12605,7 +12646,7 @@
               ${foePileMarkup()}
               <div class="foe-peek" hidden><h3>敵の山札</h3><p>残りの中から、無作為に1枚使う。</p><ol>${sortedCards(sourcePattern()).map((card) => `<li><b>${esc(String(card.cost))}</b><span>${esc(card.name)}</span></li>`).join("") || "<li>なし</li>"}</ol></div>
             </div>
-            ${stageFxMarkup(encounter, turnNow, fatalNow, hurtNow, hitNow, hitPow)}
+            ${stageFxMarkup(encounter, turnNow, fatalNow, hurtNow, hitNow, hitPow, noManaNow)}
             </div>
           </div>
           </div>
