@@ -5103,6 +5103,38 @@
       filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.4));
     }
     .menu p { margin: 0; color: #fff6e4; font-size: 22px; font-weight: 700; line-height: 1.6; text-align: center; }
+    .settings-events {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+      gap: 10px;
+      width: min(760px, 100%);
+      margin: 12px 0 6px;
+      text-align: left;
+    }
+    .settings-events h2 {
+      grid-column: 1 / -1;
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #ffe08a;
+      text-align: center;
+    }
+    .settings-events .settings-note {
+      grid-column: 1 / -1;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.55;
+      color: rgba(255, 236, 210, 0.88);
+      text-align: center;
+    }
+    .settings-events button {
+      width: 100%;
+      min-width: 0;
+      padding: 10px 12px;
+      font-size: 17px;
+    }
     .pass-box { display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(440px, 100%); }
     .pass-box input {
       width: 100%;
@@ -7394,6 +7426,16 @@
     const SAVE_KEY = "card-battle-save-v1";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
+    const OPTION_EVENT_KINDS = [
+      ["祝福", "挑戦者に祝福を"],
+      ["探索", "探索"],
+      ["キャンプ", "休憩"],
+      ["お店", "お店"],
+      ["物乞い", "物乞いに遭遇"],
+      ["修行", "修行"],
+      ["ジョブ", "ジョブ"],
+      ["未知", "未知（ランダム）"],
+    ];
     const META_KEY = "card-battle-meta-v1";
     const ACCOUNT_KEY = "card-battle-account-v1";
     const BATTLE_TOTAL = 3;
@@ -10796,9 +10838,14 @@
       return `戦士${w}と魔法使い${m}`;
     }
 
-    function openFloor(keepHp) {
+    function enterFloorScreen() {
+      screen = "floor";
+      render();
+      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+    }
+
+    function beginFloorEvent(kind, keepHp) {
       floorHp = keepHp == null ? runMaxHp() : Math.min(runMaxHp(), keepHp);
-      const kind = String(route[battleIndex] || "").slice("出来事:".length);
       floorKind = kind;
       floorNote = "";
       floorPrompt = "";
@@ -10807,6 +10854,7 @@
       floorGift = null;
       blessPicks = [];
       beggarCut = false;
+      beggarPick = -1;
       ultimatePicks = [];
       if (kind === "祝福") {
         floorKind = "挑戦者に祝福を";
@@ -10872,9 +10920,22 @@
         floorNote = "光る紋章の前に立つと、別の戦い方が見えてきた。";
         floorPrompt = `いまのジョブは${job}。カードは捨てない。ジョブを1つ選ぶ。`;
       }
-      screen = "floor";
-      render();
-      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+    }
+
+    function openFloor(keepHp) {
+      const kind = String(route[battleIndex] || "").slice("出来事:".length);
+      beginFloorEvent(kind, keepHp);
+      enterFloorScreen();
+    }
+
+    function optionEventActive() {
+      return !!player && returnScreen === "battle" && screen === "settings";
+    }
+
+    function launchOptionEvent(kind) {
+      if (!kind || !player) return;
+      beginFloorEvent(kind, player.hp);
+      enterFloorScreen();
     }
 
     function playBlessArrive() {
@@ -11200,6 +11261,9 @@
       const medalBtn = inBattle
         ? menuButton("メダルを10個にする（見た目確認）", "medal-look", true)
         : `<button type="button" disabled>メダルを10個にする（見た目確認・戦闘中のみ）</button>`;
+      const eventBlock = optionEventActive()
+        ? `<div class="settings-events"><h2>イベントを起こす</h2>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
+        : `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">攻略中の戦闘画面から開いたときだけ使えます。</p></div>`;
       root.innerHTML = `
         <div class="menu">
           <h1>オプション</h1>
@@ -11207,6 +11271,7 @@
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
           ${handBtn}
           ${medalBtn}
+          ${eventBlock}
           ${menuButton("もどる", "back")}
         </div>`;
     }
@@ -13941,6 +14006,10 @@
             screen = "battle";
             render();
           }
+          return;
+        }
+        if (name === "option-event") {
+          launchOptionEvent(action.dataset.eventKind || "");
           return;
         }
         if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
