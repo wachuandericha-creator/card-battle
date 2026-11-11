@@ -67,7 +67,7 @@
         "road hand";
     }
     .game { display: contents; }
-    .hud-top { grid-area: hud; min-width: 0; overflow: hidden; }
+    .hud-top { grid-area: hud; min-width: 0; overflow: visible; }
     .battle-bands {
       grid-area: arena;
       position: relative;
@@ -338,6 +338,7 @@
     .hud-actions {
       grid-column: 3;
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       align-items: stretch;
       justify-content: flex-end;
@@ -4660,6 +4661,14 @@
       gap: 14px;
       padding: 24px;
     }
+    .menu.settings-screen {
+      box-sizing: border-box;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(28px, env(safe-area-inset-bottom));
+    }
     /* タイトル：一枚絵は大きすぎない枠に収め、演出は残す。操作は中央下 */
     .title-screen {
       position: relative;
@@ -7427,14 +7436,14 @@
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const OPTION_EVENT_KINDS = [
-      ["祝福", "挑戦者に祝福を"],
+      ["祝福", "祝福"],
       ["探索", "探索"],
       ["キャンプ", "休憩"],
       ["お店", "お店"],
-      ["物乞い", "物乞いに遭遇"],
+      ["物乞い", "物乞い"],
       ["修行", "修行"],
       ["ジョブ", "ジョブ"],
-      ["未知", "未知（ランダム）"],
+      ["未知", "未知"],
     ];
     const META_KEY = "card-battle-meta-v1";
     const ACCOUNT_KEY = "card-battle-account-v1";
@@ -11265,7 +11274,7 @@
         ? `<div class="settings-events"><h2>イベントを起こす</h2>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
         : `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">攻略中の戦闘画面から開いたときだけ使えます。</p></div>`;
       root.innerHTML = `
-        <div class="menu">
+        <div class="menu settings-screen">
           <h1>オプション</h1>
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
@@ -12038,7 +12047,7 @@
     function eventShell(body, paths) {
       const buttons = paths
         ? ""
-        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || "<p>記録は無い。</p>"}</div></aside></div>${deckOverlay()}`;
     }
