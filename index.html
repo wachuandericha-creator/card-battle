@@ -3408,8 +3408,7 @@
       min-height: 32px;
     }
     .gear-effect-chiprow .gear-effect-stats {
-      width: auto;
-      flex: 0 1 auto;
+      display: contents;
     }
     .gear-effect-slotico {
       display: flex;
@@ -7786,7 +7785,7 @@
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=6" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
-      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
+      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=6" },
@@ -8124,10 +8123,19 @@
       return text;
     }
 
+    function gearAtkInTrait(item) {
+      return !!item && (item.atkInTrait || item.id === "lion-shield");
+    }
+
+    function gearTraitAtkLine(item) {
+      if (!item || !item.atk || !gearAtkInTrait(item)) return "";
+      return `ATK+${item.atk}`;
+    }
+
     function gearStatChips(item) {
       if (!item) return "";
       const chips = [];
-      if (item.atk) chips.push(`<span class="atk">ATK ${signed(item.atk)}</span>`);
+      if (item.atk && !gearAtkInTrait(item)) chips.push(`<span class="atk">ATK ${signed(item.atk)}</span>`);
       if (item.def) chips.push(`<span class="def">DEF ${signed(item.def)}</span>`);
       if (!chips.length) return "";
       return `<div class="gear-effect-stats">${chips.join("")}</div>`;
@@ -8145,7 +8153,12 @@
       }
       if (item) {
         const special = gearSpecialText(item);
-        if (special) return { show: true, text: special, extra: "" };
+        const traitAtk = gearTraitAtkLine(item);
+        if (special) {
+          const text = traitAtk ? `${traitAtk}　${special}` : special;
+          return { show: true, text, extra: "" };
+        }
+        if (traitAtk) return { show: true, text: traitAtk, extra: "" };
         if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
         return { show: true, text: "", extra: "empty-trait" };
       }
