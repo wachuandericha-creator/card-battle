@@ -6361,9 +6361,12 @@
       margin: 0;
       align-self: start;
       display: block;
-      pointer-events: none;
-      cursor: default;
+      pointer-events: auto;
+      cursor: pointer;
       z-index: 1;
+    }
+    .cast-screen.character-focus .cast-deck .deck-card:hover {
+      z-index: 3;
     }
     .cast-screen.character-focus .cast-deck .card,
     .cast-screen.character-focus .cast-deck .card:hover,
@@ -11676,18 +11679,13 @@
               </div>
             </div>
             <div class="cast-deck-block">
-              <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
+              <h2><span>初期デッキ</span></h2>
               <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
             </div>
           </div>
         </div>
         <aside class="cast-keys" aria-label="パリィ">
           <h2>パリィ</h2>
-          <p>次の攻撃を１回無効にする。重複不可。</p>
-          <p>ターン終了時に消失。</p>
-          <p>パリィを得ると、いま持っているシールドはすべてなくなる。表示は銀の盾から金の盾へ変わる。</p>
-          <p>パリィがある間、シールドを追加で得ることはできない。</p>
-          <p>奥義で重なれるとき、2枚目以降は金の盾に2から数字が載る。</p>
         </aside>`;
     }
 
@@ -11756,10 +11754,6 @@
     function bindDeckHover() {
       const deck = root.querySelector(".cast-deck");
       if (!deck) return;
-      if (deck.closest(".cast-screen.character-focus")) {
-        hideCastCardPop();
-        return;
-      }
       if (deck.dataset.deckBound === "1") return;
       deck.dataset.deckBound = "1";
       deck.addEventListener("pointerover", (event) => {
@@ -12180,7 +12174,7 @@
         const cap = card.deckCopies ? ` aria-label="${esc(card.name)}×${card.deckCopies}"` : ` aria-label="${esc(card.name)}のカードを拡大"`;
         return `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}"${cap} aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`;
       }).join("");
-      const starterNote = albumTab === "初期デッキ" ? "戦士10枚（種類4）　チャージアタックはこの1枚だけ　" : "";
+      const starterNote = albumTab === "初期デッキ" ? "戦士（種類4）　チャージアタックはこの1枚だけ　" : "";
       const metaLine =
         albumTab === "初期デッキ"
           ? `${starterNote}押すと右半分に全体　★${meta.stars}`
@@ -14279,7 +14273,6 @@
     function kwAnchorOf(target) {
       const el = target instanceof Element ? target : target && target.parentElement;
       if (!el) return null;
-      if (el.closest(".cast-screen.character-focus .cast-deck")) return null;
       const card = el.closest(".card");
       if (card && card.querySelector(".hint")) return card;
       const play = el.closest(".play-card");
