@@ -7497,6 +7497,7 @@
     let foeDeckEmpty = false;
     let foeRageBusy = false;
     let foeAngerShow = false;
+    let foeActGen = 0;
     let eventFloorCall = false;
     let note = "";
     let banner = "";
@@ -8788,7 +8789,28 @@
       foeDiscard = [];
       foeDeckEmpty = false;
       foeRageBusy = false;
+      foeAngerShow = false;
       chooseNextIntent();
+    }
+
+    // 戦闘をまたいで残った怒り演出を切る。山札を使い切る前の怒りは出さない。
+    function invalidateFoeAct() {
+      foeActGen += 1;
+      foeAngerShow = false;
+      foeRageBusy = false;
+      foeDrawPending = false;
+      foeDeckEmpty = false;
+      if (foeLeaveGhost && foeLeaveGhost.ghost) foeLeaveGhost.ghost.remove();
+      foeLeaveGhost = null;
+    }
+
+    function foeActLive(gen) {
+      return gen === foeActGen && !outcome && phase === "player";
+    }
+
+    // いまの山札を1枚ずつ捨て切ったあとだけ。戦闘開始時（捨て札0）は怒らない。
+    function foeDeckSpent() {
+      return !!(foeDeckEmpty && enemyLoop.length && intentIndex >= enemyLoop.length && foeDiscard.length);
     }
 
     function foeDeckRemain() {
@@ -8820,9 +8842,13 @@
     }
 
     function advanceEnemyLoop() {
-      if (enemyLoop.length && intentIndex < enemyLoop.length) foeDiscard.push({ ...enemyLoop[intentIndex] });
+      if (!(enemyLoop.length && intentIndex < enemyLoop.length)) {
+        if (foeDeckSpent() || (enemyLoop.length && intentIndex >= enemyLoop.length && foeDiscard.length)) foeDeckEmpty = true;
+        return;
+      }
+      foeDiscard.push({ ...enemyLoop[intentIndex] });
       intentIndex += 1;
-      if (!enemyLoop.length || intentIndex >= enemyLoop.length) {
+      if (intentIndex >= enemyLoop.length) {
         foeDeckEmpty = true;
         return;
       }
@@ -9980,37 +10006,40 @@
     function presentNextFoeCard() {
       timer = null;
       if (phase !== "player" || outcome) return;
-      if (foeDeckEmpty) {
+      if (!foeDeckSpent()) {
         foeDeckEmpty = false;
-        foeRageBusy = true;
-        foeAngerShow = true;
-        intentShown = true;
-        foeDrawPending = true;
-        render();
-        timer = setTimeout(() => {
-          if (outcome) return;
-          gainEnemyAnger();
-          render();
-          timer = setTimeout(() => {
-            if (outcome) return;
-            burnFoeAnger(() => {
-              if (outcome) return;
-              foeAngerShow = false;
-              intentShown = false;
-              foeDrawPending = false;
-              render();
-              flyDiscardIntoDeck(() => {
-                if (outcome) return;
-                recycleEnemyDeck();
-                foeRageBusy = false;
-                if (phase === "player") drawFoeFromDeck();
-              });
-            });
-          }, 720);
-        }, 1200);
+        foeAngerShow = false;
+        drawFoeFromDeck();
         return;
       }
-      drawFoeFromDeck();
+      const gen = foeActGen;
+      foeDeckEmpty = false;
+      foeRageBusy = true;
+      foeAngerShow = true;
+      intentShown = true;
+      foeDrawPending = true;
+      render();
+      timer = setTimeout(() => {
+        if (!foeActLive(gen)) return;
+        gainEnemyAnger();
+        render();
+        timer = setTimeout(() => {
+          if (!foeActLive(gen)) return;
+          burnFoeAnger(() => {
+            if (!foeActLive(gen)) return;
+            foeAngerShow = false;
+            intentShown = false;
+            foeDrawPending = false;
+            render();
+            flyDiscardIntoDeck(() => {
+              if (!foeActLive(gen)) return;
+              recycleEnemyDeck();
+              foeRageBusy = false;
+              if (phase === "player") drawFoeFromDeck();
+            });
+          });
+        }, 720);
+      }, 1200);
     }
 
     function finishResolve() {
@@ -10096,6 +10125,7 @@
 
     function endTurn() {
       if (phase !== "player" || outcome || foeRageBusy) return;
+      clearTimer();
       if (hasReuseBracelet()) {
         const left = Math.max(0, Number(player.energy) || 0);
         player.pendingCarry = left;
@@ -10645,6 +10675,8 @@
         enemy.def = hiddenDef(foe) - enemy.anger;
       }
       restoreEnemyLoop(data);
+      invalidateFoeAct();
+      if (enemyLoop.length && intentIndex >= enemyLoop.length && foeDiscard.length) foeDeckEmpty = true;
       heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
@@ -10670,6 +10702,7 @@
 
     function startBattle(keepHp) {
       clearTimer();
+      invalidateFoeAct();
       clearReward();
       lastFoeBlow = null;
       fxFatal = false;
@@ -11088,7 +11121,8 @@
     }
 
     function optionEventActive() {
-      return !!player && returnScreen === "battle" && screen === "settings";
+      if (!player || screen !== "settings") return false;
+      return returnScreen === "battle" || returnScreen === "floor";
     }
 
     function launchOptionEvent(kind) {
@@ -11235,6 +11269,7 @@
 
     function goTitle() {
       clearTimer();
+      invalidateFoeAct();
       askLeave = false;
       clearLive();
       clearArtZoom();
@@ -11422,7 +11457,7 @@
         : `<button type="button" disabled>メダルを10個にする（見た目確認・戦闘中のみ）</button>`;
       const eventBlock = optionEventActive()
         ? `<div class="settings-events"><h2>イベントを起こす</h2>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
-        : `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">攻略中の戦闘画面から開いたときだけ使えます。</p></div>`;
+        : `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">攻略中に戦闘またはイベント画面からオプションを開いたとき使えます。</p></div>`;
       root.innerHTML = `
         <div class="menu settings-screen">
           <h1>オプション</h1>
@@ -12623,7 +12658,8 @@
         const held = resolving && i < active;
         return playFace(card, on, true, false, i, { held });
       }).join("");
-      const foe = foeAngerShow ? foeAngerCard() : (intentShown ? intentAt(0) : null);
+      const angerNow = phase !== "intro" && foeAngerShow && foeDiscard.length > 0 && enemyLoop.length > 0 && intentIndex >= enemyLoop.length;
+      const foe = phase === "intro" ? null : (angerNow ? foeAngerCard() : (intentShown ? intentAt(0) : null));
       const foeHot = resolving && active === inPlay.length;
       const foeCard = foe ? playFace(foe, foeHot, true, true, null, { awaitDraw: foeDrawPending && !foeHot }) : "";
       return `<div class="use-board" aria-label="プレイエリア">
