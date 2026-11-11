@@ -15,6 +15,7 @@
       --gold: #d4a84a;
       --gold-soft: rgba(212, 168, 74, 0.55);
       --gold-line: rgba(212, 168, 74, 0.72);
+      --fade-line-mid: rgba(228, 177, 90, 0.75);
       --panel-face: linear-gradient(180deg, rgba(22, 18, 14, 0.98), rgba(6, 5, 4, 0.99));
       --panel-sheen: radial-gradient(120% 80% at 50% 0%, rgba(212, 168, 74, 0.1), transparent 55%);
       --panel-frame:
@@ -2072,10 +2073,34 @@
       align-self: center;
     }
     .cast-side .cast-plaque h2::before {
-      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.75));
+      background: linear-gradient(90deg, transparent, var(--fade-line-mid));
     }
     .cast-side .cast-plaque h2::after {
-      background: linear-gradient(90deg, rgba(228, 177, 90, 0.75), transparent);
+      background: linear-gradient(90deg, var(--fade-line-mid), transparent);
+    }
+    /* テキストや階Ｆを左右のフェード線で挟む（見出し・イベント・道など） */
+    .fade-sandwich {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 14px);
+    }
+    .fade-sandwich > .fade-line,
+    .fade-sandwich > i.fade-line {
+      flex: 1 1 auto;
+      min-width: 8px;
+      height: 1px;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+    .fade-sandwich > .fade-line:first-child,
+    .fade-sandwich > i.fade-line:first-child {
+      background: linear-gradient(90deg, transparent, var(--fade-line-mid));
+    }
+    .fade-sandwich > .fade-line:last-child,
+    .fade-sandwich > i.fade-line:last-child {
+      background: linear-gradient(90deg, var(--fade-line-mid), transparent);
     }
     .cast-side .cast-plaque h2 span,
     .cast-side .cast-plaque h2 small {
@@ -5072,7 +5097,19 @@
     .menu.event.shop .shop-have { margin: 0 0 12px; width: 100%; text-align: center; font-size: 28px; font-weight: 900; color: #ffe08a; }
     .menu.event > h1 { grid-area: title; text-align: center; margin: 28px 0 0; }
     .menu.event > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3vw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
-    .overlay.paths .path-now { font-size: clamp(32px, 3vw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
+    .overlay.paths .path-now,
+    .overlay.paths .path-now .event-floor-num {
+      font-size: clamp(32px, 3vw, 48px);
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: #ffe08a;
+      line-height: 1;
+    }
+    .overlay.paths .path-now {
+      margin: 8px 0 16px;
+      width: 100%;
+      justify-content: center;
+    }
     .event-floor-call {
       position: fixed;
       inset: 0;
@@ -5081,7 +5118,15 @@
       place-items: center;
       pointer-events: none;
     }
+    .event-floor-call .fade-sandwich {
+      width: min(94vw, 980px);
+      padding: 0 3vw;
+    }
+    .event-floor-call .fade-line {
+      height: 2px;
+    }
     .event-floor-call b {
+      flex: 0 0 auto;
       font-size: min(16vw, 168px);
       font-weight: 900;
       letter-spacing: 0.08em;
@@ -5257,30 +5302,19 @@
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
     }
-    .menu.bless h1 small.event-floor-mark {
+    .menu.event h1 small.event-floor-mark {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(10px, 2vw, 18px);
       margin-top: 4px;
       width: 100%;
+      justify-content: center;
     }
-    .menu.bless h1 .event-floor-num {
+    .menu.event h1 .event-floor-num {
       flex: 0 0 auto;
       font-size: clamp(32px, 3vw, 48px);
       font-weight: 900;
       letter-spacing: 0.18em;
       color: #ffe08a;
       line-height: 1;
-    }
-    .menu.bless h1 .event-floor-line {
-      display: block;
-      flex: 0 1 min(112px, 20vw);
-      width: min(112px, 20vw);
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #fff6d4, transparent);
-      box-shadow: 0 0 16px rgba(255, 214, 120, 0.8);
     }
     .gift-row { display: flex; gap: 22px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
     .menu .gift-btn {
@@ -6483,7 +6517,17 @@
       gap: 10px;
     }
     .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
-    .floor-call b { font-size: min(34vw, 420px); letter-spacing: 0.06em; color: #f0c36a; }
+    .floor-call .fade-sandwich {
+      width: min(94vw, 980px);
+      padding: 0 3vw;
+    }
+    .floor-call .fade-line { height: 2px; }
+    .floor-call b {
+      flex: 0 0 auto;
+      font-size: min(34vw, 420px);
+      letter-spacing: 0.06em;
+      color: #f0c36a;
+    }
     .encounter-stars {
       font-size: min(6vw, 48px);
       font-weight: 800;
@@ -7443,6 +7487,19 @@
         return Number(floorAt[battleIndex]);
       }
       return Math.max(1, battleIndex + 1 - floorStart());
+    }
+    function fadeSandwichMarkup(inner, { tag = "span", className = "" } = {}) {
+      const extra = className ? ` ${className}` : "";
+      return `<${tag} class="fade-sandwich${extra}"><i class="fade-line" aria-hidden="true"></i>${inner}<i class="fade-line" aria-hidden="true"></i></${tag}>`;
+    }
+    function eventFloorMarkHtml() {
+      return fadeSandwichMarkup(`<span class="event-floor-num">${floorNo()}Ｆ</span>`, { tag: "small", className: "event-floor-mark" });
+    }
+    function pathFloorNowHtml() {
+      return fadeSandwichMarkup(`<span class="event-floor-num">${floorNo()}Ｆ</span>`, { tag: "p", className: "path-now" });
+    }
+    function eventFloorFlashHtml() {
+      return `<div class="event-floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>現在 ${floorNo()}Ｆ</b>`, { tag: "div" })}</div>`;
     }
     function floorMax() { return dungeonFloors; }
     function floorLabel() { return `最大${floorMax()}Ｆ`; }
@@ -11467,7 +11524,7 @@
 
     function renderFloor() {
       if (floorPhase === "paths") {
-        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">-${floorNo()}Ｆ-</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
+        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
         runEntrance = false;
         return;
       }
@@ -11516,11 +11573,9 @@
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
-      const floorFlash = eventFloorCall ? `<div class="event-floor-call" aria-hidden="true"><b>現在 ${floorNo()}Ｆ</b></div>` : "";
+      const floorFlash = eventFloorCall ? eventFloorFlashHtml() : "";
       eventFloorCall = false;
-      const floorTitle = floorKind === "挑戦者に祝福を"
-        ? `<small class="event-floor-mark"><i class="event-floor-line" aria-hidden="true"></i><span class="event-floor-num">${floorNo()}Ｆ</span><i class="event-floor-line" aria-hidden="true"></i></small>`
-        : `<small>-${floorNo()}Ｆ-</small>`;
+      const floorTitle = eventFloorMarkHtml();
       const title = `<h1>${esc(floorKind)}${floorTitle}</h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
@@ -11884,7 +11939,7 @@
     function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow, noManaNow) {
       const calls = [];
       if (noManaNow) calls.push(`<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`);
-      if (floorCall) calls.push(`<div class="turn-call floor-call" aria-hidden="true"><b>${floorNo()}Ｆ</b></div>`);
+      if (floorCall) calls.push(`<div class="turn-call floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>${floorNo()}Ｆ</b>`, { tag: "div" })}</div>`);
       else if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars">${esc(foeStarText())}</span></div>`);
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
@@ -12941,7 +12996,7 @@
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">-${floorNo()}Ｆ-</p><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
