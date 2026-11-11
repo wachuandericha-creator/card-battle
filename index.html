@@ -7371,7 +7371,7 @@
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
       パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
-      ライフフルネスアタック: { cost: 3, text: "10ダメージ\n体力が満タンなら+5", damage: 10, kind: "attack", fullBonus: 5 },
+      ライフフルネスアタック: { cost: 2, stars: 2, text: "7ダメージ\n体力が満タンなら+7", damage: 7, kind: "attack", fullBonus: 7 },
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
@@ -7427,12 +7427,12 @@
         image: "enemy-goblin.png?v=4",
         tier: 1,
         rank: "雑魚",
-        hp: 24,
+        hp: 20,
+        atkHidden: 0,
         pattern: [
           { name: "アタック" },
-          { name: "アタック" },
           { name: "ブロック" },
-          { name: "キック", cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
+          { name: "ライフフルネスアタック" },
         ],
       },
       {
@@ -7873,7 +7873,11 @@
     }
 
     function applyEnemyHidden(card, foe) {
-      return enemyBasic(foe, card && card.name) || { ...card };
+      const basic = enemyBasic(foe, card && card.name);
+      if (basic) return basic;
+      const known = cardDef(card && card.name);
+      if (known) return { name: card.name, ...known, stars: known.stars || 1 };
+      return { ...card };
     }
 
     function foeLiveAtk(foe) {
@@ -9972,7 +9976,8 @@
       }
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
-        takeEnemyHit(rollCrit(card, card.damage) + kick, card);
+        const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
+        takeEnemyHit(rollCrit(card, card.damage) + kick + full, card);
       } else if (card.block) {
         const gain = Math.max(0, card.block + (Number(enemy.def) || 0));
         if (gain) {
@@ -12586,7 +12591,10 @@
           if (card.fullBonus && player && player.hp >= player.maxHp) bonus += card.fullBonus;
           if (card.safeBonus && player && !player.hurtLast) bonus += card.safeBonus;
           if (card.kick && enemy && enemy.block > 0) bonus += card.kick;
-        } else if (card.kick && player && player.block > 0) bonus += card.kick;
+        } else if (foe) {
+          if (card.fullBonus && enemy && enemy.hp >= enemy.maxHp) bonus += card.fullBonus;
+          if (card.kick && player && player.block > 0) bonus += card.kick;
+        }
         const base = foe ? (Number(card.damage) || 0) : printedDamage(card);
         return [Math.max(0, base + atk + focus + bonus)];
       }
