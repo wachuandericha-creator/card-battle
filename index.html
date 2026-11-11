@@ -5232,12 +5232,29 @@
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
     }
-    .menu.bless h1::after {
-      content: "";
+    .menu.bless h1 .event-floor-mark {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .menu.bless h1 .event-floor-num {
+      font-size: clamp(32px, 3vw, 48px);
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: #ffe08a;
+    }
+    .menu.bless h1 .event-floor-under {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .menu.bless h1 .event-floor-under i {
       display: block;
-      width: min(420px, 70%);
+      width: min(112px, 20vw);
       height: 2px;
-      margin: 10px auto 0;
       background: linear-gradient(90deg, transparent, #fff6d4, transparent);
       box-shadow: 0 0 16px rgba(255, 214, 120, 0.8);
     }
@@ -11321,7 +11338,10 @@
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
       const floorFlash = eventFloorCall ? `<div class="event-floor-call" aria-hidden="true"><b>現在 ${floorNo()}Ｆ</b></div>` : "";
       eventFloorCall = false;
-      const title = `<h1>${esc(floorKind)}<small>-${floorNo()}Ｆ-</small></h1>`;
+      const floorTitle = floorKind === "挑戦者に祝福を"
+        ? `<small class="event-floor-mark"><span class="event-floor-num">${floorNo()}Ｆ</span><span class="event-floor-under" aria-hidden="true"><i></i><i></i></span></small>`
+        : `<small>-${floorNo()}Ｆ-</small>`;
+      const title = `<h1>${esc(floorKind)}${floorTitle}</h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
       const picture = art || "";
