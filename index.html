@@ -1816,8 +1816,8 @@
     /* 初期デッキ：枚数バッジではなく実物を並べる。小さく一望、乗せると拡大 */
     .cast-deck {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 4px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
       margin: 0;
       align-content: start;
       overflow: visible;
@@ -5545,7 +5545,7 @@
     }
     .cast-screen.character-focus .cast-keys {
       justify-self: end;
-      width: min(320px, 100%);
+      width: min(460px, 100%);
     }
     .cast-mid {
       display: flex;
@@ -5615,6 +5615,7 @@
     .cast-screen.character-focus .stat-chips .chip b { font-size: 22px; }
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 13px; letter-spacing: 0.04em; }
     .cast-screen.dungeon-screen {
+      position: relative;
       width: 100%;
       display: grid;
       grid-template-rows: auto minmax(0, 1.35fr) minmax(168px, 0.72fr) auto;
@@ -5626,13 +5627,11 @@
     .dungeon-screen .cast-title { grid-row: 1; }
     .dungeon-screen .dungeon-top {
       grid-row: 2;
-      width: min(1280px, 100%);
+      width: min(1180px, 100%);
       height: 100%;
       min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(220px, 0.62fr);
-      gap: 16px;
-      align-items: stretch;
+      display: block;
+      justify-self: center;
     }
     .dungeon-screen .dungeon-preview {
       height: 100%;
@@ -5641,6 +5640,11 @@
       border-radius: 16px;
     }
     .dungeon-side {
+      position: absolute;
+      top: 96px;
+      right: 14px;
+      width: 220px;
+      max-height: calc(100% - 200px);
       min-width: 0;
       display: flex;
       flex-direction: column;
@@ -5648,6 +5652,8 @@
       gap: 8px;
       text-align: right;
       overflow: auto;
+      z-index: 4;
+      pointer-events: none;
     }
     .dungeon-side .dungeon-foes,
     .dungeon-side .dungeon-clears,
@@ -5757,9 +5763,9 @@
     .challenge-job .cast-side .cast-gear img { width: 48px; height: 48px; }
     .challenge-job .cast-side .cast-gear figcaption { font-size: 10px; }
     .challenge-job .cast-deck {
-      gap: 3px;
+      gap: 6px;
       flex: 0 0 auto;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
     .challenge-job .cast-roster {
       width: 100%;
@@ -5865,7 +5871,7 @@
       min-height: 0;
       height: 100%;
       display: grid;
-      grid-template-rows: minmax(0, 1fr) 46px;
+      grid-template-rows: minmax(0, 1fr) auto;
       border: 2px solid rgba(120, 90, 50, 0.45);
       border-radius: 16px;
       overflow: hidden;
@@ -5911,28 +5917,20 @@
       position: relative;
       z-index: 3;
       display: grid;
-      grid-template-rows: 1.15em 1.15em;
       align-items: center;
       justify-items: center;
       background: #140e0c;
       border-top: 1px solid rgba(228, 177, 90, 0.35);
       pointer-events: none;
     }
-    .dungeon-facts .dungeon-rank {
-      color: #ffe9ae;
-      font-size: 15px;
+    .dungeon-facts .dungeon-name-big {
+      padding: 8px 6px 10px;
+      color: #fff6e0;
+      font-size: clamp(26px, 2.2vw, 36px);
       font-weight: 900;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.18em;
       line-height: 1;
-      text-shadow: 0 1px 0 #000;
-    }
-    .dungeon-facts .dungeon-floor {
-      color: #f6d48a;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
+      text-shadow: 0 2px 0 #000;
     }
     .dungeon-col.active .dungeon-facts { filter: none; }
     .dungeon-col .chain-wrap {
@@ -5944,19 +5942,21 @@
     }
     .dungeon-col .chain-art {
       position: absolute;
-      width: 170%;
-      height: 170%;
+      width: 86%;
+      height: 86%;
       max-width: none;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      object-fit: fill;
+      object-fit: contain;
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
     }
     .dungeon-col .chain-art.one {
-      left: -21%;
-      top: -18%;
-      transform: none;
+      width: 72%;
+      height: 72%;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
     }
     .dungeon-pick .cast-actions {
       z-index: 6;
@@ -6823,6 +6823,7 @@
     let dungeonName = "洞窟";
     let pendingDungeon = DUNGEON_LIST[0];
     let dungeonHover = "";
+    let dungeonView = "";
     let dungeonLock = "";
     let meta = { uses: 0, clears: 0, stars: 0, cleared: {} };
 
@@ -10624,7 +10625,7 @@
     }
 
     function shownDungeonName() {
-      return dungeonHover || dungeonLock;
+      return dungeonHover || dungeonView || dungeonLock;
     }
 
     function dungeonChainHtml(count) {
@@ -10734,12 +10735,12 @@
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
         return `
-        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" aria-label="${esc(item.name)} ${esc(item.rank || "")} 最大${esc(item.label)}階${sealed ? "（鎖）" : ""}">
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" data-open="${sealed ? "0" : "1"}" aria-label="${esc(item.name)}${sealed ? "（鎖）" : ""}">
           <span class="dungeon-shot">
             <img src="${item.art}" alt="">
             ${dungeonChainHtml(chains)}
           </span>
-          <span class="dungeon-facts" aria-hidden="true"><span class="dungeon-rank">${esc(item.rank || "")}</span><span class="dungeon-floor">最大${esc(item.label)}階</span></span>
+          <span class="dungeon-facts" aria-hidden="true"><span class="dungeon-name-big">${esc(item.name)}</span></span>
         </button>`;
       }).join("");
       dungeonLit = false;
@@ -12984,9 +12985,17 @@
         render();
       }
       if (name === "dungeon-token") {
-        dungeonLock = action.dataset.dungeon || dungeonLock;
+        const picked = action.dataset.dungeon || "";
+        const item = DUNGEON_LIST.find((dungeon) => dungeon.name === picked);
         dungeonHover = "";
-        pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
+        if (!item || !dungeonOpen(item.floors)) {
+          dungeonView = picked;
+          paintDungeon();
+          return;
+        }
+        dungeonView = "";
+        dungeonLock = picked;
+        pendingDungeon = item;
         paintDungeon();
         if (challengeReady()) departRun(pendingDungeon.floors, pendingDungeon.name);
       }
@@ -13058,10 +13067,19 @@
         if (name === "cast-stay") { screen = "character"; render(); }
         if (name === "dungeon-list") { screen = "dungeon"; render(); }
         if (name === "dungeon-token") {
-          dungeonLock = action.dataset.dungeon || "";
+          const picked = action.dataset.dungeon || "";
+          const item = DUNGEON_LIST.find((dungeon) => dungeon.name === picked);
           dungeonHover = "";
+          if (!item || !dungeonOpen(item.floors)) {
+            dungeonView = picked;
+            dungeonLit = false;
+            paintDungeon();
+            return;
+          }
+          dungeonView = "";
+          dungeonLock = picked;
           dungeonLit = true;
-          pendingDungeon = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonLock) || DUNGEON_LIST[0];
+          pendingDungeon = item;
           paintDungeon();
         }
         if (name === "dungeon-start") {
