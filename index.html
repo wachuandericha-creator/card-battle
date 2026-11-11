@@ -12477,6 +12477,7 @@
 
     function cardKind(card) {
       if (!card) return "skill";
+      if (card.kind === "foe") return "foe";
       if (card.kind === "power" || card.power) return "power";
       if (card.kind === "attack" || card.kind === "block" || card.kind === "skill") return card.kind;
       if (card.parry) return "block";
