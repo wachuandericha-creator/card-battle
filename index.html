@@ -2614,7 +2614,7 @@
         radial-gradient(circle at 68% 40%, rgba(170, 70, 240, 0.62), transparent 48%);
       filter: blur(2px);
       mix-blend-mode: screen;
-      animation: poison-mist 2.2s ease-out forwards;
+      animation: poison-mist 1.85s ease-out forwards;
     }
     .poison-hit .bubble {
       position: absolute;
@@ -2626,7 +2626,7 @@
       background: radial-gradient(circle at 35% 32%, #f4ffe4, #8ee05a 46%, #6a28b8 78%);
       box-shadow: 0 0 10px rgba(140, 230, 70, 0.8), inset 0 0 0 2px rgba(90, 20, 140, 0.45);
       opacity: 0;
-      animation: poison-bubble 2.1s ease-out forwards;
+      animation: poison-bubble 1.75s ease-out forwards;
     }
     .poison-hit .b1 { --px: -36px; --py: -90px; width: 22px; height: 22px; }
     .poison-hit .b2 { --px: 28px; --py: -110px; animation-delay: 0.16s; }
@@ -2642,7 +2642,7 @@
       border-radius: 40%;
       background: linear-gradient(#d8ff8a, #7a32c8);
       opacity: 0;
-      animation: poison-drip 2s ease-in forwards;
+      animation: poison-drip 1.65s ease-in forwards;
     }
     .poison-hit .d1 { --px: -24px; animation-delay: 0.2s; }
     .poison-hit .d2 { --px: 18px; animation-delay: 0.4s; }
@@ -2652,7 +2652,7 @@
     .sprite.poison:not(.slash) { animation: poison-shudder 1.15s linear; }
     .hero-shoulder.poison:not(.hurt) { animation: poison-shudder 1.15s linear; }
     .sprite.poison img,
-    .hero-shoulder.poison .hero-fig { animation: poison-flash 2.2s ease-out both; }
+    .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
     .poison-stamp {
       position: absolute;
       left: 50%;
@@ -2665,7 +2665,7 @@
       line-height: 1;
       color: #e8ffb0;
       text-shadow: 0 4px 0 #3a1460, 0 0 16px rgba(90, 220, 70, 0.95), 0 0 26px rgba(160, 70, 230, 0.85);
-      animation: poison-stamp 2.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      animation: poison-stamp 1.85s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
       pointer-events: none;
     }
     .status-chip.poison.fresh { animation: poison-chip 1.35s ease-out; }
@@ -6811,26 +6811,26 @@
     }
     @keyframes poison-mist {
       0% { opacity: 0; transform: scale(0.7); }
-      16% { opacity: 1; transform: scale(1); }
-      62% { opacity: 0.82; transform: scale(1.08); }
+      19% { opacity: 1; transform: scale(1); }
+      74% { opacity: 0.82; transform: scale(1.08); }
       100% { opacity: 0; transform: scale(1.2); }
     }
     @keyframes poison-bubble {
       0% { opacity: 0; transform: translate(0, 12px) scale(0.4); }
-      16% { opacity: 1; }
-      68% { opacity: 0.9; }
+      19% { opacity: 1; }
+      82% { opacity: 0.9; }
       100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(1.05); }
     }
     @keyframes poison-drip {
       0% { opacity: 0; transform: translate(var(--px), 0) scaleY(0.4); }
-      18% { opacity: 1; }
-      62% { opacity: 0.85; transform: translate(var(--px), 48px) scaleY(1); }
+      22% { opacity: 1; }
+      75% { opacity: 0.85; transform: translate(var(--px), 48px) scaleY(1); }
       100% { opacity: 0; transform: translate(var(--px), 90px) scaleY(1.1); }
     }
     @keyframes poison-flash {
       0% { filter: none; }
-      14% { filter: drop-shadow(0 0 16px rgba(150, 240, 80, 0.95)) drop-shadow(0 0 28px rgba(150, 60, 220, 0.85)); }
-      58% { filter: drop-shadow(0 0 12px rgba(150, 240, 80, 0.7)) drop-shadow(0 0 22px rgba(150, 60, 220, 0.6)); }
+      17% { filter: drop-shadow(0 0 16px rgba(150, 240, 80, 0.95)) drop-shadow(0 0 28px rgba(150, 60, 220, 0.85)); }
+      69% { filter: drop-shadow(0 0 12px rgba(150, 240, 80, 0.7)) drop-shadow(0 0 22px rgba(150, 60, 220, 0.6)); }
       100% { filter: none; }
     }
     @keyframes poison-shudder {
@@ -6842,8 +6842,8 @@
     }
     @keyframes poison-stamp {
       0% { opacity: 0; transform: translate(-50%, 18px) scale(0.55); }
-      12% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
-      72% { opacity: 1; transform: translate(-50%, -8px) scale(1); }
+      14% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
+      86% { opacity: 1; transform: translate(-50%, -8px) scale(1); }
       100% { opacity: 0; transform: translate(-50%, -32px) scale(0.96); }
     }
     @keyframes poison-chip {
@@ -10042,7 +10042,7 @@
       const flyWait = pendingPlayClearFly.length
         ? 560 + (pendingPlayClearFly.length - 1) * 70
         : 0;
-      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
+      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2200 : 0;
       render();
       const wait = Math.max(flyWait, poisonWait);
       if (wait) timer = setTimeout(startPlayerTurn, wait);
@@ -10091,7 +10091,7 @@
         const guardKind = fxGuard;
         const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
         const slashCount = fxSlashes.length;
-        const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
+        const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2200 : 0;
         render();
         const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
@@ -10100,7 +10100,7 @@
       const guardKind = fxGuard;
       const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
       const slashCount = fxSlashes.length;
-      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
+      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2200 : 0;
       render();
       const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
@@ -10136,7 +10136,7 @@
           return;
         }
       }
-      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 1100;
+      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2200 : 1100;
       render();
       timer = setTimeout(stepResolve, poisonWait);
     }
@@ -10220,7 +10220,7 @@
         fatalHold = true;
       }
       const fatalWait = fatal ? 3600 : 0;
-      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
+      const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2200 : 0;
       const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
