@@ -131,7 +131,7 @@
       display: flex;
       flex-direction: column;
       margin: 0;
-      padding: 6px 10px;
+      padding: 8px 12px 10px;
       border-radius: 16px;
       background: var(--panel-sheen), var(--panel-face);
       box-shadow: var(--panel-frame);
@@ -153,7 +153,8 @@
     .road-map ol {
       list-style: none;
       margin: 0;
-      padding: 2px 0;
+      padding: 4px 6px 6px;
+      box-sizing: border-box;
       overflow-x: hidden;
       overflow-y: auto;
       flex: 1 1 auto;
@@ -165,7 +166,7 @@
     .road-node {
       position: relative;
       display: block;
-      flex: 0 0 calc((100% - 24px) / 5);
+      flex: 0 0 calc((100% - 24px) / 5 - 6px);
       min-height: 0;
       overflow: hidden;
       border-radius: 10px;
@@ -7271,7 +7272,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=6",
+        image: "enemy-slime.png?v=7",
         tier: 1,
         rank: "雑魚",
         hp: 34,
@@ -11894,7 +11895,7 @@
             ${sheetBanner("event-bless.jpg?v=2", "祝福（戦士）", "昔の一枚絵。女神がひざまずく戦士に手を差し伸べている")}
             <h3>敵</h3>
             <div class="ref-grid">
-              ${sheetFig("enemy-slime.png?v=6", "スライム", "enemy-ref")}
+              ${sheetFig("enemy-slime.png?v=7", "スライム", "enemy-ref")}
               ${sheetFig("enemy-goblin.png?v=3", "ゴブリン", "enemy-ref")}
               ${sheetFig("enemy-minotaur.png?v=4", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=3", "ちびドラゴン", "enemy-ref")}
@@ -13764,7 +13765,7 @@
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
-                <img src="${esc(enemy.image || "enemy-slime.png?v=6")}" alt="">
+                <img src="${esc(enemy.image || "enemy-slime.png?v=7")}" alt="">
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
