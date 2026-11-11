@@ -5380,10 +5380,77 @@
       margin-top: 10px;
       padding-top: 10px;
     }
+    .menu.event.bless {
+      grid-template-areas:
+        "title"
+        "board";
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      column-gap: 0;
+    }
+    .menu.event.bless .bless-board {
+      grid-area: board;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+      padding: 0 12px 12px;
+    }
+    /* 説明＋報酬を一枚の板とみなし、挿絵はその幾何中心（以前の左絵） */
+    .menu.event.bless .bless-art {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+      width: min(56vw, 700px);
+      max-width: calc(100% - 32px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .menu.event.bless .bless-art .bless-picture {
+      width: 100%;
+      height: auto;
+      max-height: min(56vh, 480px);
+      max-width: 100%;
+      margin: 0;
+      justify-self: unset;
+      align-self: unset;
+      object-fit: contain;
+    }
+    .menu.event.bless .event-choice.bless-choice {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 12px;
+      padding: 4px clamp(12px, 6vw, 72px) 10px;
+      box-sizing: border-box;
+    }
+    .menu.event.bless .bless-choice .event-split {
+      flex: 0 0 auto;
+    }
     .menu.event.bless .gift-row {
       align-self: center;
       width: 100%;
       justify-content: center;
+      flex: 0 0 auto;
+      margin-top: auto;
+      padding-top: 10px;
     }
     .menu.event.search {
       grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.72fr);
@@ -6129,7 +6196,8 @@
       gap: var(--cast-job-deck-gap);
       overflow: hidden;
     }
-    .cast-screen.character-focus .cast-deck .deck-card {
+    .cast-screen.character-focus .cast-deck .deck-card,
+    .cast-screen.character-focus .cast-deck .deck-card:hover {
       width: var(--cast-job-card-w);
       height: auto;
       margin: 0;
@@ -6137,14 +6205,20 @@
       display: block;
       pointer-events: none;
       cursor: default;
-    }
-    .cast-screen.character-focus .cast-deck .deck-card:hover {
       z-index: 1;
     }
-    .cast-screen.character-focus .cast-deck .card.preview {
+    .cast-screen.character-focus .cast-deck .card,
+    .cast-screen.character-focus .cast-deck .card:hover,
+    .cast-screen.character-focus .cast-deck .card.preview,
+    .cast-screen.character-focus .cast-deck .card.preview:hover {
       width: var(--cast-job-card-w);
       height: auto;
       aspect-ratio: var(--card-ratio);
+      transform: none;
+      filter: none;
+      cursor: default;
+      pointer-events: none;
+      z-index: auto;
     }
     .cast-screen.character-focus .cast-side { min-width: 0; overflow: hidden; }
     .cast-screen.character-focus .stat-chips { min-width: 0; }
@@ -7148,12 +7222,18 @@
         tier: 1,
         rank: "雑魚",
         hp: 34,
+        atkHidden: 0,
         pattern: [
           { name: "アタック" },
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "アタック" },
           { name: "ブロック" },
-          { name: "シールドアタック", cost: 2, text: "自分のシールドの数だけダメージ", press: true },
-          { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
-          { name: "スライム粘液", cost: 1, text: "相手を毒+1", poison: 1 },
+          { name: "ブロック" },
+          { name: "ブロック" },
+          { name: "ブロック" },
+          { name: "スライム粘液", cost: 1, text: "相手を毒+2", poison: 2 },
+          { name: "スライム粘液", cost: 1, text: "相手を毒+2", poison: 2 },
         ],
       },
       {
@@ -11959,8 +12039,12 @@
       const title = `<h1>${esc(floorKind)}${floorTitle}</h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
-      const picture = art || "";
-        root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>`);
+      const blessPhase = floorKind === "挑戦者に祝福を" && floorPhase === "bless";
+      const blessPicture = art ? art.replace('class="event-picture"', 'class="event-picture bless-picture"') : "";
+      const choiceShell = blessPhase
+        ? `<div class="bless-board">${blessPicture ? `<div class="bless-art">${blessPicture}</div>` : ""}<div class="event-choice bless-choice">${choice}</div></div>`
+        : `${art || ""}<div class="event-choice">${choice}</div>`;
+      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${title}${choiceShell}</div>`);
       runEntrance = false;
     }
 
@@ -13766,6 +13850,7 @@
     function kwAnchorOf(target) {
       const el = target instanceof Element ? target : target && target.parentElement;
       if (!el) return null;
+      if (el.closest(".cast-screen.character-focus .cast-deck")) return null;
       const card = el.closest(".card");
       if (card && card.querySelector(".hint")) return card;
       const play = el.closest(".play-card");
