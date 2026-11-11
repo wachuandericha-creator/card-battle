@@ -9528,6 +9528,7 @@
         while (inPlay.length) battleExile.push(inPlay.shift());
         log(`${heroName()}は${names}を廃棄した。`);
       }
+      if (card.keep) card.resolved = false;
       inPlay.push(card);
       note = "";
       pullFromBracelets();
@@ -9804,7 +9805,10 @@
         const made = makeFlyGhost(el);
         if (!made) return;
         const mode = forceMode || (afterUsePile(card) === "keep" && card.resolved ? "stay" : goesToDiscard(card) ? "discard" : "exile");
-        if (mode === "stay") return;
+        if (mode === "stay") {
+          made.ghost.remove();
+          return;
+        }
         pendingPlayClearFly.push({ ...made, mode });
       });
     }
@@ -9941,6 +9945,7 @@
         || document.querySelectorAll(".play-side.mine .play-card .card")[index];
       const from = el ? el.getBoundingClientRect() : null;
       inPlay.splice(index, 1);
+      if (card.keep) card.resolved = false;
       refundEnergy(card.cost);
       hand.push(card);
       sortHand();
@@ -10108,6 +10113,7 @@
       resolveAt += 1;
       if (index < enemyIndex) {
         resolveCard(inPlay[index]);
+        if (inPlay[index] && inPlay[index].keep) inPlay[index].resolved = true;
         if (enemy.hp <= 0) {
           scrapPlay();
           scheduleFinish("win");
@@ -10172,6 +10178,7 @@
       }
       phase = "resolve";
       resolveAt = 0;
+      while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
       while (hand.length) discard.push(hand.pop());
       note = "";
       const poisoned = tickPoison("player");
@@ -12658,18 +12665,27 @@
         if (!word || !note || !text.includes(word)) return text;
         return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
       };
-      if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, `<span class="kw-line hint" data-word="戦闘中">戦闘中<i>${esc(DURING_NOTE)}</i></span>`);
+      const kwLine = (word, note) => `<span class="kw-line hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`;
+      const keywords = [];
+      if (card.during) {
+        noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
+        keywords.push(kwLine("戦闘中", DURING_NOTE));
+      }
+      if (card.quick) keywords.push(kwLine("クイック", QUICK_NOTE));
+      if (isItemCard(card)) keywords.push(kwLine("アイテム", ITEM_NOTE));
+      if (card.permanent) keywords.push(kwLine("永続", PERMANENT_NOTE));
+      if (card.keep) keywords.push(kwLine("キープ", KEEP_NOTE));
+      noteText = keywords.join("") + noteText;
       noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
       noteText = hintWord(noteText, "インスタント", INSTANT_NOTE);
-      noteText = hintWord(noteText, "クイック", QUICK_NOTE);
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.permanent || card.keep || isItemCard(card) || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
@@ -13063,6 +13079,8 @@
       if (card.heal) next.heal = card.heal;
       if (card.instant) next.instant = true;
       if (card.quick) next.quick = true;
+      if (card.permanent) next.permanent = true;
+      if (card.keep) next.keep = true;
       if (card.draw) next.draw = card.draw;
       if (card.crit) { next.crit = card.crit; next.critChance = card.critChance; }
       if (card.halfOnly) next.halfOnly = true;
