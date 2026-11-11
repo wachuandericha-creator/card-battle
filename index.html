@@ -2725,7 +2725,7 @@
       justify-content: center;
       min-width: 0;
       height: auto;
-      margin-top: -16px;
+      margin-top: 4px;
     }
     .mana-read {
       position: relative;
@@ -4195,8 +4195,7 @@
     }
     .overlay.paths p { font-size: 22px; margin-bottom: 12px; }
     .overlay.paths .path-list { flex-wrap: nowrap; }
-    .overlay.paths .path-list button,
-    .menu.event.paths-open .path-list button {
+    .overlay.paths .path-list button {
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -4207,21 +4206,19 @@
       padding: 14px 14px 18px;
       border-radius: 18px;
       font-size: 20px;
+      background: linear-gradient(180deg, #ffe7a0 0%, #e2b03a 48%, #8a5a08 100%);
+      color: #fff8ee;
+    }
+    .overlay.paths .path-list button.path-camp {
       background: linear-gradient(180deg, #d7ecff 0%, #6aa4e0 55%, #24588f 100%);
-      color: #102033;
+      color: #fff8ee;
     }
-    .overlay.paths .path-list button.path-straight,
-    .menu.event.paths-open .path-list button.path-straight {
+    .overlay.paths .path-list button.path-straight {
       background: linear-gradient(180deg, #ffd0c4 0%, #e24a38 55%, #8d1c16 100%);
-      color: #fff6f2;
+      color: #fff8ee;
     }
-    .overlay.paths .path-list button.path-straight b,
-    .overlay.paths .path-list button.path-straight span,
-    .menu.event.paths-open .path-list button.path-straight b,
-    .menu.event.paths-open .path-list button.path-straight span { color: #fff6f2; }
     .overlay.paths .path-list button + button { margin-top: 0; }
-    .overlay.paths .path-list button img,
-    .menu.event.paths-open .path-list button img {
+    .overlay.paths .path-list button img {
       width: 100%;
       flex: 1 1 auto;
       min-height: 240px;
@@ -4229,12 +4226,8 @@
       object-fit: contain;
       border-radius: 12px;
     }
-    .overlay.paths .path-list button b,
-    .menu.event.paths-open .path-list button b { font-size: 34px; letter-spacing: 0.06em; color: #2a2118; }
-    .overlay.paths .path-list button span,
-    .menu.event.paths-open .path-list button span { font-weight: 700; font-size: 20px; line-height: 1.45; color: #2a2118; }
-    .menu.event.paths-open .path-list { height: 100%; align-items: stretch; }
-    .menu.event.paths-open .path-list button { min-height: 0; height: 100%; }
+    .overlay.paths .path-list button b { font-size: 34px; letter-spacing: 0.06em; color: #fff8ee; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65); }
+    .overlay.paths .path-list button span { font-weight: 700; font-size: 20px; line-height: 1.45; color: #fff8ee; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65); }
     .overlay button.ghost {
       background: transparent;
       color: var(--cream);
@@ -4820,24 +4813,84 @@
       height: 100%;
       padding: 8px 12px 12px;
       display: grid;
-      grid-template-columns: minmax(160px, 14%) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
       grid-template-areas:
-        "map title title"
-        "map picture choice";
+        "title title"
+        "picture choice";
       align-items: stretch;
       justify-items: stretch;
       gap: 8px 12px;
       overflow: hidden;
     }
     .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
-    .menu.event.shop,
-    .menu.event.paths-open {
-      grid-template-columns: minmax(160px, 14%) minmax(0, 1fr);
+    .menu.event.shop {
+      grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-        "map title"
-        "map choice";
+        "title"
+        "choice";
     }
+    .event-drawers {
+      position: fixed;
+      z-index: 40;
+      left: 0;
+      top: 64px;
+      bottom: 12px;
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .event-drawers .drawer-tabs,
+    .event-drawers .drawer-panel { pointer-events: auto; }
+    .event-drawers .drawer-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-self: flex-start;
+    }
+    .event-drawers .drawer-tab {
+      writing-mode: vertical-rl;
+      min-height: 132px;
+      margin: 0;
+      padding: 16px 10px;
+      border: 0;
+      border-radius: 0 14px 14px 0;
+      background: linear-gradient(180deg, #4a3824, #24180f);
+      color: #fff3c4;
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: 0.18em;
+      box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+    }
+    .event-drawers .drawer-tab.on { background: linear-gradient(180deg, #e4b15a, #8a5a18); color: #2a2118; }
+    .event-drawers .drawer-panel {
+      width: min(300px, 46vw);
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+      border-radius: 16px;
+      background: var(--panel-sheen), var(--panel-face);
+      box-shadow: var(--panel-frame);
+      color: var(--cream);
+    }
+    .event-drawers .drawer-panel .road-map {
+      grid-area: auto;
+      height: 100%;
+      width: 100%;
+      box-shadow: none;
+      background: transparent;
+    }
+    .event-drawers .deck-drawer { padding: 10px 12px 14px; }
+    .event-drawers .deck-drawer h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: 0.12em;
+      text-align: center;
+      color: #fff3c4;
+    }
+    .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
     .menu.event.shop .event-choice { justify-content: flex-start; overflow: auto; padding: 8px 12px 12px; }
     .menu.event.shop .shop-row {
       display: grid;
@@ -4958,14 +5011,13 @@
     .menu.event.bless { justify-content: stretch; overflow: hidden; padding-top: 8px; }
     @media (max-width: 900px) {
       .menu.event {
-        grid-template-columns: 120px minmax(0, 1fr);
-        grid-template-areas: "map title" "map picture" "map choice";
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "title" "picture" "choice";
         height: 100%;
         overflow: hidden;
       }
-      .menu.event.shop,
-      .menu.event.paths-open {
-        grid-template-areas: "map title" "map choice";
+      .menu.event.shop {
+        grid-template-areas: "title" "choice";
       }
       .menu.event.shop .shop-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .menu.event .event-picture { height: auto; max-height: 36vh; }
@@ -6142,7 +6194,8 @@
       overflow: hidden;
     }
     html.phone .side-rail { display: contents; }
-    html.phone .road-map { display: none; }
+    html.phone .battle-screen .road-map { display: none; }
+    html.phone .drawer-panel .road-map { display: flex; }
     html.phone .battle-log {
       display: none;
       position: absolute;
@@ -6490,6 +6543,8 @@
     let returnScreen = "title";
     let askLeave = false;
     let showDeck = false;
+    let eventMapOpen = false;
+    let eventDeckOpen = false;
     let showFoeDeck = false;
     let albumTab = "all";
     let albumZoom = "";
@@ -6895,9 +6950,7 @@
     // 0層目は祝福（階層の数には入れない）。1層目は雑魚で固定。最後の層はボス。route の添え字＝層の番号
     function buildRoute(floors, name) {
       const route = new Array(floors + 1);
-      const jobFloors = !name || name === "洞窟" || floors <= 20
-        ? []
-        : JOB_CHANGE_FLOORS.filter((floor) => floor >= 2 && floor < floors && floor !== 10);
+      const jobFloors = [];
       for (const floor of jobFloors) route[floor] = "出来事:ジョブ";
       route[floors] = DUNGEON.boss;
       if (floors > 10) route[10] = "出来事:お店";
@@ -9258,7 +9311,7 @@
       beggarGift = Array.isArray(data.beggarGift) ? data.beggarGift.filter((card) => card && card.name) : [];
       beggarBattle = !!data.beggarBattle;
       if (Array.isArray(data.route) && data.route.length) {
-        route = data.route.map((name) => enemyKey(name));
+        route = data.route.map((name) => enemyKey(name)).map((name) => name === "出来事:ジョブ" ? "出来事:探索" : name);
       } else {
         route = CLASSIC_ROUTE.slice();
         const total = data.battleTotal || route.length;
@@ -10738,7 +10791,7 @@
 
     function renderFloor() {
       if (floorPhase === "paths") {
-        root.innerHTML = `<div class="menu event paths-open">${roadMapHtml()}<h1>道を選ぶ<small>現在 ${floorNo()}Ｆ</small></h1><div class="event-choice"><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+        root.innerHTML = `<div class="menu event">${eventToolsHtml()}<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>`;
         runEntrance = false;
         return;
       }
@@ -10793,7 +10846,7 @@
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
       const picture = art && !shopMode ? art : "";
-      root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${roadMapHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>`;
+        root.innerHTML = `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${eventToolsHtml()}${floorFlash}${title}${picture}<div class="event-choice">${choice}</div></div>`;
       runEntrance = false;
     }
 
@@ -11395,9 +11448,18 @@
       return `<section class="deck-group"><h3>${heading}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
     }
 
+    function eventToolsHtml() {
+      const cards = runDeck();
+      const mapPanel = eventMapOpen ? `<section class="drawer-panel">${roadMapHtml()}</section>` : "";
+      const deckPanel = eventDeckOpen
+        ? `<section class="drawer-panel deck-drawer"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div></section>`
+        : "";
+      return `<div class="event-drawers"><div class="drawer-tabs"><button type="button" class="drawer-tab${eventMapOpen ? " on" : ""}" data-action="toggle-map">マップ</button><button type="button" class="drawer-tab${eventDeckOpen ? " on" : ""}" data-action="toggle-deck">マイデッキ</button></div>${mapPanel}${deckPanel}</div>`;
+    }
+
     function deckOverlay() {
       if (!showDeck || outcome || askLeave) return "";
-      const cards = openingDeck.length ? openingDeck : deck.concat(hand, inPlay, discard);
+      const cards = runDeck();
       return `<div class="overlay deck-view"><div class="panel"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
@@ -11449,9 +11511,9 @@
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
     // 右の1枠。左は休憩、真ん中は戦闘で固定
-    const PATH_RIGHT = ["search", "beggar", "shop", "lost", "job", "unknown", "train"];
-    // 迷子は、見えている2つと迷子自身を除く。休憩・戦闘を含め、ボス戦は入れない。祝福は遭遇だけ
-    const LOST_POOL = ["camp", "straight", "search", "beggar", "shop", "job", "unknown", "train"];
+    const PATH_RIGHT = ["search", "beggar", "shop", "lost", "unknown", "train"];
+    // 迷子は、見えている2つと迷子自身を除く。休憩・戦闘を含め、ボス戦は入れない。祝福は遭遇だけ。ジョブはいま出さない
+    const LOST_POOL = ["camp", "straight", "search", "beggar", "shop", "unknown", "train"];
 
     function starsForRank(rank) {
       if (rank === "強敵") return 3;
@@ -12166,7 +12228,7 @@
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+        return `<div class="overlay paths">${eventToolsHtml()}<div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
@@ -12594,6 +12656,8 @@
         const name = action.dataset.action;
         if (name === "title") goTitle();
         if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
+        if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
+        if (name === "toggle-deck") { eventDeckOpen = !eventDeckOpen; render(); }
         if (name === "deck") { showDeck = true; render(); }
         if (name === "close-deck") { showDeck = false; render(); }
         if (name === "foe-deck") { showFoeDeck = true; render(); }
