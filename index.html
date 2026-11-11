@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -942,6 +942,7 @@
     .battle-plate h2 .plate-badges:empty { display: none; }
     /* 状態のアイコン札：丸い暗地に色つきアイコン。重なるものは右に数字 */
     .status-chip {
+      position: relative;
       display: inline-flex;
       align-items: center;
       gap: 2px;
@@ -962,6 +963,18 @@
     .status-chip svg { width: 22px; height: 22px; display: block; flex: 0 0 auto; filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)); }
     .status-chip b { font-size: 15px; letter-spacing: 0; text-shadow: 0 1px 0 #000; }
     .status-chip.hint, .status-chip.hint b { text-decoration: none; border-bottom: 0; }
+    .status-chip.hint::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 2px;
+      height: 2px;
+      border-radius: 1px;
+      background: currentColor;
+      opacity: 0.9;
+      pointer-events: none;
+    }
     .status-chip:has(> b) { padding-right: 8px; }
     .status-chip.poison { border-color: rgba(180, 140, 200, 0.45); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
     .status-chip.poison b { color: #d8c4e8; }
@@ -4097,6 +4110,12 @@
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
+    .card .text .hint {
+      text-decoration-line: underline;
+      text-decoration-color: #16325c;
+      text-decoration-thickness: 0.14em;
+      text-underline-offset: 0.16em;
+    }
     /* 注釈の本文はカードの中には出さない（カードの外の .kw-tip に写す） */
     .hint i { display: none; }
     .kw-tip {
@@ -7453,7 +7472,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "スライム粘液", cost: 1, text: "相手を毒+2", poison: 2 },
+          { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 },
         ],
       },
       {
@@ -7498,9 +7517,9 @@
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアーボール", cost: 1, text: "2ダメージ\n相手を炎上+1", damage: 2, burn: 1, kind: "attack" },
-          { name: "ファイアソード", cost: 2, text: "先に炎上+1\n5ダメージ", damage: 5, burn: 1, burnFirst: true, kind: "attack" },
-          { name: "ファイアパラダイス", cost: 3, text: "相手を炎上+3", burn: 3, kind: "skill" },
+          { name: "ファイアーボール", cost: 1, text: "2ダメージ\n相手に炎上+1を与える", damage: 2, burn: 1, kind: "attack" },
+          { name: "ファイアソード", cost: 2, text: "先に相手に炎上+1を与える\n5ダメージ", damage: 5, burn: 1, burnFirst: true, kind: "attack" },
+          { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" },
         ],
       },
       {
@@ -12667,12 +12686,16 @@
         }
       }
       let noteText = esc(live ? liveCardText(card, fromHand, foe) : (card.text || "")).replaceAll("\n", "<br>");
-      if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, `<span class="kw-line hint">戦闘中<i>${esc(DURING_NOTE)}</i></span>`);
-      if (card.parry && card.note) noteText = noteText.replaceAll("パリィ", `<span class="hint">パリィ<i>${esc(card.note)}</i></span>`);
-      if (card.poison) noteText = noteText.replaceAll("毒", `<span class="hint">毒<i>${esc(POISON_NOTE)}</i></span>`);
-      if (card.burn) noteText = noteText.replaceAll("炎上", `<span class="hint">炎上<i>${esc(BURN_NOTE)}</i></span>`);
-      if (card.instant) noteText = noteText.replaceAll("インスタント", `<span class="hint">インスタント<i>${esc(INSTANT_NOTE)}</i></span>`);
-      if (card.quick) noteText = noteText.replaceAll("クイック", `<span class="hint">クイック<i>${esc(QUICK_NOTE)}</i></span>`);
+      const hintWord = (text, word, note) => {
+        if (!word || !note || !text.includes(word)) return text;
+        return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
+      };
+      if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, `<span class="kw-line hint" data-word="戦闘中">戦闘中<i>${esc(DURING_NOTE)}</i></span>`);
+      noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
+      noteText = hintWord(noteText, "毒", POISON_NOTE);
+      noteText = hintWord(noteText, "炎上", BURN_NOTE);
+      noteText = hintWord(noteText, "インスタント", INSTANT_NOTE);
+      noteText = hintWord(noteText, "クイック", QUICK_NOTE);
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
