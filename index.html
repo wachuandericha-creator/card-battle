@@ -3572,6 +3572,11 @@
       font-weight: 700;
       letter-spacing: 0.14em;
     }
+    .gear-effect-body.empty-trait {
+      min-height: 2.15em;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
     .gear-effect.center-boon .gear-effect-inner { text-align: center; }
     .gear-effect.center-boon .gear-effect-head {
       display: flex;
@@ -7690,7 +7695,7 @@
       const name = String(node || "");
       if (name === "出来事:祝福") return { src: "path-bless.jpg?v=19", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=13", label: "探索" };
-      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
+      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=8", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=12", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
@@ -8167,7 +8172,7 @@
         }
         if (traitAtk) return { show: true, text: traitAtk, extra: "" };
         if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
-        return { show: false, text: "", extra: "" };
+        return { show: true, text: "", extra: "empty-trait" };
       }
       const t = String(o.body ?? "").trim();
       return { show: !!t, text: t, extra: "" };
@@ -8241,21 +8246,11 @@
           image: look.image || "",
           rarity: gearRarityText(look),
           body: esc(gearSpecialText(look)),
-        } : {
-          name: "メダル",
-          body: "ボスを倒すと確定でもらえる。",
-          empty: true,
-        });
+        } : "");
       }
       if (slotId === "itemL" || slotId === "itemR") {
         const item = gear[slotId];
-        if (!item) {
-          return gearPopShell(slotId, {
-            name: "空き枠",
-            body: "使い捨てアイテム。なにも入っていない。",
-            empty: true,
-          });
-        }
+        if (!item) return "";
         const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
         const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
         const button = item.quick
@@ -8273,13 +8268,7 @@
         });
       }
       const item = gear[slotId];
-      if (!item) {
-        return gearPopShell(slotId, {
-          name: "空き枠",
-          body: "なにも入っていない。",
-          empty: true,
-        });
-      }
+      if (!item) return "";
       return gearPopShell(slotId, {
         item,
         name: item.name || gearSlotLabel(slotId),
@@ -11603,7 +11592,7 @@
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
               ${sheetFig("path-job.jpg?v=8", "ジョブ")}
-              ${sheetFig("path-unknown.jpg?v=7", "遭遇")}
+              ${sheetFig("path-unknown.jpg?v=8", "遭遇")}
               ${sheetFig("path-train.jpg?v=5", "修行")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -11837,12 +11826,12 @@
         : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
-        "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
         "探索": ["event-search.jpg?v=13", "宝箱の蓋は戦士のほうへ開く"],
         "休憩": ["event-rest.jpg?v=10", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
         "修行": ["event-train.jpg?v=7", "カメラは上を過ぎ、顔は少しやわらかい"],
+        "お店": ["event-shop.jpg?v=1", "ポーション瓶と巻物"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -12523,7 +12512,7 @@
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
-      unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
+      unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=8" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=19" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
