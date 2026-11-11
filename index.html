@@ -2729,8 +2729,8 @@
     }
     .mana-read {
       position: relative;
-      width: 112px;
-      height: 112px;
+      width: 96px;
+      height: 96px;
       display: grid;
       place-items: center;
       padding: 0;
@@ -2739,20 +2739,19 @@
       filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
     }
     .mana-read b {
-      width: 96px;
-      height: 96px;
+      width: 84px;
+      height: 84px;
       display: grid;
       place-items: center;
       border-radius: 50%;
-      font-size: 64px;
+      font-size: 52px;
       line-height: 1;
       font-weight: 900;
-      color: #fffdf6;
-      -webkit-text-stroke: 5px #140806;
-      paint-order: stroke fill;
-      text-shadow: 0 3px 0 #140806, 0 0 2px #140806;
+      color: #fff;
+      -webkit-text-stroke: 2px #1a0806;
+      text-shadow: 0 2px 0 #1a0806, 0 0 8px #1a0806;
       background:
-        radial-gradient(circle at 50% 42%, #2a0c08 0 34%, #ffb15a 42%, #e23a18 58%, #7a140c 78%, #2a0a08 100%);
+        radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
       box-shadow:
         inset 0 0 0 3px rgba(255, 220, 160, 0.35),
         inset 0 -12px 16px rgba(0, 0, 0, 0.45),
@@ -3311,16 +3310,16 @@
     .gear-effect-slot .ico { width: 22px; height: 22px; color: #d5dbe3; }
     .gear-effect-name {
       margin: 0;
-      font-size: 17px;
+      font-size: 26px;
       font-weight: 800;
-      line-height: 1.25;
+      line-height: 1.2;
       color: #ffe7a8;
       letter-spacing: 0.04em;
       text-shadow: 0 0 12px rgba(255, 210, 120, 0.28), 0 1px 0 rgba(0, 0, 0, 0.55);
     }
     .gear-effect-stars {
-      margin: 5px 0 0;
-      font-size: 14px;
+      margin: 6px 0 0;
+      font-size: 22px;
       letter-spacing: 0.08em;
       color: #ffe27a;
       text-shadow: 0 0 8px rgba(255, 215, 120, 0.55);
@@ -4871,34 +4870,31 @@
     .menu.event.shop .shop-slot .gear-effect { width: 100%; }
     .menu.event.shop .shop-slot .gear-effect-art { width: 64px; height: 64px; }
     .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 64px 1fr; }
-    .event-drawers {
+    .event-map {
       position: fixed;
-      z-index: 40;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      z-index: 45;
+      left: 8px;
+      top: 72px;
+      bottom: 12px;
+      width: 12.5vw;
+      min-width: 168px;
+      transform: translateX(calc(-100% - 16px));
+      transition: transform 0.28s ease;
       pointer-events: none;
     }
-    .event-drawers .map-tab,
-    .event-drawers .drawer-panel { pointer-events: auto; }
-    .event-drawers .map-tab {
-      width: 42px;
-      height: 84px;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      border-radius: 0 14px 14px 0;
-      background: linear-gradient(180deg, #4a3824, #24180f);
-      color: #fff3c4;
-      font-weight: 900;
-      font-size: 26px;
-      box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.45);
-      cursor: pointer;
+    .event-map.on {
+      transform: translateX(0);
+      pointer-events: auto;
     }
-    .event-drawers .map-tab.on { background: linear-gradient(180deg, #e4b15a, #8a5a18); color: #2a2118; }
+    .event-map .road-map {
+      height: 100%;
+      width: 100%;
+      grid-area: auto;
+    }
+    .event-hud .small-btn.on {
+      color: #2a2118;
+      background: linear-gradient(180deg, #e4b15a, #8a5a18);
+    }
     .event-hud {
       position: fixed;
       top: 10px;
@@ -7535,14 +7531,13 @@
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
       const name = o.name ? `<p class="gear-effect-name">${esc(o.name)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const genre = boon ? "" : `<p class="gear-effect-slot">${gearSlotIcon(slotId)}<span>${esc(gearSlotLabel(slotId))}</span></p>`;
-      const under = boon ? "" : `<span class="gear-genre">${gearSlotIcon(slotId)}</span>`;
+      const genre = boon ? "" : `<p class="gear-effect-slot"><span>${esc(gearSlotLabel(slotId))}</span></p>`;
       const bodyClass = o.empty ? "gear-effect-body empty" : "gear-effect-body";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
       const body = o.body ? `<p class="${bodyClass}">${o.body}</p>` : "";
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${under}</div><div class="gear-effect-meta">${name}${stars}</div></div>${genre}${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${name}${stars}</div></div>${genre}${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -8573,8 +8568,9 @@
         showFoePlay(play);
         return;
       }
-      const ghost = deck.cloneNode(true);
+      const ghost = play.cloneNode(true);
       ghost.classList.add("fly-card");
+      ghost.style.visibility = "visible";
       ghost.style.position = "fixed";
       ghost.style.zIndex = "70";
       ghost.style.left = `${from.left}px`;
@@ -9777,34 +9773,8 @@
       return `${pick.card.name}を1枚受け取った。`;
     }
 
-    function playPickCenter(selector, done) {
-      const el = document.querySelector(selector);
-      const finish = typeof done === "function" ? done : function () {};
-      if (!(el instanceof HTMLElement) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        finish();
-        return;
-      }
-      const r = el.getBoundingClientRect();
-      const ghost = el.cloneNode(true);
-      ghost.classList.add("pick-glow");
-      ghost.style.position = "fixed";
-      ghost.style.left = r.left + "px";
-      ghost.style.top = r.top + "px";
-      ghost.style.width = r.width + "px";
-      ghost.style.height = r.height + "px";
-      ghost.style.margin = "0";
-      ghost.style.zIndex = "80";
-      ghost.style.pointerEvents = "none";
-      ghost.style.transition = "left .42s ease, top .42s ease, transform .42s ease, box-shadow .42s ease, opacity .32s ease .48s";
-      document.body.appendChild(ghost);
-      requestAnimationFrame(() => {
-        ghost.style.left = ((window.innerWidth - r.width) / 2) + "px";
-        ghost.style.top = ((window.innerHeight - r.height) / 2) + "px";
-        ghost.style.transform = "scale(1.06)";
-        ghost.style.boxShadow = "0 0 36px 10px rgba(255, 214, 120, 0.9)";
-      });
-      setTimeout(() => { ghost.style.opacity = "0"; }, 500);
-      setTimeout(() => { ghost.remove(); finish(); }, 860);
+    function playPickCenter(_selector, done) {
+      if (typeof done === "function") done();
     }
 
     function takeBless(index) {
@@ -11682,9 +11652,9 @@
     }
 
     function eventToolsHtml() {
-      const mapPanel = eventMapOpen ? `<section class="drawer-panel">${roadMapHtml()}</section>` : "";
-      const mark = eventMapOpen ? "◀" : "▶";
-      return `<div class="event-drawers"><button type="button" class="map-tab${eventMapOpen ? " on" : ""}" data-action="toggle-map" aria-label="マップ">${mark}</button>${mapPanel}</div><div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button></div>`;
+      const map = `<aside class="event-map${eventMapOpen ? " on" : ""}">${roadMapHtml()}</aside>`;
+      const label = eventMapOpen ? "MAP:ON" : "MAP:OFF";
+      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
     }
 
     function deckOverlay() {
