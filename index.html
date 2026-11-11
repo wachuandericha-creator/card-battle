@@ -6239,6 +6239,18 @@
       致命の一撃: { cost: 3, text: "パリィをすべて消費\n消費した数×15ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 2, text: "ブロックの数だけダメージ", kind: "attack", press: true },
     };
+    const CARD_BUILD = {
+      捨て身の一撃: "パリィ",
+      怒り: "パリィ",
+      パリィスラッシュ: "パリィ",
+      臆病者の構え: "パリィ",
+      余裕の構え: "パリィ",
+      ガードブレイク: "パリィ",
+      致命の一撃: "パリィ",
+      ジャストミート: "パリィ",
+      シールドアタック: "パリィ",
+      ライフフルネスアタック: "ライフフル",
+    };
     const COMMON = {
       頭突き: { cost: 1, text: "2ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 2, kind: "attack", headbutt: true },
       キック: { cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
@@ -6438,11 +6450,11 @@
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=15",
         action: "girl-action.jpg?v=5",
-        battle: "girl-battle.png?v=38",
+        battle: "girl-battle.png?v=39",
         battleRatio: "3 / 4",
-        defeat: "girl-defeat.png?v=11",
-        victory: "girl-victory.jpg?v=19",
-        bless: "blessing-goddess-f.jpg?v=2",
+        defeat: "girl-defeat.png?v=12",
+        victory: "girl-victory.jpg?v=20",
+        bless: "event-bless.jpg?v=1",
       },
     ];
     let heroCast = "戦士";
@@ -6838,10 +6850,10 @@
       if (name === "出来事:探索") return { src: "path-search.jpg?v=8", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
-      if (name === "出来事:お店") return { src: "path-shop.jpg?v=10", label: "お店" };
+      if (name === "出来事:お店") return { src: "path-shop.jpg?v=11", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=5", label: "物乞い" };
       if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=4", label: "ジョブ" };
-      if (name === "出来事:修行") return { src: "path-train.jpg?v=1", label: "修行" };
+      if (name === "出来事:修行") return { src: "path-train.jpg?v=2", label: "修行" };
       if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=1", label: "ボス戦", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -9294,18 +9306,44 @@
       }, 1400);
     }
 
-    function grantExplore() {
-      const kind = ["カード", "装備"][Math.floor(Math.random() * 2)];
-      if (kind === "カード") {
-        const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name] })).concat(classCards());
-        const pick = offers[Math.floor(Math.random() * offers.length)];
-        return takeGift({ kind: "card", card: keepCard({ ...pick, stars: pick.stars || 1 }) });
-      }
-      if (kind === "装備") {
-        const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
-        return takeGift({ kind: "gear", gear: { ...item } });
-      }
+    function cardBuildName(name) {
+      if (CARD_BUILD[name]) return CARD_BUILD[name];
+      if (name === "パリィ") return "パリィ";
       return "";
+    }
+
+    function playerBuild() {
+      const counts = {};
+      for (const card of runDeck()) {
+        const build = cardBuildName(card.name);
+        if (!build) continue;
+        counts[build] = (counts[build] || 0) + 1;
+      }
+      let best = "パリィ";
+      let bestN = -1;
+      for (const build of Object.keys(counts)) {
+        if (counts[build] > bestN) {
+          best = build;
+          bestN = counts[build];
+        }
+      }
+      return best;
+    }
+
+    function grantTrain() {
+      const build = playerBuild();
+      const names = Object.keys(CARD_BUILD).filter((name) => CARD_BUILD[name] === build && WARRIOR[name]);
+      const pool = names.length ? names : Object.keys(WARRIOR);
+      const name = shuffle(pool)[0];
+      const def = WARRIOR[name];
+      if (!def) return "";
+      return takeGift({ kind: "card", card: keepCard({ name, ...def, stars: def.stars || 1 }) });
+    }
+
+    function grantExplore() {
+      const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
+      if (!item) return "";
+      return takeGift({ kind: "gear", gear: { ...item } });
     }
 
     function giftMarkup(gift, big, hot, index) {
@@ -9382,8 +9420,9 @@
           startBattle(floorHp);
           return;
         }
-        floorNote = grantExplore() || "先へ進む。";
-        floorPrompt = "";
+        const gotGear = grantExplore();
+        floorNote = gotGear ? "宝箱に手を伸ばした。" : "先へ進む。";
+        floorPrompt = gotGear ? "装備だけもらえる。" : "";
       } else if (kind === "未知") {
         if (Math.random() < 0.5) {
           floorKind = "物乞いに遭遇";
@@ -9400,12 +9439,9 @@
         }
       } else if (kind === "修行") {
         floorKind = "修行";
-        if (player) {
-          player.atkMod = (Number(player.atkMod) || 0) + 1;
-          syncGearStats();
-        }
-        floorNote = "剣を振って体を慣らした。";
-        floorPrompt = "この攻略のあいだ、ATK+1。";
+        const gotCard = grantTrain();
+        floorNote = gotCard ? "素振りの汗が落ちた。" : "先へ進む。";
+        floorPrompt = gotCard ? `${playerBuild()}のカードを1枚もらった。` : "";
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
@@ -10157,11 +10193,11 @@
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front.png?v=11", "キャラデザ", "cut-ref")}
-              ${sheetFig("girl-battle.png?v=38", "戦闘", "cut-ref")}
+              ${sheetFig("girl-battle.png?v=39", "戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("girl-defeat.png?v=11", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=19", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=20", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10206,23 +10242,23 @@
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-boss.jpg?v=1", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=5", "物乞い")}
-              ${sheetFig("path-shop.jpg?v=10", "お店")}
+              ${sheetFig("path-shop.jpg?v=11", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
               ${sheetFig("path-job.jpg?v=4", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=7", "遭遇")}
-              ${sheetFig("path-train.jpg?v=1", "修行")}
+              ${sheetFig("path-train.jpg?v=2", "修行")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-search.jpg?v=8", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=9", "探索", "land-ref", "span-2")}
               ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
               ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=6", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=10", "ジョブ", "land-ref", "span-2")}
-              ${sheetFig("event-train.jpg?v=1", "修行", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=7", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-job.jpg?v=11", "ジョブ", "land-ref", "span-2")}
+              ${sheetFig("event-train.jpg?v=2", "修行", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -10233,7 +10269,7 @@
               ${sheetFig("chain-lock.png?v=1", "錆びた鎖（錠前2）", "cut-ref")}
             </div>
             <h3>祝福</h3>
-            ${sheetBanner("blessing-goddess-f.jpg?v=2", "祝福（戦士）", "荘厳な女神が、ひざまずく戦士に祝福を授けている")}
+            ${sheetBanner("event-bless.jpg?v=1", "祝福（戦士）", "道と同じく、女神がひざまずく戦士に手を差し伸べている")}
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=4", "スライム", "enemy-ref")}
@@ -10400,11 +10436,11 @@
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
         "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
-        "探索": ["event-search.jpg?v=8", "よだれを垂らしながら、宝箱を見つけている"],
-        "キャンプ": ["event-rest.jpg?v=6", "焚き火のそばに剣と盾を立てかけて、横向きに丸くなって寝ている"],
+        "探索": ["event-search.jpg?v=9", "宝箱の宝物に両手を伸ばしている"],
+        "キャンプ": ["event-rest.jpg?v=7", "部屋の真ん中の焚き火のそばで、剣を1本だけ立てて寝ている"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
-        "ジョブ": ["event-job.jpg?v=10", "階段のない石の床で、壁の紋章から光を受けている。左太ももにベルト"],
-        "修行": ["event-train.jpg?v=1", "剣を振って体を慣らしている"],
+        "ジョブ": ["event-job.jpg?v=11", "ジョブマスターからジョブを学んでいる"],
+        "修行": ["event-train.jpg?v=2", "盾を置かず、汗をかいて素振りしている"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -11057,13 +11093,13 @@
     const PATHS = {
       camp: { name: "休憩", text: "体力が全快する。", image: "path-rest.jpg?v=3" },
       straight: { name: "戦闘", text: "次の戦いに進む。", image: "path-fight.jpg?v=5" },
-      search: { name: "探索", text: "カードか装備。半分で戦闘。", image: "path-search.jpg?v=8" },
+      search: { name: "探索", text: "装備だけ。半分で戦闘。", image: "path-search.jpg?v=8" },
       beggar: { name: "物乞い", text: "デッキから1枚だけ外せる。進むと襲ってくる。", image: "path-beggar.jpg?v=5" },
-      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=10" },
+      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=11" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=4" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
-      train: { name: "修行", text: "この攻略のあいだ、ATK+1。", image: "path-train.jpg?v=1" },
+      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=2" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=4" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
