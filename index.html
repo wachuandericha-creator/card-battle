@@ -3482,9 +3482,10 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 6px;
+      gap: 4px;
       text-align: right;
     }
+    .gear-effect-titles > p { margin: 0; }
     .gear-effect-name {
       margin: 0;
       width: auto;
@@ -3501,12 +3502,13 @@
     }
     .gear-effect-stars {
       margin: 0;
-      padding: 0 0 1px;
-      font-size: 18px;
-      letter-spacing: 0.08em;
+      padding: 0;
+      font-size: 15px;
+      letter-spacing: 0.06em;
       color: #ffe27a;
       text-shadow: 0 0 8px rgba(255, 215, 120, 0.55);
-      line-height: 1.25;
+      line-height: 1.15;
+      white-space: nowrap;
     }
     .gear-effect-stars.boss {
       display: inline-block;
@@ -3548,16 +3550,18 @@
     .gear-effect-stats .atk { color: #ffc28a; }
     .gear-effect-stats .def { color: #d5dbe3; }
     .gear-effect-body {
-      margin: 10px 0 0;
-      padding: 10px 12px;
+      margin: 8px 0 0;
+      padding: 8px 10px;
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.28);
       border: 1px solid rgba(228, 177, 90, 0.38);
       color: #f3e2bf;
-      font-size: 13.5px;
-      line-height: 1.55;
+      font-size: 12px;
+      line-height: 1.42;
       white-space: normal;
       text-align: left;
+      overflow-wrap: anywhere;
+      line-break: strict;
     }
     .gear-effect.center-boon .gear-effect-body { text-align: center; }
     .gear-effect-body.empty {
@@ -3568,7 +3572,7 @@
     .gear-effect-body.starter {
       text-align: center;
       color: rgba(236, 220, 178, 0.88);
-      font-size: 13px;
+      font-size: 11.5px;
       font-weight: 700;
       letter-spacing: 0.14em;
     }
@@ -8146,6 +8150,14 @@
       return text.trim();
     }
 
+    function gearTraitOneLine(text) {
+      return String(text || "")
+        .replace(/\r\n?/g, "\n")
+        .replace(/\s*\n+\s*/g, " ")
+        .replace(/[ \u3000]{2,}/g, " ")
+        .trim();
+    }
+
     function gearSpecialText(item) {
       if (!item) return "";
       if (item.statusImmune) return "状態異常にならない";
@@ -8160,7 +8172,7 @@
       text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
       text = text.replace(/アクセサリー枠[。.]?/g, "").replace(/アクセサリー[。.]?/g, "");
       text = text.replace(/[。.\s　]+/g, " ").trim();
-      return text;
+      return gearTraitOneLine(text);
     }
 
     function gearAtkInTrait(item) {
@@ -8186,23 +8198,23 @@
     }
 
     function gearPopBodyLine(item, o, boon) {
-      if (o.empty) return { show: true, text: String(o.body ?? "").trim(), extra: "empty" };
+      if (o.empty) return { show: true, text: gearTraitOneLine(o.body ?? ""), extra: "empty" };
       if (boon) {
-        const t = String(o.body ?? "").trim();
+        const t = gearTraitOneLine(o.body ?? "");
         return { show: !!t, text: t, extra: "" };
       }
       if (item) {
         const special = gearSpecialText(item);
         const traitAtk = gearTraitAtkLine(item);
         if (special) {
-          const text = traitAtk ? `${traitAtk}　${special}` : special;
+          const text = gearTraitOneLine(traitAtk ? `${traitAtk}　${special}` : special);
           return { show: true, text, extra: "" };
         }
-        if (traitAtk) return { show: true, text: traitAtk, extra: "" };
+        if (traitAtk) return { show: true, text: gearTraitOneLine(traitAtk), extra: "" };
         if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
         return { show: true, text: "", extra: "empty-trait" };
       }
-      const t = String(o.body ?? "").trim();
+      const t = gearTraitOneLine(o.body ?? "");
       return { show: !!t, text: t, extra: "" };
     }
 
