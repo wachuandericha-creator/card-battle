@@ -3731,7 +3731,7 @@
       font-weight: 800;
       letter-spacing: 0;
     }
-    /* カード名は白字＋黒の縁取り（名札の色に関わらず） */
+    /* カード名は白字＋黒の縁取り。★★は銀、★★★以上は金。縁取りは黒のまま */
     .card .nameplate .name {
       color: #ffffff;
       -webkit-text-stroke: 0.9px #0a0806;
@@ -3747,6 +3747,8 @@
         1px -1px 0 #0a0806,
         -1px -1px 0 #0a0806;
     }
+    .card-fit.r2 .nameplate .name { color: #d7dee8; }
+    .card-fit.r3 .nameplate .name { color: #ffe14a; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
     .card:has(.card-fit.r2),
     .card:has(.card-fit.r3) {
@@ -6546,7 +6548,7 @@
       アタック: "card-attack-f.jpg?v=9",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=10",
-      パリィ: "card-parry.jpg?v=6",
+      パリィ: "card-parry.jpg?v=7",
       捨て身の一撃: "",
       怒り: "",
       パリィスラッシュ: "",
@@ -6733,6 +6735,7 @@
     let foeLeaveGhost = null;
     let foeDrawPending = false;
     let foeDeckEmpty = false;
+    let foeRageBusy = false;
     let foeAngerShow = false;
     let eventFloorCall = false;
     let note = "";
@@ -7917,6 +7920,8 @@
       enemyLoop = shuffle(sourcePattern());
       intentIndex = 0;
       foeDiscard = [];
+      foeDeckEmpty = false;
+      foeRageBusy = false;
       chooseNextIntent();
     }
 
@@ -7945,7 +7950,7 @@
     }
 
     function foeAngerCard() {
-      return { name: "怒り", cost: 0, text: "この戦闘中 ATK+1 DEF-1", kind: "skill", rage: true };
+      return { name: "怒り", cost: 0, text: "この戦闘中 ATK+1 DEF-1", kind: "skill", rage: true, foeRage: true, image: "card-anger.jpg?v=1" };
     }
 
     function advanceEnemyLoop() {
@@ -9063,23 +9068,68 @@
       render();
     }
 
+    function burnFoeAnger(done) {
+      const el = document.querySelector(".play-side.foe .play-card .card");
+      if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        done();
+        return;
+      }
+      const made = makeFlyGhost(el);
+      el.style.visibility = "hidden";
+      if (!made) {
+        done();
+        return;
+      }
+      const ghost = made.ghost;
+      const finish = () => {
+        if (ghost.dataset.landed) return;
+        ghost.dataset.landed = "1";
+        ghost.remove();
+        done();
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.55s ease, filter 0.55s ease";
+          ghost.style.transform = "translateY(-70px) scale(1.08)";
+          ghost.style.filter = "sepia(1) saturate(6) brightness(1.7)";
+          ghost.style.opacity = "0";
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 640);
+    }
+
     function presentNextFoeCard() {
       timer = null;
       if (phase !== "player" || outcome) return;
       if (foeDeckEmpty) {
         foeDeckEmpty = false;
+        foeRageBusy = true;
         foeAngerShow = true;
         intentShown = true;
         foeDrawPending = true;
-        gainEnemyAnger();
         render();
         timer = setTimeout(() => {
-          if (phase !== "player" || outcome) return;
-          flyDiscardIntoDeck(() => {
-            recycleEnemyDeck();
-            drawFoeFromDeck();
-          });
-        }, 1100);
+          if (outcome) return;
+          gainEnemyAnger();
+          render();
+          timer = setTimeout(() => {
+            if (outcome) return;
+            burnFoeAnger(() => {
+              if (outcome) return;
+              foeAngerShow = false;
+              intentShown = false;
+              foeDrawPending = false;
+              render();
+              flyDiscardIntoDeck(() => {
+                if (outcome) return;
+                recycleEnemyDeck();
+                foeRageBusy = false;
+                if (phase === "player") drawFoeFromDeck();
+              });
+            });
+          }, 720);
+        }, 700);
         return;
       }
       drawFoeFromDeck();
@@ -9163,7 +9213,7 @@
     }
 
     function endTurn() {
-      if (phase !== "player" || outcome) return;
+      if (phase !== "player" || outcome || foeRageBusy) return;
       if (hasReuseBracelet()) {
         const left = Math.max(0, Number(player.energy) || 0);
         player.pendingCarry = left;
@@ -11531,7 +11581,7 @@
       const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
-      const picture = cardArtSrc(card.name) ? `<img src="${cardArtSrc(card.name)}" alt="">` : "";
+      const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
@@ -11587,7 +11637,7 @@
     }
 
     function endButtonMarkup() {
-      return `<button type="button" class="end${phase === "player" && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" ? "" : "disabled"}>ターン終了</button>`;
+      return `<button type="button" class="end${phase === "player" && !foeRageBusy && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" && !foeRageBusy ? "" : "disabled"}>ターン終了</button>`;
     }
 
     let heroImage = null;
