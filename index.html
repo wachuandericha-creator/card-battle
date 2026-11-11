@@ -12192,7 +12192,7 @@
       if (face) {
         return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`, false);
       }
-      const style = CARD_STYLE.find((item) => item[0] === name) || CARD_STYLE_DEEP.find((item) => item[0] === name);
+      const style = CARD_STYLE.find((item) => item[0] === name);
       if (style) {
         const title = styleLabel(style[0], style[1]);
         return zoomSidePanel(title, `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(title)}"></div>`, false);
@@ -12388,9 +12388,6 @@
               <section>
                 <h3>カードスタイル</h3>
                 <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
-                <h3>枠を濃く</h3>
-                <p class="album-meta">枠だけ濃くした。名札の色はいまのまま。今のカードには使っていない</p>
-                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_DEEP)}</div>
               </section>
               <section>
                 <h3>裏面</h3>
@@ -12729,15 +12726,7 @@
       ["style-green", "アイテム", "frame-metal-green.png?v=5"],
       ["style-navy", "紺", "frame-metal-navy.png?v=4"],
     ];
-    const CARD_STYLE_DEEP = [
-      ["style-red-deep", "アタック", "frame-metal-red-deep.png?v=1"],
-      ["style-blue-deep", "ブロック", "frame-metal-blue-deep.png?v=1"],
-      ["style-yellow-deep", "スキル", "frame-metal-yellow-deep.png?v=1"],
-      ["style-green-deep", "アイテム", "frame-metal-green-deep.png?v=1"],
-      ["style-navy-deep", "紺", "frame-metal-navy-deep.png?v=1"],
-    ];
     function styleLabel(id, name) {
-      if (id.indexOf("deep") >= 0) return `濃い枠の${name}`;
       return name;
     }
     const ALBUM_FACE = [
