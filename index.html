@@ -141,9 +141,9 @@
       margin: 0 0 6px;
       padding: 4px 0 6px;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 18px;
+      font-size: 30px;
       font-weight: 900;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.22em;
       text-indent: 0.28em;
       text-align: center;
       color: #fff3c4;
@@ -195,13 +195,13 @@
       overflow: visible;
       color: #fff6d0;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 4px #e4c27a, 0 0 0 2px #6a4512;
+      box-shadow: inset 0 0 0 8px #ffe08a, 0 0 0 3px #6a4512;
     }
     .road-node.fixed {
       box-shadow: inset 0 0 0 4px #c43a32;
     }
     .road-node.now.fixed {
-      box-shadow: inset 0 0 0 4px #e4c27a, 0 0 0 2px #6a4512;
+      box-shadow: inset 0 0 0 8px #ffe08a, 0 0 0 3px #6a4512;
     }
     .road-node.boss { color: #ffb0a4; }
     .road-cap {
@@ -777,8 +777,8 @@
       align-items: center;
       justify-items: center;
       column-gap: 0;
-      font-size: 12px;
-      letter-spacing: 0.14em;
+      font-size: 16px;
+      letter-spacing: 0.08em;
       color: #d9c39a;
       text-shadow: 0 1px 0 #000;
     }
@@ -792,7 +792,7 @@
       width: 100%;
       text-align: center;
     }
-    .battle-plate .hp-line .lbl .ico { width: 14px; height: 14px; flex: none; }
+    .battle-plate .hp-line .lbl .ico { width: 18px; height: 18px; flex: none; }
     .battle-plate .hp-line .num {
       grid-column: 2;
       display: flex;
@@ -1783,19 +1783,7 @@
       cursor: pointer;
     }
     .cast-deck .card .text,
-    .cast-deck .card .rarity { visibility: hidden; }
-    .cast-deck .card-fit::after {
-      content: "";
-      position: absolute;
-      left: 6.5%;
-      right: 6.5%;
-      bottom: 4.5%;
-      height: 40%;
-      background: #140f0c;
-      z-index: 4;
-      pointer-events: none;
-    }
-    .cast-deck .card .text { background: transparent; }
+    .cast-deck .card .rarity { visibility: visible; }
     .cast-card-pop {
       position: fixed;
       z-index: 80;
@@ -2728,50 +2716,61 @@
       height: auto;
     }
     .mana-read {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      min-width: 72px;
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
       padding: 0;
       border: 0;
       background: none;
-      box-shadow: none;
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
     }
     .mana-read b {
-      width: 72px;
-      height: 72px;
+      width: 84px;
+      height: 84px;
       display: grid;
       place-items: center;
       border-radius: 50%;
-      font-size: 40px;
+      font-size: 42px;
       line-height: 1;
       font-weight: 900;
-      color: #140800;
-      text-shadow: none;
-      background: radial-gradient(circle at 38% 32%, #fffef4 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
-      box-shadow: 0 0 16px rgba(255, 190, 60, 0.75);
+      color: #fff6ea;
+      text-shadow: 0 2px 0 #4a1208, 0 0 10px rgba(255, 220, 160, 0.85);
+      background:
+        radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
+      box-shadow:
+        inset 0 0 0 3px rgba(255, 220, 160, 0.35),
+        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
+        0 0 0 7px #24180f,
+        0 0 0 10px #d7b56a,
+        0 0 0 13px #140e0a,
+        0 0 22px rgba(255, 70, 24, 0.72);
     }
-    .mana-read > span {
-      font-size: 18px;
+    .mana-read.has-temp b {
+      box-shadow:
+        inset 0 0 0 3px rgba(210, 230, 255, 0.7),
+        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
+        0 0 0 7px #1a2430,
+        0 0 0 10px #8eb4e0,
+        0 0 0 13px #140e0a,
+        0 0 22px rgba(120, 180, 255, 0.7);
+    }
+    .mana-read .mana-temp {
+      position: absolute;
+      right: -2px;
+      bottom: 2px;
+      min-width: 28px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #d7ecff;
+      color: #16324c;
+      font-size: 14px;
+      font-style: normal;
       font-weight: 900;
-      letter-spacing: 0.12em;
-      color: #ffe7a4;
+      line-height: 1;
+      box-shadow: 0 0 0 2px #1a120c;
     }
-    .mana-pips { display: flex; gap: 7px; margin-top: 6px; }
-    .mana-pip {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #fff6c2, #e4b15a 46%, #8a5812);
-      box-shadow: 0 0 8px rgba(255, 200, 80, 0.85);
-    }
-    .mana-pip.temp {
-      background: radial-gradient(circle at 35% 30%, #fff, #d9ecff 42%, #6aa4dc);
-      box-shadow: 0 0 8px rgba(180, 220, 255, 0.85);
-    }
-    .mana-pip.off { opacity: 0.28; box-shadow: none; }
     .handbar {
       width: 100%;
       min-width: 0;
@@ -4866,7 +4865,12 @@
     .menu.event .event-play p,
     .menu.event .event-where,
     .menu.event .event-prompt {
-      color: #e4c27a;
+      color: #ffe08a;
+    }
+    .menu.event .event-play p {
+      font-size: clamp(28px, 2.4vw, 36px);
+      font-weight: 800;
+      color: #ffe08a;
     }
     .menu.event .event-split.both .event-play,
     .menu.event .event-split:not(.both):has(.event-story) + .event-where {
@@ -4918,20 +4922,45 @@
     }
     .gift-row { display: flex; gap: 22px; justify-content: center; align-items: stretch; flex-wrap: wrap; }
     .menu .gift-btn {
-      min-width: 0;
-      width: 280px;
-      padding: 8px 8px 10px;
+      min-width: 220px;
+      width: auto;
+      max-width: 300px;
+      padding: 12px 12px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
+      border: 2px solid #e4c27a;
+      border-radius: 18px;
+      background: rgba(16, 11, 9, 0.78);
+      box-shadow: 0 0 0 1px #5c3d12, 0 14px 24px rgba(0, 0, 0, 0.4);
       color: var(--cream);
       cursor: pointer;
     }
+    .gift-btn .gear-effect,
+    .gift-pick .gear-effect,
+    .gift-show .gear-effect {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: min(260px, 100%);
+      max-width: 260px;
+      max-height: none;
+      pointer-events: none;
+    }
+    .bless-boon {
+      width: 220px;
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #fff6e4;
+    }
+    .bless-boon b { font-size: 20px; letter-spacing: 0.14em; color: #ffe08a; }
+    .bless-boon strong { font-size: 46px; line-height: 1; }
+    .bless-boon p { margin: 0; font-size: 14px; font-weight: 700; text-align: center; }
     .menu .gift-btn:hover { transform: none; filter: brightness(1.08); }
     .gift-label {
       font-size: 28px;
@@ -5150,6 +5179,12 @@
       .menu.event.bless.arrive { animation: none; }
     }
     .depart-name span { color: inherit; }
+    .menu.run-in { animation: run-in 0.9s ease both; }
+    @keyframes run-in {
+      0% { opacity: 0; filter: brightness(2.2); }
+      45% { opacity: 1; filter: brightness(1.25); }
+      100% { opacity: 1; filter: none; }
+    }
     @keyframes depart-zoom {
       0% { transform: scale(1.02); filter: brightness(0.55); }
       16% { transform: scale(1.06); filter: brightness(1); }
@@ -5263,17 +5298,49 @@
       filter: none;
       pointer-events: none;
     }
+    .cast-screen.character-focus .cast-stage {
+      position: relative;
+      z-index: 2;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .cast-deck-stage {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .cast-deck-stage h2 {
+      margin: 0 0 8px;
+      text-align: center;
+      color: #f0c36a;
+      font-size: 18px;
+      letter-spacing: 0.16em;
+    }
+    .cast-screen.character-focus .cast-deck {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .cast-screen.character-focus .cast-deck .card.preview { width: 100%; height: auto; }
     .cast-screen.character-focus .cast-keys {
       justify-self: end;
+      align-self: flex-end;
       width: min(320px, 100%);
     }
     .cast-mid {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: flex-start;
-      gap: 12px;
+      gap: 16px;
     }
-    .cast-vitals { flex: 1; min-width: 140px; display: flex; flex-direction: column; gap: 6px; margin: 8px 0 4px; }
+    .cast-vitals { flex: 0 1 auto; min-width: 140px; display: flex; flex-direction: column; gap: 4px; margin: 0; }
     .cast-gear-col { flex: 0 0 auto; }
     .cast-gear-col h2 { margin-top: 0; }
     .cast-gear-col .cast-gear { flex-direction: column; align-items: flex-end; }
@@ -5304,16 +5371,21 @@
     .cast-vitals .hp-line .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
     .cast-vitals .hp-line .ico.shield { color: #d7dde6; filter: drop-shadow(0 0 5px rgba(220, 226, 232, 0.45)); }
     .cast-vitals .hp-line .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
-    .cast-screen.character-focus .cast-side,
-    .cast-screen.character-focus .cast-keys {
+    .cast-screen.character-focus .cast-side {
       position: relative;
       z-index: 2;
       height: 100%;
       min-height: 0;
       align-self: stretch;
     }
-    .cast-screen.character-focus .cast-side .cast-plaque,
     .cast-screen.character-focus .cast-keys {
+      position: relative;
+      z-index: 2;
+      height: auto;
+      flex: 0 0 auto;
+      align-self: flex-end;
+    }
+    .cast-screen.character-focus .cast-side .cast-plaque {
       height: 100%;
       max-height: 100%;
       overflow: auto;
@@ -5336,6 +5408,7 @@
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 13px; letter-spacing: 0.04em; }
     .cast-screen.dungeon-screen {
       width: 100%;
+      padding: 12px 16px 88px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(300px, 34%);
       grid-template-rows: auto minmax(0, 1fr) auto;
@@ -5348,6 +5421,16 @@
       gap: 10px 18px;
       padding-right: 22px;
     }
+    .dungeon-screen > .cast-actions {
+      position: fixed;
+      grid-area: title;
+      width: max-content;
+      height: 76px;
+      justify-self: center;
+      align-self: end;
+      pointer-events: none;
+    }
+    .dungeon-screen > .cast-actions > button { pointer-events: auto; }
     .dungeon-screen .cast-title { grid-area: title; }
     .dungeon-screen .dungeon-preview {
       grid-area: preview;
@@ -5602,7 +5685,7 @@
       min-width: 0;
       min-height: 0;
       height: 100%;
-      filter: brightness(0.38) saturate(0.7);
+      filter: brightness(0.78) saturate(0.9);
       transition: filter 0.22s ease;
     }
     .dungeon-col.active .dungeon-shot { filter: none; }
@@ -6177,12 +6260,12 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-f.jpg?v=6",
-      仮アタック: "card-attack-temp.jpg?v=5",
+      アタック: "card-attack-f.jpg?v=7",
+      仮アタック: "card-attack-temp.jpg?v=6",
       チャージアタック: "card-charge-f.jpg?v=7",
-      ブロック: "card-block-f.jpg?v=8",
-      仮ブロック: "card-block-temp.jpg?v=7",
-      パリィ: "card-parry.jpg?v=1",
+      ブロック: "card-block-f.jpg?v=9",
+      仮ブロック: "card-block-temp.jpg?v=8",
+      パリィ: "card-parry.jpg?v=2",
       捨て身の一撃: "",
       怒り: "",
       パリィスラッシュ: "",
@@ -6468,6 +6551,8 @@
     let floorGift = null;
     let blessPicks = [];
     let floorHp = 30;
+    let runBonus = { hp: 0, spd: 0, mana: 0 };
+    let runEntrance = false;
     let battleStartHp = 30; // この戦闘を始めたときのHP（天使のペンダントのやり直し用）
     let ultimatePicks = [];
     let rewardReady = false;
@@ -8587,7 +8672,7 @@
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
       const carried = Math.max(0, Number(player.pendingCarry) || 0);
       player.pendingCarry = 0;
-      player.baseMax = MANA + halfMana;
+      player.baseMax = MANA + (Number(player.manaMod) || 0) + halfMana;
       player.baseEnergy = player.baseMax;
       player.tempEnergy = carried;
       syncEnergyTotal();
@@ -8595,7 +8680,7 @@
       if (carried > 0) log(`${heroName()}は持ち越したマナ${carried}（オレンジ）。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
-      draw(DRAW_PER_TURN + extra);
+      draw(DRAW_PER_TURN + (Number(player.spdMod) || 0) + extra);
       pullFromBracelets();
       fxDeal = true;
       slashSeq = 0;
@@ -8923,6 +9008,7 @@
         pathEventTitle,
         bonusCard,
         floorGift,
+        runBonus,
         bossPicks,
         shopStock,
         gearOffer,
@@ -8965,6 +9051,9 @@
     }
 
     function applySave(data) {
+      runBonus = data.runBonus && typeof data.runBonus === "object"
+        ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0 }
+        : emptyRunBonus();
       cleared = !!data.cleared;
       runEnded = data.runEnded || (data.cleared ? "win" : null);
       defeatSnap = data.defeatSnap || null;
@@ -8994,9 +9083,11 @@
         player.hit = false;
         player.atk = player.atk || 0;
         player.def = player.def || 0;
-        player.maxHp = 30;
+        player.maxHp = Math.max(runMaxHp(), Number(player.maxHp) || 30);
+        player.manaMod = Number(player.manaMod) || runBonus.mana || 0;
+        player.spdMod = Number(player.spdMod) || runBonus.spd || 0;
         if (player.hp > player.maxHp) player.hp = player.maxHp;
-        player.maxEnergy = Math.min(MANA + 1, Math.max(MANA, Number(player.maxEnergy) || MANA));
+        player.maxEnergy = Math.min(MANA + (Number(player.manaMod) || 0) + 1, Math.max(MANA + (Number(player.manaMod) || 0), Number(player.maxEnergy) || MANA));
         if (player.energy > player.maxEnergy) player.energy = player.maxEnergy;
         if (player.baseMax == null) player.baseMax = Math.max(0, Number(player.maxEnergy) || MANA);
         if (player.tempEnergy == null) player.tempEnergy = 0;
@@ -9102,9 +9193,10 @@
       screen = "battle";
       cleared = false;
       runEnded = null;
-      const hp = keepHp == null ? 30 : Math.min(30, keepHp);
+      const maxHp = runMaxHp();
+      const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
       battleStartHp = hp;
-      player = { hp, maxHp: 30, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0 };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0 };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -9262,15 +9354,23 @@
       return "";
     }
 
+    function emptyRunBonus() {
+      return { hp: 0, spd: 0, mana: 0 };
+    }
+
+    function runMaxHp() {
+      return 30 + Math.max(0, Number(runBonus && runBonus.hp) || 0);
+    }
+
     function rollBlessPicks() {
-      const gearA = rollBlessGear();
-      let gearB = rollBlessGear();
-      for (let i = 0; i < 8 && gearB.id === gearA.id; i++) gearB = rollBlessGear();
-      return [
-        { kind: "gear", gear: gearA, label: "装備" },
-        { kind: "gear", gear: gearB, label: "装備" },
-        { kind: "card", card: rollBlessCard(), label: "カード" },
-      ];
+      const kinds = shuffle(["maxhp", "spd", "mana", "gear", "card"]).slice(0, 3);
+      return kinds.map((kind) => {
+        if (kind === "maxhp") return { kind, label: "最大HP" };
+        if (kind === "spd") return { kind, label: "SPD" };
+        if (kind === "mana") return { kind, label: "マナ" };
+        if (kind === "gear") return { kind, gear: rollBlessGear(), label: "装備" };
+        return { kind: "card", card: rollBlessCard(), label: "カード" };
+      });
     }
 
     function takeGift(pick) {
@@ -9294,8 +9394,21 @@
       if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
       const pick = blessPicks[index];
       if (!pick) return;
-      const got = takeGift(pick);
-      if (!got) return;
+      let got = "";
+      if (pick.kind === "maxhp") {
+        runBonus.hp = (Number(runBonus.hp) || 0) + 10;
+        floorHp = runMaxHp();
+        got = "最大HPが10増えた。";
+      } else if (pick.kind === "spd") {
+        runBonus.spd = (Number(runBonus.spd) || 0) + 1;
+        got = "SPDが1増えた。";
+      } else if (pick.kind === "mana") {
+        runBonus.mana = (Number(runBonus.mana) || 0) + 1;
+        got = "マナが1増えた。";
+      } else {
+        got = takeGift(pick);
+        if (!got) return;
+      }
       floorNote = got || "";
       floorPrompt = "";
       blessPicks = [];
@@ -9358,12 +9471,27 @@
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(gift.card)}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
+      if (gift.kind === "maxhp" || gift.kind === "spd" || gift.kind === "mana") {
+        const boon = gift.kind === "maxhp"
+          ? ["最大HP", "+10", "この攻略のあいだ増える"]
+          : gift.kind === "spd"
+            ? ["SPD", "+1", "毎ターンのドローが増える"]
+            : ["マナ", "+1", "毎ターンのマナが増える"];
+        return `<div class="${cls}"><div class="bless-boon"><b>${boon[0]}</b><strong>${boon[1]}</strong><p>${boon[2]}</p></div></div>`;
+      }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
+      if (gift.kind === "gear") {
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${gearPopShell(item.slot || "sword", {
+          name: item.name,
+          rarity: gearRarityText(item),
+          image: item.image || "",
+          body: esc(gearEffectPlain(item)),
+          stats: gearStatChips(item),
+        })}</div>`;
+      }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
-      const detail = gift.kind === "gear"
-        ? `<b>${esc(item.name)}</b>${gearCompareHtml(item)}<small>${esc(item.effect || "")}</small>`
-        : `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
+      const detail = `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
     }
 
@@ -9390,7 +9518,7 @@
     }
 
     function openFloor(keepHp) {
-      floorHp = keepHp == null ? 30 : Math.min(30, keepHp);
+      floorHp = keepHp == null ? runMaxHp() : Math.min(runMaxHp(), keepHp);
       const kind = String(route[battleIndex] || "").slice("出来事:".length);
       floorKind = kind;
       floorNote = "";
@@ -9408,8 +9536,11 @@
         floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
-        floorHp = 30;
-        if (player) player.hp = 30;
+        floorHp = runMaxHp();
+        if (player) {
+          player.maxHp = runMaxHp();
+          player.hp = player.maxHp;
+        }
         floorNote = "体力が全快した。";
         floorPrompt = "";
       } else if (kind === "お店") {
@@ -9522,6 +9653,8 @@
       rememberFloors(floors || 20);
       battleTotal = route.length;
       cleared = false;
+      runBonus = emptyRunBonus();
+      runEntrance = true;
       gear = starterGear();
       gearOpen = null;
       gearOffer = null;
@@ -9649,12 +9782,8 @@
     function pips() {
       const baseOn = Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0);
       const temp = Math.max(0, Number(player.tempEnergy) || 0);
-      const cap = Math.max(baseOn, Number(player.baseMax) || 0, MANA);
       const total = baseOn + temp;
-      const dots = [];
-      for (let i = 0; i < cap; i += 1) dots.push(`<i class="mana-pip${i < baseOn ? "" : " off"}"></i>`);
-      for (let i = 0; i < temp; i += 1) dots.push(`<i class="mana-pip temp"></i>`);
-      return `<div class="mana-read" aria-label="マナ残り ${total}。枠 ${cap}${temp ? `。持ち越し ${temp}` : ""}"><span>マナ残り</span><b>${total}</b><div class="mana-pips">${dots.join("")}</div></div>`;
+      return `<div class="mana-read${temp ? " has-temp" : ""}" aria-label="マナ残り ${total}${temp ? `。持ち越し ${temp}` : ""}"><b>${total}</b>${temp ? `<i class="mana-temp">+${temp}</i>` : ""}</div>`;
     }
 
     function menuButton(label, action, primary, disabled) {
@@ -9847,16 +9976,20 @@
                 </div>
               </div>
             </div>
-            <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
-            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
           </div>
         </div>
-        <aside class="cast-keys" aria-label="パリィ">
-          <h2>パリィ</h2>
-          <p>次の攻撃を１回無効にする。重複不可。</p>
-          <p>ターン終了時に消失。</p>
-          <p>パリィがある間、シールドを追加で得ることはできない。</p>
-        </aside>`;
+        <div class="cast-stage">
+          <section class="cast-deck-stage">
+            <h2><span>初期デッキ</span> ${starterDeckCount()}枚</h2>
+            <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
+          </section>
+          <aside class="cast-keys" aria-label="パリィ">
+            <h2>パリィ</h2>
+            <p>次の攻撃を１回無効にする。重複不可。</p>
+            <p>ターン終了時に消失。</p>
+            <p>パリィがある間、シールドを追加で得ることはできない。</p>
+          </aside>
+        </div>`;
     }
 
     function challengeReady() {
@@ -9962,7 +10095,7 @@
     }
 
     function shownDungeonName() {
-      return dungeonHover || dungeonLock;
+      return dungeonHover || dungeonLock || (DUNGEON_LIST[0] && DUNGEON_LIST[0].name) || "";
     }
 
     function dungeonChainHtml(count) {
@@ -10457,8 +10590,7 @@
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
         })
         : [];
-      const blessSkip = floorPhase === "bless" ? menuButton("スキップ", "bless-skip") : "";
-      const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>${blessSkip}` : blessSkip;
+      const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
@@ -10467,8 +10599,9 @@
       const title = `<h1>${esc(floorKind)}</h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${where}${shop}${gift}${bless}${beggar}${jobs}${ultimates}${next}`;
       root.innerHTML = art
-        ? `<div class="menu event${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
+        ? `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
         : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${title}${choice}</div>`;
+      runEntrance = false;
     }
 
     function renderClear() {
@@ -11652,7 +11785,7 @@
     function eventNoteHtml() {
       const gameLine = (text) => /選べ|外せる|外さず|進むと|受け取|捨てない|残っている/.test(text || "");
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は<span class="hint">祝福</span>を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p><p>いらないときは、祝福を受け取らずに先へ進める。</p></div><div class="event-play"><p>報酬を選べ</p></div></div>`;
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は<span class="hint">祝福</span>を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p></div><div class="event-play"><p>報酬を選べ</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const noteIsGame = gameLine(floorNote);
@@ -11893,7 +12026,7 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.extraDraw) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { badges: statusChips(player), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
