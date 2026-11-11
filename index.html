@@ -1918,7 +1918,20 @@
     }
     .cast-token.mini img { width: 168px; height: 168px; object-fit: contain; border-radius: 12px; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5)); }
     .cast-token.mini span { font-size: 16px; letter-spacing: 0.1em; }
-    .cast-token.mini.shown { border-color: #e4b15a; }
+    .cast-screen.character-focus .cast-token.mini.locked {
+      border-color: #e4b15a;
+      box-shadow:
+        0 0 0 1px rgba(228, 177, 90, 0.9),
+        0 0 16px rgba(240, 195, 106, 0.5),
+        inset 0 0 10px rgba(228, 177, 90, 0.15);
+      background: rgba(36, 28, 20, 0.82);
+    }
+    .cast-screen.character-focus .cast-token.mini.locked img {
+      filter: drop-shadow(0 0 10px rgba(240, 195, 106, 0.7)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+    }
+    .cast-screen.character-focus .cast-token.mini.shown:not(.locked) {
+      border-color: rgba(228, 177, 90, 0.38);
+    }
     .cast-hero {
       height: min(22vh, 200px);
       width: auto;
@@ -10684,8 +10697,10 @@
         const main = root.querySelector(".cast-main");
         if (main) main.innerHTML = castMainMarkup(item);
       }
+      const jobPick = root.querySelector(".cast-screen.character-focus");
       root.querySelectorAll("[data-cast]").forEach((token) => {
-        token.classList.toggle("locked", token.dataset.cast === castLock);
+        const picked = token.dataset.cast === castLock;
+        token.classList.toggle("locked", jobPick ? castLit && picked : picked);
         token.classList.toggle("shown", token.dataset.cast === name);
       });
       paintChallengeStart();
@@ -13191,7 +13206,7 @@
           screen = "character";
           render();
         }
-        if (name === "open-dungeon") { castLock = shownCastName(); screen = "dungeon"; render(); }
+        if (name === "open-dungeon") { castLock = shownCastName(); castLit = true; screen = "dungeon"; render(); }
         if (name === "cast-token") {
           castLock = action.dataset.cast || castLock;
           castHover = "";
