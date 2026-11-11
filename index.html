@@ -13717,7 +13717,6 @@
       const foeHitsNow = fxFoeHits;
       const hurtNow = fxHurt;
       const struckNow = fxStruck;
-      const shieldPlayerNow = fxShieldPlayer;
       const shieldEnemyNow = fxShieldEnemy;
       const parryPlayerNow = fxParryPlayer;
       const parryFromShieldNow = fxParryFromShield;
@@ -13782,7 +13781,7 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
