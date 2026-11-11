@@ -5157,6 +5157,7 @@
       font-weight: 700;
       line-height: 1.85;
       letter-spacing: 0.06em;
+      text-align: left;
       color: #ffe08a;
       background: none;
       border: 0;
@@ -6897,7 +6898,7 @@
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
-        defeat: "girl-defeat.png?v=12",
+        defeat: "girl-defeat.jpg?v=13",
         victory: "girl-victory.jpg?v=26",
         bless: "event-bless.jpg?v=2",
       },
@@ -10198,7 +10199,7 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "女神が三つを差し出した。ひとつだけ受け取れる。";
+        floorNote = "女神は祝福を３つ差し出す、受け取れるのは一つだけ。";
         floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
@@ -11047,7 +11048,7 @@
               ${sheetFig("girl-battle.png?v=40", "戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-defeat.jpg?v=13", "敗北", "land-ref", "wide-land")}
               ${sheetFig("girl-victory.jpg?v=26", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
@@ -12668,7 +12669,7 @@
 
     function eventNoteHtml() {
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p></div><div class="event-play"><p>報酬を1つ選ぶ。</p></div></div>`;
+        return `<div class="event-split both"><div class="event-story"><p>意志のサイン段にひざまずくと、光の翼をもつ女神が下りてきた</p><p>これから恐ろしい困難が待ち受けているとは知らない挑戦者に女神は優しく微笑んだ。</p><p>女神は祝福を３つ差し出す、受け取れるのは一つだけ。</p><p>強欲なものは嫌われるに決まっている。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const story = floorNote ? eventStoryHtml(floorNote) : "";
