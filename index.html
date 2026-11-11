@@ -12196,9 +12196,12 @@
       if (face) {
         return zoomSidePanel(face[1], `<div class="art-zoom-frame"><img class="art-zoom-img" src="${face[2]}" alt="${esc(face[1])}"></div>`, false);
       }
-      const style = CARD_STYLE.find((item) => item[0] === name) || CARD_STYLE_GLOSS.find((item) => item[0] === name);
+      const style = CARD_STYLE.find((item) => item[0] === name)
+        || CARD_STYLE_GLOSS.find((item) => item[0] === name)
+        || CARD_STYLE_PLATE_SILVER.find((item) => item[0] === name)
+        || CARD_STYLE_PLATE_GOLD.find((item) => item[0] === name);
       if (style) {
-        const title = style[0].indexOf("gloss") >= 0 ? `光沢案の${style[1]}` : style[1];
+        const title = styleLabel(style[0], style[1]);
         return zoomSidePanel(title, `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(title)}"></div>`, false);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || {}) };
@@ -12394,6 +12397,12 @@
                 <h3>光沢案</h3>
                 <p class="album-meta">名札を濃くして、上に光沢を足した案。今のカードには使っていない</p>
                 <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_GLOSS)}</div>
+                <h3>名札・銀</h3>
+                <p class="album-meta">枠はジャンルの色のまま。名札だけ銀。今のカードには使っていない</p>
+                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_PLATE_SILVER)}</div>
+                <h3>名札・金</h3>
+                <p class="album-meta">枠はジャンルの色のまま。名札だけ金。今のカードには使っていない</p>
+                <div class="ref-grid blank-grid">${cardStyleSheet(CARD_STYLE_PLATE_GOLD)}</div>
               </section>
               <section>
                 <h3>裏面</h3>
@@ -12739,6 +12748,26 @@
       ["style-green-gloss", "アイテム", "frame-metal-green-gloss.png?v=1"],
       ["style-navy-gloss", "紺", "frame-metal-navy-gloss.png?v=1"],
     ];
+    const CARD_STYLE_PLATE_SILVER = [
+      ["style-red-plate-silver", "アタック", "frame-metal-red-plate-silver.png?v=1"],
+      ["style-blue-plate-silver", "ブロック", "frame-metal-blue-plate-silver.png?v=1"],
+      ["style-yellow-plate-silver", "スキル", "frame-metal-yellow-plate-silver.png?v=1"],
+      ["style-green-plate-silver", "アイテム", "frame-metal-green-plate-silver.png?v=1"],
+      ["style-navy-plate-silver", "紺", "frame-metal-navy-plate-silver.png?v=1"],
+    ];
+    const CARD_STYLE_PLATE_GOLD = [
+      ["style-red-plate-gold", "アタック", "frame-metal-red-plate-gold.png?v=1"],
+      ["style-blue-plate-gold", "ブロック", "frame-metal-blue-plate-gold.png?v=1"],
+      ["style-yellow-plate-gold", "スキル", "frame-metal-yellow-plate-gold.png?v=1"],
+      ["style-green-plate-gold", "アイテム", "frame-metal-green-plate-gold.png?v=1"],
+      ["style-navy-plate-gold", "紺", "frame-metal-navy-plate-gold.png?v=1"],
+    ];
+    function styleLabel(id, name) {
+      if (id.indexOf("plate-silver") >= 0) return `銀の名札・${name}`;
+      if (id.indexOf("plate-gold") >= 0) return `金の名札・${name}`;
+      if (id.indexOf("gloss") >= 0) return `光沢案の${name}`;
+      return name;
+    }
     const ALBUM_FACE = [
       ["back-player", "裏面", "card-back.jpg?v=3"],
       ["back-foe", "敵の裏面", "card-back-foe.jpg?v=1"],
@@ -12752,7 +12781,7 @@
     function cardStyleSheet(list) {
       return (list || CARD_STYLE).map((item) => {
         const on = albumZoom === item[0];
-        const aria = item[0].indexOf("gloss") >= 0 ? `光沢案の${item[1]}` : item[1];
+        const aria = styleLabel(item[0], item[1]);
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(aria)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(aria)}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
     }
@@ -13209,7 +13238,15 @@
     }
 
     function sortedCards(cards) {
-      return cards.slice().sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name, "ja"));
+      return cards.slice().sort((a, b) => {
+        const ga = cardGenreRank(a);
+        const gb = cardGenreRank(b);
+        if (ga !== gb) return ga - gb;
+        const ca = Number(a.cost) || 0;
+        const cb = Number(b.cost) || 0;
+        if (ca !== cb) return ca - cb;
+        return a.name.localeCompare(b.name, "ja");
+      });
     }
 
     function deckGroup(label, cards) {
