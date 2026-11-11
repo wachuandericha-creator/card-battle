@@ -6187,7 +6187,7 @@
       grid-template-rows: auto minmax(0, 1fr);
       align-content: start;
       align-items: stretch;
-      justify-items: center;
+      justify-items: stretch;
       width: 100%;
       min-width: 0;
     }
@@ -6251,28 +6251,13 @@
       justify-self: end;
     }
     .cast-screen.character-focus .cast-stat-board .hp-line b { font-size: clamp(22px, 2vw, 28px); }
-    /* 初期ステ：表の内側だけコンパクト（cast-deck／cast-deck-block には触れない） */
+    /* 初期ステ：左列いっぱい（cast-deck／cast-deck-block には触れない） */
     .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals {
-      width: min(100%, 90px);
-      max-width: 90px;
-      justify-self: center;
+      width: 100%;
+      max-width: 100%;
+      justify-self: stretch;
       align-self: start;
       flex: 0 0 auto;
-    }
-    .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals .hp-line {
-      gap: 4px;
-      padding: 5px 7px;
-    }
-    .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals .hp-line .lbl {
-      font-size: 12px;
-      gap: 4px;
-    }
-    .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals .hp-line .ico {
-      width: 19px;
-      height: 19px;
-    }
-    .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals .hp-line b {
-      font-size: clamp(17px, 1.55vw, 21px);
     }
     .cast-screen.character-focus .cast-plaque h2 { margin: 8px 0 6px; font-size: 15px; }
     .cast-screen.character-focus .cast-gear-col {
