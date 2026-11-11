@@ -195,13 +195,13 @@
       overflow: visible;
       color: #fff6d0;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 8px #ffe08a, 0 0 0 3px #6a4512;
+      box-shadow: inset 0 0 0 16px #ffe08a, 0 0 0 6px #6a4512;
     }
     .road-node.fixed {
       box-shadow: inset 0 0 0 4px #c43a32;
     }
     .road-node.now.fixed {
-      box-shadow: inset 0 0 0 8px #ffe08a, 0 0 0 3px #6a4512;
+      box-shadow: inset 0 0 0 16px #ffe08a, 0 0 0 6px #6a4512;
     }
     .road-node.boss { color: #ffb0a4; }
     .road-cap {
@@ -2720,12 +2720,13 @@
     }
     .handbar .mana-dock {
       flex: 0 0 auto;
-      align-self: center;
+      align-self: flex-start;
       display: flex;
       align-items: center;
       justify-content: center;
       min-width: 0;
       height: auto;
+      margin-top: -16px;
     }
     .mana-read {
       position: relative;
@@ -2744,11 +2745,12 @@
       display: grid;
       place-items: center;
       border-radius: 50%;
-      font-size: 42px;
+      font-size: 52px;
       line-height: 1;
       font-weight: 900;
-      color: #fff6ea;
-      text-shadow: 0 2px 0 #4a1208, 0 0 10px rgba(255, 220, 160, 0.85);
+      color: #fff;
+      -webkit-text-stroke: 2px #1a0806;
+      text-shadow: 0 2px 0 #1a0806, 0 0 8px #1a0806;
       background:
         radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
       box-shadow:
@@ -4211,9 +4213,15 @@
       padding: 14px 14px 18px;
       border-radius: 18px;
       font-size: 20px;
-      background: linear-gradient(180deg, #fff1c4 0%, #e4b15a 55%, #c48a2a 100%);
-      color: #2a2118;
+      background: linear-gradient(180deg, #d7ecff 0%, #6aa4e0 55%, #24588f 100%);
+      color: #102033;
     }
+    .overlay.paths .path-list button.path-straight {
+      background: linear-gradient(180deg, #ffd0c4 0%, #e24a38 55%, #8d1c16 100%);
+      color: #fff6f2;
+    }
+    .overlay.paths .path-list button.path-straight b,
+    .overlay.paths .path-list button.path-straight span { color: #fff6f2; }
     .overlay.paths .path-list button + button { margin-top: 0; }
     .overlay.paths .path-list button img {
       width: 100%;
@@ -4891,6 +4899,14 @@
       margin-top: 14px;
       padding-top: 12px;
     }
+    .menu.event.search {
+      grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.72fr);
+    }
+    .menu.event.search .event-choice { padding-right: 4%; padding-left: 4%; gap: 10px; }
+    .menu.event.search .gift-show { width: min(280px, 100%); max-width: 280px; align-self: center; }
+    .menu.event .event-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .menu.event .event-actions button { min-width: 0; }
+    .menu.event .beggar-card.picked .card.preview { outline: 4px solid #ffe08a; outline-offset: 2px; }
     .menu.event .gift-row,
     .menu.event .shop-row { width: 100%; justify-content: space-between; }
     .menu.event .gift-btn { flex: 1 1 0; width: auto; min-width: 0; }
@@ -6230,7 +6246,7 @@
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=10",
       仮ブロック: "card-block-temp.jpg?v=9",
-      パリィ: "card-parry.jpg?v=4",
+      パリィ: "card-parry.jpg?v=5",
       捨て身の一撃: "",
       怒り: "",
       パリィスラッシュ: "",
@@ -6350,6 +6366,7 @@
         hp: 50,
         medal: "minotaur-medal",
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
+        rally: true,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -6381,7 +6398,6 @@
         rank: "雑魚",
         hp: 15,
         atkHidden: 3,
-        trait: "この戦闘で、物乞いにあげたカードを使う。",
         pattern: [
           { name: "アタック" },
         ],
@@ -6453,6 +6469,8 @@
     let removed = [];
     let beggarGift = [];
     let beggarCut = false;
+    let beggarPick = -1;
+    let beggarBattle = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
     let manaFireGen = 0;
@@ -6945,6 +6963,10 @@
     }
 
     function enemyNow() {
+      if (beggarBattle) {
+        const foe = enemyByName("物乞い");
+        return { ...foe, plus: 0 };
+      }
       const foe = enemyByName(route[battleIndex] || DUNGEON.boss);
       return { ...foe, plus: foeRepeat() };
     }
@@ -8554,7 +8576,7 @@
         dropShield(enemy);
         enemyUseCard(card);
         advanceEnemyLoop();
-        if (player.hp > 0 && enemyNow().trait && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
+        if (player.hp > 0 && enemyNow().rally && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
           enemy.rallied = true;
           const extra = shuffle(sourcePattern()).slice(0, 2);
           log(`${enemy.name}の特性。デッキから2枚引いて、続けて使う。`, null, true);
@@ -8956,6 +8978,7 @@
         stolen,
         removed,
         beggarGift,
+        beggarBattle,
         battleTotal,
         route,
         dungeonFloors,
@@ -9093,6 +9116,7 @@
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
       removed = Array.isArray(data.removed) ? data.removed.filter((card) => card && card.name) : [];
       beggarGift = Array.isArray(data.beggarGift) ? data.beggarGift.filter((card) => card && card.name) : [];
+      beggarBattle = !!data.beggarBattle;
       if (Array.isArray(data.route) && data.route.length) {
         route = data.route.map((name) => enemyKey(name));
       } else {
@@ -9181,6 +9205,7 @@
       outcome = null;
       askLeave = false;
       logLines = [];
+      if (beggarBattle) log("物乞いが襲ってきた。");
       saveNote = "";
       buildDeck();
       render();
@@ -9207,6 +9232,7 @@
     }
 
     function appearLine() {
+      if (beggarBattle) return "物乞いが襲ってきた";
       if (bossNow()) return "ボスが現れた!!!";
       const rank = (enemyNow() && enemyNow().rank) || "普通";
       if (rank === "強敵") return "強敵が現れた!!";
@@ -9526,14 +9552,17 @@
           startBattle(floorHp);
           return;
         }
-        const gotGear = grantExplore();
-        floorNote = gotGear ? "宝箱に手を伸ばした。" : "先へ進む。";
-        floorPrompt = gotGear ? "装備だけもらえる。" : "";
+        const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
+        floorGift = item ? { kind: "gear", gear: { ...item } } : null;
+        floorPhase = floorGift ? "search" : "show";
+        floorNote = "松明の光が、古びた宝箱を照らしている。女の戦士は蓋に手をかけ、今にも開けようとしている。目は星のように輝き、よだれが一筋落ちた。";
+        floorPrompt = floorGift ? "宝箱の中から使えそうな装備を見つけた。" : "中は空っぽだった。";
       } else if (kind === "未知") {
         if (Math.random() < 0.5) {
           floorKind = "物乞いに遭遇";
           beggarGift = [];
-          floorNote = "遭遇は、物乞いだった。デッキから1枚だけ外せる。外さずに進んでもよい。進むと、物乞いが襲ってくる。";
+          floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
+          floorPrompt = "廃棄するカードを1枚選ぶ。決めると、物乞いが襲ってくる。";
           floorPrompt = "";
         } else {
           floorKind = "挑戦者に祝福を";
@@ -9551,8 +9580,9 @@
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
-        floorNote = "デッキから1枚だけ外せる。外さずに進んでもよい。進むと、物乞いが襲ってくる。";
-        floorPrompt = "";
+        beggarPick = -1;
+        floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
+        floorPrompt = "廃棄するカードを1枚選ぶ。決めると、物乞いが襲ってくる。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
         floorNote = `いまのジョブは${job}。カードは捨てない。`;
@@ -9570,18 +9600,50 @@
       setTimeout(() => { if (flash.parentNode) flash.remove(); }, 700);
     }
 
-    function dropBeggar(index) {
+    function pickBeggar(index) {
       if (floorKind !== "物乞いに遭遇" || beggarCut) return;
-      const cards = runDeck();
-      const card = cards[index];
+      if (!runDeck()[index]) return;
+      beggarPick = index;
+      render();
+    }
+
+    function beginBeggarFight() {
+      beggarBattle = true;
+      startBattle(floorHp);
+    }
+
+    function confirmBeggar() {
+      if (floorKind !== "物乞いに遭遇" || beggarCut) return;
+      const card = runDeck()[beggarPick];
       if (!card) return;
       const gift = keepCard(card);
       removed.push(gift);
       beggarGift = [gift];
       beggarCut = true;
-      floorNote = `${card.name}を1枚、デッキから外した。進むと、物乞いがそのカードを使ってくる。`;
+      beginBeggarFight();
+    }
+
+    function skipBeggar() {
+      if (floorKind !== "物乞いに遭遇") return;
+      beggarGift = [];
+      beggarCut = true;
+      beginBeggarFight();
+    }
+
+    function takeSearchGear() {
+      if (floorKind !== "探索" || floorPhase !== "search" || !floorGift) return;
+      const got = takeGift(floorGift);
+      if (!got) return;
+      floorNote = got;
       floorPrompt = "";
+      floorPhase = "show";
       render();
+    }
+
+    function skipSearchGear() {
+      if (floorKind !== "探索") return;
+      floorGift = null;
+      advance(1);
     }
 
     function enterNode(keepHp) {
@@ -10341,7 +10403,7 @@
               ${sheetFig("reward-hp.jpg?v=1", "報酬の最大HP")}
             </div>
             <h3>道（三択）</h3>
-            <p class="album-meta">道を選ぶときの候補アイコン。三択は同じ黄色。左が休憩、真ん中が戦闘、右がそのほか</p>
+            <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=8", "探索")}
               ${sheetFig("path-bless.jpg?v=6", "祝福")}
@@ -10358,7 +10420,7 @@
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-search.jpg?v=11", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=12", "探索", "land-ref", "span-2")}
               ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
               ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
               ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
@@ -10531,18 +10593,23 @@
       const ultimates = floorPhase === "ultimate"
         ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
         : "";
-      const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" ? menuButton(floorKind === "物乞いに遭遇" && !beggarCut ? "外さずに進む" : "進む", "floor-next", true) : "";
+      const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" && floorKind !== "物乞いに遭遇" && floorKind !== "探索"
+        ? menuButton("進む", "floor-next", true)
+        : "";
       const beggar = floorKind === "物乞いに遭遇"
         ? `<div class="deck-cards beggar-cards">${runDeck().map((card, i) => {
           const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
-          if (beggarCut) return face;
-          return `<button type="button" class="beggar-card" data-action="beggar-drop" data-index="${i}">${face}</button>`;
-        }).join("") || `<p>外せるカードは無い。</p>`}</div>`
+          const picked = i === beggarPick ? " picked" : "";
+          return `<button type="button" class="beggar-card${picked}" data-action="beggar-pick" data-index="${i}">${face}</button>`;
+        }).join("") || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("廃棄するカードを選んで決定", "beggar-confirm", true)}${menuButton("無視して進む", "beggar-skip")}</div>`
         : "";
+      const searchActions = floorKind === "探索" && floorPhase === "search"
+        ? `<div class="event-actions">${menuButton("受け取る", "search-take", true)}${menuButton("無視する", "search-skip")}</div>`
+        : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
         "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
-        "探索": ["event-search.jpg?v=11", "目がキラキラして、よだれを垂らしている"],
+        "探索": ["event-search.jpg?v=12", "今まさに宝箱を開けようとして、目がキラキラし、よだれを垂らしている"],
         "キャンプ": ["event-rest.jpg?v=8", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
@@ -10562,14 +10629,14 @@
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
-      const gift = floorPhase === "show" ? giftMarkup(floorGift, true, giftLive, 0) : "";
+      const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "お店", takeRare("shop")) : "";
-      const where = floorKind === "挑戦者に祝福を" ? "" : `<p class="event-where">${esc(dungeonName)}　${floorLabel()}</p>`;
+      const where = floorKind === "挑戦者に祝福を" || floorKind === "探索" ? "" : `<p class="event-where">${esc(dungeonName)}　${floorLabel()}</p>`;
       const title = `<h1>${esc(floorKind)}</h1>`;
-      const choice = `${rareFlash}${eventNoteHtml()}${where}${shop}${gift}${bless}${beggar}${jobs}${ultimates}${next}`;
+      const choice = `${rareFlash}${eventNoteHtml()}${where}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       root.innerHTML = art
-        ? `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
+        ? `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
         : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${title}${choice}</div>`;
       runEntrance = false;
     }
@@ -11215,9 +11282,9 @@
 
     const PATHS = {
       camp: { name: "休憩", text: "体力が全快する。", image: "path-rest.jpg?v=3" },
-      straight: { name: "戦闘", text: "次の戦いに進む。", image: "path-fight.jpg?v=5" },
+      straight: { name: "戦闘", text: "このダンジョンの敵と戦う。", image: "path-fight.jpg?v=5" },
       search: { name: "探索", text: "装備だけ。半分で戦闘。", image: "path-search.jpg?v=8" },
-      beggar: { name: "物乞い", text: "デッキから1枚だけ外せる。進むと襲ってくる。", image: "path-beggar.jpg?v=5" },
+      beggar: { name: "物乞い", text: "カードを1枚捨てると、物乞いが襲ってくる。", image: "path-beggar.jpg?v=5" },
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=11" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=6" },
@@ -11660,9 +11727,7 @@
     }
 
     function advance(step) {
-      if (screen === "floor" && floorKind === "物乞いに遭遇" && step > 0 && route[battleIndex + 1] !== "物乞い") {
-        insertAhead("物乞い");
-      }
+      beggarBattle = false;
       const hp = screen === "floor" ? floorHp : (player ? player.hp : floorHp);
       const next = battleIndex + step;
       outcome = null;
@@ -11678,10 +11743,42 @@
       enterNode(hp);
     }
 
+    function nextFloorNumber() {
+      const now = floorAt[battleIndex] != null ? floorAt[battleIndex] : floorNo();
+      return Math.min(dungeonFloors, Math.max(1, now) + 1);
+    }
+
+    function dungeonEnemy() {
+      const n = nextFloorNumber();
+      return rollRank(n <= Math.ceil(dungeonFloors / 2) ? 1 : 2);
+    }
+
+    function placeNext(node) {
+      const at = battleIndex + 1;
+      const mark = nextFloorNumber();
+      if (at >= route.length) {
+        route.push(node);
+        floorAt.push(mark);
+        battleTotal = route.length;
+        return;
+      }
+      const next = route[at];
+      const locked = next === DUNGEON.boss || roadFixed(next, at);
+      if (locked) {
+        route.splice(at, 0, node);
+        floorAt.splice(at, 0, mark);
+        battleTotal = route.length;
+        return;
+      }
+      route[at] = node;
+      floorAt[at] = mark;
+    }
+
     function applyPath(id) {
       if (rewardStep === "done" || rewardStep === "cards") return;
       rewardStep = "done";
       if (id === "camp") restoreHp(player.maxHp - player.hp);
+      if (id === "straight") placeNext(dungeonEnemy());
       advance(id === "skip" ? 2 : 1);
     }
 
@@ -11704,13 +11801,55 @@
         return;
       }
       rewardStep = "done";
-      insertAhead(node);
+      placeNext(node);
       advance(1);
+    }
+
+    function flyPathIntoMap(button, done) {
+      const img = button && button.querySelector("img");
+      const now = document.querySelector(".road-map .road-node.now");
+      const above = now && now.previousElementSibling;
+      const dest = above && above.classList.contains("road-node") && !above.classList.contains("pad") ? above : now;
+      if (!img || !dest || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        done();
+        return;
+      }
+      const overlay = document.querySelector(".overlay.paths");
+      if (overlay) {
+        overlay.style.transition = "opacity 0.28s ease";
+        overlay.style.opacity = "0.12";
+      }
+      const from = img.getBoundingClientRect();
+      const to = dest.getBoundingClientRect();
+      const ghost = img.cloneNode(true);
+      ghost.style.position = "fixed";
+      ghost.style.zIndex = "90";
+      ghost.style.margin = "0";
+      ghost.style.left = `${from.left}px`;
+      ghost.style.top = `${from.top}px`;
+      ghost.style.width = `${from.width}px`;
+      ghost.style.height = `${from.height}px`;
+      ghost.style.objectFit = "cover";
+      ghost.style.borderRadius = "8px";
+      ghost.style.transition = "left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.55s ease, height 0.55s ease";
+      document.body.appendChild(ghost);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        ghost.style.left = `${to.left}px`;
+        ghost.style.top = `${to.top}px`;
+        ghost.style.width = `${Math.max(to.width, 8)}px`;
+        ghost.style.height = `${Math.max(to.height, 8)}px`;
+      }));
+      setTimeout(() => {
+        ghost.remove();
+        done();
+      }, 580);
     }
 
     function takePath(id) {
       if (rewardStep !== "paths" || !PATHS[id]) return;
-      enterPath(id);
+      rewardStep = "flying";
+      const button = document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
+      flyPathIntoMap(button, () => enterPath(id));
     }
 
     function offerTone(card) {
@@ -11878,7 +12017,7 @@
           const picture = path.image ? `<img src="${path.image}" alt="">` : "";
           return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
         }).join("");
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p>所持 <span data-star-count>★${shownStarCount()}</span></p><div class="path-list">${buttons}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><div class="path-list">${buttons}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
@@ -12383,7 +12522,11 @@
         if (name === "floor-next") advance(1);
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
         if (name === "bless-skip") advance(1);
-        if (name === "beggar-drop") dropBeggar(Number(action.dataset.index));
+        if (name === "beggar-pick") pickBeggar(Number(action.dataset.index));
+        if (name === "beggar-confirm") confirmBeggar();
+        if (name === "beggar-skip") skipBeggar();
+        if (name === "search-take") takeSearchGear();
+        if (name === "search-skip") skipSearchGear();
         if (name === "job-pick") {
           const nextJob = action.dataset.job || "戦士";
           job = nextJob;
