@@ -752,8 +752,8 @@
       color: #e4eef8;
       text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.9);
     }
-    /* シールドの有無で板の大きさと縁は変えない。盾の絵だけが増える。 */
-    .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(212, 168, 74, 0.4), 0 14px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 232, 180, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.65); }
+    /* シールド：板の右上。青鋼のヒーター盾 */
+    .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 10, 14, 0.95), 0 0 0 4px rgba(140, 178, 214, 0.62), 0 0 16px rgba(100, 150, 200, 0.28), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(200, 220, 240, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
     /* パリィ中：金の光で無敵感を出す（次の攻撃を受けない） */
     .battle-plate.parried {
       box-shadow: 0 0 0 3px rgba(8, 6, 5, 0.95), 0 0 0 4px rgba(232, 200, 120, 0.85), 0 0 20px rgba(212, 168, 74, 0.4), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 236, 200, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
@@ -770,10 +770,25 @@
       text-shadow: 0 1px 0 #000, 0 0 10px rgba(212, 168, 74, 0.4);
     }
     @keyframes shield-gain {
-      0% { filter: brightness(1.7); }
-      100% { filter: brightness(1); }
+      0% { transform: scale(0.55) rotate(-8deg); filter: brightness(2.4); }
+      42% { transform: scale(1.18) rotate(4deg); filter: brightness(1.55); }
+      100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
     }
-    .shield-badge.fresh { animation: shield-gain 0.35s ease-out; }
+    @keyframes shield-ring {
+      0% { opacity: 0.95; transform: scale(0.55); }
+      100% { opacity: 0; transform: scale(1.45); }
+    }
+    .shield-badge.fresh { animation: shield-gain 0.55s ease-out; }
+    .shield-badge.fresh::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border-radius: 46%;
+      border: 3px solid rgba(186, 220, 255, 0.95);
+      box-shadow: 0 0 18px rgba(140, 190, 255, 0.85);
+      animation: shield-ring 0.55s ease-out forwards;
+      pointer-events: none;
+    }
     @keyframes parry-invuln {
       0%, 100% { filter: brightness(1) saturate(1); box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 0 10px rgba(212, 168, 74, 0.45); }
       50% { filter: brightness(1.18) saturate(1.08); box-shadow: inset 0 -2px 0 rgba(60, 40, 10, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 16px rgba(232, 200, 120, 0.7); }
@@ -6808,7 +6823,7 @@
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=12",
-        victory: "girl-victory.jpg?v=24",
+        victory: "girl-victory.jpg?v=25",
         bless: "event-bless.jpg?v=2",
       },
     ];
@@ -7221,15 +7236,15 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=7", label: "祝福" };
-      if (name === "出来事:探索") return { src: "path-search.jpg?v=8", label: "探索" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=8", label: "祝福" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=9", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
-      if (name === "出来事:お店") return { src: "path-shop.jpg?v=11", label: "お店" };
-      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=5", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=7", label: "ジョブ" };
-      if (name === "出来事:修行") return { src: "path-train.jpg?v=4", label: "修行" };
-      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=1", label: "ボス戦", boss: true };
+      if (name === "出来事:お店") return { src: "path-shop.jpg?v=12", label: "お店" };
+      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
+      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=8", label: "ジョブ" };
+      if (name === "出来事:修行") return { src: "path-train.jpg?v=5", label: "修行" };
+      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=2", label: "ボス戦", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
 
@@ -10904,7 +10919,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=24", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=25", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10947,17 +10962,17 @@
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
-              ${sheetFig("path-search.jpg?v=8", "探索")}
-              ${sheetFig("path-bless.jpg?v=7", "祝福")}
+              ${sheetFig("path-search.jpg?v=9", "探索")}
+              ${sheetFig("path-bless.jpg?v=8", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
-              ${sheetFig("path-boss.jpg?v=1", "ボス戦", "", "path-series")}
-              ${sheetFig("path-beggar.jpg?v=5", "物乞い")}
-              ${sheetFig("path-shop.jpg?v=11", "お店")}
+              ${sheetFig("path-boss.jpg?v=2", "ボス戦", "", "path-series")}
+              ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
+              ${sheetFig("path-shop.jpg?v=12", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
-              ${sheetFig("path-job.jpg?v=7", "ジョブ")}
+              ${sheetFig("path-job.jpg?v=8", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=7", "遭遇")}
-              ${sheetFig("path-train.jpg?v=4", "修行")}
+              ${sheetFig("path-train.jpg?v=5", "修行")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
@@ -11848,14 +11863,14 @@
     const PATHS = {
       camp: { name: "休憩", text: "体力が全快する。", image: "path-rest.jpg?v=3" },
       straight: { name: "戦闘", text: "このダンジョンの敵と戦う。", image: "path-fight.jpg?v=5" },
-      search: { name: "探索", text: "装備だけ。戦闘にはならない。", image: "path-search.jpg?v=8" },
-      beggar: { name: "物乞い", text: "カードを1枚捨てると、物乞いが襲ってくる。", image: "path-beggar.jpg?v=5" },
-      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=11" },
+      search: { name: "探索", text: "装備だけ。戦闘にはならない。", image: "path-search.jpg?v=9" },
+      beggar: { name: "物乞い", text: "カードを1枚捨てると、物乞いが襲ってくる。", image: "path-beggar.jpg?v=6" },
+      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
-      job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=7" },
+      job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
-      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=4" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=7" },
+      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=8" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
