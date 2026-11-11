@@ -5666,12 +5666,6 @@
         radial-gradient(ellipse at 80% 88%, rgba(70, 32, 16, 0.35), transparent 42%),
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
-    .cast-screen.character-focus .cast-roster {
-      position: relative;
-      width: 100%;
-      max-width: none;
-      justify-content: center;
-    }
     .cast-screen.character-focus {
       --cast-job-card-w: 132px;
       --cast-job-deck-gap: 8px;
@@ -5679,51 +5673,73 @@
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
       --cast-keys-w: min(420px, 34vw);
-      /* ちびコマ幅（168px画像＋枠）に合わせた中央スロット */
-      --cast-job-chibi-slot: clamp(184px, 17vw, 228px);
-      padding-left: 12.5vw;
-      padding-right: 12.5vw;
+      --cast-hero-col: clamp(260px, 30vw, 400px);
+      padding-left: max(16px, 3vw);
+      padding-right: max(16px, 3vw);
       align-items: center;
     }
-    /* 板の内側端を画面50%±スロット/2に固定（左右板幅が違ってもちび中央と一致） */
+    /* 上段：絵｜情報板｜キーワード板（板の見た目・中身はそのまま） */
+    .cast-screen.character-focus .cast-roster {
+      position: relative;
+      margin-left: auto;
+      margin-right: auto;
+      justify-content: center;
+      width: min(
+        100%,
+        calc(var(--cast-hero-col) + var(--cast-job-panel-w) + var(--cast-keys-w) + 2 * clamp(12px, 1.8vw, 20px))
+      );
+    }
     .cast-screen.character-focus .cast-main {
       position: relative;
+      display: grid;
+      grid-template-columns: var(--cast-hero-col) minmax(0, var(--cast-job-panel-w)) var(--cast-keys-w);
+      gap: clamp(12px, 1.8vw, 20px);
       width: 100%;
       max-width: none;
       margin-left: auto;
       margin-right: auto;
       flex: 1 1 auto;
       min-height: 0;
+      align-items: stretch;
       overflow: hidden;
     }
-    .cast-screen.character-focus .cast-wash {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
+    .cast-screen.character-focus .cast-hero-frame {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      border-radius: 16px;
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      box-shadow:
+        0 0 0 1px #15100d,
+        0 14px 28px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 236, 190, 0.2);
+      overflow: hidden;
+      background: #120e0c;
+    }
+    .cast-screen.character-focus .cast-hero-art {
+      display: block;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      object-position: center 44%;
+      object-fit: cover;
+      object-position: center 38%;
       filter: none;
-      pointer-events: none;
     }
     .cast-screen.character-focus .cast-side {
-      position: absolute;
-      z-index: 2;
-      top: 0;
-      bottom: 0;
-      right: calc(50% + var(--cast-job-chibi-slot) / 2);
-      width: min(var(--cast-job-panel-w), calc(50% - var(--cast-job-chibi-slot) / 2 - 12px));
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-width: 0;
       max-width: var(--cast-job-panel-w);
+      height: 100%;
     }
     .cast-screen.character-focus .cast-keys {
-      position: absolute;
-      z-index: 2;
-      top: 0;
-      bottom: 0;
-      left: calc(50% + var(--cast-job-chibi-slot) / 2);
-      width: min(var(--cast-keys-w), calc(50% - var(--cast-job-chibi-slot) / 2 - 12px));
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-width: 0;
       max-width: var(--cast-keys-w);
+      height: 100%;
     }
     .cast-mid {
       display: flex;
@@ -6305,16 +6321,20 @@
       .dungeon-col { min-height: 0; height: 100%; }
       .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(140px, 30vh) minmax(0, 1fr) auto;
         gap: 10px;
         width: 100%;
         max-width: none;
         min-height: min(52vh, 480px);
       }
+      .cast-screen.character-focus .cast-hero-frame {
+        max-height: 30vh;
+      }
       .cast-screen.character-focus .cast-side,
       .cast-screen.character-focus .cast-keys {
-        position: static;
+        position: relative;
         width: 100%;
         max-width: none;
         height: auto;
@@ -6829,7 +6849,7 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-f.jpg?v=11",
+      アタック: "card-attack-f.jpg?v=12",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=10",
       パリィ: "card-parry.jpg?v=9",
@@ -7110,7 +7130,7 @@
         action: "girl-action.jpg?v=5",
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
-        defeat: "girl-defeat.jpg?v=13",
+        defeat: "girl-defeat.jpg?v=14",
         victory: "girl-victory.jpg?v=26",
         bless: "event-bless.jpg?v=2",
       },
@@ -7537,7 +7557,7 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=16", label: "祝福" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=19", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=9", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
@@ -10918,7 +10938,9 @@
         ? `<div class="cast-blurb-wrap">${castBlurbParagraphs(item.blurb)}</div>`
         : "";
       return `
-        <img class="cast-wash" src="${item.action}" alt="${esc(item.name)}の一枚絵">
+        <div class="cast-hero-frame">
+          <img class="cast-hero-art" src="${item.action}" alt="${esc(item.name)}の一枚絵">
+        </div>
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
@@ -11304,7 +11326,7 @@
               ${sheetFig("girl-battle.png?v=40", "戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("girl-defeat.jpg?v=13", "敗北", "land-ref", "wide-land")}
+              ${sheetFig("girl-defeat.jpg?v=14", "敗北", "land-ref", "wide-land")}
               ${sheetFig("girl-victory.jpg?v=26", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
@@ -11349,7 +11371,7 @@
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=9", "探索")}
-              ${sheetFig("path-bless.jpg?v=16", "祝福")}
+              ${sheetFig("path-bless.jpg?v=19", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-boss.jpg?v=2", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
@@ -12258,7 +12280,7 @@
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=16" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=19" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
