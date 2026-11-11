@@ -9951,7 +9951,7 @@
         const slashCount = fxSlashes.length;
         const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0, poisonWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "break" ? 1300 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
         return;
       }
@@ -9960,7 +9960,7 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind ? 1300 : 0, poisonWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "break" ? 1300 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -10078,7 +10078,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 2400 : 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind ? 1300 : 0, fatalWait, poisonWait);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "break" ? 1300 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -12572,9 +12572,7 @@
         ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
-      const guardHtml = guard === "hold"
-        ? `<div class="hero-guard" aria-label="ダメージなし">${guardMark()}</div>`
-        : guard === "break"
+      const guardHtml = guard === "break"
           ? `<div class="hero-guard break" aria-hidden="true">${brokenShield()}</div>`
           : "";
       const who = heroItem();
@@ -13666,6 +13664,7 @@
       const foeHitsNow = fxFoeHits;
       const hurtNow = fxHurt;
       const struckNow = fxStruck;
+      const shieldPlayerNow = fxShieldPlayer;
       const shieldEnemyNow = fxShieldEnemy;
       const parryPlayerNow = fxParryPlayer;
       const parryFromShieldNow = fxParryFromShield;
@@ -13730,7 +13729,7 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
