@@ -3851,7 +3851,7 @@
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
     }
-    /* 報酬・贈り物のカードは乗せても動かさない（下線の説明は吹き出しのまま） */
+    /* 報酬・贈り物のカードは乗せても動かさない（色のついた語の説明は吹き出しのまま） */
     .reward-pick .card,
     .reward-pick .card:hover,
     .reward-pick:hover .card,
@@ -4060,12 +4060,6 @@
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
     .card .text .hint {
-      text-decoration-line: underline;
-      text-decoration-color: #16325c;
-      text-decoration-thickness: 0.14em;
-      text-underline-offset: 0.16em;
-    }
-    .card .text .kw-line.hint {
       text-decoration: none;
       color: #9a3412;
     }
@@ -7426,8 +7420,16 @@
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, text: "パリィをすべて消費\n消費した数×15ダメージ", kind: "attack", finisher: true },
+      致命の一撃: { cost: 3, text: "直前3ターンで、パリィが成功したターンの数×15ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
+      ナイフパリィ: { cost: 3, unrated: true, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
+      超集中: { cost: 3, unrated: true, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
+      諸刃の剣: { cost: 3, unrated: true, text: "20ダメージ\n次に受ける攻撃を2倍", damage: 20, kind: "attack", doubleNext: true },
+      達人の間合い: { cost: 3, unrated: true, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true },
+      魔法のパリィ: { cost: 1, unrated: true, text: "パリィ中、状態異常にならない", kind: "skill", permanent: true, magicParry: true },
+      クイックステップ: { cost: 0, unrated: true, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, step: true },
+      自信過剰: { cost: 2, unrated: true, text: "パリィに成功するたび、ATK+1", kind: "skill", permanent: true, pride: true },
+      盾削ぎ: { cost: 2, unrated: true, text: "パリィに成功するたび、相手のDEF-3", kind: "skill", permanent: true, shave: 3 },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
@@ -7439,6 +7441,14 @@
       致命の一撃: "パリィ",
       ジャストミート: "パリィ",
       シールドアタック: "パリィ",
+      ナイフパリィ: "パリィ",
+      超集中: "パリィ",
+      諸刃の剣: "パリィ",
+      達人の間合い: "パリィ",
+      魔法のパリィ: "パリィ",
+      クイックステップ: "パリィ",
+      自信過剰: "パリィ",
+      盾削ぎ: "パリィ",
       ライフフルネスアタック: "ライフフル",
     };
     const COMMON = {
@@ -7947,12 +7957,18 @@
 
     function addBurn(target, amount) {
       if (target === player && hasStatusImmune()) {
-        log(`${heroName()}は${gear.shield.name}。炎上を無視した。`);
+        log(`${heroName()}は${statusImmuneName()}。炎上を無視した。`);
         return false;
       }
       target.burn = burnStacks(target) + Math.max(1, Number(amount) || 1);
       if (target === player) syncGearStats();
       return true;
+    }
+
+    function syncEnemyDef() {
+      if (!enemy) return;
+      const foe = enemyNow();
+      enemy.def = hiddenDef(foe) - (Number(enemy.anger) || 0) - (Number(enemy.defCut) || 0);
     }
 
     function enemyDef() {
@@ -8286,8 +8302,14 @@
       return !!(gear && ((gear.braceletL && gear.braceletL.carryMana) || (gear.braceletR && gear.braceletR.carryMana)));
     }
 
+    function statusImmuneName() {
+      if (gear && gear.shield && gear.shield.statusImmune) return gear.shield.name;
+      return "魔法のパリィ";
+    }
+
     function hasStatusImmune() {
-      return !!(gear && gear.shield && gear.shield.statusImmune);
+      if (gear && gear.shield && gear.shield.statusImmune) return true;
+      return !!(player && player.magicParry && parryCount(player) > 0);
     }
 
     function hasReflectDef() {
@@ -8893,7 +8915,7 @@
       const foe = enemyNow();
       enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
       enemy.atk = hiddenAtk(foe) + enemy.anger;
-      enemy.def = hiddenDef(foe) - enemy.anger;
+      syncEnemyDef();
       log(`${enemy.name}は怒り。ATK+1、DEF-1。`);
     }
 
@@ -9131,23 +9153,34 @@
       player.hurtThis = false;
       player.hurtLast = false;
       player.extraDraw = 0;
+      player.parryHist = [];
+      player.parryHitThis = false;
+      player.parryLast = false;
+      player.knifeReflect = false;
+      player.doubleNext = false;
+      player.magicParry = false;
+      player.pride = false;
+      player.shave = 0;
+      player.masterOnce = false;
       syncGearStats();
     }
 
-    function gainParry(card) {
+    function gainParry(card, add) {
+      const n = Math.max(1, Number(add) || 1);
       const now = parryCount(player);
-      if (now > 0 && ultimate !== "パリィが重複する") {
+      if (n === 1 && now > 0 && ultimate !== "パリィが重複する") {
         log(`${heroName()}は${card.name}。パリィは重複しない。`, card);
-        return;
+        return false;
       }
       const hadShield = Math.max(0, Number(player.block) || 0);
       if (hadShield) player.block = 0;
-      player.parry = now + 1;
+      player.parry = now + n;
       fxParryPlayer = true;
       fxParryFromShield = hadShield > 0;
-      let detail = ultimate === "パリィが重複する" ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
+      let detail = player.parry > 1 ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
       if (hadShield) detail += `所持していたシールド${hadShield}を失った。`;
       log(`${heroName()}は${card.name}。${detail}`, card);
+      return true;
     }
 
     function gainBlock(amount, card) {
@@ -9206,7 +9239,7 @@
 
     function addPoison(target, amount) {
       if (target === player && hasStatusImmune()) {
-        log(`${heroName()}は${gear.shield.name}。毒を無視した。`);
+        log(`${heroName()}は${statusImmuneName()}。毒を無視した。`);
         return false;
       }
       target.poison = poisonStacks(target) + Math.max(1, Number(amount) || 1);
@@ -9253,19 +9286,47 @@
       return target.hp <= 0;
     }
 
+    function onParrySuccess(negated) {
+      player.parryHitThis = true;
+      if (player.knifeReflect && negated > 0 && enemy && enemy.hp > 0) {
+        const hit = applyDamage(enemy, negated);
+        if (hit.hpLoss || hit.blocked) {
+          slashFoe();
+          noteHit("enemy", hit.hpLoss, negated);
+        }
+        log(`ナイフパリィ。${enemy.name}に${negated}ダメージ。`);
+      }
+      if (player.pride) {
+        player.atkMod = (Number(player.atkMod) || 0) + 1;
+        syncGearStats();
+        log(`自信過剰。ATK${signed(player.atk)}。`);
+      }
+      if (player.shave && enemy) {
+        enemy.defCut = (Number(enemy.defCut) || 0) + Number(player.shave);
+        syncEnemyDef();
+        log(`盾削ぎ。${enemy.name}のDEF${signed(enemy.def)}。`);
+      }
+    }
+
     function takeEnemyHit(raw, card) {
       const name = card && card.name ? card.name : "攻撃";
       fxStruck = true;
+      let amount = Math.max(0, Number(raw) || 0);
+      if (player.doubleNext) {
+        player.doubleNext = false;
+        amount *= 2;
+      }
       const stacks = parryCount(player);
       if (stacks > 0) {
         player.parry = stacks - 1;
-        noteHit("player", 0, raw);
+        onParrySuccess(amount);
+        noteHit("player", 0, amount);
         log(`${enemy.name}は${name}。パリィで無効。`, card, true);
         return;
       }
       const extra = Math.max(0, Number(player.expose) || 0);
       if (extra) player.expose = 0;
-      const dealt = Math.max(0, raw + extra);
+      const dealt = Math.max(0, amount + extra);
       const result = applyDamage(player, dealt);
       if (result.hpLoss > 0) {
         player.hurtThis = true;
