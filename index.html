@@ -7298,7 +7298,7 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=8", label: "祝福" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=9", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=9", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
@@ -10185,7 +10185,7 @@
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
         blessPicks = rollBlessPicks();
-        floorNote = "女神は祝福を３つ差し出す、受け取れるのは一つだけ。";
+        floorNote = "女神は祝福を三つ差し出した。受け取れるのは一つだけ。";
         floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
@@ -11079,7 +11079,7 @@
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=9", "探索")}
-              ${sheetFig("path-bless.jpg?v=8", "祝福")}
+              ${sheetFig("path-bless.jpg?v=9", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-boss.jpg?v=2", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
@@ -11990,7 +11990,7 @@
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=8" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=9" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
@@ -12655,7 +12655,7 @@
 
     function eventNoteHtml() {
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>意志のサイン段にひざまずくと、光の翼をもつ女神が下りてきた</p><p>これから恐ろしい困難が待ち受けているとは知らない挑戦者に女神は優しく微笑んだ。</p><p>女神は祝福を３つ差し出す、受け取れるのは一つだけ。</p><p>強欲なものは嫌われるに決まっている。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>これから恐ろしい困難が待ち受けているとも知らない挑戦者に、女神は優しく微笑んだ。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const story = floorNote ? eventStoryHtml(floorNote) : "";
