@@ -3393,18 +3393,31 @@
     }
     .gear-effect-head {
       display: grid;
-      grid-template-columns: 92px 1fr;
-      gap: 12px;
+      grid-template-columns: 26px 84px 1fr;
+      gap: 8px 10px;
       align-items: center;
       margin: 0 0 10px;
+    }
+    .gear-effect-slotico {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      width: 26px;
+      color: rgba(232, 196, 118, 0.95);
+      filter: drop-shadow(0 0 6px rgba(255, 200, 100, 0.25));
+    }
+    .gear-effect-slotico .ico {
+      width: 22px;
+      height: 22px;
+      display: block;
     }
     .gear-effect-artcol {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      width: 92px;
+      width: 84px;
     }
     .gear-effect-art {
       width: 84px;
@@ -3432,15 +3445,6 @@
       display: flex;
     }
     .gear-effect-art .gear-mark .ico { width: 34px; height: 34px; }
-    .gear-effect-genre {
-      margin: 0;
-      width: 100%;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.14em;
-      color: #fff6e4;
-      text-align: center;
-    }
     .gear-effect-meta {
       display: flex;
       flex-direction: column;
@@ -5109,7 +5113,7 @@
       pointer-events: none;
     }
     .menu.event.shop .shop-slot .gear-effect-art { width: 112px; height: 112px; }
-    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 112px 1fr; }
+    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 26px 112px 1fr; }
     .menu.event.shop .shop-slot .shop-ribbon { display: none; }
     .menu.event.shop .shop-have { margin: 0 0 12px; }
     .event-map {
@@ -8135,25 +8139,34 @@
       return { show: !!t, text: t, extra: "" };
     }
 
+    function gearPopSlotKey(slotId, item) {
+      const raw = (item && item.slot) || slotId || "";
+      if (raw === "braceletAny") return "braceletL";
+      return raw;
+    }
+
     function gearPopWidthPx(label) {
       const chars = [...String(label || "")].length;
       const meta = Math.max(88, Math.min(232, 18 + chars * 15));
-      return Math.min(348, Math.max(168, 92 + 12 + meta + 22));
+      return Math.min(348, Math.max(168, 26 + 8 + 84 + 10 + meta + 22));
     }
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
       const boon = slotId === "hp" || slotId === "mana" || slotId === "spd";
       const embedded = !!o.embedded;
+      const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
       const starsClass = rarity === "ボス" ? "gear-effect-stars boss" : "gear-effect-stars";
       const art = o.image
         ? `<img src="${esc(o.image)}" alt="">`
-        : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
+        : `<span class="gear-mark">${o.icon || gearSlotIcon(slotKey)}</span>`;
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const genre = boon ? "" : `<p class="gear-effect-genre">${esc(gearSlotLabel(slotId))}</p>`;
+      const slotIco = boon
+        ? ""
+        : `<div class="gear-effect-slotico" title="${esc(gearSlotLabel(slotKey))}" aria-label="${esc(gearSlotLabel(slotKey))}">${gearSlotIcon(slotKey)}</div>`;
       const stats = o.item ? gearStatChips(o.item) : "";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
@@ -8167,7 +8180,7 @@
       }
       const emb = embedded ? " gear-effect-embedded" : "";
       const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName)}px"`;
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${stats}</div></div></div>${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head">${slotIco}<div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${stats}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
