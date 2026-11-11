@@ -3342,12 +3342,15 @@
     }
     .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; filter: grayscale(0.25); }
     /* 装備説明はレイアウトを広げず、枠の右に重ねる漆金ポップ */
+    .gear-effect:not(.gear-effect-embedded) {
+      width: min(var(--gear-pop-w, 220px), calc(100vw - 20px));
+      min-width: 168px;
+      max-width: min(352px, calc(100vw - 20px));
+    }
     .gear-effect {
       position: fixed;
       z-index: 55;
       margin: 0;
-      width: min(312px, calc(100vw - 24px));
-      max-width: 312px;
       max-height: min(78vh, 440px);
       box-sizing: border-box;
       padding: 0;
@@ -3373,7 +3376,7 @@
     .gear-effect::after { content: none; }
     .gear-effect-inner {
       position: relative;
-      padding: 16px 16px 14px;
+      padding: 12px 11px 10px;
       max-height: min(78vh, 440px);
       overflow: auto;
       box-sizing: border-box;
@@ -3458,7 +3461,7 @@
     }
     .gear-effect-name {
       margin: 0;
-      width: 100%;
+      width: auto;
       max-width: 100%;
       font-size: clamp(15px, 3.6vw, 20px);
       font-weight: 800;
@@ -3532,6 +3535,18 @@
       color: rgba(232, 214, 176, 0.72);
       font-style: normal;
       text-align: center;
+    }
+    .gear-effect-body.starter {
+      text-align: center;
+      color: rgba(236, 220, 178, 0.88);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+    }
+    .gear-effect-body.empty-trait {
+      min-height: 2.15em;
+      padding-top: 8px;
+      padding-bottom: 8px;
     }
     .gear-effect.center-boon .gear-effect-inner { text-align: center; }
     .gear-effect.center-boon .gear-effect-head {
@@ -7744,11 +7759,11 @@
     }
 
     const GEAR_ITEMS = [
-      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
+      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=4" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
       { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
-      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
+      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=6" },
@@ -7898,6 +7913,7 @@
         image: item.image || "",
         rarity: gearRarityText(item),
         body: special,
+        embedded: true,
       });
       return `<div class="gear-compare-card${cls ? " " + cls : ""}${rareClass(level || 0)}"${rareStyle(level || 0, 0)}>${rareFx(level || 0)}<p class="gear-compare-label">${esc(label)}</p>${face}</div>`;
     }
@@ -8099,25 +8115,59 @@
       return `<div class="gear-effect-stats">${chips.join("")}</div>`;
     }
 
+    function isStarterGear(item) {
+      return !!item && (item.starterGear || item.id === "short-sword" || item.id === "buckler");
+    }
+
+    function gearPopBodyLine(item, o, boon) {
+      if (o.empty) return { show: true, text: String(o.body ?? "").trim(), extra: "empty" };
+      if (boon) {
+        const t = String(o.body ?? "").trim();
+        return { show: !!t, text: t, extra: "" };
+      }
+      if (item) {
+        const special = gearSpecialText(item);
+        if (special) return { show: true, text: special, extra: "" };
+        if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
+        return { show: true, text: "", extra: "empty-trait" };
+      }
+      const t = String(o.body ?? "").trim();
+      return { show: !!t, text: t, extra: "" };
+    }
+
+    function gearPopWidthPx(label) {
+      const chars = [...String(label || "")].length;
+      const meta = Math.max(88, Math.min(232, 18 + chars * 15));
+      return Math.min(348, Math.max(168, 92 + 12 + meta + 22));
+    }
+
     function gearPopShell(slotId, opts) {
       const o = opts || {};
       const boon = slotId === "hp" || slotId === "mana" || slotId === "spd";
+      const embedded = !!o.embedded;
       const rarity = o.rarity || "";
       const starsClass = rarity === "ボス" ? "gear-effect-stars boss" : "gear-effect-stars";
       const art = o.image
         ? `<img src="${esc(o.image)}" alt="">`
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotId)}</span>`;
-      const name = o.name ? `<p class="gear-effect-name">${esc(o.name)}</p>` : "";
+      const displayName = o.name || (o.item && o.item.name) || "";
+      const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
       const genre = boon ? "" : `<p class="gear-effect-genre">${esc(gearSlotLabel(slotId))}</p>`;
       const stats = o.item ? gearStatChips(o.item) : "";
-      const bodyClass = o.empty ? "gear-effect-body empty" : "gear-effect-body";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
-      const bodyText = o.body != null ? String(o.body).trim() : "";
-      const body = bodyText ? `<p class="${bodyClass}">${bodyText}</p>` : "";
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${stats}</div></div></div>${body}${hint}${button}</div></div>`;
+      const bodyLine = gearPopBodyLine(o.item, o, boon);
+      let body = "";
+      if (bodyLine.show) {
+        const extra = bodyLine.extra ? ` ${bodyLine.extra}` : "";
+        const bodyClass = `gear-effect-body${extra}`;
+        body = `<p class="${bodyClass}">${bodyLine.text ? esc(bodyLine.text) : ""}</p>`;
+      }
+      const emb = embedded ? " gear-effect-embedded" : "";
+      const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName)}px"`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${stats}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -10502,7 +10552,7 @@
           name: item.name,
           image: item.image || "",
           rarity: gearRarityText(item),
-          body: esc(gearSpecialText(item)),
+          embedded: true,
         })}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
@@ -12784,7 +12834,7 @@
             name: item.name || "",
             image: item.image || "",
             rarity: gearRarityText(item),
-            body: esc(gearSpecialText(item)),
+            embedded: true,
           });
           return `<div class="shop-slot${sold}${limited}">${ribbon}${face}<span>${esc(tag)}</span>${action}</div>`;
         }
