@@ -10050,7 +10050,7 @@
       const kinds = shuffle(["maxhp", "spd", "mana", "gear", "card"]).slice(0, 3);
       return kinds.map((kind) => {
         if (kind === "maxhp") return { kind, label: "最大HP" };
-        if (kind === "spd") return { kind, label: "SPD" };
+        if (kind === "spd") return { kind, label: "手札+1" };
         if (kind === "mana") return { kind, label: "マナ" };
         if (kind === "gear") return { kind, gear: rollBlessGear(), label: "装備" };
         return { kind: "card", card: rollBlessCard(), label: "カード" };
@@ -10153,7 +10153,7 @@
           ? { slot: "hp", name: "最大HP+10", image: "reward-hp.jpg?v=1" }
           : gift.kind === "mana"
             ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
-            : { slot: "spd", name: "SPD+1", image: "reward-spd.jpg?v=1" };
+            : { slot: "spd", name: "手札+1", image: "reward-spd.jpg?v=1" };
         return `<div class="${cls}">${gearPopShell(boon.slot, {
           name: boon.name,
           image: boon.image,
