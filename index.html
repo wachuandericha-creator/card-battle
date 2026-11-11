@@ -6652,8 +6652,13 @@
       box-shadow: 0 0 0 2px rgba(36, 24, 12, 0.85), 0 0 28px rgba(240, 195, 106, 0.45);
       z-index: 2;
     }
-    .dungeon-col.sealed {
-      cursor: not-allowed;
+    .dungeon-col.sealed,
+    .dungeon-col.sealed:hover,
+    .dungeon-col.sealed:disabled {
+      opacity: 1;
+      color: inherit;
+      cursor: default;
+      pointer-events: none;
     }
     .dungeon-col img {
       position: absolute;
@@ -11810,6 +11815,7 @@
 
     function bindDungeonHover() {
       root.querySelectorAll(".dungeon-col").forEach((col) => {
+        if (col.dataset.open !== "1") return;
         col.addEventListener("pointerenter", () => {
           const next = col.dataset.dungeon || "";
           if (dungeonHover === next) return;
@@ -11868,7 +11874,7 @@
         const chains = dungeonChainCount(item.floors);
         const sealed = chains > 0;
         return `
-        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" data-open="${sealed ? "0" : "1"}" aria-label="${esc(item.name)}${sealed ? "（鎖）" : ""}">
+        <button type="button" class="dungeon-col${sealed ? " sealed" : ""}" data-action="dungeon-token" data-dungeon="${esc(item.name)}" data-open="${sealed ? "0" : "1"}"${sealed ? " disabled" : ""} aria-label="${esc(item.name)}${sealed ? "（鎖）" : ""}">
           <span class="dungeon-shot">
             <img src="${item.art}" alt="">
             ${dungeonChainHtml(chains)}
@@ -14218,11 +14224,7 @@
         const picked = action.dataset.dungeon || "";
         const item = DUNGEON_LIST.find((dungeon) => dungeon.name === picked);
         dungeonHover = "";
-        if (!item || !dungeonOpen(item.floors)) {
-          dungeonView = picked;
-          paintDungeon();
-          return;
-        }
+        if (!item || !dungeonOpen(item.floors)) return;
         dungeonView = "";
         dungeonLock = picked;
         pendingDungeon = item;
@@ -14304,12 +14306,7 @@
           const picked = action.dataset.dungeon || "";
           const item = DUNGEON_LIST.find((dungeon) => dungeon.name === picked);
           dungeonHover = "";
-          if (!item || !dungeonOpen(item.floors)) {
-            dungeonView = picked;
-            dungeonLit = false;
-            paintDungeon();
-            return;
-          }
+          if (!item || !dungeonOpen(item.floors)) return;
           dungeonView = "";
           dungeonLock = picked;
           dungeonLit = true;
