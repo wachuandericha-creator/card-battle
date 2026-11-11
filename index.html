@@ -5232,27 +5232,26 @@
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
     }
-    .menu.bless h1 .event-floor-mark {
+    .menu.bless h1 small.event-floor-mark {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: clamp(10px, 2vw, 18px);
       margin-top: 4px;
+      width: 100%;
     }
     .menu.bless h1 .event-floor-num {
+      flex: 0 0 auto;
       font-size: clamp(32px, 3vw, 48px);
       font-weight: 900;
       letter-spacing: 0.18em;
       color: #ffe08a;
+      line-height: 1;
     }
-    .menu.bless h1 .event-floor-under {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    .menu.bless h1 .event-floor-under i {
+    .menu.bless h1 .event-floor-line {
       display: block;
+      flex: 0 1 min(112px, 20vw);
       width: min(112px, 20vw);
       height: 2px;
       background: linear-gradient(90deg, transparent, #fff6d4, transparent);
@@ -6894,7 +6893,7 @@
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=12",
-        victory: "girl-victory.jpg?v=25",
+        victory: "girl-victory.jpg?v=26",
         bless: "event-bless.jpg?v=2",
       },
     ];
@@ -11044,7 +11043,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=25", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=26", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -11339,7 +11338,7 @@
       const floorFlash = eventFloorCall ? `<div class="event-floor-call" aria-hidden="true"><b>現在 ${floorNo()}Ｆ</b></div>` : "";
       eventFloorCall = false;
       const floorTitle = floorKind === "挑戦者に祝福を"
-        ? `<small class="event-floor-mark"><span class="event-floor-num">${floorNo()}Ｆ</span><span class="event-floor-under" aria-hidden="true"><i></i><i></i></span></small>`
+        ? `<small class="event-floor-mark"><i class="event-floor-line" aria-hidden="true"></i><span class="event-floor-num">${floorNo()}Ｆ</span><i class="event-floor-line" aria-hidden="true"></i></small>`
         : `<small>-${floorNo()}Ｆ-</small>`;
       const title = `<h1>${esc(floorKind)}${floorTitle}</h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
