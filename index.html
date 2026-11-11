@@ -5677,15 +5677,16 @@
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
       --cast-hero-col: clamp(280px, 38vw, 480px);
+      --cast-keys-w: min(420px, 34vw);
       padding-left: max(20px, 4vw);
       padding-right: max(20px, 4vw);
       align-items: center;
     }
-    /* パターンB：左に一枚絵、右に情報板（キーワード含む） */
+    /* パターンB：左に一枚絵、情報板とキーワード板は別枠 */
     .cast-screen.character-focus .cast-main {
       position: relative;
       display: grid;
-      grid-template-columns: var(--cast-hero-col) minmax(0, 1fr);
+      grid-template-columns: var(--cast-hero-col) minmax(0, var(--cast-job-panel-w)) var(--cast-keys-w);
       gap: clamp(14px, 2vw, 22px);
       width: min(1280px, 100%);
       margin-left: auto;
@@ -5721,9 +5722,37 @@
       position: relative;
       z-index: 1;
       width: 100%;
+      max-width: var(--cast-job-panel-w);
       min-width: 0;
       min-height: 0;
       height: 100%;
+    }
+    .cast-screen.character-focus .cast-keys {
+      height: 100%;
+      min-height: 0;
+      align-self: stretch;
+      overflow: auto;
+      padding: 12px 16px 14px;
+    }
+    .cast-screen.character-focus .cast-keys h2 {
+      margin: 0 0 8px;
+      font-size: clamp(18px, 1.6vw, 24px);
+      letter-spacing: 0.22em;
+    }
+    .cast-screen.character-focus .cast-keys h3 {
+      margin: 0 0 10px;
+      font-size: clamp(26px, 2.2vw, 36px);
+      letter-spacing: 0.18em;
+    }
+    .cast-screen.character-focus .cast-keys p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.62;
+      letter-spacing: 0.04em;
+    }
+    .cast-screen.character-focus .cast-keys p:last-child {
+      margin-bottom: 0;
     }
     .cast-mid {
       display: flex;
@@ -5782,32 +5811,6 @@
         0 0 0 1px #15100d,
         0 14px 28px rgba(0, 0, 0, 0.45),
         inset 0 1px 0 rgba(255, 236, 190, 0.14);
-    }
-    .cast-screen.character-focus .cast-keys-inset {
-      flex: 0 0 auto;
-      margin-top: 6px;
-      padding: 10px 12px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(228, 177, 90, 0.45);
-      background: rgba(8, 6, 4, 0.42);
-    }
-    .cast-screen.character-focus .cast-keys-inset h2 {
-      margin: 0 0 6px;
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(20px, 1.8vw, 26px);
-      letter-spacing: 0.16em;
-      color: #ffe7a4;
-    }
-    .cast-screen.character-focus .cast-keys-inset p {
-      margin: 0 0 8px;
-      color: #fff6e4;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.62;
-      letter-spacing: 0.04em;
-    }
-    .cast-screen.character-focus .cast-keys-inset p:last-child {
-      margin-bottom: 0;
     }
     .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2vw, 40px); margin-bottom: 6px; }
     .cast-screen.character-focus .cast-mid {
@@ -6327,10 +6330,14 @@
       .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(160px, 34vh) minmax(0, 1fr);
+        grid-template-rows: minmax(160px, 34vh) minmax(0, 1fr) auto;
         width: 100%;
         max-width: none;
         gap: 10px;
+      }
+      .cast-screen.character-focus .cast-keys {
+        height: auto;
+        max-height: none;
       }
       .cast-screen.character-focus .cast-hero-frame {
         max-height: 36vh;
@@ -10966,14 +10973,15 @@
               <h2><span>初期デッキ</span><small>${starterDeckCount()}枚</small></h2>
               <div class="cast-deck" aria-label="初期デッキ">${starterDeckMarkup()}</div>
             </div>
-            <section class="cast-keys-inset" aria-label="パリィ">
-              <h2><span>パリィ</span></h2>
-              <p>次の攻撃を１回無効にする。重複不可。</p>
-              <p>ターン終了時に消失。</p>
-              <p>パリィがある間、シールドを追加で得ることはできない。</p>
-            </section>
           </div>
-        </div>`;
+        </div>
+        <aside class="cast-keys" aria-label="キーワード">
+          <h2>キーワード</h2>
+          <h3>パリィ</h3>
+          <p>次の攻撃を１回無効にする。重複不可。</p>
+          <p>ターン終了時に消失。</p>
+          <p>パリィがある間、シールドを追加で得ることはできない。</p>
+        </aside>`;
     }
 
     function challengeReady() {
