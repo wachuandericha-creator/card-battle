@@ -12079,6 +12079,10 @@
     }
 
     function renderFloor() {
+      if (floorPhase === "paths" && route[0] === "出来事:祝福" && floorNo() === 0) {
+        beginOpeningFight();
+        return;
+      }
       if (floorPhase === "paths") {
         root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
         runEntrance = false;
@@ -13270,7 +13274,19 @@
       });
     }
 
+    function beginOpeningFight() {
+      rewardStep = "done";
+      floorPhase = "show";
+      const next = route[battleIndex + 1];
+      if (!next || isEventNode(next)) placeNext(dungeonEnemy());
+      advance(1);
+    }
+
     function finishEvent() {
+      if (route[0] === "出来事:祝福" && floorNo() === 0) {
+        beginOpeningFight();
+        return;
+      }
       rewardPaths = rollPaths();
       rewardStep = "paths";
       floorPhase = "paths";
