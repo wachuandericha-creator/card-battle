@@ -5666,24 +5666,32 @@
         radial-gradient(ellipse at 80% 88%, rgba(70, 32, 16, 0.35), transparent 42%),
         linear-gradient(180deg, #3a2818 0%, #1a120e 48%, #070605 100%);
     }
+    .cast-screen.character-focus .cast-roster {
+      width: 100%;
+      max-width: none;
+    }
     .cast-screen.character-focus {
       --cast-job-card-w: 132px;
       --cast-job-deck-gap: 8px;
       --cast-job-deck-cols: 5;
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
+      --cast-keys-w: 460px;
+      --cast-job-center-gap: clamp(28px, 5vw, 72px);
       padding-left: 12.5vw;
       padding-right: 12.5vw;
       align-items: center;
     }
+  /* ちびが画面中央＝左右の板のあいだも中央。余った絵は左右対称に見える */
     .cast-screen.character-focus .cast-main {
       position: relative;
       width: 100%;
       max-width: none;
       margin-left: auto;
       margin-right: auto;
-      grid-template-columns: minmax(0, max-content) minmax(240px, 1fr);
-      gap: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto var(--cast-job-center-gap) auto 1fr;
+      gap: 0;
       align-items: stretch;
       justify-content: center;
       overflow: hidden;
@@ -5699,9 +5707,14 @@
       filter: none;
       pointer-events: none;
     }
-    .cast-screen.character-focus .cast-keys {
+    .cast-screen.character-focus .cast-side {
+      grid-column: 2;
       justify-self: end;
-      width: min(460px, 100%);
+    }
+    .cast-screen.character-focus .cast-keys {
+      grid-column: 4;
+      justify-self: start;
+      width: min(var(--cast-keys-w), 100%);
     }
     .cast-mid {
       display: flex;
@@ -5761,7 +5774,6 @@
     .cast-screen.character-focus .cast-side {
       width: min(var(--cast-job-panel-w), 100%);
       max-width: 100%;
-      justify-self: center;
     }
     .cast-screen.character-focus .cast-side .cast-plaque {
       display: flex;
@@ -6292,7 +6304,15 @@
       .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       .cast-screen.character-focus .cast-main {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(0, 1fr);
+        grid-template-rows: minmax(0, auto) auto;
+        width: 100%;
+        max-width: none;
+        gap: 10px;
+      }
+      .cast-screen.character-focus .cast-side,
+      .cast-screen.character-focus .cast-keys {
+        grid-column: 1;
+        justify-self: stretch;
         width: 100%;
         max-width: none;
       }
@@ -7513,7 +7533,7 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=14", label: "祝福" };
+      if (name === "出来事:祝福") return { src: "path-bless.jpg?v=15", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=9", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=7", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
@@ -11325,7 +11345,7 @@
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩とそのほかは青。左が休憩、真ん中が戦闘、右がそのほか</p>
             <div class="ref-grid">
               ${sheetFig("path-search.jpg?v=9", "探索")}
-              ${sheetFig("path-bless.jpg?v=14", "祝福")}
+              ${sheetFig("path-bless.jpg?v=15", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
               ${sheetFig("path-boss.jpg?v=2", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
@@ -12234,7 +12254,7 @@
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=14" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=15" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
     };
