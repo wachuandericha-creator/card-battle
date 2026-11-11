@@ -5143,20 +5143,25 @@
       text-shadow: none;
       background: none;
     }
+    .menu.event .event-choice .event-story p + p {
+      margin-top: 14px;
+    }
     .menu.event .event-play p,
     .menu.event .event-where,
     .menu.event .event-prompt {
       color: #ffe08a;
     }
     .menu.event .event-play p {
-      font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
       font-size: clamp(21px, 1.8vw, 28px);
       font-weight: 700;
+      line-height: 1.85;
+      letter-spacing: 0.06em;
       color: #ffe08a;
-      background: rgba(48, 32, 12, 0.72);
-      border-left: 6px solid #e4b15a;
-      border-radius: 10px;
-      padding: 10px 14px;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
     }
     .menu.event .event-split.both .event-play,
     .menu.event .event-split:not(.both):has(.event-story) + .event-where {
@@ -12646,12 +12651,27 @@
       return `<div class="gear-delta"><p class="delta-names"><span>${esc(nowName)}</span><i>→</i><span>${esc(item.name || "")}</span></p>${rows.join("")}${fx}</div>`;
     }
 
+    function splitEventStory(text) {
+      const raw = String(text || "").trim();
+      if (!raw) return [];
+      if (raw.includes("\n")) return raw.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+      const parts = raw.match(/[^。]+。/g);
+      if (parts && parts.length > 1) return parts.map((line) => line.trim());
+      return [raw];
+    }
+
+    function eventStoryHtml(text) {
+      const lines = splitEventStory(text);
+      if (!lines.length) return "";
+      return `<div class="event-story">${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</div>`;
+    }
+
     function eventNoteHtml() {
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
         return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p></div><div class="event-play"><p>報酬を1つ選ぶ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
-      const story = floorNote ? `<div class="event-story"><p>${esc(floorNote)}</p></div>` : "";
+      const story = floorNote ? eventStoryHtml(floorNote) : "";
       const play = floorPrompt ? `<div class="event-play"><p>${esc(floorPrompt)}</p></div>` : "";
       return `<div class="event-split${story && play ? " both" : ""}">${story}${play}</div>`;
     }
