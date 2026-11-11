@@ -4904,6 +4904,10 @@
     }
     .menu.event.search .event-choice { padding-right: 4%; padding-left: 4%; gap: 10px; }
     .menu.event.search .gift-show { width: min(280px, 100%); max-width: 280px; align-self: center; }
+    .menu.event .event-choice > button,
+    .menu.event .event-actions { width: auto; align-self: flex-start; }
+    .menu.event .event-choice > button,
+    .menu.event .event-actions button { width: auto; min-width: 0; align-self: flex-start; padding: 10px 18px; }
     .menu.event .event-actions { display: flex; flex-wrap: wrap; gap: 10px; }
     .menu.event .event-actions button { min-width: 0; }
     .menu.event .beggar-card.picked .card.preview { outline: 4px solid #ffe08a; outline-offset: 2px; }
@@ -9534,17 +9538,25 @@
         floorPrompt = "";
         armRare("bless");
       } else if (kind === "キャンプ") {
-        floorHp = runMaxHp();
+        floorKind = "休憩";
+        const max = runMaxHp();
+        const before = Math.min(max, floorHp);
+        const gain = Math.round(max * 0.2);
+        const after = Math.min(max, before + gain);
+        const healed = after - before;
+        floorHp = after;
         if (player) {
-          player.maxHp = runMaxHp();
-          player.hp = player.maxHp;
+          player.maxHp = max;
+          player.hp = after;
         }
-        floorNote = "体力が全快した。";
-        floorPrompt = "";
+        floorNote = "焚き火のそばで、女の戦士は丸くなってひと息ついた。頬が赤く、静かな寝息が落ちる。";
+        floorPrompt = healed
+          ? `現在HP ${before} / 最大HP ${max}。${healed} 回復して、${after} / ${max}。最大HPの20%。`
+          : `現在HP ${before} / 最大HP ${max}。すでに満タンで、回復は0。`;
       } else if (kind === "お店") {
         shopStock = rollShopStock();
-        floorNote = "おしゃれな骸骨が商いをしている。";
-        floorPrompt = "";
+        floorNote = "ダンジョンの店先で、おしゃれな骸骨が品を並べている。女の戦士はジト目のまま、値段を負けてもらおうとしている。";
+        floorPrompt = "★で買い物。カード2つ、装備2つ。出ていくと先へ進む。";
         armRare("shop");
       } else if (kind === "探索") {
         if (Math.random() < 0.5) {
@@ -9562,8 +9574,7 @@
           floorKind = "物乞いに遭遇";
           beggarGift = [];
           floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
-          floorPrompt = "廃棄するカードを1枚選ぶ。決めると、物乞いが襲ってくる。";
-          floorPrompt = "";
+          floorPrompt = "廃棄するカードを1枚選んで決定する。無視して進んでも、物乞いが襲ってくる。";
         } else {
           floorKind = "挑戦者に祝福を";
           floorPhase = "bless";
@@ -9575,18 +9586,18 @@
       } else if (kind === "修行") {
         floorKind = "修行";
         const gotCard = grantTrain();
-        floorNote = gotCard ? "素振りの汗が落ちた。" : "先へ進む。";
-        floorPrompt = gotCard ? `${playerBuild()}のカードを1枚もらった。` : "";
+        floorNote = "女の戦士は汗を飛ばしながら素振りを続け、新しい技が腕に残った。";
+        floorPrompt = gotCard ? `${playerBuild()}のカードを1枚もらった。` : "もらえるカードは無かった。";
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
         beggarPick = -1;
         floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。";
-        floorPrompt = "廃棄するカードを1枚選ぶ。決めると、物乞いが襲ってくる。";
+        floorPrompt = "廃棄するカードを1枚選んで決定する。無視して進んでも、物乞いが襲ってくる。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
-        floorNote = `いまのジョブは${job}。カードは捨てない。`;
-        floorPrompt = "";
+        floorNote = "光る紋章の前に立つと、別の戦い方が見えてきた。";
+        floorPrompt = `いまのジョブは${job}。カードは捨てない。ジョブを1つ選ぶ。`;
       }
       screen = "floor";
       render();
@@ -9634,8 +9645,7 @@
       if (floorKind !== "探索" || floorPhase !== "search" || !floorGift) return;
       const got = takeGift(floorGift);
       if (!got) return;
-      floorNote = got;
-      floorPrompt = "";
+      floorPrompt = got;
       floorPhase = "show";
       render();
     }
@@ -10610,7 +10620,7 @@
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
         "お店": ["shop-merchant.jpg?v=7", "口を開けて、値段を負けてもらおうとしている戦士"],
         "探索": ["event-search.jpg?v=12", "今まさに宝箱を開けようとして、目がキラキラし、よだれを垂らしている"],
-        "キャンプ": ["event-rest.jpg?v=8", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
+        "休憩": ["event-rest.jpg?v=8", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
         "修行": ["event-train.jpg?v=4", "上から見下ろし、汗をかいて左手でガッツポーズ"],
@@ -10632,9 +10642,8 @@
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "お店", takeRare("shop")) : "";
-      const where = floorKind === "挑戦者に祝福を" || floorKind === "探索" ? "" : `<p class="event-where">${esc(dungeonName)}　${floorLabel()}</p>`;
       const title = `<h1>${esc(floorKind)}</h1>`;
-      const choice = `${rareFlash}${eventNoteHtml()}${where}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
+      const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       root.innerHTML = art
         ? `<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}">${title}${art}<div class="event-choice">${choice}</div></div>`
         : `<div class="menu${floorKind === "物乞いに遭遇" ? " beggar" : ""}">${title}${choice}</div>`;
@@ -11777,7 +11786,6 @@
     function applyPath(id) {
       if (rewardStep === "done" || rewardStep === "cards") return;
       rewardStep = "done";
-      if (id === "camp") restoreHp(player.maxHp - player.hp);
       if (id === "straight") placeNext(dungeonEnemy());
       advance(id === "skip" ? 2 : 1);
     }
@@ -11909,17 +11917,12 @@
     }
 
     function eventNoteHtml() {
-      const gameLine = (text) => /選べ|外せる|外さず|進むと|受け取|捨てない|残っている/.test(text || "");
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は<span class="hint">祝福</span>を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p></div><div class="event-play"><p>報酬を選べ</p></div></div>`;
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出す。受け取れるのは、ひとつだけ。</p><p>選んだものは、この攻略のあいだ、戦士の力になる。</p></div><div class="event-play"><p>報酬を1つ選ぶ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
-      const noteIsGame = gameLine(floorNote);
-      const story = floorNote && !noteIsGame ? `<div class="event-story"><p>${esc(floorNote)}</p></div>` : "";
-      const playBits = [];
-      if (floorNote && noteIsGame) playBits.push(`<p>${esc(floorNote)}</p>`);
-      if (floorPrompt) playBits.push(`<p>${esc(floorPrompt)}</p>`);
-      const play = playBits.length ? `<div class="event-play">${playBits.join("")}</div>` : "";
+      const story = floorNote ? `<div class="event-story"><p>${esc(floorNote)}</p></div>` : "";
+      const play = floorPrompt ? `<div class="event-play"><p>${esc(floorPrompt)}</p></div>` : "";
       return `<div class="event-split${story && play ? " both" : ""}">${story}${play}</div>`;
     }
 
@@ -12533,15 +12536,15 @@
           if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
           floorPhase = "ultimate";
           ultimatePicks = rollUltimates(nextJob);
-          floorNote = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
-          floorPrompt = "";
+          floorNote = "紋章の光が、新しいジョブを女の戦士に重ねた。";
+          floorPrompt = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
           render();
         }
         if (name === "ultimate-pick") {
           ultimate = ultimateLabel(action.dataset.ultimate || "");
           floorPhase = "show";
-          floorNote = ultimate === "パリィが重複する" ? "パリィが重なるようになった。" : `奥義は${ultimate}。`;
-          floorPrompt = "";
+          floorNote = "選んだ奥義が、女の戦士の戦い方に残った。";
+          floorPrompt = ultimate === "パリィが重複する" ? "パリィが重なるようになった。" : `奥義は${ultimate}。`;
           render();
         }
         if (name === "new") {
