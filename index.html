@@ -3440,20 +3440,20 @@
     }
     .gear-effect-meta {
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 8px 10px;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0;
       min-width: 0;
       flex: 1;
     }
     .gear-effect-titles {
-      flex: 1 1 auto;
+      width: 100%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 4px;
+      gap: 5px;
       text-align: right;
     }
     .gear-effect-name {
@@ -3491,12 +3491,13 @@
     }
     .gear-effect-stats {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 5px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
       margin: 0;
-      flex: 0 0 auto;
+      width: 100%;
     }
     .gear-effect-stats span {
       display: inline-flex;
@@ -8116,7 +8117,7 @@
       const action = o.action ? " has-action" : "";
       const bodyText = o.body != null ? String(o.body).trim() : "";
       const body = bodyText ? `<p class="${bodyClass}">${bodyText}</p>` : "";
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}</div>${stats}</div></div>${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}" role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${genre}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${stats}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
