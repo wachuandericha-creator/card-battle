@@ -2573,7 +2573,7 @@
     .hero-guard .fissure {
       left: 50%;
       top: 14%;
-      width: 3px;
+      width: 4px;
       height: 68%;
       background: linear-gradient(transparent, #fff 10%, #ffe4b8 38%, #ff8a32 72%, transparent);
       box-shadow: 0 0 12px #fff, 0 0 22px rgba(255, 140, 40, 0.85);
@@ -2602,9 +2602,9 @@
     .hero-guard .glass.g6 { --sx: 112px; --sy: 18px; --rot: 64deg; width: 9px; height: 13px; animation-delay: 0.06s; }
     .hero-guard .guard-word {
       left: 50%;
-      top: 12%;
+      top: -4%;
       margin: 0;
-      font-size: 72px;
+      font-size: 64px;
       font-weight: 900;
       letter-spacing: 0.18em;
       line-height: 1;
@@ -7378,10 +7378,22 @@
       ファイアーボール: "card-fireball.jpg?v=1",
       ファイアソード: "card-firesword.jpg?v=1",
       ファイアパラダイス: "card-fireparadise.jpg?v=1",
+      "怒り（敵）": "card-anger-foe.jpg?v=1",
     };
     function cardArtSrc(name) {
       return CARD_ART[name] || "";
     }
+    const FOE_ONLY = {
+      "怒り（敵）": {
+        cost: 0,
+        text: "この戦闘中 ATK+1 DEF-1",
+        kind: "foe",
+        rage: true,
+        foeRage: true,
+        image: "card-anger-foe.jpg?v=1",
+        stars: 1,
+      },
+    };
     const CARDS = {
       アタック: { cost: 1, text: "3ダメージ", damage: 3 },
       チャージアタック: { cost: 2, text: "9ダメージ", damage: 9 },
@@ -8875,7 +8887,8 @@
     }
 
     function foeAngerCard() {
-      return { name: "怒り", cost: 0, text: "この戦闘中 ATK+1 DEF-1", kind: "skill", rage: true, foeRage: true, image: "card-anger-foe.jpg?v=1" };
+      const base = FOE_ONLY["怒り（敵）"];
+      return { ...base, name: "怒り" };
     }
 
     function advanceEnemyLoop() {
@@ -11939,6 +11952,7 @@
           push(name, { ...base, ...card }, "敵");
         }
       }
+      for (const [name, data] of Object.entries(FOE_ONLY)) push(name, data, "敵");
       return list;
     }
 
