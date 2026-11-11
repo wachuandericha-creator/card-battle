@@ -5150,6 +5150,7 @@
       color: #ffe08a;
     }
     .menu.event .event-play p {
+      font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
       font-size: clamp(21px, 1.8vw, 28px);
       font-weight: 700;
       color: #ffe08a;
@@ -5678,7 +5679,30 @@
         rgba(16, 11, 9, 0.72);
       backdrop-filter: blur(2px);
     }
-    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(36px, 3vw, 52px); }
+    .cast-screen.character-focus .cast-side .cast-plaque {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 14px 12px;
+      overflow: hidden;
+    }
+    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2vw, 40px); margin-bottom: 2px; }
+    .cast-screen.character-focus .cast-blurb { margin: 0; font-size: 16px; line-height: 1.35; }
+    .cast-screen.character-focus .cast-mid { gap: 8px; align-items: center; }
+    .cast-screen.character-focus .cast-vitals { gap: 2px; margin: 2px 0; }
+    .cast-screen.character-focus .cast-vitals .hp-line b { font-size: 20px; }
+    .cast-screen.character-focus .cast-plaque h2 { margin: 6px 0 4px; font-size: 14px; }
+    .cast-screen.character-focus .cast-gear .cast-gear-slot .gear-frame { width: 64px; height: 64px; }
+    .cast-screen.character-focus .cast-deck {
+      flex: 1 1 auto;
+      min-height: 0;
+      align-content: stretch;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+    }
+    .cast-screen.character-focus .cast-deck .card.preview {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+    }
     .cast-screen.character-focus .cast-blurb { font-size: 20px; line-height: 1.55; }
     .cast-screen.character-focus .cast-side { min-width: 0; overflow: hidden; }
     .cast-screen.character-focus .stat-chips { min-width: 0; }
@@ -5698,7 +5722,8 @@
       align-items: stretch;
       justify-items: center;
       gap: 8px;
-      padding-right: 22px;
+      padding-left: 24px;
+      padding-right: 24px;
     }
     .dungeon-screen .cast-title { grid-row: 1; }
     .dungeon-screen .dungeon-top {
@@ -5718,22 +5743,22 @@
     .dungeon-side {
       position: absolute;
       top: 96px;
-      right: 14px;
-      width: 220px;
+      right: 56px;
+      width: 240px;
       max-height: calc(100% - 200px);
       min-width: 0;
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: center;
       gap: 8px;
-      text-align: right;
+      text-align: center;
       overflow: auto;
       z-index: 4;
       pointer-events: none;
     }
     .dungeon-side .dungeon-foes,
     .dungeon-side .dungeon-clears,
-    .dungeon-side .dungeon-clear-slot { justify-content: flex-end; width: 100%; }
+    .dungeon-side .dungeon-clear-slot { justify-content: center; width: 100%; }
     .dungeon-screen .dungeon-columns {
       grid-row: 3;
       height: 100%;
@@ -6018,8 +6043,8 @@
     }
     .dungeon-col .chain-art {
       position: absolute;
-      width: 86%;
-      height: 86%;
+      width: 118%;
+      height: 118%;
       max-width: none;
       left: 50%;
       top: 50%;
@@ -6028,10 +6053,10 @@
       filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.7));
     }
     .dungeon-col .chain-art.one {
-      width: 72%;
-      height: 72%;
+      width: 100%;
+      height: 100%;
       left: 50%;
-      top: 48%;
+      top: 50%;
       transform: translate(-50%, -50%);
     }
     .dungeon-pick .cast-actions {
@@ -8777,12 +8802,12 @@
       };
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          ghost.style.transition = "transform 0.45s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transition = "transform 1.05s cubic-bezier(0.22, 0.7, 0.2, 1)";
           ghost.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
         });
       });
       ghost.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 520);
+      setTimeout(finish, 1180);
     }
 
     function flyDiscardIntoDeck(done) {
@@ -9149,7 +9174,7 @@
               });
             });
           }, 720);
-        }, 700);
+        }, 1200);
         return;
       }
       drawFoeFromDeck();
@@ -9818,7 +9843,7 @@
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, rallied: false, hit: false };
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -10546,7 +10571,7 @@
       for (const [name, count] of CARD_POOL) {
         const card = { name, ...(cardDef(name) || {}) };
         for (let i = 0; i < count; i += 1) {
-          cards.push(`<button type="button" class="deck-card" data-action="cast-card" data-index="${cards.length}" title="${esc(name)}" aria-label="${esc(name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`);
+          cards.push(`<button type="button" class="deck-card" data-card="${esc(name)}" aria-label="${esc(name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`);
         }
       }
       return cards.join("");
@@ -10677,22 +10702,24 @@
       bindCastGearHover();
     }
 
-    function placeCastCardPop(action) {
+    function showCastCard(button) {
+      const name = button.dataset.card || "";
       const old = root.querySelector(".cast-card-pop");
-      if (old && old.dataset.index === (action.dataset.index || "")) return;
+      if (old && old.dataset.card === name) return;
       if (old) old.remove();
-      const card = action.querySelector(".card");
-      if (!card) return;
+      const def = cardDef(name);
+      if (!def) return;
+      const card = { name, ...def };
       const pop = document.createElement("div");
       pop.className = "cast-card-pop";
-      pop.dataset.index = action.dataset.index || "";
-      pop.innerHTML = card.outerHTML;
+      pop.dataset.card = name;
+      pop.innerHTML = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
       root.appendChild(pop);
-      const rect = action.getBoundingClientRect();
+      const rect = button.getBoundingClientRect();
       const width = pop.offsetWidth || 280;
-      const height = pop.offsetHeight || 420;
-      let left = rect.left - width - 12;
-      if (left < 8) left = Math.min(rect.right + 12, window.innerWidth - width - 8);
+      const height = pop.offsetHeight || 372;
+      let left = rect.right + 12;
+      if (left + width > window.innerWidth - 8) left = Math.max(8, rect.left - width - 12);
       let top = rect.top + rect.height / 2 - height / 2;
       top = Math.max(8, Math.min(window.innerHeight - height - 8, top));
       pop.style.left = `${Math.round(left)}px`;
@@ -10705,12 +10732,15 @@
     }
 
     function bindDeckHover() {
-      root.querySelectorAll(".cast-deck .deck-card").forEach((card) => {
-        if (card.dataset.hoverBound) return;
-        card.dataset.hoverBound = "1";
-        card.addEventListener("pointerenter", () => placeCastCardPop(card));
-        card.addEventListener("pointerleave", () => hideCastCardPop());
+      const deck = root.querySelector(".cast-deck");
+      if (!deck || deck.dataset.deckBound === "1") return;
+      deck.dataset.deckBound = "1";
+      deck.addEventListener("pointerover", (event) => {
+        const button = event.target instanceof Element ? event.target.closest(".deck-card") : null;
+        if (!button || !deck.contains(button)) return;
+        showCastCard(button);
       });
+      deck.addEventListener("pointerleave", () => hideCastCardPop());
     }
 
     function bindCastHover() {
