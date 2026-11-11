@@ -205,10 +205,10 @@
       border-radius: 8px;
       outline: none;
       box-shadow:
-        inset 0 0 0 5px #ffe14a,
-        inset 0 0 0 8px rgba(255, 236, 150, 0.42),
+        inset 0 0 0 9px #ffe14a,
+        inset 0 0 0 14px rgba(255, 236, 150, 0.42),
         0 0 0 1px #2a1604,
-        0 0 18px 5px rgba(255, 214, 70, 0.88);
+        0 0 20px 6px rgba(255, 214, 70, 0.9);
       animation: here-pulse 1.1s ease-in-out infinite;
     }
     .road-node.now::after {
@@ -231,17 +231,17 @@
     @keyframes here-pulse {
       0%, 100% {
         box-shadow:
-          inset 0 0 0 5px #ffe14a,
-          inset 0 0 0 8px rgba(255, 236, 150, 0.38),
+          inset 0 0 0 9px #ffe14a,
+          inset 0 0 0 14px rgba(255, 236, 150, 0.38),
           0 0 0 1px #2a1604,
-          0 0 14px 4px rgba(255, 214, 70, 0.72);
+          0 0 16px 5px rgba(255, 214, 70, 0.76);
       }
       50% {
         box-shadow:
-          inset 0 0 0 5px #fff6b0,
-          inset 0 0 0 8px rgba(255, 248, 200, 0.55),
+          inset 0 0 0 9px #fff6b0,
+          inset 0 0 0 14px rgba(255, 248, 200, 0.55),
           0 0 0 1px #2a1604,
-          0 0 24px 7px rgba(255, 236, 140, 0.98);
+          0 0 26px 8px rgba(255, 236, 140, 0.98);
       }
     }
     .road-node.boss { color: #ffb0a4; }
@@ -5188,22 +5188,20 @@
       height: 100%;
       padding: 8px 12px 12px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
       grid-template-areas:
-        "title title"
-        "picture choice";
+        "title"
+        "lead"
+        "choice";
       align-items: stretch;
       justify-items: stretch;
       gap: 8px 12px;
       overflow: hidden;
     }
     .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
-    .menu.event.shop {
-      grid-template-columns: minmax(200px, 0.62fr) minmax(0, 1.5fr);
-    }
     .menu.event.shop .event-choice {
-      justify-content: center;
+      justify-content: flex-start;
       overflow: auto;
       min-height: 0;
       padding: 8px 16px 12px;
@@ -5344,6 +5342,28 @@
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82);
       animation: turn-word 1.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
+    .menu.event .event-lead {
+      grid-area: lead;
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
+      align-items: stretch;
+      gap: 8px 18px;
+      width: min(100%, 1180px);
+      justify-self: center;
+      min-height: 0;
+    }
+    .menu.event .event-art {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+    }
+    .menu.event .event-copy {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+    .menu.event .event-copy .event-split { width: 100%; }
     .menu.event .event-picture {
       grid-area: picture;
       width: auto;
@@ -5362,6 +5382,16 @@
       position: relative;
       z-index: 1;
       background: #120e0c;
+    }
+    .menu.event .event-art .event-picture {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      aspect-ratio: auto;
+      margin: 0;
     }
     .menu.event .event-choice {
       grid-area: choice;
@@ -5440,97 +5470,13 @@
       margin-top: 10px;
       padding-top: 10px;
     }
-    .menu.event.bless {
-      grid-template-areas:
-        "title"
-        "board";
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto minmax(0, 1fr);
-      column-gap: 0;
-    }
-    .menu.event.bless .bless-board {
-      grid-area: board;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 0 clamp(6px, 2vw, 20px) 10px;
-    }
-    /* 祝福：説明文と報酬を上下の等しい帯にし、挿絵はその一枚の板の中心 */
-    .menu.event.bless .event-choice.bless-choice {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: min(100%, 1180px);
-      height: 100%;
-      max-height: none;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
-      align-items: stretch;
-      justify-items: stretch;
-      gap: 8px;
-      padding: 0 8px 4px;
-      box-sizing: border-box;
-      grid-area: unset;
-    }
-    .menu.event.bless .bless-choice .event-split {
-      align-self: start;
-      justify-self: stretch;
-      width: 100%;
-      min-height: 0;
-    }
-    .menu.event.bless .bless-art-slot {
-      align-self: center;
-      justify-self: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      margin: 0;
-      pointer-events: none;
-    }
-    .menu.event.bless .bless-art-slot .bless-picture {
-      display: block;
-      width: auto;
-      height: 100%;
-      max-width: min(100%, 860px);
-      max-height: 100%;
-      margin: 0 auto;
-      object-fit: contain;
-      object-position: center;
-    }
     .menu.event.bless .gift-row {
-      align-self: end;
-      justify-self: stretch;
-      width: 100%;
       justify-content: center;
       flex-wrap: nowrap;
-      margin: 0;
-      padding: 0;
-      max-height: 100%;
       gap: 12px;
     }
-    .menu.event.bless .gift-btn {
-      min-width: 0;
-      max-width: none;
-      flex: 1 1 0;
-      padding: 8px 10px 10px;
-      gap: 4px;
-    }
-    .menu.event.bless .gift-label { font-size: 22px; line-height: 1.15; }
-    .menu.event.bless .gift-btn .gear-effect { width: 100%; max-width: none; }
-    .menu.event.bless .gear-effect-head { margin-bottom: 4px; }
-    .menu.event.bless .gear-effect-body { margin-top: 4px; padding: 6px 8px; }
-    .menu.event.bless .gear-effect.center-boon .gear-effect-art { width: 112px; height: 112px; }
     .menu.event.search {
-      grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.72fr);
+      grid-template-columns: minmax(0, 1fr);
     }
     .menu.event.search .event-choice { padding-right: 4%; padding-left: 4%; gap: 10px; }
     .menu.event.search .gift-show { width: min(280px, 100%); max-width: 280px; align-self: center; }
@@ -5548,17 +5494,14 @@
     @media (max-width: 900px) {
       .menu.event {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-areas: "title" "picture" "choice";
+        grid-template-areas: "title" "lead" "choice";
         height: 100%;
         overflow: hidden;
       }
-      .menu.event.bless {
-        grid-template-areas: "title" "board";
-        grid-template-columns: minmax(0, 1fr);
-      }
+      .menu.event .event-lead { grid-template-columns: minmax(0, 1fr); }
+      .menu.event .event-art { min-height: 34vh; }
       .menu.event.shop .shop-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .menu.event .event-picture { height: auto; max-height: 36vh; }
-      .menu.event.bless .bless-art-slot .bless-picture { max-height: 100%; }
+      .menu.event.shop .event-picture { height: auto; max-height: 36vh; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.event,
@@ -7571,6 +7514,7 @@
     }
     let rewardPicks = [];
     let rewardPaths = [];
+    let hurtRestUsed = false;
     let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
     let rareArmed = "";
@@ -10416,6 +10360,7 @@
         rewardStars,
         rewardPicks,
         rewardPaths,
+        hurtRestUsed,
         rewardStep,
         pathEventTitle,
         bonusCard,
@@ -10584,6 +10529,7 @@
       rewardStars = data.rewardStars || 0;
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
       rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
+      hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
@@ -12188,16 +12134,11 @@
       const floorTitle = eventFloorMarkHtml();
       const title = `<h1>${esc(floorKind)}${floorTitle}</h1>`;
       const shopMode = floorKind === "お店";
-      const blessPhase = floorKind === "挑戦者に祝福を" && floorPhase === "bless";
-      const blessPicture = art ? art.replace('class="event-picture"', 'class="event-picture bless-picture"') : "";
-      const blessArtSlot = blessPicture ? `<div class="bless-art-slot">${blessPicture}</div>` : "";
-      const choiceCommon = `${shop}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}`;
-      const choice = blessPhase
-        ? `${rareFlash}${eventNoteHtml()}${blessArtSlot}${bless}`
-        : `${rareFlash}${eventNoteHtml()}${choiceCommon}${bless}`;
-      const choiceShell = blessPhase
-        ? `<div class="bless-board"><div class="event-choice bless-choice">${choice}</div></div>`
-        : `${art || ""}<div class="event-choice">${choice}</div>`;
+      const note = eventNoteHtml();
+      const artBox = art ? `<div class="event-art">${art}</div>` : "";
+      const lead = (art || note) ? `<div class="event-lead">${artBox}<div class="event-copy">${note}</div></div>` : "";
+      const choiceBody = `${rareFlash}${shop}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}${bless}`;
+      const choiceShell = `${lead}<div class="event-choice">${choiceBody}</div>`;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${title}${choiceShell}</div>`);
       runEntrance = false;
     }
@@ -12989,7 +12930,15 @@
 
     function rollPaths() {
       const pool = shuffle(["camp"].concat(PATH_RIGHT));
-      return [pool[0], "straight", pool[1]];
+      const paths = [pool[0], "straight", pool[1]];
+      if (!hpHalf(player)) {
+        hurtRestUsed = false;
+        return paths;
+      }
+      if (hurtRestUsed || paths.indexOf("camp") >= 0) return paths;
+      paths[Math.random() < 0.5 ? 0 : 2] = "camp";
+      hurtRestUsed = true;
+      return paths;
     }
 
     function resolveLost(shown) {
