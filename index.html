@@ -5421,7 +5421,7 @@
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82);
       animation: turn-word 1.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .menu.event.bless { --event-art: 0.72fr; --event-side: 1.4fr; }
+    .menu.event.bless { --event-art: 1.1fr; --event-side: 1.75fr; }
     .menu.event.shop { --event-art: 0.58fr; --event-side: 1.62fr; }
     .menu.event.search { --event-art: 0.82fr; --event-side: 1.28fr; }
     .menu.event.beggar { --event-art: 0.68fr; --event-side: 1.45fr; }
@@ -5500,6 +5500,54 @@
       max-height: 100%;
       aspect-ratio: 16 / 9;
       margin: 0;
+    }
+    .menu.event.bless .event-lead {
+      width: min(100%, 1580px);
+      gap: 12px 32px;
+      height: 100%;
+      max-height: none;
+      align-self: stretch;
+    }
+    .menu.event.bless .event-art {
+      flex: 1 1 auto;
+      min-height: min(64vh, 560px);
+    }
+    .menu.event.bless .event-art .event-picture {
+      width: 100%;
+      height: 100%;
+      max-height: min(82vh, 940px);
+      aspect-ratio: auto;
+    }
+    .menu.event.bless .event-side {
+      flex: 1 1 auto;
+      gap: 20px;
+      padding: 6px 12px 10px 4px;
+    }
+    .menu.event.bless .event-copy .event-story p,
+    .menu.event.bless .event-copy .event-play p {
+      font-size: clamp(21px, 1.95vw, 31px);
+      line-height: 1.68;
+    }
+    .menu.event.bless .event-side .event-choice {
+      gap: 16px;
+    }
+    .menu.event.bless .gift-btn {
+      padding: 10px 12px 14px;
+    }
+    .menu.event.bless .gift-pick .card.preview {
+      width: min(272px, 100%);
+    }
+    .menu.event.bless .gift-pick .gift-img {
+      width: min(272px, 100%);
+      height: auto;
+      aspect-ratio: 1;
+    }
+    .menu.event.bless .gift-btn .gear-effect-art {
+      width: 124px;
+      height: 124px;
+    }
+    .menu.event.bless .gift-btn .gear-effect-head {
+      grid-template-columns: 124px 1fr;
     }
     .menu.event .event-choice {
       grid-area: choice;
