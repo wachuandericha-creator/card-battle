@@ -190,18 +190,42 @@
     }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
+    .road-node.tone-fight img,
+    .road-node.tone-fight i { box-shadow: inset 0 0 0 10px #e24a38; }
+    .road-node.tone-rest img,
+    .road-node.tone-rest i { box-shadow: inset 0 0 0 6px #6aa4e0; }
+    .road-node.tone-other img,
+    .road-node.tone-other i { box-shadow: inset 0 0 0 6px #e2b03a; }
     .road-node.now {
       z-index: 2;
       overflow: visible;
       color: #fff6d0;
       border-radius: 8px;
-      box-shadow: inset 0 0 0 16px #ffe08a, 0 0 0 6px #6a4512;
+      outline: 7px solid #ffe14a;
+      outline-offset: 3px;
+      box-shadow: 0 0 0 3px #2a1604, 0 0 22px 6px rgba(255, 214, 70, 0.95);
+      animation: here-pulse 1.1s ease-in-out infinite;
     }
-    .road-node.fixed {
-      box-shadow: inset 0 0 0 4px #c43a32;
+    .road-node.now::after {
+      content: "現在地";
+      position: absolute;
+      z-index: 4;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 3px 10px 4px;
+      border-radius: 999px;
+      background: #ffe14a;
+      color: #3a2208;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      line-height: 1;
+      box-shadow: 0 2px 0 #6a4512;
     }
-    .road-node.now.fixed {
-      box-shadow: inset 0 0 0 16px #ffe08a, 0 0 0 6px #6a4512;
+    @keyframes here-pulse {
+      0%, 100% { outline-color: #ffe14a; box-shadow: 0 0 0 3px #2a1604, 0 0 16px 4px rgba(255, 214, 70, 0.75); }
+      50% { outline-color: #fff6b0; box-shadow: 0 0 0 3px #2a1604, 0 0 28px 8px rgba(255, 236, 140, 1); }
     }
     .road-node.boss { color: #ffb0a4; }
     .road-cap {
@@ -4973,7 +4997,8 @@
     .shop-gear-card p { margin: 0; font-size: 16px; line-height: 1.45; font-weight: 700; color: #ffe7a8; }
     .shop-have { margin: 0 0 8px; width: 100%; text-align: center; font-size: 28px; font-weight: 900; color: #ffe08a; }
     .menu.event > h1 { grid-area: title; text-align: center; margin: 28px 0 0; }
-    .menu.event > h1 small { display: block; margin-top: 4px; font-size: 26px; letter-spacing: 0.14em; color: #ffe08a; }
+    .menu.event > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3vw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
+    .overlay.paths .path-now { font-size: clamp(32px, 3vw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
     .event-floor-call {
       position: fixed;
       inset: 0;
@@ -6744,7 +6769,7 @@
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.png?v=12",
-        victory: "girl-victory.jpg?v=23",
+        victory: "girl-victory.jpg?v=24",
         bless: "event-bless.jpg?v=2",
       },
     ];
@@ -7162,10 +7187,17 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=11", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=5", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=6", label: "ジョブ" };
-      if (name === "出来事:修行") return { src: "path-train.jpg?v=3", label: "修行" };
+      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=7", label: "ジョブ" };
+      if (name === "出来事:修行") return { src: "path-train.jpg?v=4", label: "修行" };
       if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=1", label: "ボス戦", boss: true };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
+    }
+
+    function roadTone(node) {
+      const name = String(node || "");
+      if (name === "出来事:キャンプ") return "rest";
+      if (name.startsWith("出来事:")) return "other";
+      return "fight";
     }
 
     function roadFixed(node, index) {
@@ -7189,7 +7221,8 @@
           ? `<img src="${face.src}" alt="">`
           : `<i>${esc(face.mark || "")}</i>`;
         const fixed = roadFixed(node, i);
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
+        const tone = known ? roadTone(node) : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
       const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
       return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
@@ -10022,8 +10055,8 @@
         if (Math.random() < 0.5) {
           floorKind = "物乞いに遭遇";
           beggarGift = [];
-          floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。渡す品によっては、目が据わりそうだ。";
-          floorPrompt = "カードを1枚渡して決定する。★2以下だと襲ってくる。それより珍しいカードなら道を開ける。無視して進むと、戦わずに過ぎる。";
+          floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
+          floorPrompt = "物乞いにカードをあげろ。";
         } else {
           floorKind = "挑戦者に祝福を";
           floorPhase = "bless";
@@ -10041,8 +10074,8 @@
         floorKind = "物乞いに遭遇";
         beggarGift = [];
         beggarPick = -1;
-        floorNote = "フードの物乞いが、道をふさいで手を伸ばしてきた。渡す品によっては、目が据わりそうだ。";
-        floorPrompt = "カードを1枚渡して決定する。★2以下だと襲ってくる。それより珍しいカードなら道を開ける。無視して進むと、戦わずに過ぎる。";
+        floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
+        floorPrompt = "物乞いにカードをあげろ。";
       } else if (kind === "ジョブ") {
         floorPhase = "job";
         floorNote = "光る紋章の前に立つと、別の戦い方が見えてきた。";
@@ -10831,7 +10864,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.png?v=12", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=23", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory.jpg?v=24", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -10882,9 +10915,9 @@
               ${sheetFig("path-shop.jpg?v=11", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
-              ${sheetFig("path-job.jpg?v=6", "ジョブ")}
+              ${sheetFig("path-job.jpg?v=7", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=7", "遭遇")}
-              ${sheetFig("path-train.jpg?v=3", "修行")}
+              ${sheetFig("path-train.jpg?v=4", "修行")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
@@ -10895,7 +10928,7 @@
               ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
               ${sheetFig("event-rest.jpg?v=10", "休憩", "land-ref", "span-2")}
               ${sheetFig("event-job.jpg?v=13", "ジョブ", "land-ref", "span-2")}
-              ${sheetFig("event-train.jpg?v=6", "修行", "land-ref", "span-2")}
+              ${sheetFig("event-train.jpg?v=7", "修行", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -11074,7 +11107,7 @@
 
     function renderFloor() {
       if (floorPhase === "paths") {
-        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
+        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">-${floorNo()}Ｆ-</p><div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
         runEntrance = false;
         return;
       }
@@ -11104,7 +11137,7 @@
         "休憩": ["event-rest.jpg?v=10", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
-        "修行": ["event-train.jpg?v=6", "カメラは上を過ぎ、顔は少しやわらかい"],
+        "修行": ["event-train.jpg?v=7", "カメラは上を過ぎ、顔は少しやわらかい"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -11125,7 +11158,7 @@
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
       const floorFlash = eventFloorCall ? `<div class="event-floor-call" aria-hidden="true"><b>現在 ${floorNo()}Ｆ</b></div>` : "";
       eventFloorCall = false;
-      const title = `<h1>${esc(floorKind)}<small>現在 ${floorNo()}Ｆ</small></h1>`;
+      const title = `<h1>${esc(floorKind)}<small>-${floorNo()}Ｆ-</small></h1>`;
       const choice = `${rareFlash}${eventNoteHtml()}${shop}${gift}${searchActions}${bless}${beggar}${jobs}${ultimates}${next}`;
       const shopMode = floorKind === "お店";
       const picture = art || "";
@@ -11784,9 +11817,9 @@
       beggar: { name: "物乞い", text: "カードを1枚捨てると、物乞いが襲ってくる。", image: "path-beggar.jpg?v=5" },
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=11" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
-      job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=6" },
+      job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=7" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=7" },
-      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=3" },
+      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=4" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=7" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
@@ -12533,7 +12566,7 @@
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">現在 ${floorNo()}Ｆ</p><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2><p class="path-now">-${floorNo()}Ｆ-</p><div class="path-list">${pathButtonsHtml()}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
