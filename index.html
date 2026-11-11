@@ -5850,19 +5850,29 @@
     .cast-screen.character-focus .cast-stat-col h2,
     .cast-screen.character-focus .cast-gear-col h2 {
       margin: 0 0 8px;
-      gap: 8px;
+      gap: 7px;
       min-height: 1.35em;
       align-items: center;
+      justify-content: center;
       letter-spacing: 0.2em;
     }
-    .cast-screen.character-focus .cast-stat-col h2::before,
-    .cast-screen.character-focus .cast-gear-col h2::before {
-      display: none;
-    }
-    .cast-screen.character-focus .cast-stat-col h2::after,
-    .cast-screen.character-focus .cast-gear-col h2::after {
+    .cast-screen.character-focus .cast-plaque h2::before,
+    .cast-screen.character-focus .cast-plaque h2::after {
+      flex: 0 0 auto;
+      width: 26px;
+      min-width: 0;
       height: 2px;
+      align-self: center;
+    }
+    .cast-screen.character-focus .cast-plaque h2::before {
+      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9));
+    }
+    .cast-screen.character-focus .cast-plaque h2::after {
       background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent);
+    }
+    .cast-screen.character-focus .cast-deck-block h2::before,
+    .cast-screen.character-focus .cast-deck-block h2::after {
+      width: clamp(32px, 4.5vw, 44px);
     }
     .cast-screen.character-focus .cast-stat-board.cast-vitals {
       flex: 1 1 auto;
@@ -5914,18 +5924,9 @@
       width: 100%;
     }
     .cast-screen.character-focus .cast-deck-block h2 {
-      gap: 14px;
+      gap: 8px;
       margin: 8px 0 6px;
-    }
-    .cast-screen.character-focus .cast-deck-block h2::before,
-    .cast-screen.character-focus .cast-deck-block h2::after {
-      height: 2px;
-    }
-    .cast-screen.character-focus .cast-deck-block h2::before {
-      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9));
-    }
-    .cast-screen.character-focus .cast-deck-block h2::after {
-      background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent);
+      justify-content: center;
     }
     .cast-screen.character-focus .cast-gear .cast-gear-slot { width: 118px; }
     .cast-screen.character-focus .cast-gear .cast-gear-slot .gear-frame { width: 112px; height: 112px; }
