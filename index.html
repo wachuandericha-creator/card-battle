@@ -1841,6 +1841,13 @@
       position: relative;
       min-width: 0;
       z-index: 1;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
     }
     .cast-deck .deck-card:hover { z-index: 2; }
     .cast-deck .card.preview {
@@ -5674,13 +5681,19 @@
     .cast-screen.character-focus .cast-deck {
       flex: 1 1 auto;
       min-height: 0;
-      align-content: stretch;
-      grid-template-rows: repeat(3, minmax(0, 1fr));
+      align-content: start;
+      grid-auto-rows: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
     .cast-screen.character-focus .cast-deck .card.preview {
       width: 100%;
-      height: 100%;
-      aspect-ratio: auto;
+      height: auto;
+      aspect-ratio: var(--card-ratio);
+    }
+    .cast-screen.character-focus .cast-deck .deck-card {
+      height: auto;
+      align-self: start;
     }
     .cast-screen.character-focus .cast-blurb { font-size: 20px; line-height: 1.55; }
     .cast-screen.character-focus .cast-side { min-width: 0; overflow: hidden; }
