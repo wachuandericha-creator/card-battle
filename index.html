@@ -5948,7 +5948,7 @@
     }
     .cast-screen.character-focus .cast-stat-col {
       display: grid;
-      grid-template-rows: auto auto;
+      grid-template-rows: auto minmax(0, 1fr);
       align-content: start;
       align-items: stretch;
       width: auto;
@@ -6070,25 +6070,23 @@
       min-height: 0;
       width: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap));
       max-width: 100%;
-      grid-template-columns: repeat(var(--cast-job-deck-cols), minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      justify-content: stretch;
-      align-content: stretch;
-      overflow: hidden;
+      grid-template-columns: repeat(var(--cast-job-deck-cols), var(--cast-job-card-w));
+      grid-template-rows: repeat(2, auto);
+      justify-content: start;
+      align-content: start;
+      gap: var(--cast-job-deck-gap);
+      overflow: auto;
     }
     .cast-screen.character-focus .cast-deck .deck-card {
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      align-self: stretch;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      width: var(--cast-job-card-w);
+      height: auto;
+      margin: 0;
+      align-self: start;
+      display: block;
     }
     .cast-screen.character-focus .cast-deck .card.preview {
-      width: auto;
-      height: 100%;
-      max-width: 100%;
+      width: var(--cast-job-card-w);
+      height: auto;
       aspect-ratio: var(--card-ratio);
     }
     .cast-screen.character-focus .cast-side { min-width: 0; overflow: hidden; }
@@ -7712,7 +7710,7 @@
       const name = String(node || "");
       if (name === "出来事:祝福") return { src: "path-bless.jpg?v=19", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=13", label: "探索" };
-      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=8", label: "遭遇" };
+      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=9", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=12", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
@@ -11609,7 +11607,7 @@
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
               ${sheetFig("path-lost.jpg?v=11", "迷子")}
               ${sheetFig("path-job.jpg?v=8", "ジョブ")}
-              ${sheetFig("path-unknown.jpg?v=8", "遭遇")}
+              ${sheetFig("path-unknown.jpg?v=9", "遭遇")}
               ${sheetFig("path-train.jpg?v=5", "修行")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -12529,7 +12527,7 @@
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "見えているほかの道以外が起きる。ボス戦にはならない。", image: "path-lost.jpg?v=11" },
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
-      unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=8" },
+      unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless.jpg?v=19" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
