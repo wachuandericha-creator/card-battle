@@ -2904,25 +2904,19 @@
         transform: scale(1.1);
       }
     }
-    .shield-break {
-      position: absolute;
-      left: 50%;
-      top: 46%;
-      z-index: 6;
-      width: min(42%, 150px);
-      aspect-ratio: 80 / 96;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+    .shield-badge.breaking {
+      overflow: visible;
+      z-index: 5;
     }
-    .shield-break .half {
+    .shield-badge.breaking .half {
       position: absolute;
       inset: 0;
       animation: shield-split-left 1.05s ease-in forwards;
     }
-    .shield-break .plate-shield { width: 100%; height: 100%; filter: drop-shadow(0 0 10px rgba(220, 230, 245, 0.85)); }
-    .shield-break .half.left { clip-path: inset(0 50% 0 0); animation-name: shield-split-left; }
-    .shield-break .half.right { clip-path: inset(0 0 0 50%); animation-name: shield-split-right; }
-    .shield-break .crack {
+    .shield-badge.breaking .plate-shield { filter: drop-shadow(0 0 10px rgba(220, 230, 245, 0.85)); }
+    .shield-badge.breaking .half.left { clip-path: inset(0 50% 0 0); animation-name: shield-split-left; }
+    .shield-badge.breaking .half.right { clip-path: inset(0 0 0 50%); animation-name: shield-split-right; }
+    .shield-badge.breaking .crack {
       position: absolute;
       left: 48%;
       top: 8%;
@@ -2933,6 +2927,7 @@
       opacity: 0;
       animation: shield-crack 0.7s ease-out 0.16s forwards;
     }
+    .shield-badge.breaking b { animation: shield-num-fade 1.05s ease-in forwards; }
     @keyframes shield-split-left {
       0% { opacity: 0; transform: scale(0.7); }
       14% { opacity: 1; transform: scale(1); }
@@ -2951,6 +2946,11 @@
       0% { opacity: 0; }
       20% { opacity: 1; }
       70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes shield-num-fade {
+      0%, 30% { opacity: 1; }
+      62% { opacity: 0; }
       100% { opacity: 0; }
     }
     .sprite.break { overflow: visible; }
@@ -8275,7 +8275,7 @@
     let lastFoeBlow = null;
     let defeatSnap = null;
     let fxGuard = "";
-    let fxShieldBreak = "";
+    let fxShieldBreak = { player: 0, enemy: 0 };
     let fxHeal = false;
     let fxLabId = "guard";
     let fxLabTick = 0;
@@ -9486,9 +9486,9 @@
       return `<div class="hero-guard hold" aria-label="ガード"><b class="guard-word">ガード</b></div>`;
     }
 
-    function shieldBreakHtml() {
+    function shieldBreakBadge(n) {
       const plate = plateShieldSvg(false);
-      return `<div class="shield-break" aria-hidden="true"><span class="half left">${plate}</span><span class="half right">${plate}</span><i class="crack"></i></div>`;
+      return `<div class="shield-badge breaking" aria-label="シールド ${n}"><span class="half left">${plate}</span><span class="half right">${plate}</span><i class="crack"></i><b>${n}</b></div>`;
     }
 
     function hurtWord(n, poison) {
@@ -9889,7 +9889,7 @@
     }
 
     function markShieldBreak(side, result) {
-      if (result && result.blocked > 0 && result.hpLoss > 0) fxShieldBreak = side;
+      if (result && result.blocked > 0 && result.hpLoss > 0) fxShieldBreak[side] = result.blocked;
     }
 
     // 敵への斬撃エフェクト。1ターンの中で 右上→左下、左上→右下、上→下 の順に回す。
@@ -12294,7 +12294,10 @@
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
       const fresh = Boolean(extra && extra.shieldFlash && block > 0);
       const parryFresh = Boolean(extra && extra.parryFlash);
-      const shieldBadge = block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
+      const breakingN = extra && Number(extra.shieldBreak) > 0 ? Math.round(Number(extra.shieldBreak)) : 0;
+      const shieldBadge = breakingN
+        ? shieldBreakBadge(breakingN)
+        : (block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "");
       const parryBadge = parried
         ? `<div class="shield-badge parry-badge${parryFresh ? " fresh" : ""}${extra && extra.parryFromShield ? " from-shield" : ""}" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryStacks ? `<b>${parryN}</b>` : ""}</div>`
         : "";
@@ -12424,12 +12427,17 @@
       const poison = Boolean(opt.poison);
       const anger = Boolean(opt.anger);
       const give = Boolean(opt.stamp);
-      const broke = Boolean(opt.break);
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
     function fxPlate(id) {
       const name = esc(heroName());
+      if (id === "break") {
+        return `<div class="hero-stack"><section class="battle-plate hero-plate">${shieldBreakBadge(8)}<h2><span class="who">${name}</span></h2></section></div>`;
+      }
+      if (id === "foe-break") {
+        return `<section class="battle-plate foe-plate" data-rank="普通">${shieldBreakBadge(6)}<h2><span class="who">スライム</span></h2></section>`;
+      }
       if (id === "shield") {
         return `<div class="hero-stack"><section class="battle-plate hero-plate shielded"><div class="shield-badge fresh" aria-label="シールド 8">${plateShieldSvg(false)}<b>8</b></div><h2><span class="who">${name}</span></h2></section></div>`;
       }
@@ -12461,7 +12469,7 @@
       let call = "";
       let cls = "";
       if (id === "guard") hero = { guard: true };
-      else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6), break: true };
+      else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "hurt") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "poison-tick") hero = { hurt: true, kind: "poison", n: 3, pow: hitPower(3) };
       else if (id === "poison-give") hero = { poisonApply: true };
@@ -12472,7 +12480,7 @@
         cls = " fatal";
       } else if (id === "heal") hero = { heal: true };
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
-      else if (id === "foe-break") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6), break: true };
+      else if (id === "foe-break") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
       else if (id === "slash-multi") foe = { slash: true, dirs: [0, 1, 2], hits: [4, 5, 8] };
       else if (id === "foe-poison") foe = { poison: true, hits: [3] };
       else if (id === "foe-poison-give") foe = { poison: true, stamp: true };
@@ -12502,7 +12510,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal), Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -14183,7 +14191,7 @@
       return "";
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN, heal, shieldBreak) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN, heal) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -14196,10 +14204,9 @@
       const hit = poisonHtml + bluntHtml;
       const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick) : "";
       const healHtml = heal ? healFxHtml() : "";
-      const breakHtml = shieldBreak ? shieldBreakHtml() : "";
       const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${shieldBreak ? " break" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${breakHtml}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${hurtHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15394,7 +15401,7 @@
       fxParryFromShield = false;
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
-      const breakNow = fxShieldBreak;
+      const breakNow = { player: fxShieldBreak.player, enemy: fxShieldBreak.enemy };
       const healNow = fxHeal;
       const hitNow = fxHit;
       const poisonPlayerNow = fxPoisonApply.player;
@@ -15419,7 +15426,7 @@
       fxHurt = false;
       fxFatal = false;
       fxGuard = "";
-      fxShieldBreak = "";
+      fxShieldBreak = { player: 0, enemy: 0 };
       fxHeal = false;
       fxHit = null;
       fxDeal = false;
@@ -15451,16 +15458,16 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, shieldBreak: breakNow.player, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, shieldBreak: breakNow.enemy, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, healNow, breakNow === "player")}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, healNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -15469,12 +15476,11 @@
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${(poisonEnemyNow && foeKind !== "poison") ? " give" : ""}${foeAngerShow ? " anger" : ""}${breakNow === "enemy" ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${(poisonEnemyNow && foeKind !== "poison") ? " give" : ""}${foeAngerShow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=7")}" alt="">
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${foeAngerShow ? angerFxHtml() : ""}
-                ${breakNow === "enemy" ? shieldBreakHtml() : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
               </div>
