@@ -7572,7 +7572,7 @@
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
       捨て身の一撃: "card-sacrifice.jpg?v=1",
-      怒り: "card-anger.jpg?v=3",
+      怒り: "card-anger-quiet.jpg?v=1",
       パリィスラッシュ: "card-parry-slash.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ライフフルネスアタック: "card-lifefull.jpg?v=2",
@@ -8476,12 +8476,29 @@
       return route[0] === "出来事:祝福" && battleIndex === 0;
     }
 
+    function roadPlacedAhead(i) {
+      return i === battleIndex + 1 && route[i] && (rewardStep === "flying" || rewardStep === "done");
+    }
+
+    function roadDoneBelow(now) {
+      let el = now.nextElementSibling;
+      while (el) {
+        if (el.classList.contains("pad")) {
+          el = el.nextElementSibling;
+          continue;
+        }
+        if (el.classList.contains("road-node")) return el;
+        break;
+      }
+      return null;
+    }
+
     function roadMapHtml() {
       if (!route || !route.length) return "";
       const blessing = route[0] === "出来事:祝福";
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const known = state !== "ahead" || roadFixed(node, i);
+        const known = state !== "ahead" || roadFixed(node, i) || roadPlacedAhead(i);
         const face = known ? roadFace(node) : { mark: "？", label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
@@ -8505,11 +8522,17 @@
         ol.scrollTop = Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
         return;
       }
+      const prev = roadDoneBelow(now);
+      if (prev) {
+        ol.scrollTop = Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
+        return;
+      }
       const row = ol.clientHeight / 5;
-      const prev = now.nextElementSibling;
-      const anchor = prev && prev.classList.contains("road-node") ? prev : now;
-      const extra = anchor === now ? row : 0;
-      ol.scrollTop = Math.max(0, anchor.offsetTop + anchor.offsetHeight + extra - ol.clientHeight);
+      ol.scrollTop = Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
+    }
+
+    function schedulePlaceRoad() {
+      requestAnimationFrame(() => requestAnimationFrame(() => placeRoad()));
     }
 
     function enemyNow() {
@@ -14516,9 +14539,25 @@
 
     function takePath(id) {
       if (rewardStep !== "paths" || !PATHS[id]) return;
+      if (id === "straight" || id === "skip") {
+        enterPath(id);
+        return;
+      }
+      const node = pathNode(id);
+      if (!node) {
+        applyPath("straight");
+        return;
+      }
       rewardStep = "flying";
+      placeNext(node);
+      render();
+      schedulePlaceRoad();
       const button = document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
-      flyPathIntoMap(button, () => enterPath(id));
+      flyPathIntoMap(button, () => {
+        rewardStep = "done";
+        advance(1);
+        schedulePlaceRoad();
+      });
     }
 
     function offerTone(card) {
