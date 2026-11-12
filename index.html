@@ -219,7 +219,8 @@
       color: #fff6d0;
       border-radius: 10px;
       outline: none;
-      box-shadow: inset 0 0 0 6px #e4b15a;
+      box-shadow: inset 0 0 0 6px #e4b15a, 0 0 16px 5px rgba(255, 214, 70, 0.82);
+      animation: here-pulse 1.1s ease-in-out infinite;
     }
     .road-node.now > img,
     .road-node.now > i {
@@ -250,6 +251,17 @@
       letter-spacing: 0.16em;
       line-height: 1;
       box-shadow: 0 2px 0 #6a4512;
+    }
+    @keyframes here-pulse {
+      0%, 100% {
+        box-shadow: inset 0 0 0 6px #e4b15a, 0 0 14px 4px rgba(255, 214, 70, 0.72);
+      }
+      50% {
+        box-shadow: inset 0 0 0 6px #fff0a0, 0 0 26px 8px rgba(255, 236, 140, 0.98);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .road-node.now { animation: none; }
     }
     .road-node.boss { color: #ffb0a4; }
     .road-cap {
