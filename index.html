@@ -7508,8 +7508,8 @@
       },
     };
     const CARDS = {
-      アタック: { cost: 1, text: "3ダメージ", damage: 3 },
-      チャージアタック: { cost: 2, text: "9ダメージ", damage: 9 },
+      アタック: { cost: 1, text: "4ダメージ", damage: 4 },
+      チャージアタック: { cost: 2, text: "12ダメージ", damage: 12 },
       ブロック: { cost: 1, text: "ブロック3", block: 3 },
     };
     const WARRIOR = {
@@ -7557,7 +7557,7 @@
       頭突き: { cost: 1, text: "2ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 2, kind: "attack", headbutt: true },
       キック: { cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
       ツインアタック: { cost: 2, text: "1ダメージを2回", damage: 1, hits: 2, stars: 3, kind: "attack" },
-      ビッグアタック: { cost: 3, text: "15ダメージ", damage: 15, stars: 3, kind: "attack" },
+      ビッグアタック: { cost: 3, text: "20ダメージ", damage: 20, stars: 3, kind: "attack" },
       瞑想: { cost: 1, text: "ブロック2\n次のターンに1枚引く", block: 2, nextDraw: 1, kind: "block" },
       ハードブロック: { cost: 2, text: "ブロック7", block: 7, kind: "block" },
       ビッグブロック: { cost: 3, text: "ブロック12", block: 12, kind: "block" },
@@ -7568,7 +7568,7 @@
       ホテル: { cost: 3, text: "体力を18回復", heal: 18, instant: true, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本3にこのATKを足した合計を書く。DEFは0で、板にも出す。
+    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本4にこのATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
@@ -8027,7 +8027,7 @@
       // 旧セーブの「アタック+」「ブロック+」は、いまのアタック／ブロックと同じ扱い
       const key = name === "アタック+" ? "アタック" : name === "ブロック+" ? "ブロック" : name;
       if (key === "アタック") {
-        const dmg = (CARDS.アタック.damage || 3) + foeLiveAtk(foe);
+        const dmg = (CARDS.アタック.damage || 4) + foeLiveAtk(foe);
         return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
       }
       if (key === "ブロック") {
@@ -12846,7 +12846,7 @@
 
     function printedDamage(card) {
       if (!card) return 0;
-      if (card.name === "アタック" || card.name === "アタック+") return CARDS.アタック.damage || 3; // 旧名互換
+      if (card.name === "アタック" || card.name === "アタック+") return CARDS.アタック.damage || 4; // 旧名互換
       return Number(card.damage) || 0;
     }
 
