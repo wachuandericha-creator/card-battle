@@ -12984,9 +12984,29 @@
       return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}${close}</aside>`;
     }
 
+    const UNADOPTED_CARD_ARTS = [
+      ["unadopt-attack-f-b", "アタック", "card-attack-f-b.jpg"],
+      ["unadopt-attack-f-card", "アタック（枠見本）", "card-attack-f-card.png?v=1"],
+      ["unadopt-attack-slash-user", "アタック", "card-attack-slash-user.jpg?v=1"],
+      ["unadopt-attack-slash-v2", "アタック", "card-attack-slash-v2.jpg?v=1"],
+      ["unadopt-attack-slash-v3", "アタック（壁砕き）", "card-attack-slash-v3.jpg?v=1"],
+      ["unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
+      ["unadopt-quick-step", "クイックステップ", "card-quick-step.jpg?v=1"],
+    ];
+    function unadoptedCardSheet() {
+      return UNADOPTED_CARD_ARTS.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の未採用絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
+
     function artZoomSide(name) {
       if (!name) {
         return `<aside class="art-zoom-side" aria-label="全体表示"><h3>全体</h3><p class="art-zoom-note">左を押すと、ここに全体を出します。</p></aside>`;
+      }
+      const unadopted = UNADOPTED_CARD_ARTS.find((item) => item[0] === name);
+      if (unadopted) {
+        return zoomSidePanel(`${unadopted[1]}（未採用）`, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[2]}" alt="${esc(unadopted[1])}"></div>`, false);
       }
       const face = ALBUM_FACE.find((item) => item[0] === name);
       if (face) {
@@ -13187,6 +13207,11 @@
               <section>
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
+              </section>
+              <section>
+                <h3>未採用絵柄</h3>
+                <p class="album-meta">ゲームのカードには載せない候補。押すと右半分に拡大</p>
+                <div class="ref-grid blank-grid">${unadoptedCardSheet()}</div>
               </section>
             </div>
             <div class="album-tabs" role="tablist">${tabs}</div>
@@ -13523,6 +13548,8 @@
       ["style-silver", "銀", "frame-sample-silver.png?v=1"],
       ["style-gold", "金", "frame-sample-gold.png?v=1"],
       ["style-black", "黒", "frame-sample-black.png?v=1"],
+      ["style-mana-black", "マナ黒", "frame-mana-black.png?v=1"],
+      ["style-mana-copper", "マナ銅", "frame-mana-copper.png?v=1"],
       ["style-red", "アタック", "frame-metal-red.png?v=7"],
       ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
