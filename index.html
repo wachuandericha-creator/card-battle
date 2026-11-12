@@ -4096,7 +4096,8 @@
       padding: 3cqw;
     }
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
-    .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; }
+    .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; word-break: keep-all; line-break: strict; overflow-wrap: normal; }
+    .card .fx.note .nobr { white-space: nowrap; }
     .card .fx b { font-size: 14cqw; color: #1a120e; }
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
@@ -8304,12 +8305,12 @@
       { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=4" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
-      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
+      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 10, ignoreTrait: true, effect: "★★★★★　ATK+10。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=6" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 10, statusImmune: true, effect: "★★★★★　DEF+10。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
@@ -12910,6 +12911,51 @@
       return Math.max(0, base + focusLeftFor(card, fromHand) + (Number(player && player.def) || 0));
     }
 
+    // 効果文は、助詞や句点のあとでのみ改行する。数字＋ダメージ、句読点の直前では割らない。
+    function canBreakCardText(text, i) {
+      if (i <= 0 || i >= text.length) return false;
+      const prev = text[i - 1];
+      const next = text[i];
+      if ("、。！？…・）】」』ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮー％%".includes(next)) return false;
+      if ("（「『【〈《".includes(prev)) return false;
+      if (next === "×" || prev === "×") return false;
+      if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
+      if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
+      if (/[0-9０-９]/.test(prev) && (text.startsWith("ダメージ", i) || text.startsWith("回復", i) || text.startsWith("枚", i) || text.startsWith("回", i))) return false;
+      const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック"];
+      for (const word of glued) {
+        for (let k = 1; k < word.length; k++) {
+          if (i >= k && text.startsWith(word, i - k)) return false;
+        }
+      }
+      if ("、。！？ 　".includes(prev)) return true;
+      if (text.startsWith("ダメージ", i)) return true;
+      // 助詞の直後でも、とき・ならない・でも のように語が続くときは割らない。
+      const tails = ["から", "まで", "だけ", "たら", "なら", "は", "が", "を", "に", "で", "と", "も", "へ", "の"];
+      const continues = next && !/[0-9０-９A-Za-zＡ-Ｚａ-ｚ\u30A0-\u30FF\u4E00-\u9FFF＋+\-－]/.test(next) && !text.startsWith("ない", i);
+      if (continues) return false;
+      for (const tail of tails) {
+        if (tail === "なら" && text.startsWith("ない", i)) continue;
+        if (tail === "と" && (text.startsWith("き", i) || text.startsWith("こ", i) || text.startsWith("い", i) || text.startsWith("ころ", i))) continue;
+        if (i >= tail.length && text.slice(i - tail.length, i) === tail) return true;
+      }
+      return false;
+    }
+
+    function cardNoteHtml(raw) {
+      return String(raw || "").split("\n").map((line) => {
+        const parts = [];
+        let start = 0;
+        for (let i = 1; i <= line.length; i++) {
+          if (i === line.length || canBreakCardText(line, i)) {
+            parts.push(`<span class="nobr">${esc(line.slice(start, i))}</span>`);
+            start = i;
+          }
+        }
+        return parts.join("");
+      }).join("<br>");
+    }
+
     function liveCardText(card, fromHand, foe) {
       let text = String(card.text || "");
       const hits = expectedHits(card, fromHand, foe);
@@ -12963,7 +13009,7 @@
           shownBlock = Number(card.block) || 0;
         }
       }
-      let noteText = esc(live ? liveCardText(card, fromHand, foe) : (card.text || "")).replaceAll("\n", "<br>");
+      let noteText = cardNoteHtml(live ? liveCardText(card, fromHand, foe) : (card.text || ""));
       const hintWord = (text, word, note) => {
         if (!word || !note || !text.includes(word)) return text;
         return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
