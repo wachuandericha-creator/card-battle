@@ -13308,7 +13308,7 @@
             </figure>
           </div>
           <div class="end-cols">
-            <div class="end-log battle-log"><h2>ログ</h2>${logHtml || `<p>記録は無い。</p>`}</div>
+            <div class="end-log battle-log"><h2>ログ</h2>${logHtml || ""}</div>
             <div class="end-deck">${deckHtml}</div>
           </div>
           <p class="end-note">${esc(snap.dungeon || dungeonName)}　${esc(snap.floor || "")}　初期デッキに戻った。装備を失った。★${meta.stars}は残っている。使いこみ ${meta.uses}</p>
@@ -13391,7 +13391,7 @@
         ? ""
         : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || "<p>記録は無い。</p>"}</div></aside></div>${deckOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}`;
     }
 
     function renderFloor() {
