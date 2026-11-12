@@ -1314,6 +1314,58 @@
     .enemy-main[data-size="medium"] { --foe-scale: 0.94; max-width: min(82%, 380px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
     .enemy-main[data-size="large"] { --foe-scale: 1; max-width: min(88%, 420px); --cut-x: 48%; --cut-y: 42%; --pop-y: 26%; }
     .enemy-main[data-size="boss"] { --foe-scale: 1.08; max-width: min(96%, 480px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
+    /* 見える高さは自分×ランク。大きいほうが戦闘枠の高さいっぱい。足元は下端でそろえる。 */
+    html.stage-fit .duel-side.ally,
+    html.stage-fit .duel-side.foe,
+    .fx-lab-preview .duel-side.ally,
+    .fx-lab-preview .duel-side.foe { align-items: flex-end; }
+    html.stage-fit .hero-shoulder,
+    .fx-lab-preview .hero-shoulder {
+      height: auto;
+      width: var(--hero-w, 400px);
+      max-width: 100%;
+      min-width: 0;
+      flex: none;
+      align-self: flex-end;
+      justify-content: flex-end;
+    }
+    html.stage-fit .hero-body,
+    .fx-lab-preview .hero-body {
+      flex: 0 0 auto;
+      width: 100%;
+      max-width: none;
+      height: auto;
+      transform: translateY(calc(15 / 1152 * 100% - var(--foot-gap, 12px)));
+    }
+    html.stage-fit .enemy-main,
+    .fx-lab-preview .enemy-main {
+      width: var(--foe-w, 400px);
+      max-width: 100%;
+      height: auto;
+      flex: none;
+      align-self: flex-end;
+      justify-content: flex-end;
+      --cut-y: calc(var(--ink-mid, 0.5) * 100%);
+      --pop-y: calc(var(--ink-mid, 0.5) * 100%);
+    }
+    html.stage-fit .foe-body,
+    .fx-lab-preview .foe-body {
+      flex: 0 0 auto;
+      width: 100%;
+      height: auto;
+      aspect-ratio: var(--img-w, 864) / var(--img-h, 1152);
+      transform: translateY(calc(var(--ink-bottom, 0) * 100% - var(--foot-gap, 12px)));
+    }
+    html.stage-fit .enemy-main .sprite,
+    .fx-lab-preview .enemy-main .sprite {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+    }
+    html.stage-fit .enemy-field > .foe-plate,
+    .fx-lab-preview .enemy-field > .foe-plate {
+      width: min(300px, 42%);
+    }
     .intent { flex: none; text-align: center; background: transparent; border: 0; padding: 0; }
     .intent .now { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; font-size: 32px; font-weight: 800; line-height: 1.2; }
     .act { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; line-height: 1; }
@@ -5236,7 +5288,7 @@
       display: grid;
       grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
       gap: 12px;
-      padding: 64px 16px 16px;
+      padding: 10px 10px 4px;
       background: #0a0908;
     }
     .fx-col {
@@ -5281,25 +5333,29 @@
       background: linear-gradient(180deg, rgba(90, 62, 24, 0.95), rgba(36, 24, 12, 0.95));
       color: #ffe7a8;
     }
-    .fx-view {
+    .fx-lab-preview {
       position: relative;
       min-width: 0;
       min-height: 0;
-      container-type: size;
+      overflow: hidden;
     }
-    .fx-view .battle-bands { width: 100%; height: 100%; }
-    .fx-view .duel-side { align-items: flex-end; }
-    .fx-view .hero-shoulder,
-    .fx-view .enemy-main {
-      height: min(68cqh, 520px);
-      max-height: 100%;
-      justify-content: flex-end;
+    .fx-lab-preview .fx-view {
+      position: absolute;
+      inset: 0;
     }
-    .fx-view .hero-body,
-    .fx-view .foe-body,
-    .fx-view .enemy-main .sprite { height: 100%; }
-    .fx-view .overlay.victory { position: absolute; inset: 0; }
-    .fx-view.fatal .stage::after {
+    .fx-lab-preview .battle-screen {
+      width: 100%;
+      height: 100%;
+    }
+    .fx-lab-preview .fx-lab-hand {
+      position: relative;
+    }
+    .fx-lab-preview .overlay.victory {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+    }
+    .fx-lab-preview .battle-screen.fatal .stage::after {
       content: "";
       position: absolute;
       inset: 0;
@@ -5310,9 +5366,9 @@
         linear-gradient(180deg, rgba(40, 0, 0, 0.08), rgba(12, 0, 0, 0.55));
       animation: fatal-veil 2.8s ease-out forwards;
     }
-    .fx-view.shake .battle-bands { animation: mana-shake 0.38s linear; }
-    .fx-view .turn-call b { font-size: min(14cqw, 72px); }
-    .fx-view .floor-call b { font-size: min(34cqh, 220px); }
+    .fx-lab-preview .battle-screen.shake .battle-bands { animation: mana-shake 0.38s linear; }
+    .fx-lab-preview .turn-call b { font-size: min(14cqw, 72px); }
+    .fx-lab-preview .floor-call b { font-size: min(34cqh, 220px); }
     .fx-center {
       position: absolute;
       inset: 0;
@@ -5331,22 +5387,16 @@
       0% { transform: none; filter: none; opacity: 1; }
       100% { transform: translateY(-70px) scale(1.08); filter: sepia(1) saturate(6) brightness(1.7); opacity: 0; }
     }
-    .fx-deal.hand {
+    .fx-lab-preview .fx-deal.hand {
       position: absolute;
-      left: 50%;
-      bottom: 18px;
-      z-index: 7;
-      width: min(520px, 86%);
-      height: 168px;
-      transform: translateX(-50%);
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: none;
       pointer-events: none;
     }
-    .fx-end {
-      position: absolute;
-      left: 50%;
-      bottom: 24px;
-      z-index: 7;
-      transform: translateX(-50%);
+    .fx-lab-preview .fx-end {
+      margin-left: auto;
       pointer-events: none;
     }
     .fx-starline {
@@ -7842,6 +7892,7 @@
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
+      諸刃の剣: "card-shield-throw-v3.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
@@ -8152,8 +8203,8 @@
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
-    const ITEM_NOTE = "効果処理後デッキから削除。キープであり、クイックであり、バースト。";
-    const KEEP_NOTE = "ターン終了時に捨て札にいかない。";
+    const KEEP_NOTE = "使わなかったとき、手札に残る。使ったらプレイエリアに置く。";
+    const ITEM_NOTE = "使わなかったときは手札に残る。使ったらすぐ処理し、デッキから削除する。キープであり、バースト。";
     let phase = "player";
     let encounter = false;
     let floorCall = false;
@@ -10442,7 +10493,6 @@
     function afterUsePile(card) {
       if (!card) return "discard";
       if (card.burst || isItemCard(card)) return "burst";
-      if (card.keep) return "keep";
       if (isFlashCard(card)) return "exile";
       return "discard";
     }
@@ -10729,19 +10779,13 @@
 
     function scrapPlay() {
       capturePlayClearFlights();
-      const stayed = [];
       while (inPlay.length) {
         const card = inPlay.shift();
         const pile = afterUsePile(card);
-        if (pile === "keep" && card.resolved) {
-          stayed.push(card);
-          continue;
-        }
-        if (pile === "keep") discard.push(card);
-        else placeUsedCard(card);
+        if (pile === "exile" || pile === "burst") placeUsedCard(card);
+        else discard.push(card);
       }
-      inPlay = stayed;
-      resolveAt = stayed.length;
+      resolveAt = 0;
     }
 
     function flyPlayToHand(from, handIndex) {
@@ -12401,6 +12445,12 @@
       return "";
     }
 
+    function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
+      const shake = shellCls.includes("shake") ? " shake" : "";
+      const fatal = shellCls.includes("fatal") ? " fatal" : "";
+      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand" aria-hidden="true">${handHtml || ""}</div></div></div></div>`;
+    }
+
     function fxVictory() {
       const pose = heroItem().victory;
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
@@ -12411,7 +12461,6 @@
     function fxStage(id) {
       let hero = {};
       let foe = {};
-      let extra = "";
       let call = "";
       let cls = "";
       if (id === "guard") hero = { guard: true };
@@ -12443,14 +12492,21 @@
       else if (id === "no-mana") {
         call = `<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`;
         cls = " shake";
-      } else if (id === "deal") {
+      }
+      let handHtml = "";
+      if (id === "deal") {
         const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
-        extra = `<div class="hand fx-deal">${cards}</div>`;
-      } else if (id === "end-ready") extra = `<div class="end ready fx-end">ターン終了</div>`;
-      else if (id === "victory") return `<div class="fx-view" data-play="${fxLabTick}">${fxVictory()}</div>`;
+        handHtml = `<div class="hand fx-deal">${cards}</div>`;
+      } else if (id === "end-ready") {
+        handHtml = `<div class="end ready fx-end">ターン終了</div>`;
+      }
+      if (id === "victory") {
+        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play">${fxVictory()}</div></div>`;
+      }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal), Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal), Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
     function renderFxLab() {
@@ -12460,7 +12516,7 @@
         const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
         return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
-      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside>${fxStage(fxLabId)}</div>`;
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
       placeFoePoisonWords();
     }
 
