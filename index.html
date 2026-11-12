@@ -7569,8 +7569,8 @@
       ホテル: { cost: 3, text: "体力を18回復", heal: 18, instant: true, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+5、強敵+8。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本4にこのATKを足した合計を書く。DEFは0で、板にも出す。
-    const HIDDEN_ATK = { 雑魚: 2, 普通: 5, 強敵: 8 };
+    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+6、強敵+9。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本4にこのATKを足した合計を書く。DEFは0で、板にも出す。
+    const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
       {
@@ -7578,7 +7578,7 @@
         image: "enemy-slime.png?v=7",
         tier: 1,
         rank: "雑魚",
-        hp: 34,
+        hp: 43,
         atkHidden: 0,
         pattern: [
           { name: "アタック" },
@@ -7591,7 +7591,7 @@
         image: "enemy-goblin.png?v=4",
         tier: 1,
         rank: "雑魚",
-        hp: 20,
+        hp: 25,
         atkHidden: 0,
         pattern: [
           { name: "アタック" },
@@ -7604,7 +7604,7 @@
         image: "enemy-minotaur.png?v=8",
         tier: 3,
         rank: "強敵",
-        hp: 50,
+        hp: 63,
         medal: "minotaur-medal",
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
         rally: true,
@@ -7623,7 +7623,7 @@
         image: "enemy-dragon.png?v=4",
         tier: 2,
         rank: "普通",
-        hp: 30,
+        hp: 38,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -7637,7 +7637,7 @@
         name: "物乞い",
         image: "enemy-beggar.png?v=2",
         rank: "雑魚",
-        hp: 15,
+        hp: 19,
         atkHidden: 3,
         pattern: [
           { name: "アタック" },
