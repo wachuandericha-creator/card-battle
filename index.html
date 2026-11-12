@@ -8063,6 +8063,7 @@
     let intentIndex = 0;
     let enemyLoop = [];
     let foeDiscard = [];
+    let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
@@ -9432,7 +9433,60 @@
       foeDeckEmpty = false;
       foeRageBusy = false;
       foeAngerShow = false;
+      foePlan = [];
       chooseNextIntent();
+    }
+
+    function foeSpd() {
+      const foe = enemyNow();
+      const n = Number(foe && foe.spd);
+      return n > 0 ? n : 1;
+    }
+
+    function deckCardsLeft() {
+      return Math.max(0, enemyLoop.length - intentIndex);
+    }
+
+    function takeDeckCard() {
+      if (deckCardsLeft() <= 0) return null;
+      chooseNextIntent();
+      const card = applyEnemyHidden(enemyLoop[intentIndex], enemyNow());
+      intentIndex += 1;
+      if (intentIndex >= enemyLoop.length) foeDeckEmpty = true;
+      return card;
+    }
+
+    function recycleDiscardToDeck() {
+      if (!foeDiscard.length) return false;
+      const foe = enemyNow();
+      enemyLoop = shuffle(foeDiscard.map((card) => applyEnemyHidden(card, foe)));
+      foeDiscard = [];
+      intentIndex = 0;
+      foeDeckEmpty = false;
+      return true;
+    }
+
+    // SPDの枠を埋める。引けない枠は怒りが1回だけ代わりに入る。入ったあとに捨て札を山札へ戻し、残りの枠を引く。
+    function buildFoePlan() {
+      foePlan = [];
+      const need = foeSpd();
+      let guard = 0;
+      while (foePlan.length < need && guard < need + 4) {
+        guard += 1;
+        const card = takeDeckCard();
+        if (card) {
+          foePlan.push({ anger: false, card });
+          continue;
+        }
+        const angerAlready = !!(enemy && enemy.anger) || foePlan.some((step) => step.anger);
+        if (!angerAlready) {
+          foePlan.push({ anger: true, card: foeAngerCard() });
+          recycleDiscardToDeck();
+          continue;
+        }
+        if (!recycleDiscardToDeck()) break;
+      }
+      foeAngerShow = foePlan.some((step) => step.anger);
     }
 
     // 戦闘をまたいで残った怒り演出を切る。山札を使い切る前の怒りは出さない。
@@ -9457,8 +9511,7 @@
 
     function foeDeckRemain() {
       if (!enemyLoop.length) return 0;
-      const drawn = intentShown ? 1 : 0;
-      return Math.max(0, enemyLoop.length - intentIndex - drawn);
+      return Math.max(0, enemyLoop.length - intentIndex);
     }
 
     function gainEnemyAnger() {
@@ -10755,7 +10808,7 @@
       timer = null;
       if (outcome) return;
       captureFoeLeave();
-      advanceEnemyLoop();
+      foePlan = [];
       intentShown = false;
       foeDrawPending = false;
       foeAngerShow = false;
@@ -10805,40 +10858,18 @@
     function presentNextFoeCard() {
       timer = null;
       if (phase !== "player" || outcome) return;
-      if (!foeDeckSpent()) {
-        foeDeckEmpty = false;
-        foeAngerShow = false;
-        drawFoeFromDeck();
-        return;
-      }
-      const gen = foeActGen;
-      foeDeckEmpty = false;
-      foeRageBusy = true;
-      foeAngerShow = true;
-      intentShown = true;
+      if (!foePlan.length) buildFoePlan();
+      foeAngerShow = foePlan.some((step) => step.anger);
+      intentShown = foePlan.length > 0;
       foeDrawPending = true;
+      foeRageBusy = false;
       render();
+      const gen = foeActGen;
       timer = setTimeout(() => {
         if (!foeActLive(gen)) return;
-        gainEnemyAnger();
+        foeDrawPending = false;
         render();
-        timer = setTimeout(() => {
-          if (!foeActLive(gen)) return;
-          burnFoeAnger(() => {
-            if (!foeActLive(gen)) return;
-            foeAngerShow = false;
-            intentShown = false;
-            foeDrawPending = false;
-            render();
-            flyDiscardIntoDeck(() => {
-              if (!foeActLive(gen)) return;
-              recycleEnemyDeck();
-              foeRageBusy = false;
-              if (phase === "player") drawFoeFromDeck();
-            });
-          });
-        }, 720);
-      }, 1200);
+      }, 700);
     }
 
     function finishResolve() {
@@ -10879,8 +10910,15 @@
       } else {
         logTurn("enemy");
         dropShield(enemy);
-        const card = intentAt(0);
-        enemyUseCard(card);
+        for (const step of foePlan) {
+          if (player.hp <= 0) break;
+          if (step.anger) gainEnemyAnger();
+          else {
+            const live = applyEnemyHidden(step.card, enemyNow());
+            enemyUseCard(live);
+            foeDiscard.push({ ...live });
+          }
+        }
         if (player.hp > 0 && enemyNow().rally && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
           enemy.rallied = true;
           const extra = shuffle(sourcePattern()).slice(0, 2);
@@ -11292,6 +11330,7 @@
         intentIndex,
         enemyLoop,
         foeDiscard,
+        foePlan,
         phase,
         note,
         banner,
@@ -11499,8 +11538,9 @@
         syncEnemyDef();
       }
       restoreEnemyLoop(data);
+      foePlan = Array.isArray(data.foePlan) ? data.foePlan.map((step) => ({ anger: !!step.anger, card: { ...step.card } })) : [];
       invalidateFoeAct();
-      if (enemyLoop.length && intentIndex >= enemyLoop.length && foeDiscard.length) foeDeckEmpty = true;
+      if (screen === "battle" && phase === "player" && enemy && !foePlan.length && enemyLoop.length) buildFoePlan();
       heroCast = castByName(data.heroCast || "戦士").name;
       job = data.job || "戦士";
       jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
@@ -13834,7 +13874,27 @@
       }
       if (foe.hp <= 0) return { give: give.show ? give : null, take: null };
       foe.block = 0;
-      const take = scratchEnemyBlow(shownFoeCard(), mine, foe);
+      let take = null;
+      let angerAhead = false;
+      for (const step of foePlan) {
+        if (step.anger) {
+          if (!(enemy && enemy.anger)) angerAhead = true;
+          continue;
+        }
+        let card = step.card;
+        if (angerAhead && card && card.name === "アタック") {
+          const dmg = (Number(card.damage) || 0) + 2;
+          card = { ...card, damage: dmg };
+        }
+        const blow = scratchEnemyBlow(card, mine, foe);
+        if (!blow) continue;
+        if (!take) take = { raw: 0, hp: 0, parry: false, show: false };
+        take.raw += blow.raw;
+        take.hp += blow.hp;
+        take.show = take.show || blow.show;
+        take.parry = take.parry && blow.parry;
+        if (blow.parry && take.raw === blow.raw) take.parry = true;
+      }
       return { give: give.show ? give : null, take };
     }
 
@@ -13928,14 +13988,25 @@
       if (card.block) scratchGainBlock(mine, (Number(card.block) || 0) + added);
     }
 
+    function planCardFace(index) {
+      let angerAhead = false;
+      for (let i = 0; i < index; i += 1) {
+        if (foePlan[i] && foePlan[i].anger && !(enemy && enemy.anger)) angerAhead = true;
+      }
+      const step = foePlan[index];
+      if (!step) return null;
+      if (step.anger) return step.card;
+      if (angerAhead && step.card && step.card.name === "アタック") {
+        const dmg = (Number(step.card.damage) || 0) + 2;
+        return { ...step.card, damage: dmg, text: `${dmg}ダメージ` };
+      }
+      return step.card;
+    }
+
     function shownFoeCard() {
-      if (phase === "intro" || !enemy) return null;
-      const angerNow = foeAngerShow && foeDiscard.length > 0 && enemyLoop.length > 0 && intentIndex >= enemyLoop.length;
-      if (angerNow) return foeAngerCard();
-      if (!intentShown || !enemyLoop.length) return null;
-      const at = intentIndex;
-      if (at < 0 || at >= enemyLoop.length) return null;
-      return enemyLoop[at];
+      if (phase === "intro" || !enemy || !foePlan.length) return null;
+      const step = foePlan.find((item) => !item.anger) || foePlan[0];
+      return step ? step.card : null;
     }
 
     function scratchEnemyBlow(card, mine, foe) {
@@ -13976,17 +14047,18 @@
         const held = resolving && i < active;
         return playFace(card, on, true, false, i, { held });
       }).join("");
-      const angerNow = phase !== "intro" && foeAngerShow && foeDiscard.length > 0 && enemyLoop.length > 0 && intentIndex >= enemyLoop.length;
-      const foe = phase === "intro" ? null : (angerNow ? foeAngerCard() : (intentShown ? intentAt(0) : null));
-      const foeHot = resolving && active === inPlay.length;
-      const foeCard = foe ? playFace(foe, foeHot, true, true, null, { awaitDraw: foeDrawPending && !foeHot }) : "";
+      const foeCards = phase === "intro" ? "" : foePlan.map((step, i) => {
+        const face = planCardFace(i);
+        const hot = resolving && active === inPlay.length && i === 0;
+        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeDrawPending && !hot }) : "";
+      }).join("");
       const cast = forecastTurn();
       const giveChip = forecastChip("give", cast.give);
       const takeChip = forecastChip("take", cast.take);
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
           <div class="play-side mine use-half">${giveChip}<div class="play-cards">${mine}</div></div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCard}</div>${takeChip}</div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div>${takeChip}</div>
         </div>
       </div>`;
     }
@@ -14279,7 +14351,7 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中から無作為に1枚使う。初めて使い切ると怒り（ATK+2、DEF-2。重ねない）。そのあと捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
+      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中からSPDの枚数だけ無作為に置く。置けない枠は怒りが代わりに入る（ATK+2、DEF-2。1回だけ）。置いたあと、捨て札を山札に戻す。残りの枠があれば、戻した山札から引く。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
     }
 
     function clearFoeDeckPop() {
@@ -15311,7 +15383,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
