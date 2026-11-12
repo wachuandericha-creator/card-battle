@@ -5230,7 +5230,7 @@
     }
     .title-sub-actions button.logged-in::before { content: "● "; color: #9bff94; }
     .title-sub-actions button.logged-in:hover:not(:disabled) { border-color: #c6ffc0; background: linear-gradient(180deg, rgba(48, 110, 52, 0.92), rgba(22, 62, 28, 0.92)); }
-    /* 戦闘の演出を、タイトルの列からいつでも再生する */
+    /* 演出確認（タイトルの「演出」から。戦闘中は開かない） */
     .fx-lab {
       height: 100%;
       display: grid;
@@ -8149,8 +8149,8 @@
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。";
-    const FLASH_NOTE = "効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
-    const BURST_NOTE = "効果処理後デッキから削除。";
+    const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
+    const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
     const ITEM_NOTE = "効果処理後デッキから削除。キープであり、クイックであり、バースト。";
     const KEEP_NOTE = "ターン終了時に捨て札にいかない。";
@@ -8847,7 +8847,7 @@
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える", image: "gear-battle-counter.jpg?v=6" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える。", image: "gear-battle-counter.jpg?v=6" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 10, statusImmune: true, effect: "★★★★★　DEF+10。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
@@ -9188,7 +9188,7 @@
       if (!item) return "";
       if (item.statusImmune) return "状態異常にならない";
       if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
-      if (item.reflectDef) return "自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える";
+      if (item.reflectDef) return "自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える。";
       if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
       if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
       if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
@@ -10432,7 +10432,7 @@
     }
 
     function playsImmediately(card) {
-      return !!(card && (card.quick || isItemCard(card)));
+      return !!(card && (card.quick || card.burst || isItemCard(card) || isFlashCard(card)));
     }
 
     function isFlashCard(card) {
@@ -13319,7 +13319,7 @@
     function eventShell(body, paths) {
       const buttons = paths
         ? ""
-        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="fx-lab">演出</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || "<p>記録は無い。</p>"}</div></aside></div>${deckOverlay()}`;
     }
@@ -14315,7 +14315,7 @@
     function eventToolsHtml() {
       const map = `<aside class="event-map${eventMapOpen ? " on" : ""}">${roadMapHtml()}</aside>`;
       const label = eventMapOpen ? "MAP:ON" : "MAP:OFF";
-      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="fx-lab">演出</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
+      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
     }
 
     function deckOverlay() {
@@ -15365,7 +15365,6 @@
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button>`}
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
-              <button type="button" class="small-btn" data-action="fx-lab">演出</button>
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>`}
             </div>
           </header>
