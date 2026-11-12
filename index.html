@@ -813,6 +813,16 @@
       background: linear-gradient(180deg, #ff9a86 0%, #e8533f 42%, #b02819 100%);
       box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 10px rgba(255, 90, 60, 0.45);
     }
+    .battle-plate .meter.hp .hp-threat {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 2;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #6a221c 0%, #4a100e 55%, #2c0808 100%);
+      box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+    }
     .battle-plate.low .meter.hp > span {
       background: linear-gradient(180deg, #ffb4a0 0%, #ff5a3a 42%, #c01c0c 100%);
       animation: hp-low 1.1s ease-in-out infinite;
@@ -12287,12 +12297,17 @@
       return true;
     }
 
-    function meters(who, hp, maxHp, block) {
+    function meters(who, hp, maxHp, block, threat) {
       const cap = Math.max(1, maxHp);
       const hpPct = Math.max(0, Math.min(100, (hp / cap) * 100));
+      const loss = Math.max(0, Math.min(Number(hp) || 0, Number(threat) || 0));
+      const lossPct = (loss / cap) * 100;
+      const stayPct = Math.max(0, hpPct - lossPct);
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = `<div class="shield-row" aria-label="シールド ${block}"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>`;
-      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span data-bar="${who}" style="width:${hpPct}%"></span><b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div></div>`;
+      const threatHtml = loss > 0 ? `<i class="hp-threat" style="left:${stayPct}%;width:${lossPct}%"></i>` : "";
+      const aria = loss > 0 ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(loss)}減る` : `HP ${Math.round(hp)}/${Math.round(cap)}`;
+      return `<div class="meters">${shield}<div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${hpPct}%"></span>${threatHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div></div>`;
     }
 
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
@@ -12323,7 +12338,7 @@
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
       return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
-        ${meters(who, shownHp, maxHp, block)}
+        ${meters(who, shownHp, maxHp, block, extra && extra.threat)}
         ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
       </section>`;
     }
@@ -14170,22 +14185,6 @@
       return { raw: dealt, hp: hit.hpLoss, parry: false, show: true };
     }
 
-    function forecastChip(kind, cast) {
-      if (!cast || !cast.show) return "";
-      const label = kind === "give" ? "与ダメ" : "被ダメ";
-      const value = cast.parry
-        ? `<span class="from">${cast.raw}</span><span class="to">→</span><b>0</b><em>パリィ</em>`
-        : cast.raw === cast.hp
-          ? `<b>${cast.hp}</b>`
-          : `<span class="from">${cast.raw}</span><span class="to">→</span><b>${cast.hp}</b>`;
-      const aria = cast.parry
-        ? `この攻撃はパリィで無効。予定は${cast.raw}`
-        : kind === "give"
-          ? `ターン終了で、敵の体力が${cast.hp}減る`
-          : `この攻撃で、自分の体力が${cast.hp}減る`;
-      return `<p class="forecast ${kind}${cast.parry ? " parry" : ""}" aria-label="${esc(aria)}"><span>${label}</span>${value}</p>`;
-    }
-
     function useZoneMarkup() {
       const resolving = phase === "resolve";
       const active = resolving ? resolveAt - 1 : -1;
@@ -14199,13 +14198,10 @@
         const hot = resolving && active === inPlay.length && i === 0;
         return face ? playFace(face, hot, true, true, null, { awaitDraw: foeDrawPending && !hot }) : "";
       }).join("");
-      const cast = forecastTurn();
-      const giveChip = forecastChip("give", cast.give);
-      const takeChip = forecastChip("take", cast.take);
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
-          <div class="play-side mine use-half">${giveChip}<div class="play-cards">${mine}</div></div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div>${takeChip}</div>
+          <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div></div>
         </div>
       </div>`;
     }
@@ -15506,6 +15502,9 @@
       const logHtml = logLinesHtml(logLines);
       const enemyShown = Math.round(shownEnemy());
       const playerShown = Math.round(shownPlayer());
+      const cast = forecastTurn();
+      const foeThreat = cast.give && cast.give.hp > 0 ? cast.give.hp : 0;
+      const mineThreat = cast.take && cast.take.hp > 0 ? cast.take.hp : 0;
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
         ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
@@ -15529,10 +15528,10 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, threat: foeThreat, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
