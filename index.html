@@ -7510,7 +7510,7 @@
     const CARDS = {
       アタック: { cost: 1, text: "4ダメージ", damage: 4 },
       チャージアタック: { cost: 2, text: "12ダメージ", damage: 12 },
-      ブロック: { cost: 1, text: "ブロック3", block: 3 },
+      ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
@@ -7558,9 +7558,9 @@
       キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら+5", damage: 3, kind: "attack", kick: 5 },
       ツインアタック: { cost: 2, text: "2ダメージを2回", damage: 2, hits: 2, stars: 3, kind: "attack" },
       ビッグアタック: { cost: 3, text: "20ダメージ", damage: 20, stars: 3, kind: "attack" },
-      瞑想: { cost: 1, text: "ブロック2\n次のターンに1枚引く", block: 2, nextDraw: 1, kind: "block" },
-      ハードブロック: { cost: 2, text: "ブロック7", block: 7, kind: "block" },
-      ビッグブロック: { cost: 3, text: "ブロック12", block: 12, kind: "block" },
+      瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block" },
+      ハードブロック: { cost: 2, text: "ブロック9", block: 9, kind: "block" },
+      ビッグブロック: { cost: 3, text: "ブロック16", block: 16, kind: "block" },
       アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4 },
       反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9 },
       応急手当: { cost: 1, text: "体力を4回復\nインスタント", heal: 4, instant: true, kind: "skill" },
@@ -8031,7 +8031,7 @@
         return { name: "アタック", cost: 1, text: `${dmg}ダメージ`, damage: dmg };
       }
       if (key === "ブロック") {
-        const blk = CARDS.ブロック.block || 3;
+        const blk = CARDS.ブロック.block || 4;
         return { name: "ブロック", cost: 1, text: `ブロック${blk}`, block: blk };
       }
       return null;
@@ -12852,7 +12852,7 @@
 
     function printedBlock(card) {
       if (!card) return 0;
-      if (card.name === "ブロック" || card.name === "ブロック+") return CARDS.ブロック.block || 3;
+      if (card.name === "ブロック" || card.name === "ブロック+") return CARDS.ブロック.block || 4;
       return Number(card.block) || 0;
     }
 
