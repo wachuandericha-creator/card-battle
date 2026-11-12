@@ -5272,13 +5272,13 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* 祝福の一枚絵：切らずに全体を見せる（高さで決め、幅は比率どおり） */
+    /* イベント画面：左半分＝挿絵（黄枠・全体が見える）、右半分＝物語・ゲーム説明・操作（お店はゲーム説明だけ） */
     .menu.event {
       width: 100%;
       height: 100%;
       padding: 8px 4px 12px 10px;
       --event-art: 1fr;
-      --event-side: clamp(280px, 36vw, 520px);
+      --event-side: 1fr;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
@@ -5433,14 +5433,10 @@
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82);
       animation: turn-word 1.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
-    .menu.event.bless { --event-side: clamp(300px, 40vw, 580px); }
-    .menu.event.shop { --event-side: clamp(300px, 42vw, 600px); }
-    .menu.event.search { --event-side: clamp(260px, 34vw, 480px); }
-    .menu.event.beggar { --event-side: clamp(280px, 38vw, 520px); }
     .menu.event .event-lead {
       grid-area: lead;
       display: grid;
-      grid-template-columns: minmax(0, var(--event-art)) var(--event-side);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: stretch;
       align-self: stretch;
       gap: clamp(10px, 1.4vw, 22px) clamp(4px, 0.8vw, 12px);
@@ -5461,21 +5457,30 @@
       width: 100%;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
+    }
+    .menu.event .event-lead.no-art {
+      grid-template-columns: minmax(0, 1fr);
     }
     .menu.event .event-side {
       min-width: 0;
-      max-width: var(--event-side);
-      justify-self: end;
+      min-height: 0;
+      max-width: none;
+      justify-self: stretch;
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 14px;
-      padding-right: clamp(2px, 0.5vw, 8px);
+      overflow: hidden;
+      padding-right: clamp(6px, 1vw, 16px);
+      padding-left: clamp(4px, 0.6vw, 12px);
       box-sizing: border-box;
     }
     .menu.event .event-copy {
       min-width: 0;
+      min-height: 0;
+      flex: 0 1 auto;
+      overflow: auto;
       display: flex;
       align-items: center;
     }
@@ -5484,9 +5489,10 @@
       grid-area: auto;
       height: auto;
       max-height: none;
-      overflow: visible;
-      padding: 0;
+      overflow: auto;
+      padding: 0 2px 0 0;
       width: 100%;
+      min-height: 0;
     }
     .menu.event .event-side .gift-btn {
       min-width: 0;
@@ -5518,11 +5524,11 @@
       display: block;
       width: auto;
       height: auto;
-      max-width: min(52%, 100%);
-      max-height: min(50vh, 50%);
+      max-width: min(94%, 100%);
+      max-height: min(calc(100vh - 132px), 100%);
       aspect-ratio: auto;
       object-fit: contain;
-      object-position: left center;
+      object-position: center center;
       margin: 0;
       box-sizing: border-box;
     }
@@ -5638,7 +5644,7 @@
     }
     .menu.event.bless .gift-row {
       justify-content: center;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 12px;
     }
     .menu.event.search {
@@ -5658,7 +5664,7 @@
     .menu.event .gift-btn { flex: 1 1 0; width: auto; min-width: 0; }
     .menu.event.bless { justify-content: stretch; overflow: hidden; padding-top: 8px; }
     @media (max-width: 900px) {
-      .menu.event { --event-side: min(44vw, 320px); padding: 8px 4px 12px 8px; }
+      .menu.event { padding: 8px 4px 12px 8px; }
       .menu.event .event-lead {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr) auto;
@@ -12566,7 +12572,7 @@
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art">${art}</div>` : "";
       const choiceBody = `${rareFlash}${shop}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}${bless}`;
-      const lead = `<div class="event-lead">${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
+      const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${title}${choiceShell}</div>`);
       runEntrance = false;
