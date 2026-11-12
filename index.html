@@ -1573,7 +1573,7 @@
     }
     .album-top {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.8fr) minmax(0, 0.95fr);
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
       gap: 14px;
       margin: 0 0 12px;
     }
@@ -1885,33 +1885,28 @@
     .unadopt-figure { position: relative; }
     .unadopt-figure .unadopt-no {
       position: absolute;
-      top: 2px;
-      left: 2px;
-      right: 2px;
+      top: 4px;
+      left: 4px;
       z-index: 3;
       pointer-events: none;
-      padding: 3px 4px;
+      min-width: 1.6em;
+      padding: 2px 6px;
       border-radius: 6px;
       border: 1px solid rgba(255, 231, 168, 0.65);
       background: rgba(8, 6, 4, 0.92);
       color: #ffe7a8;
-      font-size: 11px;
+      font-size: 16px;
       font-weight: 900;
       line-height: 1.2;
-      letter-spacing: 0.02em;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
     }
-    .unadopt-figure figcaption {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      line-height: 1.25;
+    .album-unadopted-tab {
+      margin: 0 0 12px;
     }
-    .unadopt-figure .unadopt-no-caption { color: #ffe7a8; font-size: 12px; letter-spacing: 0.06em; }
-    .unadopt-figure .unadopt-name-caption { font-size: 12px; font-weight: 700; color: #f4ead7; }
-    .album-top .album-unadopted .ref-grid { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); }
+    .album-unadopted-tab .ref-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
     .ref-grid figure.ref-slot { max-width: 160px; }
     .ref-grid .ref-slot-box {
       width: 100%;
@@ -12943,15 +12938,11 @@
       [7, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
       [8, "unadopt-quick-step", "クイックステップ（旧）", "card-quick-step.jpg?v=1"],
     ];
-    function unadoptedLabel(item) {
-      return `未採用${item[0]} ${item[2]}`;
-    }
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
         const on = albumZoom === item[1];
-        const label = unadoptedLabel(item);
-        const no = item[0];
-        return `<figure class="unadopt-figure${on ? " on" : ""}"><span class="unadopt-no">未採用${no}</span><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[1]}" aria-label="${esc(label)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[3]}" alt="${esc(label)}"></button><figcaption><b class="unadopt-no-caption">未採用${no}</b><span class="unadopt-name-caption">${esc(item[2])}</span></figcaption></figure>`;
+        const no = String(item[0]);
+        return `<figure class="unadopt-figure${on ? " on" : ""}"><span class="unadopt-no">${no}</span><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[1]}" aria-label="${no}" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[3]}" alt=""></button></figure>`;
       }).join("");
     }
 
@@ -12961,8 +12952,8 @@
       }
       const unadopted = UNADOPTED_CARD_ARTS.find((item) => item[1] === name);
       if (unadopted) {
-        const label = `${unadoptedLabel(unadopted)}（未採用）`;
-        return zoomSidePanel(label, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[3]}" alt="${esc(label)}"></div>`, false);
+        const label = String(unadopted[0]);
+        return zoomSidePanel(label, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[3]}" alt=""></div>`, false);
       }
       const face = ALBUM_FACE.find((item) => item[0] === name);
       if (face) {
@@ -13126,7 +13117,7 @@
       const tabOrder = ["初期デッキ", "基本", "戦士", "共通", "敵"].filter(
         (name) => name === "初期デッキ" || catalog.some((card) => card.klass === name),
       );
-      if (!tabOrder.includes(albumTab) && albumTab !== "all") albumTab = "all";
+      if (!tabOrder.includes(albumTab) && albumTab !== "all" && albumTab !== "未採用") albumTab = "all";
       const starterCards = starterAlbumCards();
       const shown =
         albumTab === "初期デッキ"
@@ -13137,25 +13128,23 @@
       const label = albumTab === "all" ? "すべて" : albumTab;
       const tabs = [`<button type="button" class="${albumTab === "all" ? "on" : ""}" data-album="all">すべて</button>`]
         .concat(tabOrder.map((name) => `<button type="button" class="${albumTab === name ? "on" : ""}" data-album="${esc(name)}">${esc(name)}</button>`))
+        .concat(`<button type="button" class="${albumTab === "未採用" ? "on" : ""}" data-album="未採用">未採用</button>`)
         .join("");
       const faces = sortedCards(shown).map((card) => {
         const cap = card.deckCopies ? ` aria-label="${esc(card.name)}×${card.deckCopies}"` : ` aria-label="${esc(card.name)}のカードを拡大"`;
         return `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}"${cap} aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`;
       }).join("");
       const starterNote = albumTab === "初期デッキ" ? "戦士（種類4）　チャージアタックはこの1枚だけ　" : "";
-      const metaLine =
-        albumTab === "初期デッキ"
+      const metaLine = albumTab === "未採用"
+        ? "押すと右半分に拡大"
+        : albumTab === "初期デッキ"
           ? `${starterNote}押すと右半分に全体　★${meta.stars}`
           : `全${catalog.length}種　表示${shown.length}　押すと右半分に全体　★${meta.stars}`;
       const groupTitle =
         albumTab === "初期デッキ"
           ? shown.map((card) => `${card.name}×${card.deckCopies}`).join("　")
           : `${label} ${shown.length}`;
-      root.innerHTML = `
-        <div class="album-screen album-split">
-          <div class="panel">
-            <h2>カードリスト</h2>
-            <div class="album-top">
+      const albumTop = albumTab === "未採用" ? "" : `<div class="album-top">
               <section>
                 <h3>カードスタイル</h3>
                 <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
@@ -13164,15 +13153,18 @@
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
-              <section class="album-unadopted">
-                <h3>未採用絵柄</h3>
-                <p class="album-meta">未採用1〜の番号付き。ゲームのカード面には載せない候補。押すと右半分に拡大</p>
-                <div class="ref-grid blank-grid">${unadoptedCardSheet()}</div>
-              </section>
-            </div>
+            </div>`;
+      const unadoptedBody = albumTab === "未採用"
+        ? `<div class="album-unadopted-tab"><div class="ref-grid blank-grid">${unadoptedCardSheet()}</div></div>`
+        : `<section class="deck-group"><h3>${esc(groupTitle)}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
+      root.innerHTML = `
+        <div class="album-screen album-split">
+          <div class="panel">
+            <h2>カードリスト</h2>
+            ${albumTop}
             <div class="album-tabs" role="tablist">${tabs}</div>
             <p class="album-meta">${metaLine}</p>
-            <section class="deck-group"><h3>${esc(groupTitle)}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>
+            ${unadoptedBody}
           </div>
           ${artZoomSide(albumZoom)}
         </div>`;
