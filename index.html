@@ -5018,6 +5018,144 @@
     }
     .title-sub-actions button.logged-in::before { content: "● "; color: #9bff94; }
     .title-sub-actions button.logged-in:hover:not(:disabled) { border-color: #c6ffc0; background: linear-gradient(180deg, rgba(48, 110, 52, 0.92), rgba(22, 62, 28, 0.92)); }
+    /* 戦闘の演出を、タイトルの列からいつでも再生する */
+    .fx-lab {
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+      gap: 12px;
+      padding: 64px 16px 16px;
+      background: #0a0908;
+    }
+    .fx-col {
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+    .fx-col h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.2em;
+      color: #f0c36a;
+    }
+    .fx-col p {
+      margin: 0 0 4px;
+      color: #cbbba0;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .fx-col h2 {
+      margin: 8px 0 0;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: #e4b15a;
+    }
+    .fx-col button {
+      text-align: left;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 195, 106, 0.45);
+      background: rgba(14, 9, 6, 0.82);
+      color: #fff1d2;
+      padding: 8px 14px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .fx-col button:hover { border-color: #ffe6a8; }
+    .fx-col button.on {
+      border-color: #ffe6a8;
+      background: linear-gradient(180deg, rgba(90, 62, 24, 0.95), rgba(36, 24, 12, 0.95));
+      color: #ffe7a8;
+    }
+    .fx-view {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      container-type: size;
+    }
+    .fx-view .battle-bands { width: 100%; height: 100%; }
+    .fx-view .duel-side { align-items: flex-end; }
+    .fx-view .hero-shoulder,
+    .fx-view .enemy-main {
+      height: min(68cqh, 520px);
+      max-height: 100%;
+      justify-content: flex-end;
+    }
+    .fx-view .hero-body,
+    .fx-view .foe-body,
+    .fx-view .enemy-main .sprite { height: 100%; }
+    .fx-view .overlay.victory { position: absolute; inset: 0; }
+    .fx-view.fatal .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 28% 78%, rgba(180, 12, 8, 0.18), transparent 42%),
+        linear-gradient(180deg, rgba(40, 0, 0, 0.08), rgba(12, 0, 0, 0.55));
+      animation: fatal-veil 2.8s ease-out forwards;
+    }
+    .fx-view.shake .battle-bands { animation: mana-shake 0.38s linear; }
+    .fx-view .turn-call b { font-size: min(14cqw, 72px); }
+    .fx-view .floor-call b { font-size: min(34cqh, 220px); }
+    .fx-center {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .fx-anger {
+      width: min(180px, 34cqw);
+      border-radius: 10px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.55);
+      animation: fx-anger-burn 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) 0.45s both;
+    }
+    @keyframes fx-anger-burn {
+      0% { transform: none; filter: none; opacity: 1; }
+      100% { transform: translateY(-70px) scale(1.08); filter: sepia(1) saturate(6) brightness(1.7); opacity: 0; }
+    }
+    .fx-deal.hand {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      z-index: 7;
+      width: min(520px, 86%);
+      height: 168px;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .fx-end {
+      position: absolute;
+      left: 50%;
+      bottom: 24px;
+      z-index: 7;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .fx-starline {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      z-index: 5;
+      margin: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    @media (max-width: 800px) {
+      .fx-lab {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) auto;
+        padding-top: 58px;
+      }
+      .fx-col { max-height: 38%; flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+      .fx-col h1, .fx-col p { flex: 1 0 100%; }
+      .fx-view { order: -1; }
+    }
     .title-board {
       position: absolute;
       z-index: 5;
@@ -7878,6 +8016,8 @@
     let defeatSnap = null;
     let fxGuard = "";
     let fxHeal = false;
+    let fxLabId = "guard";
+    let fxLabTick = 0;
     let fxHit = null;
     let fxPoisonApply = { player: false, enemy: false };
     let fxDeal = false;
@@ -11918,6 +12058,148 @@
         </aside>`;
     }
 
+    function fxLabGroups() {
+      return [
+        ["自分", [
+          ["guard", "ガード"],
+          ["hurt", "被ダメージ"],
+          ["poison-tick", "毒ダメージ"],
+          ["poison-give", "毒を付与"],
+          ["fatal", "止め"],
+          ["heal", "回復"],
+          ["shield", "シールド"],
+          ["parry", "パリィ"],
+          ["poison-chip", "毒の印"],
+        ]],
+        ["敵", [
+          ["slash", "斬撃"],
+          ["slash-multi", "連続斬撃"],
+          ["foe-poison", "毒ダメージ"],
+          ["foe-poison-give", "毒を付与"],
+          ["arrive", "登場"],
+          ["anger", "怒り"],
+        ]],
+        ["掛け声", [
+          ["floor", "階"],
+          ["encounter", "敵が現れた"],
+          ["encounter-strong", "強敵が現れた"],
+          ["encounter-boss", "ボスが現れた"],
+          ["start", "戦闘開始"],
+          ["turn-player", "自分のターン"],
+          ["turn-enemy", "敵のターン"],
+          ["resolve", "解決フェイズ"],
+          ["no-mana", "マナが足りない"],
+        ]],
+        ["手札", [
+          ["deal", "ドロー"],
+          ["end-ready", "ターン終了"],
+        ]],
+        ["終わり", [
+          ["victory", "勝利"],
+        ]],
+      ];
+    }
+
+    function fxCuts(dirs, pow) {
+      return dirs.map((dir, i) => `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * 0.34).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`).join("");
+    }
+
+    function fxPops(hits, poison) {
+      return hits.map((n, i) => {
+        const shift = (i - (hits.length - 1) / 2) * 64;
+        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}" style="--delay:${(i * 0.34 + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+      }).join("");
+    }
+
+    function fxFoe(opt) {
+      const dirs = opt.dirs || [];
+      const hits = opt.hits || [];
+      const slash = Boolean(opt.slash);
+      const poison = Boolean(opt.poison);
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(Boolean(opt.stamp)) : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+    }
+
+    function fxPlate(id) {
+      const name = esc(heroName());
+      if (id === "shield") {
+        return `<div class="hero-stack"><section class="battle-plate hero-plate shielded"><div class="shield-badge fresh" aria-label="シールド 8">${plateShieldSvg(false)}<b>8</b></div><h2><span class="who">${name}</span></h2></section></div>`;
+      }
+      if (id === "parry") {
+        return `<div class="hero-stack"><section class="battle-plate hero-plate parried"><div class="shield-badge parry-badge fresh" aria-label="パリィ">${plateShieldSvg(true)}</div><h2><span class="who">${name}</span></h2></section></div>`;
+      }
+      if (id === "poison-chip") {
+        return `<div class="hero-stack"><section class="battle-plate hero-plate"><h2><span class="who">${name}</span><span class="plate-badges">${statusChip("poison", "毒", 2, POISON_NOTE, true)}</span></h2></section></div>`;
+      }
+      return "";
+    }
+
+    function fxMePop(n, poison, fatal) {
+      return `<b class="dmg-pop me${poison ? " poison" : ""}${fatal ? " fatal" : ""}" style="--pow:${hitPower(n)}">${n}</b>`;
+    }
+
+    function fxVictory() {
+      const pose = heroItem().victory;
+      const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
+      const stars = Array.from({ length: 3 }, (_, i) => `<span class="fly-star" style="--i:${i};--n:3">★</span>`).join("");
+      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt=""><img class="win-foe" src="enemy-slime.png?v=7" alt=""></div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
+    }
+
+    function fxStage(id) {
+      let hero = {};
+      let foe = {};
+      let extra = "";
+      let call = "";
+      let cls = "";
+      if (id === "guard") hero = { guard: true };
+      else if (id === "hurt") {
+        hero = { hurt: true, pow: hitPower(6) };
+        call = fxMePop(6, false, false);
+      } else if (id === "poison-tick") {
+        hero = { hurt: true, kind: "poison", pow: hitPower(3) };
+        call = fxMePop(3, true, false);
+      } else if (id === "poison-give") hero = { poisonApply: true };
+      else if (id === "fatal") {
+        hero = { hurt: true, fatal: true, pow: hitPower(12) };
+        foe = { fatal: true };
+        call = `<div class="fatal-call" aria-hidden="true">止め</div>${fxMePop(12, false, true)}`;
+        cls = " fatal";
+      } else if (id === "heal") extra = `<div class="screen-heal" aria-hidden="true"></div>`;
+      else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
+      else if (id === "slash-multi") foe = { slash: true, dirs: [0, 1, 2], hits: [4, 5, 8] };
+      else if (id === "foe-poison") foe = { poison: true, hits: [3] };
+      else if (id === "foe-poison-give") foe = { poison: true, stamp: true };
+      else if (id === "arrive") foe = { arrive: true };
+      else if (id === "anger") extra = `<div class="fx-center"><img class="fx-anger" src="card-anger-quiet.jpg?v=1" alt="怒り"></div>`;
+      else if (id === "floor") call = `<div class="turn-call floor-call" aria-hidden="true">${fadeSandwichMarkup("<b>3Ｆ</b>", { tag: "div" })}</div>`;
+      else if (id === "encounter") call = `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた!</b><span class="encounter-stars">★</span></div>`;
+      else if (id === "encounter-strong") call = `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>強敵が現れた!!</b><span class="encounter-stars">★★</span></div>`;
+      else if (id === "encounter-boss") call = `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>ボスが現れた!!!</b><span class="encounter-stars">★★★</span></div>`;
+      else if (id === "start") call = `<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`;
+      else if (id === "turn-player") call = `<div class="turn-call player" aria-hidden="true"><b>自分のターン</b></div>`;
+      else if (id === "turn-enemy") call = `<div class="turn-call enemy" aria-hidden="true"><b>敵のターン</b></div>`;
+      else if (id === "resolve") call = `<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`;
+      else if (id === "no-mana") {
+        call = `<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`;
+        cls = " shake";
+      } else if (id === "deal") {
+        const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
+        extra = `<div class="hand fx-deal">${cards}</div>`;
+      } else if (id === "end-ready") extra = `<div class="end ready fx-end">ターン終了</div>`;
+      else if (id === "victory") return `<div class="fx-view" data-play="${fxLabTick}">${fxVictory()}</div>`;
+      const calls = call ? `<div class="stage-fx">${call}</div>` : "";
+      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply))}</div><div class="duel-mid"></div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
+    }
+
+    function renderFxLab() {
+      const known = new Set(fxLabGroups().flatMap(([, rows]) => rows.map(([id]) => id)));
+      if (!known.has(fxLabId)) fxLabId = "guard";
+      const groups = fxLabGroups().map(([title, rows]) => {
+        const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
+        return `<h2>${esc(title)}</h2>${buttons}`;
+      }).join("");
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside>${fxStage(fxLabId)}</div>`;
+    }
+
     function renderTitle() {
       root.innerHTML = `
         <div class="title-screen">
@@ -11936,6 +12218,7 @@
               ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
+              ${menuButton("演出", "fx-lab")}
               ${menuButton("オプション", "settings")}
             </div>
           </div>
@@ -12751,7 +13034,7 @@
     function eventShell(body, paths) {
       const buttons = paths
         ? ""
-        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="fx-lab">演出</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || "<p>記録は無い。</p>"}</div></aside></div>${deckOverlay()}`;
     }
@@ -12906,6 +13189,7 @@
       else if (screen === "sheet") renderSheet();
       else if (screen === "defeat") renderDefeat();
       else if (screen === "settings") renderSettings();
+      else if (screen === "fx") renderFxLab();
       else if (screen === "confirm") renderConfirm();
       else if (screen === "clear") renderClear();
       else if (screen === "floor") {
@@ -13729,7 +14013,7 @@
     function eventToolsHtml() {
       const map = `<aside class="event-map${eventMapOpen ? " on" : ""}">${roadMapHtml()}</aside>`;
       const label = eventMapOpen ? "MAP:ON" : "MAP:OFF";
-      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
+      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="fx-lab">演出</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
     }
 
     function deckOverlay() {
@@ -14774,6 +15058,7 @@
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button>`}
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
+              <button type="button" class="small-btn" data-action="fx-lab">演出</button>
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>`}
             </div>
           </header>
@@ -15087,6 +15372,22 @@
         if (name === "close-foe-deck") { showFoeDeck = false; render(); }
         if (name === "stay") { askLeave = false; render(); }
         if (name === "settings") { returnScreen = screen; screen = "settings"; render(); }
+        if (name === "fx-lab") {
+          if (screen !== "fx") returnScreen = screen;
+          screen = "fx";
+          render();
+        }
+        if (name === "fx-play") {
+          fxLabId = action.dataset.fx || "guard";
+          fxLabTick += 1;
+          screen = "fx";
+          render();
+        }
+        if (name === "fx-replay") {
+          fxLabTick += 1;
+          screen = "fx";
+          render();
+        }
         if (name === "back") { screen = returnScreen; render(); }
         if (name === "toggle-log") { showLog = !showLog; persistSettings(); render(); }
         if (name === "phone-log") {
