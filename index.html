@@ -205,6 +205,43 @@
       color: #ffe7a4;
       text-shadow: 0 3px 0 #000;
     }
+    .road-node > i.road-unknown-mark {
+      grid-template-rows: auto 1fr;
+      align-content: center;
+      gap: 2px;
+      padding: 8px 4px 12px;
+    }
+    .road-ahead-floor {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.06em;
+      color: #ffe7a4;
+      text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.9);
+    }
+    .road-unknown-q {
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .road-inlay-floor {
+      position: absolute;
+      z-index: 2;
+      top: 10px;
+      left: 10px;
+      padding: 2px 8px 3px;
+      border-radius: 6px;
+      background: rgba(8, 6, 4, 0.72);
+      color: #ffe7a4;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.05em;
+      text-shadow: 0 2px 0 #000;
+      pointer-events: none;
+    }
+    .road-node.now .road-inlay-floor,
+    .road-node.done .road-inlay-floor { display: none; }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
     .road-node.tone-fight img,
@@ -3774,9 +3811,11 @@
       line-height: 1.42;
       white-space: normal;
       text-align: left;
-      overflow-wrap: anywhere;
+      overflow-wrap: normal;
+      word-break: keep-all;
       line-break: strict;
     }
+    .gear-effect-body .nobr { white-space: nowrap; }
     .gear-effect.gear-effect-embedded .gear-effect-body:not(.starter),
     .gear-effect.cast-pop .gear-effect-body:not(.starter) {
       text-align: left;
@@ -8610,12 +8649,17 @@
         const face = known ? roadFace(node) : { mark: "？", label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
+        const unknownAhead = state === "ahead" && !known;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
-          : `<i>${esc(face.mark || "")}</i>`;
+          : unknownAhead
+            ? `<i class="road-unknown-mark" aria-label="${esc(floor)} 未定"><span class="road-ahead-floor">${floor}</span><b class="road-unknown-q">？</b></i>`
+            : `<i>${esc(face.mark || "")}</i>`;
+        const inlayFloor = state === "ahead" && face.src ? `<span class="road-inlay-floor">${floor}</span>` : "";
+        const capFloor = unknownAhead ? "" : `<span class="road-floor">${floor}</span>`;
         const fixed = roadFixed(node, i);
         const tone = known ? roadTone(node) : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}${inlayFloor}<span class="road-cap">${capFloor}<span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
@@ -8687,7 +8731,7 @@
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。ダメージを食らうと、相手にいまのDEFだけダメージ", image: "gear-battle-counter.jpg?v=6" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える", image: "gear-battle-counter.jpg?v=6" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 10, statusImmune: true, effect: "★★★★★　DEF+10。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
@@ -9028,7 +9072,7 @@
       if (!item) return "";
       if (item.statusImmune) return "状態異常にならない";
       if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
-      if (item.reflectDef) return "ダメージを食らうと、相手にいまのDEFだけダメージ";
+      if (item.reflectDef) return "自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える";
       if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
       if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
       if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
@@ -9136,7 +9180,7 @@
       if (bodyLine.show) {
         const extra = bodyLine.extra ? ` ${bodyLine.extra}` : "";
         const bodyClass = `gear-effect-body${extra}`;
-        body = `<p class="${bodyClass}">${bodyLine.text ? esc(bodyLine.text) : ""}</p>`;
+        body = `<p class="${bodyClass}">${bodyLine.text ? cardNoteHtml(bodyLine.text) : ""}</p>`;
       }
       const emb = embedded ? " gear-effect-embedded" : "";
       const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
@@ -9724,6 +9768,7 @@
           amount += extra;
         }
       }
+      const hadShield = who === "player" && Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(target, amount);
       markPoisonApply(target);
       if (who === "player" && result.hpLoss > 0) player.hurtThis = true;
@@ -9742,6 +9787,7 @@
         noteHit("enemy", result.hpLoss, stacks, "poison");
       }
       log(poisonSentence(name, stacks, 0, result));
+      if (hadShield) reflectBattleCounter(amount);
       return target.hp <= 0;
     }
 
@@ -9786,6 +9832,7 @@
       const extra = Math.max(0, Number(player.expose) || 0);
       if (extra) player.expose = 0;
       const dealt = Math.max(0, amount + extra);
+      const hadShield = Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(player, dealt);
       if (result.hpLoss > 0) {
         player.hurtThis = true;
@@ -9799,18 +9846,19 @@
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
       log(hurtSentence(enemy.name, name, raw + extra, 0, result), card, true);
-      // バトルカウンター：ダメージを食らったら、いまのDEFだけ相手へ
-      if (result.hpLoss > 0 && hasReflectDef() && enemy.hp > 0 && player.hp > 0) {
-        const reflect = Math.max(0, Number(player.def) || 0);
-        if (reflect > 0) {
-          const hit = applyDamage(enemy, reflect);
-          if (hit.hpLoss || hit.blocked) {
-            slashFoe();
-            noteHit("enemy", hit.hpLoss, reflect);
-          }
-          log(`${gear.shield.name}。${enemy.name}に${reflect}ダメージ。`, card);
-        }
+      if (hadShield) reflectBattleCounter(dealt, card);
+    }
+
+    function reflectBattleCounter(incoming, card) {
+      if (!(incoming > 0) || !hasReflectDef() || !enemy || enemy.hp <= 0 || !player || player.hp <= 0) return;
+      const reflect = Math.max(0, Number(player.def) || 0);
+      if (reflect <= 0) return;
+      const hit = applyDamage(enemy, reflect);
+      if (hit.hpLoss || hit.blocked) {
+        slashFoe();
+        noteHit("enemy", hit.hpLoss, reflect);
       }
+      log(`${gear.shield.name}。${enemy.name}に${reflect}ダメージ。`, card);
     }
 
     function restoreHp(amount) {
