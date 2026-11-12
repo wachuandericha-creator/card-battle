@@ -1801,6 +1801,23 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
     .nav-title:hover { filter: brightness(1.08); }
+    .nav-full {
+      position: fixed;
+      left: 14px;
+      top: 64px;
+      z-index: 60;
+      border: 2px solid rgba(228, 177, 90, 0.95);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f0d078, #c9963a);
+      color: #2a2118;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 11px 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+    .nav-full:hover { filter: brightness(1.08); }
     .album-screen .panel > button[data-action] {
       align-self: center;
       margin-top: 8px;
@@ -7508,6 +7525,9 @@
     html.phone button { touch-action: manipulation; }
     html.phone .phone-only { display: inline-flex; }
     .phone-only { display: none; }
+    html:not(.stage-fit) .pc-only,
+    html.iphone-play .pc-only,
+    html.phone .pc-only { display: none; }
     html.phone .battle-screen {
       position: relative;
       left: auto;
@@ -7748,6 +7768,7 @@
       クイックステップ: "card-attack-f-b.jpg",
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
       自信過剰: "card-pride.jpg?v=1",
+      超集中: "card-deep-focus.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
@@ -12314,8 +12335,37 @@
       return `<div class="mana-read${temp ? " has-temp" : ""}" aria-label="マナ残り ${total}${temp ? `。持ち越し ${temp}` : ""}"><b>${total}</b>${temp ? `<i class="mana-temp">+${temp}</i>` : ""}</div>`;
     }
 
-    function menuButton(label, action, primary, disabled) {
-      return `<button type="button" class="${primary ? "primary" : ""}" data-action="${action}" ${disabled ? "disabled" : ""}>${esc(label)}</button>`;
+    function menuButton(label, action, primary, disabled, extraClass) {
+      const cls = [primary ? "primary" : "", extraClass || ""].filter(Boolean).join(" ");
+      return `<button type="button" class="${cls}" data-action="${action}" ${disabled ? "disabled" : ""}>${esc(label)}</button>`;
+    }
+
+    function fullscreenActive() {
+      return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    }
+
+    function fullscreenLabel() {
+      return fullscreenActive() ? "全画面をやめる" : "全画面";
+    }
+
+    function toggleFullscreen() {
+      const leave = fullscreenActive();
+      const target = document.documentElement;
+      const ask = leave
+        ? (document.exitFullscreen || document.webkitExitFullscreen)
+        : (target.requestFullscreen || target.webkitRequestFullscreen);
+      if (!ask) return;
+      const pending = leave ? ask.call(document) : ask.call(target);
+      if (pending && typeof pending.catch === "function") pending.catch(() => {});
+    }
+
+    function paintFullscreenLabels() {
+      const on = fullscreenActive();
+      const label = on ? "全画面をやめる" : "全画面";
+      root.querySelectorAll('[data-action="fullscreen"]').forEach((btn) => {
+        btn.textContent = label;
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
     }
 
     function titleBoardHtml() {
@@ -12542,6 +12592,7 @@
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
               ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play")}
+              ${menuButton(fullscreenLabel(), "fullscreen", false, false, "pc-only")}
               ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
@@ -12584,6 +12635,7 @@
       root.innerHTML = `
         <div class="menu settings-screen">
           <h1>オプション</h1>
+          ${menuButton(fullscreenLabel(), "fullscreen", true, false, "pc-only")}
           ${menuButton(showLog ? "ログの表示：オン" : "ログの表示：オフ", "toggle-log", true)}
           ${menuButton(autoEndTurn ? "自動でターン終了：オン" : "自動でターン終了：オフ", "toggle-auto-end", true)}
           ${handBtn}
@@ -13389,7 +13441,7 @@
     function eventShell(body, paths) {
       const buttons = paths
         ? ""
-        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn pc-only" data-action="fullscreen">${fullscreenLabel()}</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}`;
     }
@@ -13526,11 +13578,23 @@
       root.appendChild(btn);
     }
 
+    function paintFullscreenNav() {
+      root.querySelectorAll(".nav-full").forEach((el) => el.remove());
+      if (screen === "title" || screen === "battle" || screen === "floor" || screen === "settings") return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "nav-full pc-only";
+      btn.dataset.action = "fullscreen";
+      btn.textContent = fullscreenLabel();
+      root.appendChild(btn);
+    }
+
     function render() {
       hideLogPeek();
       clearFoeDeckPop();
       if (screen === "title") {
         renderTitle();
+        paintFullscreenLabels();
         return;
       }
       if (screen === "account") renderAccount();
@@ -13556,6 +13620,8 @@
       }
       paintEdgeClear();
       paintTitleNav();
+      paintFullscreenNav();
+      paintFullscreenLabels();
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
@@ -15452,6 +15518,7 @@
             ${starCountHtml(shownStarCount())}
             <div class="hud-actions">
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button>`}
+              <button type="button" class="small-btn pc-only" data-action="fullscreen">${fullscreenLabel()}</button>
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
               ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>`}
@@ -15790,6 +15857,7 @@
       const action = el.closest("[data-action]");
       if (action) {
         const name = action.dataset.action;
+        if (name === "fullscreen") { toggleFullscreen(); return; }
         if (name === "title") goTitle();
         if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
@@ -16007,7 +16075,10 @@
       if (el.closest("[data-end]")) endTurn();
     });
 
+    document.addEventListener("fullscreenchange", paintFullscreenLabels);
+    document.addEventListener("webkitfullscreenchange", paintFullscreenLabels);
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && fullscreenActive()) return;
       if (event.key === "Escape" && ((screen === "album" && albumZoom) || (screen === "sheet" && sheetZoom))) {
         captureAlbumScroll();
         clearArtZoom();
