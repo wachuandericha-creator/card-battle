@@ -4438,13 +4438,11 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-mana-copper.png?v=2"); }
-    .card .card-fit.k-attack.r2 { --frame-img: url("frame-mana-silver.png?v=2"); }
-    .card .card-fit.k-attack.r3 { --frame-img: url("frame-mana-gold.png?v=2"); }
+    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
     .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
     .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
     .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
-    .card .card-fit.k-attack.rboss { --frame-img: url("frame-mana-black.png?v=2"); }
+    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
@@ -9524,10 +9522,7 @@
 
     function sourcePattern() {
       const foe = enemyNow();
-      const base = (foe.pattern || []).map((card) => {
-        const next = applyEnemyHidden(card, foe);
-        return foe.name === DUNGEON.boss ? { ...next, boss: true } : next;
-      });
+      const base = (foe.pattern || []).map((card) => applyEnemyHidden(card, foe));
       if (foe.name === "物乞い" && !swordIgnoresTrait()) {
         return base.concat((beggarGift || []).map((card) => ({ ...card })));
       }
@@ -13045,7 +13040,7 @@
           if (name === "アタック" || name === "ブロック") continue;
           if (CARDS[name] || WARRIOR[name] || COMMON[name]) continue;
           const base = CARDS[name] || WARRIOR[name] || COMMON[name] || {};
-          push(name, { ...base, ...card, boss: foe.name === DUNGEON.boss }, "敵");
+          push(name, { ...base, ...card }, "敵");
         }
       }
       for (const [name, data] of Object.entries(FOE_ONLY)) push(name, data, "敵");
@@ -13875,8 +13870,7 @@
       const stars = card.stars || 1;
       const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
-      const natural = cardKind(card);
-      const kind = foe && !(card.boss && natural === "attack") ? "foe" : natural;
+      const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
