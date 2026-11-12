@@ -2710,15 +2710,14 @@
     }
     .battle-screen.block { animation: screen-shake 0.55s linear; }
     .battle-screen.no-mana { animation: mana-shake 0.38s linear; }
-    .screen-hurt,
-    .screen-heal {
+    .screen-hurt {
       position: fixed;
       inset: 0;
       z-index: 25;
       pointer-events: none;
       animation: hurt-fade 1.15s ease-out forwards;
+      background: rgba(150, 18, 12, 0.46);
     }
-    .screen-hurt { background: rgba(150, 18, 12, 0.46); }
     .hero-body .hero-guard {
       position: absolute;
       inset: -4% -8% -2%;
@@ -2837,10 +2836,47 @@
       pointer-events: none;
     }
     .status-chip.poison.fresh { animation: poison-chip 1.35s ease-out; }
-    .screen-heal {
+    .hero-hit.heal { overflow: visible; z-index: 4; }
+    .hero-hit.heal .glow {
+      position: absolute;
+      left: 16%;
+      top: 14%;
+      width: 68%;
+      height: 72%;
       background:
-        radial-gradient(circle at 50% 42%, rgba(214, 255, 226, 0.38), transparent 46%),
-        rgba(22, 148, 78, 0.48);
+        radial-gradient(circle at 48% 72%, rgba(150, 255, 120, 0.78), transparent 46%),
+        radial-gradient(circle at 42% 38%, rgba(70, 210, 90, 0.42), transparent 44%);
+      filter: blur(2px);
+      mix-blend-mode: screen;
+      animation: poison-mist 1.5s ease-out forwards;
+    }
+    .hero-hit.heal .plus {
+      position: absolute;
+      bottom: 4%;
+      margin: 0;
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1;
+      color: #eaffd8;
+      text-shadow: 0 2px 0 #146018, 0 0 12px rgba(90, 230, 80, 0.95);
+      opacity: 0;
+      animation: heal-plus 1.25s ease-out forwards;
+    }
+    .hero-hit.heal .p1 { left: 32%; font-size: 34px; }
+    .hero-hit.heal .p2 { left: 46%; font-size: 58px; animation-delay: 0.1s; }
+    .hero-hit.heal .p3 { left: 60%; font-size: 40px; animation-delay: 0.2s; }
+    .hero-hit.heal .p4 { left: 38%; font-size: 30px; animation-delay: 0.3s; }
+    .hero-hit.heal .p5 { left: 68%; font-size: 44px; animation-delay: 0.06s; }
+    @keyframes heal-plus {
+      0% { opacity: 0; bottom: 2%; transform: translate(-50%, 0) scale(0.65); }
+      14% { opacity: 1; bottom: 8%; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; bottom: 92%; transform: translate(-50%, 0) scale(0.95); }
+    }
+    .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
+    @keyframes heal-glow {
+      0% { filter: none; }
+      22% { filter: drop-shadow(0 0 14px rgba(150, 255, 130, 0.95)) drop-shadow(0 -10px 24px rgba(40, 180, 60, 0.8)); }
+      100% { filter: none; }
     }
     .enemy { text-align: center; }
     .enemy.vitals { align-self: center; width: 82%; padding: 0; }
@@ -12556,7 +12592,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal), Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -14261,7 +14297,11 @@
       return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply) {
+    function healFxHtml() {
+      return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><b class="plus p1">+</b><b class="plus p2">+</b><b class="plus p3">+</b><b class="plus p4">+</b><b class="plus p5">+</b></div>`;
+    }
+
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -14272,9 +14312,10 @@
         ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
+      const healHtml = heal ? healFxHtml() : "";
       const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15507,7 +15548,6 @@
       const mineThreat = cast.take && cast.take.hp > 0 ? cast.take.hp : 0;
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
-        ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -15537,7 +15577,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
