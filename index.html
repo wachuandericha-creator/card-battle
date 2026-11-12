@@ -1094,10 +1094,38 @@
       mix-blend-mode: screen;
       animation: hero-flash 0.7s ease-out forwards;
     }
+    .hero-body .hero-hit.blunt { overflow: visible; }
     .hero-hit.blunt .flash {
-      background: radial-gradient(circle at 50% 46%, rgba(255, 90, 70, 0.35), rgba(170, 16, 12, 0.62) 46%, transparent 72%);
-      mix-blend-mode: multiply;
+      left: 16%;
+      top: 18%;
+      width: 68%;
+      height: 64%;
+      inset: auto;
+      background:
+        radial-gradient(circle at 38% 62%, rgba(255, 78, 52, 0.82), transparent 44%),
+        radial-gradient(circle at 66% 36%, rgba(190, 22, 16, 0.72), transparent 48%),
+        radial-gradient(circle at 46% 28%, rgba(255, 150, 110, 0.42), transparent 40%);
+      filter: blur(3px);
+      mix-blend-mode: screen;
+      animation: poison-mist 1.25s ease-out forwards;
     }
+    .hero-hit.blunt .ember {
+      position: absolute;
+      left: 46%;
+      top: 58%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 32%, #ffe8df, #ff5a3c 46%, #8a100c 78%);
+      box-shadow: 0 0 10px rgba(255, 70, 40, 0.85), inset 0 0 0 2px rgba(90, 8, 6, 0.4);
+      opacity: 0;
+      animation: poison-bubble 1.25s ease-out forwards;
+    }
+    .hero-hit.blunt .e1 { --px: -36px; --py: -90px; width: 22px; height: 22px; }
+    .hero-hit.blunt .e2 { --px: 28px; --py: -110px; animation-delay: 0.12s; }
+    .hero-hit.blunt .e3 { --px: -8px; --py: -70px; width: 12px; height: 12px; animation-delay: 0.22s; }
+    .hero-hit.blunt .e4 { --px: 48px; --py: -64px; width: 14px; height: 14px; animation-delay: 0.08s; }
+    .hero-hit.blunt .e5 { --px: -52px; --py: -48px; animation-delay: 0.28s; }
     /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
     .hero-hit .ring {
       position: absolute;
@@ -1146,7 +1174,7 @@
       opacity: 0;
       animation: blunt-dust 0.7s ease-out forwards;
     }
-    .hero-shoulder.blunt:not(.poison) .hero-fig { animation: hero-recoil 0.55s ease-out; }
+    .hero-shoulder.blunt:not(.poison) .hero-fig { animation: hero-recoil 0.55s ease-out, hurt-cling 1.25s ease-out; }
     .hero-hit.fatal .flash { animation-duration: 2.2s; }
     .hero-hit.fatal .ring { animation-duration: 1.6s; }
     .hero-hit.fatal .star { animation-duration: 1.8s; }
@@ -6998,11 +7026,17 @@
       100% { opacity: 0; transform: scale(1.25); }
     }
     @keyframes hero-recoil {
-      0% { transform: none; filter: none; }
-      14% { transform: translateX(-14px) rotate(-3deg); filter: sepia(1) saturate(8) hue-rotate(-28deg) brightness(0.9); }
-      32% { transform: translateX(9px) rotate(2deg); filter: sepia(1) saturate(7) hue-rotate(-18deg) brightness(1.08); }
-      52% { transform: translateX(-5px); filter: sepia(0.85) saturate(6) hue-rotate(-24deg) brightness(0.95); }
-      100% { transform: none; filter: none; }
+      0% { transform: none; }
+      14% { transform: translateX(-14px) rotate(-3deg); }
+      32% { transform: translateX(9px) rotate(2deg); }
+      52% { transform: translateX(-5px); }
+      100% { transform: none; }
+    }
+    @keyframes hurt-cling {
+      0% { filter: none; }
+      16% { filter: drop-shadow(0 0 14px rgba(255, 48, 32, 0.95)) drop-shadow(0 0 28px rgba(160, 12, 8, 0.85)); }
+      42% { filter: drop-shadow(0 0 12px rgba(255, 64, 40, 0.7)) drop-shadow(0 0 22px rgba(140, 10, 8, 0.55)); }
+      72%, 100% { filter: none; }
     }
     @keyframes poison-mist {
       0% { opacity: 0; transform: scale(0.7); }
@@ -13566,7 +13600,7 @@
         ? `<div class="hero-hit poison${fatal && poisonTick ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml(!poisonTick)}</div>`
         : "";
       const bluntHtml = blunt
-        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
+        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
       const guardHtml = guard === "hold" ? holdGuard() : "";
