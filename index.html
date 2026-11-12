@@ -3751,6 +3751,16 @@
     .gear-effect.center-boon .gear-effect-titles,
     .gear-effect.center-boon .gear-effect-name,
     .gear-effect.center-boon .gear-effect-stars { text-align: center; }
+    .gear-effect-boon-sub {
+      margin: 5px 0 0;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      line-height: 1.1;
+      color: #ffe08a;
+      text-align: center;
+    }
+    .menu.event.bless .gear-effect-boon-sub { font-size: 15px; }
     .gear-effect-hint {
       margin: 8px 0 0;
       font-size: 12px;
@@ -5575,11 +5585,32 @@
       aspect-ratio: 1;
     }
     .menu.event.bless .gift-btn .gear-effect-art {
-      width: 124px;
-      height: 124px;
+      width: 96px;
+      height: 96px;
     }
     .menu.event.bless .gift-btn .gear-effect-head {
-      grid-template-columns: 124px 1fr;
+      grid-template-columns: 96px 1fr;
+    }
+    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) {
+      --gear-pop-w: min(220px, 100%) !important;
+      font-size: 12px;
+    }
+    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-name {
+      font-size: 15px;
+    }
+    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-stars {
+      font-size: 11px;
+    }
+    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-body {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+    .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-art {
+      width: 88px;
+      height: 88px;
+    }
+    .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-head {
+      grid-template-columns: 88px 1fr;
     }
     .menu.event .event-choice {
       grid-area: choice;
@@ -8692,6 +8723,7 @@
       const art = o.image
         ? `<img src="${esc(o.image)}" alt="">`
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotKey)}</span>`;
+      const boonSub = o.boonSub ? `<p class="gear-effect-boon-sub">${esc(o.boonSub)}</p>` : "";
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
@@ -8712,7 +8744,7 @@
       }
       const emb = embedded ? " gear-effect-embedded" : "";
       const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
+      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -11256,10 +11288,11 @@
           ? { slot: "hp", name: "最大HP+10", image: "reward-hp.jpg?v=1" }
           : gift.kind === "mana"
             ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
-            : { slot: "spd", name: "手札+1", image: "reward-spd.jpg?v=1" };
+            : { slot: "spd", name: "手札+1", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
         return `<div class="${cls}">${gearPopShell(boon.slot, {
           name: boon.name,
           image: boon.image,
+          boonSub: boon.boonSub || "",
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
@@ -12269,7 +12302,7 @@
               ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.png?v=2", "物乞い", "enemy-ref")}
-              ${sheetFig("enemy-hades.png?v=6", "ハデス", "enemy-ref")}
+              ${sheetFig("enemy-hades.png?v=7", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
