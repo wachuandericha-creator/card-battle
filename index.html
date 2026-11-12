@@ -7514,19 +7514,19 @@
     };
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
-      捨て身の一撃: { cost: 1, text: "6ダメージ\n次に受けるダメージ+3", damage: 6, kind: "attack", expose: 3 },
+      捨て身の一撃: { cost: 1, text: "8ダメージ\n次に受けるダメージ+4", damage: 8, kind: "attack", expose: 4 },
       怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
-      パリィスラッシュ: { cost: 3, text: "5ダメージ\nパリィを得る", damage: 5, parry: true, kind: "attack" },
+      パリィスラッシュ: { cost: 3, text: "7ダメージ\nパリィを得る", damage: 7, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
-      ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で7ダメージ", damage: 7, kind: "attack", fullBonus: 7 },
-      ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
+      ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で9ダメージ", damage: 9, kind: "attack", fullBonus: 9 },
+      ジャストミート: { cost: 2, text: "11ダメージ\n前のターンにダメージを受けていないなら+4", damage: 11, kind: "attack", safeBonus: 4 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, text: "直前のターンに成功したパリィの数×15ダメージ", kind: "attack", finisher: true },
+      致命の一撃: { cost: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, unrated: true, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, unrated: true, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
-      諸刃の剣: { cost: 3, unrated: true, text: "20ダメージ\n次に受ける攻撃を2倍", damage: 20, kind: "attack", doubleNext: true },
+      諸刃の剣: { cost: 3, unrated: true, text: "27ダメージ\n次に受ける攻撃を2倍", damage: 27, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, unrated: true, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true },
       魔法のパリィ: { cost: 1, unrated: true, text: "パリィ中、状態異常にならない", kind: "skill", permanent: true, magicParry: true },
       クイックステップ: { cost: 0, unrated: true, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, step: true },
@@ -7554,15 +7554,15 @@
       ライフフルネスアタック: "ライフフル",
     };
     const COMMON = {
-      頭突き: { cost: 1, text: "2ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 2, kind: "attack", headbutt: true },
-      キック: { cost: 1, text: "2ダメージ\n敵にシールドがあるなら+4", damage: 2, kind: "attack", kick: 4 },
+      頭突き: { cost: 1, text: "3ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 3, kind: "attack", headbutt: true },
+      キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら+5", damage: 3, kind: "attack", kick: 5 },
       ツインアタック: { cost: 2, text: "1ダメージを2回", damage: 1, hits: 2, stars: 3, kind: "attack" },
       ビッグアタック: { cost: 3, text: "20ダメージ", damage: 20, stars: 3, kind: "attack" },
       瞑想: { cost: 1, text: "ブロック2\n次のターンに1枚引く", block: 2, nextDraw: 1, kind: "block" },
       ハードブロック: { cost: 2, text: "ブロック7", block: 7, kind: "block" },
       ビッグブロック: { cost: 3, text: "ブロック12", block: 12, kind: "block" },
-      アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×3ダメージ", kind: "attack", redTimes: 3 },
-      反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、7ダメージ", kind: "attack", counter: 7 },
+      アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4 },
+      反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9 },
       応急手当: { cost: 1, text: "体力を4回復\nインスタント", heal: 4, instant: true, kind: "skill" },
       ベッド: { cost: 2, text: "体力を10回復", heal: 10, instant: true, kind: "power", power: true },
       ホテル: { cost: 3, text: "体力を18回復", heal: 18, instant: true, kind: "power", power: true },
@@ -7613,8 +7613,8 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "ミノスの一撃", cost: 3, text: "12ダメージ\n20%で20ダメージ", damage: 12, kind: "attack", crit: 20, critChance: 0.2 },
-          { name: "タウロスアタック", cost: 2, text: "12ダメージ\n体力が最大の半分以下のときだけ使える", damage: 12, kind: "attack", halfOnly: true },
+          { name: "ミノスの一撃", cost: 3, text: "16ダメージ\n20%で27ダメージ", damage: 16, kind: "attack", crit: 27, critChance: 0.2 },
+          { name: "タウロスアタック", cost: 2, text: "16ダメージ\n体力が最大の半分以下のときだけ使える", damage: 16, kind: "attack", halfOnly: true },
         ],
       },
       {
@@ -7627,8 +7627,8 @@
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアーボール", cost: 1, text: "2ダメージ\n相手に炎上+1を与える", damage: 2, burn: 1, kind: "attack" },
-          { name: "ファイアソード", cost: 2, text: "先に相手に炎上+1を与える\n5ダメージ", damage: 5, burn: 1, burnFirst: true, kind: "attack" },
+          { name: "ファイアーボール", cost: 1, text: "3ダメージ\n相手に炎上+1を与える", damage: 3, burn: 1, kind: "attack" },
+          { name: "ファイアソード", cost: 2, text: "先に相手に炎上+1を与える\n7ダメージ", damage: 7, burn: 1, burnFirst: true, kind: "attack" },
           { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" },
         ],
       },
@@ -9613,7 +9613,7 @@
       }
       if (card.finisher) {
         const hits = Math.max(0, Number(player.parryHitsLast) || 0);
-        strike(card, hits * 15);
+        strike(card, hits * 20);
         return;
       }
       if (card.parryAdd) {
@@ -12881,7 +12881,7 @@
       }
       if (card.finisher) {
         const hits = Math.max(0, Number(player && player.parryHitsLast) || 0);
-        return [hits * 15];
+        return [hits * 20];
       }
       if (card.counter) {
         const reds = (inPlay || []).filter((item) => cardKind(item) === "attack").length;
@@ -12989,7 +12989,7 @@
         } else if (card.press) {
           text = text.replace(/自分のシールドの数だけダメージ|ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
         } else if (card.finisher) {
-          text = text.replace(/直前のターンに成功したパリィの数×15ダメージ|直前3ターンで、パリィが成功したターンの数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
+          text = text.replace(/直前のターンに成功したパリィの数×\d+ダメージ|直前3ターンで、パリィが成功したターンの数×\d+ダメージ|消費した数×\d+ダメージ/u, `${dmg}ダメージ`);
         } else if (card.redTimes) {
           text = text.replace(/プレイエリアの赤いカードの数×\d+ダメージ/u, `${dmg}ダメージ`);
         } else if (card.counter) {
