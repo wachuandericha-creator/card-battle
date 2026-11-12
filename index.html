@@ -1923,6 +1923,36 @@
     .ref-grid.pose-grid figure { max-width: 140px; }
     .ref-grid.pose-grid img.cut-ref { aspect-ratio: 9 / 16; max-height: 200px; object-position: center bottom; }
     .ref-grid figcaption { margin-top: 6px; text-align: center; font-weight: 800; font-size: 13px; }
+    .unadopt-figure { position: relative; }
+    .unadopt-figure .unadopt-no {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      z-index: 3;
+      pointer-events: none;
+      padding: 3px 4px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 231, 168, 0.65);
+      background: rgba(8, 6, 4, 0.92);
+      color: #ffe7a8;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: 0.02em;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+    .unadopt-figure figcaption {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      line-height: 1.25;
+    }
+    .unadopt-figure .unadopt-no-caption { color: #ffe7a8; font-size: 12px; letter-spacing: 0.06em; }
+    .unadopt-figure .unadopt-name-caption { font-size: 12px; font-weight: 700; color: #f4ead7; }
+    .album-top .album-unadopted .ref-grid { grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); }
     .ref-grid figure.ref-slot { max-width: 160px; }
     .ref-grid .ref-slot-box {
       width: 100%;
@@ -7907,7 +7937,9 @@
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
-      クイックステップ: "card-quick-step.jpg?v=1",
+      クイックステップ: "card-attack-f-b.jpg",
+      諸刃の剣: "card-double-edge-v7.jpg?v=1",
+      自信過剰: "card-pride.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
@@ -13089,21 +13121,24 @@
     }
 
     const UNADOPTED_CARD_ARTS = [
-      ["unadopt-attack-f-b", "アタック", "card-attack-f-b.jpg"],
-      ["unadopt-attack-f-card", "アタック（枠見本）", "card-attack-f-card.png?v=1"],
-      ["unadopt-attack-slash-user", "アタック", "card-attack-slash-user.jpg?v=1"],
-      ["unadopt-attack-slash-v2", "アタック", "card-attack-slash-v2.jpg?v=1"],
-      ["unadopt-attack-slash-v3", "アタック（壁砕き）", "card-attack-slash-v3.jpg?v=1"],
-      ["unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
-      ["unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
-      ["unadopt-pride", "自信過剰", "card-pride.jpg?v=1"],
-      ["unadopt-double-edge", "諸刃の剣（振りかぶり）", "card-double-edge-v7.jpg?v=1"],
-      ["unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
+      [1, "unadopt-attack-f-card", "アタック（枠見本）", "card-attack-f-card.png?v=1"],
+      [2, "unadopt-attack-slash-user", "アタック", "card-attack-slash-user.jpg?v=1"],
+      [3, "unadopt-attack-slash-v2", "アタック", "card-attack-slash-v2.jpg?v=1"],
+      [4, "unadopt-attack-slash-v3", "アタック（壁砕き）", "card-attack-slash-v3.jpg?v=1"],
+      [5, "unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
+      [6, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
+      [7, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
+      [8, "unadopt-quick-step", "クイックステップ（旧）", "card-quick-step.jpg?v=1"],
     ];
+    function unadoptedLabel(item) {
+      return `未採用${item[0]} ${item[2]}`;
+    }
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の未採用絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+        const on = albumZoom === item[1];
+        const label = unadoptedLabel(item);
+        const no = item[0];
+        return `<figure class="unadopt-figure${on ? " on" : ""}"><span class="unadopt-no">未採用${no}</span><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[1]}" aria-label="${esc(label)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[3]}" alt="${esc(label)}"></button><figcaption><b class="unadopt-no-caption">未採用${no}</b><span class="unadopt-name-caption">${esc(item[2])}</span></figcaption></figure>`;
       }).join("");
     }
 
@@ -13111,9 +13146,10 @@
       if (!name) {
         return `<aside class="art-zoom-side" aria-label="全体表示"><h3>全体</h3><p class="art-zoom-note">左を押すと、ここに全体を出します。</p></aside>`;
       }
-      const unadopted = UNADOPTED_CARD_ARTS.find((item) => item[0] === name);
+      const unadopted = UNADOPTED_CARD_ARTS.find((item) => item[1] === name);
       if (unadopted) {
-        return zoomSidePanel(`${unadopted[1]}（未採用）`, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[2]}" alt="${esc(unadopted[1])}"></div>`, false);
+        const label = `${unadoptedLabel(unadopted)}（未採用）`;
+        return zoomSidePanel(label, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[3]}" alt="${esc(label)}"></div>`, false);
       }
       const face = ALBUM_FACE.find((item) => item[0] === name);
       if (face) {
@@ -13315,9 +13351,9 @@
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
-              <section>
+              <section class="album-unadopted">
                 <h3>未採用絵柄</h3>
-                <p class="album-meta">ゲームのカードには載せない候補。押すと右半分に拡大</p>
+                <p class="album-meta">未採用1〜の番号付き。ゲームのカード面には載せない候補。押すと右半分に拡大</p>
                 <div class="ref-grid blank-grid">${unadoptedCardSheet()}</div>
               </section>
             </div>
