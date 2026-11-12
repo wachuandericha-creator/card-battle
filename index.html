@@ -1239,9 +1239,9 @@
       z-index: 9;
       transform: translate(-50%, -50%);
       margin: 0;
-      font-size: clamp(36px, 5.4cqw, 68px);
+      font-size: clamp(64px, 14cqw, 156px);
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
       white-space: nowrap;
       color: #ffd8c8;
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
@@ -2532,9 +2532,9 @@
       --ang: -45deg;
       --dx: -0.72;
       --dy: 0.72;
-      --len: calc(300px + var(--pow, 0.35) * 210px);
-      --thick: calc(7px + var(--pow, 0.35) * 6px);
-      --glow: calc(8px + var(--pow, 0.35) * 14px);
+      --len: calc(520px + var(--pow, 0.35) * 340px);
+      --thick: calc(13px + var(--pow, 0.35) * 10px);
+      --glow: calc(16px + var(--pow, 0.35) * 22px);
       position: absolute;
       left: var(--cut-x, 50%);
       top: var(--cut-y, 46%);
@@ -2575,9 +2575,9 @@
       clip-path: none;
     }
     .sprite .cut .burst {
-      width: calc(60px + var(--pow, 0.35) * 80px);
-      height: calc(60px + var(--pow, 0.35) * 80px);
-      margin: calc((60px + var(--pow, 0.35) * 80px) * -0.5) 0 0 calc((60px + var(--pow, 0.35) * 80px) * -0.5);
+      width: calc(110px + var(--pow, 0.35) * 130px);
+      height: calc(110px + var(--pow, 0.35) * 130px);
+      margin: calc((110px + var(--pow, 0.35) * 130px) * -0.5) 0 0 calc((110px + var(--pow, 0.35) * 130px) * -0.5);
       border-radius: 50%;
       background: radial-gradient(circle, #fff 0%, #fff4e6 28%, rgba(255, 150, 90, 0.75) 50%, rgba(212, 38, 26, 0) 72%);
       filter: blur(0.5px);
@@ -2637,8 +2637,8 @@
     }
     @keyframes slash-spark {
       0% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(0) scaleX(0.4); }
-      18% { opacity: 1; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 34px)) scaleX(1.4); }
-      100% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 112px)) scaleX(0.6); }
+      18% { opacity: 1; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 58px)) scaleX(1.5); }
+      100% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 190px)) scaleX(0.7); }
     }
     @keyframes foe-flash {
       0% { filter: none; }
@@ -2698,10 +2698,17 @@
       text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
     }
     .dmg-pop.foe-hit.poison {
+      top: auto;
+      bottom: 72%;
+      left: 50%;
+      margin-bottom: 8px;
       font-size: 42px;
       font-weight: 900;
       letter-spacing: 0.06em;
       white-space: nowrap;
+      animation-name: guard-word;
+      animation-duration: 1.45s;
+      animation-timing-function: cubic-bezier(0.16, 0.8, 0.24, 1);
     }
     .dmg-pop.foe-hit.poison.big { font-size: 68px; }
     .dmg-pop.me.poison {
@@ -2774,21 +2781,94 @@
     .hero-shoulder.poison:not(.hurt):not(.held) { animation: poison-shudder 1.15s linear; }
     .sprite.poison img,
     .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
-    .poison-stamp {
-      position: absolute;
-      left: 50%;
-      top: 16%;
-      z-index: 6;
-      margin: 0;
-      font-size: 64px;
-      font-weight: 900;
-      letter-spacing: 0.2em;
-      line-height: 1;
-      color: #e8ffb0;
-      text-shadow: 0 4px 0 #3a1460, 0 0 16px rgba(90, 220, 70, 0.95), 0 0 26px rgba(160, 70, 230, 0.85);
-      animation: poison-stamp 1.85s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
-      pointer-events: none;
+    .sprite .hurt-word {
+      top: auto;
+      bottom: 72%;
+      margin-bottom: 8px;
     }
+    .hero-hit.heal { overflow: visible; z-index: 4; }
+    .hero-hit.heal .glow {
+      position: absolute;
+      left: 16%;
+      top: 14%;
+      width: 68%;
+      height: 72%;
+      background:
+        radial-gradient(circle at 48% 72%, rgba(255, 214, 70, 0.82), transparent 46%),
+        radial-gradient(circle at 42% 38%, rgba(255, 244, 170, 0.5), transparent 44%);
+      filter: blur(2px);
+      mix-blend-mode: screen;
+      animation: poison-mist 1.5s ease-out forwards;
+    }
+    .hero-hit.heal .rise {
+      position: absolute;
+      bottom: 6%;
+      width: 18px;
+      height: 110px;
+      border-radius: 40%;
+      background: linear-gradient(180deg, rgba(255, 252, 210, 0.05), #fff6c4 28%, rgba(255, 186, 40, 0.2));
+      box-shadow: 0 0 16px rgba(255, 210, 60, 0.95);
+      opacity: 0;
+      animation: heal-rise 1.45s ease-out forwards;
+    }
+    .hero-hit.heal .r1 { left: 36%; }
+    .hero-hit.heal .r2 { left: 46%; height: 150px; animation-delay: 0.1s; }
+    .hero-hit.heal .r3 { left: 56%; animation-delay: 0.2s; }
+    .hero-hit.heal .r4 { left: 30%; height: 84px; animation-delay: 0.28s; }
+    .hero-hit.heal .r5 { left: 66%; height: 90px; animation-delay: 0.08s; }
+    .hero-hit.heal .r6 { left: 42%; animation-delay: 0.36s; }
+    @keyframes heal-rise {
+      0% { opacity: 0; transform: translateY(36px) scaleY(0.55); }
+      16% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-260px) scaleY(1.08); }
+    }
+    .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
+    @keyframes heal-glow {
+      0% { filter: none; }
+      22% { filter: drop-shadow(0 0 14px rgba(255, 220, 90, 0.95)) drop-shadow(0 -10px 24px rgba(255, 186, 40, 0.8)); }
+      100% { filter: none; }
+    }
+    .anger-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .sprite.anger { overflow: visible; }
+    .sprite.anger img { animation: anger-red 1.6s ease-out both; }
+    @keyframes anger-red {
+      0% { filter: none; }
+      20% { filter: sepia(1) saturate(8) hue-rotate(-50deg) brightness(0.72) drop-shadow(0 0 16px rgba(160, 0, 0, 0.95)) drop-shadow(0 0 26px rgba(8, 0, 0, 0.95)); }
+      100% { filter: none; }
+    }
+    .anger-hit .glow {
+      position: absolute;
+      left: 16%;
+      top: 14%;
+      width: 68%;
+      height: 72%;
+      background:
+        radial-gradient(circle at 48% 70%, rgba(120, 0, 0, 0.72), transparent 48%),
+        radial-gradient(circle at 42% 36%, rgba(40, 0, 0, 0.45), transparent 46%);
+      mix-blend-mode: multiply;
+      animation: poison-mist 1.5s ease-out forwards;
+    }
+    .anger-hit .bolt {
+      position: absolute;
+      bottom: 8%;
+      width: 36px;
+      height: 42%;
+      background: linear-gradient(180deg, rgba(20, 0, 0, 0), #14080c 14%, #070406 46%, #2a0c10 62%, #050304 100%);
+      clip-path: polygon(42% 0, 78% 16%, 48% 20%, 96% 46%, 50% 50%, 84% 74%, 44% 78%, 62% 100%, 18% 72%, 48% 68%, 4% 44%, 46% 40%, 14% 18%, 44% 14%);
+      filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 5px rgba(80, 0, 0, 0.9));
+      opacity: 0;
+      animation: heal-rise 1.45s ease-out forwards;
+    }
+    .anger-hit .b1 { left: 24%; }
+    .anger-hit .b2 { left: 42%; height: 58%; animation-delay: 0.12s; }
+    .anger-hit .b3 { left: 60%; animation-delay: 0.22s; }
+    .anger-hit .b4 { left: 34%; height: 34%; animation-delay: 0.32s; }
     .status-chip.poison.fresh { animation: poison-chip 1.35s ease-out; }
     .screen-heal {
       background:
@@ -12228,7 +12308,8 @@
       const hits = opt.hits || [];
       const slash = Boolean(opt.slash);
       const poison = Boolean(opt.poison);
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(Boolean(opt.stamp)) : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+      const anger = Boolean(opt.anger);
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(Boolean(opt.stamp)) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
     function fxPlate(id) {
@@ -12267,13 +12348,13 @@
         foe = { fatal: true };
         call = `<div class="fatal-call" aria-hidden="true">You are Dead</div>`;
         cls = " fatal";
-      } else if (id === "heal") extra = `<div class="screen-heal" aria-hidden="true"></div>`;
+      } else if (id === "heal") hero = { heal: true };
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
       else if (id === "slash-multi") foe = { slash: true, dirs: [0, 1, 2], hits: [4, 5, 8] };
       else if (id === "foe-poison") foe = { poison: true, hits: [3] };
       else if (id === "foe-poison-give") foe = { poison: true, stamp: true };
       else if (id === "arrive") foe = { arrive: true };
-      else if (id === "anger") extra = `<div class="fx-center"><img class="fx-anger" src="card-anger-quiet.jpg?v=1" alt="怒り"></div>`;
+      else if (id === "anger") foe = { anger: true };
       else if (id === "floor") call = `<div class="turn-call floor-call" aria-hidden="true">${fadeSandwichMarkup("<b>3Ｆ</b>", { tag: "div" })}</div>`;
       else if (id === "encounter") call = `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>敵が現れた!</b><span class="encounter-stars">★</span></div>`;
       else if (id === "encounter-strong") call = `<div class="turn-call enemy encounter-call" aria-hidden="true"><b>強敵が現れた!!</b><span class="encounter-stars">★★</span></div>`;
@@ -12291,7 +12372,8 @@
       } else if (id === "end-ready") extra = `<div class="end ready fx-end">ターン終了</div>`;
       else if (id === "victory") return `<div class="fx-view" data-play="${fxLabTick}">${fxVictory()}</div>`;
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
-      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0)}</div><div class="duel-mid"></div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
+      const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
+      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
     }
 
     function renderFxLab() {
@@ -12302,6 +12384,28 @@
         return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
       root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside>${fxStage(fxLabId)}</div>`;
+      placeFoePoisonWords();
+    }
+
+    function placeFoePoisonWords() {
+      root.querySelectorAll(".sprite.poison").forEach((sprite) => {
+        const img = sprite.querySelector("img");
+        const words = sprite.querySelectorAll(".hurt-word, .dmg-pop.poison");
+        if (!img || !words.length) return;
+        const place = () => {
+          const box = sprite.getBoundingClientRect();
+          const nw = img.naturalWidth;
+          const nh = img.naturalHeight;
+          if (!nw || !nh || box.width < 8 || box.height < 8) return;
+          const painted = nh * Math.min(box.width / nw, box.height / nh);
+          words.forEach((word) => {
+            word.style.top = "auto";
+            word.style.bottom = `${Math.round(painted)}px`;
+          });
+        };
+        place();
+        if (!img.complete) img.addEventListener("load", place, { once: true });
+      });
     }
 
     function renderTitle() {
@@ -13308,6 +13412,7 @@
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
+        placeFoePoisonWords();
       });
     }
 
@@ -13905,11 +14010,19 @@
     }
 
     function poisonFxHtml(stamp) {
-      const word = stamp ? `<b class="poison-stamp">毒</b>` : "";
+      const word = stamp ? `<b class="hurt-word poison">毒になった！</b>` : "";
       return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist big"></i><i class="mist small"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN) {
+    function healFxHtml() {
+      return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><i class="rise r1"></i><i class="rise r2"></i><i class="rise r3"></i><i class="rise r4"></i><i class="rise r5"></i><i class="rise r6"></i></div>`;
+    }
+
+    function angerFxHtml() {
+      return `<div class="anger-hit" aria-hidden="true"><i class="glow"></i><i class="bolt b1"></i><i class="bolt b2"></i><i class="bolt b3"></i><i class="bolt b4"></i></div>`;
+    }
+
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN, heal) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -13921,9 +14034,10 @@
         : "";
       const hit = poisonHtml + bluntHtml;
       const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick) : "";
+      const healHtml = heal ? healFxHtml() : "";
       const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${hurtHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15152,7 +15266,6 @@
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
-        ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -15182,7 +15295,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, healNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -15191,10 +15304,11 @@
             <div class="duel-side foe">
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${foeAngerShow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=7")}" alt="">
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
+                ${foeAngerShow ? angerFxHtml() : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
               </div>
@@ -15235,6 +15349,7 @@
       }
       launchPendingPlayClearFly();
       launchFoeTurnTravel();
+      placeFoePoisonWords();
     }
 
     // 手札の重なりを固めてからドローを再生する（冒頭のつまり対策）
