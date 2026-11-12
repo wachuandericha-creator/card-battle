@@ -4317,8 +4317,9 @@
     .card .text .hint[data-word="炎上"] { color: #c0392b; }
     .card .text .hint[data-word="パリィ"] { color: #2f6fbe; }
     .card .text .hint[data-word="クイック"],
-    .card .text .hint[data-word="戦闘中"],
-    .card .text .hint[data-word="永続"] { color: #a67c00; }
+    .card .text .hint[data-word="キープ"],
+    .card .text .hint[data-word="フラッシュ"],
+    .card .text .hint[data-word="バースト"] { color: #a67c00; }
     .card .text .hint[data-word="アイテム"] { color: #2f7a45; }
     /* 注釈の本文はカードの中には出さない（カードの外の .kw-tip に写す） */
     .hint i { display: none; }
@@ -7885,7 +7886,7 @@
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
       捨て身の一撃: { cost: 1, text: "8ダメージ\n次に受けるダメージ+4", damage: 8, kind: "attack", expose: 4 },
-      怒り: { cost: 0, text: "戦闘中\nATK+1　DEF-2", kind: "skill", rage: true, during: true },
+      怒り: { cost: 0, text: "ATK+1　DEF-2", kind: "skill", rage: true, flash: true },
       パリィスラッシュ: { cost: 3, text: "7ダメージ\nパリィを得る", damage: 7, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で9ダメージ", damage: 9, kind: "attack", fullBonus: 9 },
@@ -7897,11 +7898,11 @@
       ナイフパリィ: { cost: 3, unrated: true, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, unrated: true, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
       諸刃の剣: { cost: 3, unrated: true, text: "27ダメージ\n次に受ける攻撃を2倍", damage: 27, kind: "attack", doubleNext: true },
-      達人の間合い: { cost: 3, unrated: true, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true },
-      魔法のパリィ: { cost: 1, unrated: true, text: "パリィ中、状態異常にならない", kind: "skill", permanent: true, magicParry: true },
+      達人の間合い: { cost: 3, unrated: true, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
+      魔法のパリィ: { cost: 1, unrated: true, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, unrated: true, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, step: true },
-      自信過剰: { cost: 2, unrated: true, text: "パリィに成功するたび、ATK+1", kind: "skill", permanent: true, pride: true },
-      盾削ぎ: { cost: 2, unrated: true, text: "パリィに成功するたび、相手のDEF-3", kind: "skill", permanent: true, shave: 3 },
+      自信過剰: { cost: 2, unrated: true, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
+      盾削ぎ: { cost: 2, unrated: true, text: "パリィに成功するたび、相手のDEF-3", kind: "skill", flash: true, shave: 3 },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
@@ -7933,9 +7934,9 @@
       ビッグブロック: { cost: 3, text: "ブロック16", block: 16, kind: "block" },
       アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4 },
       反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9 },
-      応急手当: { cost: 1, text: "体力を4回復\nインスタント", heal: 4, instant: true, kind: "skill" },
-      ベッド: { cost: 2, text: "体力を10回復", heal: 10, instant: true, kind: "power", power: true },
-      ホテル: { cost: 3, text: "体力を18回復", heal: 18, instant: true, kind: "power", power: true },
+      応急手当: { cost: 1, text: "体力を4回復", heal: 4, flash: true, kind: "skill" },
+      ベッド: { cost: 2, text: "体力を10回復", heal: 10, kind: "power", power: true },
+      ホテル: { cost: 3, text: "体力を18回復", heal: 18, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
     // 敵のATKは板に出す。ランク1（雑魚）+2、普通+6、強敵+9。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本4にこのATKを足した合計を書く。DEFは0で、板にも出す。
@@ -8148,11 +8149,10 @@
     let foeDiscard = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。";
-    const DURING_NOTE = "使ったら消える。次の戦闘で戻る。";
-    const INSTANT_NOTE = "インスタントは効果。使った戦闘のデッキから廃棄される。戦闘が終わると戻る。";
+    const FLASH_NOTE = "効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
+    const BURST_NOTE = "効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
-    const ITEM_NOTE = "使った後廃棄される。";
-    const PERMANENT_NOTE = "使ったらこの戦闘中だけデッキから削除。";
+    const ITEM_NOTE = "効果処理後デッキから削除。キープであり、クイックであり、バースト。";
     const KEEP_NOTE = "ターン終了時に捨て札にいかない。";
     let phase = "player";
     let encounter = false;
@@ -10121,18 +10121,16 @@
 
     function resolveCard(card) {
       syncGearStats();
-      if (card.power) {
-        if (card.coward) {
-          player.guardThrough = true;
-          log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードは、この戦闘のデッキから廃棄。`, card);
-        }
+      if (card.power && card.coward) {
+        player.guardThrough = true;
+        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。`, card);
         return;
       }
       if (card.rage) {
         player.atkMod = (Number(player.atkMod) || 0) + 1;
         player.defMod = (Number(player.defMod) || 0) - 2;
         syncGearStats();
-        log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。このカードは次の戦闘まで消える。`, card);
+        log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。このカードはデッキから削除。戦闘が終わると戻る。`, card);
         return;
       }
       if (card.poise) {
@@ -10319,12 +10317,9 @@
       }
       spendEnergy(card.cost);
       hand.splice(index, 1);
-      if (card.quick) {
+      if (playsImmediately(card)) {
         resolveCard(card);
-        const pile = afterUsePile(card);
-        if (pile === "keep") hand.push(card);
-        else if (pile === "exile") battleExile.push(card);
-        else discard.push(card);
+        placeUsedCard(card, "hand");
         note = "";
         pullFromBracelets();
         if (finishIfStuck()) return true;
@@ -10429,18 +10424,39 @@
       const card = hand[index];
       const from = handCardBox(index);
       if (!playCard(index)) return;
-      if (!card || !card.quick) flyCardToPlay(from);
+      if (!playsImmediately(card)) flyCardToPlay(from);
     }
 
     function isItemCard(card) {
       return !!(card && (card.power || card.kind === "power"));
     }
 
+    function playsImmediately(card) {
+      return !!(card && (card.quick || isItemCard(card)));
+    }
+
+    function isFlashCard(card) {
+      return !!(card && (card.flash || card.instant || card.during || card.permanent || card.masterOnce));
+    }
+
     function afterUsePile(card) {
       if (!card) return "discard";
+      if (card.burst || isItemCard(card)) return "burst";
       if (card.keep) return "keep";
-      if (card.masterOnce || card.power || card.instant || card.during || card.permanent || card.kind === "power") return "exile";
+      if (isFlashCard(card)) return "exile";
       return "discard";
+    }
+
+    function placeUsedCard(card, keepTo) {
+      const pile = afterUsePile(card);
+      if (pile === "keep") {
+        if (keepTo === "hand") hand.push(card);
+        return pile;
+      }
+      if (pile === "exile") battleExile.push(card);
+      else if (pile === "burst") removed.push(card);
+      else discard.push(card);
+      return pile;
     }
 
     function goesToDiscard(card) {
@@ -10721,8 +10737,8 @@
           stayed.push(card);
           continue;
         }
-        if (pile === "exile") battleExile.push(card);
-        else discard.push(card);
+        if (pile === "keep") discard.push(card);
+        else placeUsedCard(card);
       }
       inPlay = stayed;
       resolveAt = stayed.length;
@@ -13658,7 +13674,7 @@
       if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
       if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
       if (/[0-9０-９]/.test(prev) && (text.startsWith("ダメージ", i) || text.startsWith("回復", i) || text.startsWith("枚", i) || text.startsWith("回", i))) return false;
-      const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック"];
+      const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック", "フラッシュ", "バースト", "キープ"];
       for (const word of glued) {
         for (let k = 1; k < word.length; k++) {
           if (i >= k && text.startsWith(word, i - k)) return false;
@@ -13752,25 +13768,23 @@
       };
       const kwLine = (word, note) => `<span class="kw-line hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`;
       const keywords = [];
-      if (card.during) {
-        noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
-        keywords.push(kwLine("戦闘中", DURING_NOTE));
-      }
-      if (card.quick) keywords.push(kwLine("クイック", QUICK_NOTE));
-      if (isItemCard(card)) keywords.push(kwLine("アイテム", ITEM_NOTE));
-      if (card.permanent) keywords.push(kwLine("永続", PERMANENT_NOTE));
-      if (card.keep) keywords.push(kwLine("キープ", KEEP_NOTE));
+      const item = isItemCard(card);
+      if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
+      if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
+      if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
+      if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
+      if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
+      if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
       noteText = keywords.join("") + noteText;
       noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
-      noteText = hintWord(noteText, "インスタント", INSTANT_NOTE);
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.instant || card.quick || card.permanent || card.keep || isItemCard(card) || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
+      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.flash || card.burst || isFlashCard(card) || card.quick || card.keep || isItemCard(card) || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
       const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
       const stars = card.stars || 1;
       const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
@@ -14420,6 +14434,8 @@
       if (card.power) next.power = true;
       if (card.rage) next.rage = true;
       if (card.during) next.during = true;
+      if (card.flash) next.flash = true;
+      if (card.burst) next.burst = true;
       if (card.expose) next.expose = card.expose;
       if (card.fullBonus) next.fullBonus = card.fullBonus;
       if (card.safeBonus) next.safeBonus = card.safeBonus;
