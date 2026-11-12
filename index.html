@@ -8006,7 +8006,8 @@
     function syncEnemyDef() {
       if (!enemy) return;
       const foe = enemyNow();
-      enemy.def = hiddenDef(foe) - (Number(enemy.anger) || 0) - (Number(enemy.defCut) || 0);
+      const angerCut = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+      enemy.def = hiddenDef(foe) - angerCut - (Number(enemy.defCut) || 0);
     }
 
     function enemyDef() {
@@ -8054,8 +8055,6 @@
       const parry = parryCount(target);
       if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
       if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
-      const anger = Math.max(0, Number(target.anger) || 0);
-      if (anger) parts.push(statusChip("anger", "怒り", anger, "山札を使い切ると得る。重なるたびにATK+1、DEF-1。"));
       return parts.join("");
     }
 
@@ -8951,8 +8950,13 @@
     function gainEnemyAnger() {
       if (!enemy) return;
       const foe = enemyNow();
-      enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
-      enemy.atk = hiddenAtk(foe) + enemy.anger;
+      const had = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+      if (had >= 1) {
+        log(`${enemy.name}はすでに怒っている。`);
+        return;
+      }
+      enemy.anger = 1;
+      enemy.atk = hiddenAtk(foe) + 1;
       syncEnemyDef();
       log(`${enemy.name}は怒り。ATK+1、DEF-1。`);
     }
@@ -10884,7 +10888,7 @@
         enemy.poison = poisonStacks(enemy);
         enemy.burn = burnStacks(enemy);
         enemy.rallied = !!enemy.rallied;
-        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
+        enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
         enemy.name = enemyKey(enemy.name);
         const foe = enemyByName(enemy.name);
         enemy.atk = hiddenAtk(foe) + enemy.anger;
@@ -10935,7 +10939,7 @@
         const foe = enemyNow();
         enemy.name = foeLabel();
         enemy.image = foe.image;
-        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
+        enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
         enemy.atk = hiddenAtk(foe) + enemy.anger;
         enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
         syncEnemyDef();
@@ -12265,7 +12269,7 @@
               ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.png?v=2", "物乞い", "enemy-ref")}
-              ${sheetFig("enemy-hades.png?v=5", "ハデス", "enemy-ref")}
+              ${sheetFig("enemy-hades.png?v=6", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
@@ -13265,7 +13269,7 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中から無作為に1枚使う。使い切ると怒り（ATK+1、DEF-1）を得て、捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
+      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中から無作為に1枚使う。初めて使い切ると怒り（ATK+1、DEF-1。重ねない）。そのあと捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
     }
 
     function clearFoeDeckPop() {
