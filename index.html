@@ -530,7 +530,9 @@
       width: 100%;
     }
     .duel-mid .play-cards {
-      width: 100%;
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
       height: 100%;
       align-items: center;
       justify-content: center;
@@ -553,6 +555,45 @@
       height: 100%;
       max-height: 100%;
       pointer-events: auto;
+    }
+    .forecast {
+      flex: 0 0 auto;
+      align-self: center;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin: 0 8px;
+      padding: 7px 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .forecast b {
+      font-size: 28px;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .forecast .from,
+    .forecast .to { letter-spacing: 0; font-size: 16px; opacity: 0.78; }
+    .forecast em {
+      font-style: normal;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: #ffe08a;
+    }
+    .play-side.mine .forecast {
+      color: #fff4ea;
+      background: rgba(92, 18, 14, 0.92);
+      box-shadow: inset 0 0 0 2px rgba(255, 186, 120, 0.85);
+    }
+    .play-side.foe .forecast {
+      color: #fff8ee;
+      background: rgba(18, 12, 10, 0.9);
+      box-shadow: inset 0 0 0 2px rgba(255, 196, 120, 0.78);
     }
     .hero-shoulder {
       position: relative;
@@ -7358,6 +7399,11 @@
       border-width: 2px;
     }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
+    html.phone .forecast { font-size: 11px; padding: 3px 7px; gap: 3px; margin: 0 3px; }
+    html.phone .forecast b { font-size: 16px; }
+    html.phone .forecast .from,
+    html.phone .forecast .to { font-size: 12px; }
+    html.phone .forecast em { font-size: 10px; }
     /* iPhone横画面。高さがないので、上は1行、下は手札 */
     html.phone.land .battle-screen {
       grid-template-columns: minmax(0, 1fr);
@@ -13225,6 +13271,215 @@
       return `<div${attrs}><div class="card preview ${tone}" aria-label="${label}">${cardFace(card, live, foe)}</div></div>`;
     }
 
+    function scratchApply(target, amount) {
+      const n = Math.max(0, Number(amount) || 0);
+      const blocked = Math.min(Math.max(0, target.block), n);
+      target.block -= blocked;
+      const hpLoss = n - blocked;
+      target.hp = Math.max(0, target.hp - hpLoss);
+      return { raw: n, hpLoss };
+    }
+
+    function scratchHeal(who, amount) {
+      const room = Math.max(0, who.maxHp - who.hp);
+      const gain = Math.max(0, Math.min(Math.floor(Number(amount) || 0), room));
+      who.hp += gain;
+    }
+
+    function scratchGainParry(who, add) {
+      if (who.block > 0) who.block = 0;
+      who.parry += Math.max(1, Number(add) || 1);
+    }
+
+    function scratchGainBlock(who, amount) {
+      const gain = Math.max(0, Math.floor((Number(amount) || 0) + (Number(who.def) || 0)));
+      if (!gain || (who.parry > 0 && !who.guardThrough)) return;
+      who.block += gain;
+    }
+
+    function scratchStrike(enemySide, give, amount) {
+      const hit = scratchApply(enemySide, amount);
+      give.raw += hit.raw;
+      give.hp += hit.hpLoss;
+      if (hit.raw > 0) give.show = true;
+    }
+
+    // ターン終了と同じ順。毒 → 置いたカード → 敵のシールド消滅 → 敵の次の札。状態はコピーだけ。
+    function forecastTurn() {
+      if (phase !== "player" || outcome || !player || !enemy) return { give: null, take: null };
+      const mine = {
+        hp: player.hp,
+        maxHp: player.maxHp,
+        block: Math.max(0, Number(player.block) || 0),
+        atk: Number(player.atk) || 0,
+        def: Number(player.def) || 0,
+        focus: Number(player.focus) || 0,
+        parry: parryCount(player),
+        expose: Math.max(0, Number(player.expose) || 0),
+        doubleNext: !!player.doubleNext,
+        hurtLast: !!player.hurtLast,
+        guardThrough: !!player.guardThrough,
+        parryHitsLast: Math.max(0, Number(player.parryHitsLast) || 0),
+        masterOnce: !!player.masterOnce,
+      };
+      const foe = {
+        hp: enemy.hp,
+        maxHp: enemy.maxHp,
+        block: Math.max(0, Number(enemy.block) || 0),
+      };
+      const poison = Math.max(0, Number(player.poison) || 0);
+      if (poison) {
+        let amount = poison;
+        if (mine.expose) {
+          amount += mine.expose;
+          mine.expose = 0;
+        }
+        scratchApply(mine, amount);
+        if (mine.hp <= 0) return { give: null, take: null };
+      }
+      const give = { raw: 0, hp: 0, show: false };
+      const queue = inPlay || [];
+      for (const card of queue) {
+        if (card.keep && card.resolved) continue;
+        scratchPlayerCard(card, mine, foe, queue, give);
+        if (foe.hp <= 0) break;
+      }
+      if (foe.hp <= 0) return { give: give.show ? give : null, take: null };
+      foe.block = 0;
+      const take = scratchEnemyBlow(shownFoeCard(), mine, foe);
+      return { give: give.show ? give : null, take };
+    }
+
+    function scratchPlayerCard(card, mine, foe, queue, give) {
+      if (!card) return;
+      if (card.power) {
+        if (card.coward) mine.guardThrough = true;
+        return;
+      }
+      if (card.rage) {
+        mine.atk += 1;
+        mine.def -= 2;
+        return;
+      }
+      if (card.poise) {
+        scratchGainParry(mine, 1);
+        return;
+      }
+      if (card.guardBreak) {
+        foe.block = 0;
+        return;
+      }
+      if (card.finisher) {
+        scratchStrike(foe, give, mine.parryHitsLast * 20);
+        return;
+      }
+      if (card.parryAdd) {
+        scratchGainParry(mine, card.parryAdd);
+        return;
+      }
+      if (card.knife) {
+        scratchGainParry(mine, 1);
+        return;
+      }
+      if (card.masterOnce) {
+        if (mine.masterOnce) return;
+        mine.masterOnce = true;
+        scratchHeal(mine, card.heal || 10);
+        scratchGainParry(mine, 1);
+        return;
+      }
+      if (card.magicParry || card.pride || card.shave) return;
+      if (card.step) return;
+      if (card.focus) {
+        mine.focus += card.focus;
+        return;
+      }
+      if (card.parry && !card.damage) {
+        scratchGainParry(mine, 1);
+        return;
+      }
+      if (card.press) {
+        scratchStrike(foe, give, mine.block || 0);
+        return;
+      }
+      if (card.poison || card.heal || card.draw) {
+        if (card.heal) scratchHeal(mine, card.heal);
+        return;
+      }
+      if (card.redTimes) {
+        const reds = queue.filter((item) => cardKind(item) === "attack").length;
+        const added = mine.focus || 0;
+        if (added) mine.focus = 0;
+        scratchStrike(foe, give, reds * card.redTimes + mine.atk + added);
+        return;
+      }
+      if (card.counter) {
+        const reds = queue.filter((item) => cardKind(item) === "attack").length;
+        if (!reds) scratchStrike(foe, give, card.counter);
+        return;
+      }
+      if (card.hits) {
+        const added = mine.focus || 0;
+        if (added) mine.focus = 0;
+        const base = Number(card.damage) || 0;
+        for (let hit = 0; hit < card.hits; hit++) scratchStrike(foe, give, base + mine.atk + (hit === 0 ? added : 0));
+        return;
+      }
+      const added = mine.focus && (card.damage || card.block) ? mine.focus : 0;
+      if (added) mine.focus = 0;
+      if (card.damage) {
+        let bonus = 0;
+        if (card.fullBonus && mine.hp >= mine.maxHp) bonus += card.fullBonus;
+        if (card.safeBonus && !mine.hurtLast) bonus += card.safeBonus;
+        if (card.kick && foe.block > 0) bonus += card.kick;
+        scratchStrike(foe, give, (Number(card.damage) || 0) + added + mine.atk + bonus);
+        if (card.doubleNext) mine.doubleNext = true;
+      }
+      if (card.expose) mine.expose = (Number(mine.expose) || 0) + card.expose;
+      if (card.parry && card.damage) scratchGainParry(mine, 1);
+      if (card.block) scratchGainBlock(mine, (Number(card.block) || 0) + added);
+    }
+
+    function shownFoeCard() {
+      if (phase === "intro" || !enemy) return null;
+      const angerNow = foeAngerShow && foeDiscard.length > 0 && enemyLoop.length > 0 && intentIndex >= enemyLoop.length;
+      if (angerNow) return foeAngerCard();
+      if (!intentShown || !enemyLoop.length) return null;
+      const at = intentIndex;
+      if (at < 0 || at >= enemyLoop.length) return null;
+      return enemyLoop[at];
+    }
+
+    function scratchEnemyBlow(card, mine, foe) {
+      if (!card || card.halfOnly && !(foe.hp <= foe.maxHp / 2) || !card.damage) return null;
+      let swing = Math.max(0, Number(card.damage) || 0);
+      if (card.kick && mine.block > 0) swing += Number(card.kick) || 0;
+      if (card.fullBonus && foe.hp >= foe.maxHp) swing += Number(card.fullBonus) || 0;
+      if (mine.doubleNext) swing *= 2;
+      if (!swing && !mine.expose) return null;
+      if (mine.parry > 0) return { raw: swing, hp: 0, parry: true, show: swing > 0 };
+      const dealt = swing + (mine.expose || 0);
+      if (!dealt) return null;
+      const hit = scratchApply(mine, dealt);
+      return { raw: dealt, hp: hit.hpLoss, parry: false, show: true };
+    }
+
+    function forecastChip(kind, cast) {
+      if (!cast || !cast.show) return "";
+      const label = kind === "give" ? "与ダメ" : "被ダメ";
+      const value = cast.parry
+        ? `<span class="from">${cast.raw}</span><span class="to">→</span><b>0</b><em>パリィ</em>`
+        : cast.raw === cast.hp
+          ? `<b>${cast.hp}</b>`
+          : `<span class="from">${cast.raw}</span><span class="to">→</span><b>${cast.hp}</b>`;
+      const aria = cast.parry
+        ? `この攻撃はパリィで無効。予定は${cast.raw}`
+        : kind === "give"
+          ? `ターン終了で、敵の体力が${cast.hp}減る`
+          : `この攻撃で、自分の体力が${cast.hp}減る`;
+      return `<p class="forecast ${kind}${cast.parry ? " parry" : ""}" aria-label="${esc(aria)}"><span>${label}</span>${value}</p>`;
+    }
+
     function useZoneMarkup() {
       const resolving = phase === "resolve";
       const active = resolving ? resolveAt - 1 : -1;
@@ -13237,10 +13492,13 @@
       const foe = phase === "intro" ? null : (angerNow ? foeAngerCard() : (intentShown ? intentAt(0) : null));
       const foeHot = resolving && active === inPlay.length;
       const foeCard = foe ? playFace(foe, foeHot, true, true, null, { awaitDraw: foeDrawPending && !foeHot }) : "";
+      const cast = forecastTurn();
+      const giveChip = forecastChip("give", cast.give);
+      const takeChip = forecastChip("take", cast.take);
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
-          <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCard}</div></div>
+          <div class="play-side mine use-half">${giveChip}<div class="play-cards">${mine}</div></div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCard}</div>${takeChip}</div>
         </div>
       </div>`;
     }
