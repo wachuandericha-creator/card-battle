@@ -1096,10 +1096,6 @@
     }
     .hero-body .hero-hit.blunt { overflow: visible; }
     .hero-hit.blunt .flash {
-      left: 16%;
-      top: 18%;
-      width: 68%;
-      height: 64%;
       inset: auto;
       background:
         radial-gradient(circle at 38% 62%, rgba(255, 78, 52, 0.82), transparent 44%),
@@ -1108,6 +1104,19 @@
       filter: blur(3px);
       mix-blend-mode: screen;
       animation: poison-mist 1.25s ease-out forwards;
+    }
+    .hero-hit.blunt .flash.big {
+      left: 8%;
+      top: 14%;
+      width: 78%;
+      height: 74%;
+    }
+    .hero-hit.blunt .flash.small {
+      left: 58%;
+      top: 6%;
+      width: 30%;
+      height: 28%;
+      animation-delay: 0.16s;
     }
     .hero-hit.blunt .ember {
       position: absolute;
@@ -1129,22 +1138,29 @@
     /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
     .hero-hit .ring {
       position: absolute;
-      left: 50%;
-      top: 46%;
-      width: calc(70px + var(--pow, 0.35) * 50px);
-      height: calc(70px + var(--pow, 0.35) * 50px);
-      margin: calc((70px + var(--pow, 0.35) * 50px) * -0.5) 0 0 calc((70px + var(--pow, 0.35) * 50px) * -0.5);
       border-radius: 50%;
       border: 4px solid rgba(255, 244, 220, 0.95);
       box-shadow: 0 0 18px rgba(255, 170, 60, 0.85), inset 0 0 12px rgba(255, 220, 140, 0.45);
       opacity: 0;
       animation: blunt-ring 0.55s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
     }
+    .hero-hit .ring.a {
+      left: 46%;
+      top: 48%;
+      width: 128px;
+      height: 128px;
+      margin: -64px 0 0 -64px;
+    }
     .hero-hit .ring.b {
+      left: 70%;
+      top: 28%;
+      width: 52px;
+      height: 52px;
+      margin: -26px 0 0 -26px;
       border-width: 3px;
       border-color: rgba(255, 150, 50, 0.8);
-      animation-delay: 0.08s;
-      animation-duration: 0.68s;
+      animation-delay: 0.18s;
+      animation-duration: 0.48s;
     }
     .hero-hit .star {
       position: absolute;
@@ -1186,12 +1202,37 @@
       z-index: 9;
       transform: translate(-50%, -50%);
       margin: 0;
-      font-size: clamp(52px, 8cqw, 92px);
+      font-size: clamp(36px, 5.4cqw, 68px);
       font-weight: 800;
-      letter-spacing: 0.42em;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
       color: #ffd8c8;
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
       animation: fatal-call 2.6s ease-out both;
+    }
+    .hurt-word {
+      position: absolute;
+      left: 50%;
+      top: -6%;
+      z-index: 7;
+      margin: 0;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      white-space: nowrap;
+      color: #fff4f0;
+      text-shadow:
+        0 3px 0 #5a100c,
+        0 0 12px rgba(255, 90, 70, 0.95),
+        0 0 18px rgba(255, 40, 30, 0.85);
+      animation: guard-word 1.45s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      pointer-events: none;
+    }
+    .hurt-word.big { font-size: 68px; }
+    .hurt-word.poison {
+      color: #e8ffb0;
+      text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
     }
     /* 敵も自分と同じ列の高さ。HP板は上端そろえ。ランクは幅と絵の大きさだけ変える */
     .enemy-main {
@@ -2619,6 +2660,13 @@
       color: #e8ffb0;
       text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
     }
+    .dmg-pop.foe-hit.poison {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .dmg-pop.foe-hit.poison.big { font-size: 68px; }
     .dmg-pop.me.poison {
       animation-name: dmg-pop-poison;
       animation-duration: 1.15s;
@@ -2632,16 +2680,25 @@
     }
     .poison-hit .mist {
       position: absolute;
-      left: 18%;
-      top: 22%;
-      width: 64%;
-      height: 58%;
       background:
         radial-gradient(circle at 40% 55%, rgba(190, 255, 90, 0.72), transparent 46%),
         radial-gradient(circle at 68% 40%, rgba(170, 70, 240, 0.62), transparent 48%);
       filter: blur(2px);
       mix-blend-mode: screen;
       animation: poison-mist 1.85s ease-out forwards;
+    }
+    .poison-hit .mist.big {
+      left: 12%;
+      top: 18%;
+      width: 70%;
+      height: 64%;
+    }
+    .poison-hit .mist.small {
+      left: 58%;
+      top: 6%;
+      width: 28%;
+      height: 26%;
+      animation-delay: 0.16s;
     }
     .poison-hit .bubble {
       position: absolute;
@@ -9220,6 +9277,12 @@
       return `<div class="hero-guard hold" aria-label="ガード"><b class="guard-word">ガード</b></div>`;
     }
 
+    function hurtWord(n, poison) {
+      const big = Number(n) >= 10 ? " big" : "";
+      const kind = poison ? " poison" : "";
+      return `<b class="hurt-word${kind}${big}">${n}ダメージ！</b>`;
+    }
+
     function heartIcon() {
       return `<svg class="ico heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 20.4 10.7 19.2C5.5 14.6 2.2 11.6 2.2 8 2.2 5 4.6 2.6 7.6 2.6c1.7 0 3.4.8 4.4 2.1 1-1.3 2.7-2.1 4.4-2.1 3 0 5.4 2.4 5.4 5.4 0 3.6-3.3 6.6-8.5 11.2L12 20.4z"/></svg>`;
     }
@@ -12107,7 +12170,8 @@
     function fxPops(hits, poison) {
       return hits.map((n, i) => {
         const shift = (i - (hits.length - 1) / 2) * 64;
-        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}" style="--delay:${(i * 0.34 + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+        const text = poison ? `${n}ダメージ！` : n;
+        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}${poison && n >= 10 ? " big" : ""}" style="--delay:${(i * 0.34 + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
       }).join("");
     }
 
@@ -12133,10 +12197,6 @@
       return "";
     }
 
-    function fxMePop(n, poison, fatal) {
-      return `<b class="dmg-pop me${poison ? " poison" : ""}${fatal ? " fatal" : ""}" style="--pow:${hitPower(n)}">${n}</b>`;
-    }
-
     function fxVictory() {
       const pose = heroItem().victory;
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
@@ -12151,17 +12211,13 @@
       let call = "";
       let cls = "";
       if (id === "guard") hero = { guard: true };
-      else if (id === "hurt") {
-        hero = { hurt: true, pow: hitPower(6) };
-        call = fxMePop(6, false, false);
-      } else if (id === "poison-tick") {
-        hero = { hurt: true, kind: "poison", pow: hitPower(3) };
-        call = fxMePop(3, true, false);
-      } else if (id === "poison-give") hero = { poisonApply: true };
+      else       if (id === "hurt") hero = { hurt: true, n: 6, pow: hitPower(6) };
+      else if (id === "poison-tick") hero = { hurt: true, kind: "poison", n: 3, pow: hitPower(3) };
+      else if (id === "poison-give") hero = { poisonApply: true };
       else if (id === "fatal") {
-        hero = { hurt: true, fatal: true, pow: hitPower(12) };
+        hero = { hurt: true, fatal: true, n: 12, pow: hitPower(12) };
         foe = { fatal: true };
-        call = `<div class="fatal-call" aria-hidden="true">止め</div>${fxMePop(12, false, true)}`;
+        call = `<div class="fatal-call" aria-hidden="true">You are Dead</div>`;
         cls = " fatal";
       } else if (id === "heal") extra = `<div class="screen-heal" aria-hidden="true"></div>`;
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
@@ -12187,7 +12243,7 @@
       } else if (id === "end-ready") extra = `<div class="end ready fx-end">ターン終了</div>`;
       else if (id === "victory") return `<div class="fx-view" data-play="${fxLabTick}">${fxVictory()}</div>`;
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
-      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply))}</div><div class="duel-mid"></div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
+      return `<div class="fx-view${cls}" data-play="${fxLabTick}">${extra}<div class="battle-bands"><div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0)}</div><div class="duel-mid"></div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div></div></div>`;
     }
 
     function renderFxLab() {
@@ -13759,8 +13815,7 @@
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
-      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
-      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${hitNow.kind === "poison" ? " poison" : ""}${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
+      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">You are Dead</div>`);
       if (!calls.length) return "";
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
@@ -13803,10 +13858,10 @@
 
     function poisonFxHtml(stamp) {
       const word = stamp ? `<b class="poison-stamp">毒</b>` : "";
-      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
+      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist big"></i><i class="mist small"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -13814,12 +13869,13 @@
         ? `<div class="hero-hit poison${fatal && poisonTick ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml(!poisonTick)}</div>`
         : "";
       const bluntHtml = blunt
-        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
+        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash big"></span><span class="flash small"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
+      const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick) : "";
       const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${hurtHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15026,7 +15082,9 @@
       }).join("");
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
-        return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+        const poison = foeKind === "poison";
+        const text = poison ? `${n}ダメージ！` : n;
+        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}${poison && n >= 10 ? " big" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
       }).join("");
       fxSlash = false;
       fxSlashes = [];
@@ -15076,7 +15134,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
