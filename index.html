@@ -7431,10 +7431,10 @@
       transform: none;
     }
   
-    /* PCは1920×1080の一枚を、ウィンドウに収まる同じ比率で拡縮する。短い辺500px以下は専用配置のまま。 */
+    /* 基準は、1920×1080の画面を拡大率75%で見た一枚（2560×1440）。ウィンドウに収まる同じ比率で拡縮する。短い辺500px以下は専用配置のまま。 */
     html.stage-fit #game {
-      width: 1920px;
-      height: 1080px;
+      width: 2560px;
+      height: 1440px;
       position: absolute;
       left: 50%;
       top: 50%;
@@ -7445,10 +7445,39 @@
     html.stage-fit.iphone-play #game {
       transform: translate(-50%, -50%) rotate(90deg) scale(var(--fit, 1));
     }
+    /* 画面の外に足していた絵を、ゲームと同じ拡縮・同じ回転に乗せる */
+    #stage-float {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+    }
+    #stage-float,
+    #stage-float * { pointer-events: none; }
+    #stage-float .depart,
+    #stage-float .depart *,
+    #stage-float .foe-deck-pop,
+    #stage-float .foe-deck-pop * { pointer-events: auto; }
+    html.stage-fit #stage-float {
+      position: absolute;
+      width: 2560px;
+      height: 1440px;
+      inset: auto;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(var(--fit, 1));
+      transform-origin: center center;
+      container-type: size;
+      container-name: floatstage;
+    }
+    html.stage-fit.iphone-play #stage-float {
+      transform: translate(-50%, -50%) rotate(90deg) scale(var(--fit, 1));
+    }
 </style>
 </head>
 <body>
   <div id="game"></div>
+  <div id="stage-float"></div>
   <script>
     // 戦士の初期デッキ。共通の抽選は COMMON。
     const CARD_POOL = [
@@ -7653,6 +7682,117 @@
     const CLASSIC_ROUTE = ["スライム", "ゴブリン", "ミノタウロス"];
 
     const root = document.getElementById("game");
+    const stageFloat = document.getElementById("stage-float");
+
+    // 画面の外に足した絵は、iPhoneで遊ぶの回転に乗らない。ゲームと同じ枠へ載せる。
+    function stageOn() {
+      return document.documentElement.classList.contains("stage-fit");
+    }
+
+    function stageRotated() {
+      return stageOn() && document.documentElement.classList.contains("iphone-play");
+    }
+
+    function stageScale() {
+      if (!stageOn()) return 1;
+      const n = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fit"));
+      return Number.isFinite(n) && n > 0 ? n : 1;
+    }
+
+    function stageBox() {
+      if (stageOn()) return { w: root.offsetWidth, h: root.offsetHeight };
+      return { w: window.innerWidth, h: window.innerHeight };
+    }
+
+    function viewportToStage(vx, vy) {
+      if (!stageOn()) return { x: vx, y: vy };
+      const rect = root.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      let dx = vx - cx;
+      let dy = vy - cy;
+      if (stageRotated()) {
+        const turnedX = dy;
+        const turnedY = -dx;
+        dx = turnedX;
+        dy = turnedY;
+      }
+      const s = stageScale();
+      return {
+        x: root.offsetWidth / 2 + dx / s,
+        y: root.offsetHeight / 2 + dy / s,
+      };
+    }
+
+    function stageFrameFromRect(rect) {
+      const vw = rect.w != null ? rect.w : rect.width || 0;
+      const vh = rect.h != null ? rect.h : rect.height || 0;
+      const cx = rect.cx != null ? rect.cx : (rect.left || 0) + vw / 2;
+      const cy = rect.cy != null ? rect.cy : (rect.top || 0) + vh / 2;
+      if (!stageOn()) {
+        return { cx, cy, w: vw, h: vh, left: cx - vw / 2, top: cy - vh / 2, width: vw, height: vh };
+      }
+      const c = viewportToStage(cx, cy);
+      const s = stageScale();
+      const w = (stageRotated() ? vh : vw) / s;
+      const h = (stageRotated() ? vw : vh) / s;
+      return { cx: c.x, cy: c.y, w, h, left: c.x - w / 2, top: c.y - h / 2, width: w, height: h };
+    }
+
+    function stageFrameOf(el) {
+      const rect = el.getBoundingClientRect();
+      const frame = stageFrameFromRect({ left: rect.left, top: rect.top, width: rect.width, height: rect.height });
+      if (!stageOn() || !el.offsetWidth || !el.offsetHeight) return frame;
+      return {
+        cx: frame.cx,
+        cy: frame.cy,
+        w: el.offsetWidth,
+        h: el.offsetHeight,
+        left: frame.cx - el.offsetWidth / 2,
+        top: frame.cy - el.offsetHeight / 2,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+      };
+    }
+
+    function stageDelta(from, to) {
+      return {
+        dx: to.cx - from.cx,
+        dy: to.cy - from.cy,
+        scale: to.h / Math.max(1, from.h),
+      };
+    }
+
+    function mountFloat(node) {
+      (stageFloat || document.body).appendChild(node);
+    }
+
+    function placeAnchored(el, anchor, opt = {}) {
+      const bounds = stageBox();
+      const frame = anchor instanceof Element ? stageFrameOf(anchor) : stageFrameFromRect(anchor);
+      const pad = opt.pad ?? 8;
+      const gap = opt.gap ?? 12;
+      const w = opt.width || el.offsetWidth || opt.fallbackW || 0;
+      const h = opt.height || el.offsetHeight || opt.fallbackH || 0;
+      let sideLeft = false;
+      let left = frame.left + frame.w + gap;
+      if (opt.prefer === "left") {
+        left = frame.left - gap - w;
+        sideLeft = true;
+      } else if (opt.prefer === "end") {
+        left = frame.left + frame.w - w;
+      } else if (left + w > bounds.w - pad) {
+        left = frame.left - gap - w;
+        sideLeft = true;
+      }
+      left = Math.max(pad, Math.min(left, Math.max(pad, bounds.w - w - pad)));
+      let top = opt.align === "top" ? frame.top : frame.cy - h / 2;
+      if (opt.above) top = frame.top - h - (opt.aboveGap ?? 10);
+      top = Math.max(pad, Math.min(top, Math.max(pad, bounds.h - h - pad)));
+      el.style.left = `${Math.round(left)}px`;
+      el.style.top = `${Math.round(top)}px`;
+      return { left, top, sideLeft, frame, w, h };
+    }
     let uid = 1;
     let deck = [];
     let hand = [];
@@ -8252,6 +8392,10 @@
       return false;
     }
 
+    function isBlessingFloor0() {
+      return route[0] === "出来事:祝福" && battleIndex === 0;
+    }
+
     function roadMapHtml() {
       if (!route || !route.length) return "";
       const blessing = route[0] === "出来事:祝福";
@@ -8268,7 +8412,8 @@
         const tone = known ? roadTone(node) : "";
         return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap"><span class="road-floor">${floor}</span><span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
-      const pad = battleIndex === 0 ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
+      // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
+      const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
       return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
     }
 
@@ -8276,6 +8421,10 @@
       const ol = document.querySelector(".road-map ol");
       const now = ol && ol.querySelector(".road-node.now");
       if (!ol || !now) return;
+      if (isBlessingFloor0()) {
+        ol.scrollTop = Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
+        return;
+      }
       const row = ol.clientHeight / 5;
       const prev = now.nextElementSibling;
       const anchor = prev && prev.classList.contains("road-node") ? prev : now;
@@ -8829,20 +8978,9 @@
       if (!box || !slotId) return;
       const slot = root.querySelector(`.gear-slot[data-gear="${slotId}"]`);
       if (!slot) return;
-      const r = slot.getBoundingClientRect();
-      const gap = 12;
-      const pad = 8;
       box.style.left = "0px";
       box.style.top = "0px";
-      const w = box.offsetWidth || 288;
-      const h = box.offsetHeight || 120;
-      let left = r.right + gap;
-      let top = r.top;
-      if (left + w > window.innerWidth - pad) left = Math.max(pad, r.left - gap - w);
-      if (top + h > window.innerHeight - pad) top = Math.max(pad, window.innerHeight - pad - h);
-      if (top < pad) top = pad;
-      box.style.left = `${Math.round(left)}px`;
-      box.style.top = `${Math.round(top)}px`;
+      placeAnchored(box, slot, { gap: 12, pad: 8, fallbackW: 288, fallbackH: 120, align: "top" });
     }
 
     function paintGear() {
@@ -9835,6 +9973,8 @@
         cy: rect.top + rect.height / 2,
         w: rect.width,
         h: rect.height,
+        layoutW: cardEl.offsetWidth,
+        layoutH: cardEl.offsetHeight,
         fan: parseFloat(cardEl.style.getPropertyValue("--fan")) || 0,
       };
     }
@@ -9843,22 +9983,36 @@
       if (!from || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const target = document.querySelector(".play-side.mine .play-card:last-child .card");
       if (!target) return;
-      const to = target.getBoundingClientRect();
-      if (!to.width || !to.height || !from.w || !from.h) return;
+      const to = stageFrameOf(target);
+      let start = stageFrameFromRect(from);
+      if (stageOn() && from.layoutW && from.layoutH) {
+        start = {
+          cx: start.cx,
+          cy: start.cy,
+          w: from.layoutW,
+          h: from.layoutH,
+          width: from.layoutW,
+          height: from.layoutH,
+          left: start.cx - from.layoutW / 2,
+          top: start.cy - from.layoutH / 2,
+        };
+      }
+      if (!to.w || !to.h || !start.w || !start.h) return;
       const ghost = target.cloneNode(true);
       const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : target.classList.contains("power") ? "power" : "skill";
       ghost.className = `card fly-card ${kind}`;
-      ghost.style.left = `${from.cx - from.w / 2}px`;
-      ghost.style.top = `${from.cy - from.h / 2}px`;
-      ghost.style.width = `${from.w}px`;
-      ghost.style.height = `${from.h}px`;
+      ghost.style.left = `${start.left}px`;
+      ghost.style.top = `${start.top}px`;
+      ghost.style.width = `${start.w}px`;
+      ghost.style.height = `${start.h}px`;
       ghost.style.transition = "none";
       ghost.style.transform = `rotate(${from.fan}deg)`;
-      document.body.appendChild(ghost);
+      mountFloat(ghost);
       target.style.visibility = "hidden";
-      const dx = to.left + to.width / 2 - from.cx;
-      const dy = to.top + to.height / 2 - from.cy;
-      const scale = to.height / from.h;
+      const move = stageDelta(start, to);
+      const dx = move.dx;
+      const dy = move.dy;
+      const scale = move.scale;
       let done = false;
       const finish = () => {
         if (done) return;
@@ -9901,20 +10055,20 @@
     let pendingPlayClearFly = [];
 
     function makeFlyGhost(el) {
-      const rect = el.getBoundingClientRect();
-      if (!rect.width || !rect.height) return null;
+      const frame = stageFrameOf(el);
+      if (!frame.w || !frame.h) return null;
       const ghost = el.cloneNode(true);
       ghost.classList.add("fly-card");
-      ghost.style.left = `${rect.left}px`;
-      ghost.style.top = `${rect.top}px`;
-      ghost.style.width = `${rect.width}px`;
-      ghost.style.height = `${rect.height}px`;
+      ghost.style.left = `${frame.left}px`;
+      ghost.style.top = `${frame.top}px`;
+      ghost.style.width = `${frame.w}px`;
+      ghost.style.height = `${frame.h}px`;
       ghost.style.margin = "0";
       ghost.style.transition = "none";
       ghost.style.transform = "none";
       ghost.style.opacity = "1";
-      document.body.appendChild(ghost);
-      return { ghost, from: rect };
+      mountFloat(ghost);
+      return { ghost, from: frame };
     }
 
     function captureFoeLeave() {
@@ -9938,9 +10092,9 @@
         showFoePlay(play);
         return;
       }
-      const from = deck.getBoundingClientRect();
-      const to = play.getBoundingClientRect();
-      if (!from.width || !to.width) {
+      const from = stageFrameOf(deck);
+      const to = stageFrameOf(play);
+      if (!from.w || !to.w) {
         showFoePlay(play);
         return;
       }
@@ -9951,14 +10105,15 @@
       ghost.style.zIndex = "70";
       ghost.style.left = `${from.left}px`;
       ghost.style.top = `${from.top}px`;
-      ghost.style.width = `${from.width}px`;
-      ghost.style.height = `${from.height}px`;
+      ghost.style.width = `${from.w}px`;
+      ghost.style.height = `${from.h}px`;
       ghost.style.margin = "0";
       ghost.style.transition = "none";
-      document.body.appendChild(ghost);
-      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-      const scale = to.height / from.height;
+      mountFloat(ghost);
+      const move = stageDelta(from, to);
+      const dx = move.dx;
+      const dy = move.dy;
+      const scale = move.scale;
       const finish = () => {
         if (ghost.dataset.landed) return;
         ghost.dataset.landed = "1";
@@ -9982,9 +10137,9 @@
         done();
         return;
       }
-      const from = fromEl.getBoundingClientRect();
-      const to = toEl.getBoundingClientRect();
-      if (!from.width || !to.width) {
+      const from = stageFrameOf(fromEl);
+      const to = stageFrameOf(toEl);
+      if (!from.w || !to.w) {
         done();
         return;
       }
@@ -9994,13 +10149,14 @@
       ghost.style.zIndex = "70";
       ghost.style.left = `${from.left}px`;
       ghost.style.top = `${from.top}px`;
-      ghost.style.width = `${from.width}px`;
-      ghost.style.height = `${from.height}px`;
+      ghost.style.width = `${from.w}px`;
+      ghost.style.height = `${from.h}px`;
       ghost.style.margin = "0";
       ghost.style.transition = "none";
-      document.body.appendChild(ghost);
-      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+      mountFloat(ghost);
+      const move = stageDelta(from, to);
+      const dx = move.dx;
+      const dy = move.dy;
       let landed = false;
       const finish = () => {
         if (landed) return;
@@ -10044,12 +10200,13 @@
         goDraw();
         return;
       }
-      const to = dest.getBoundingClientRect();
+      const to = stageFrameOf(dest);
       const from = leave.from;
       const ghost = leave.ghost;
-      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-      const scale = Math.max(0.22, to.height / Math.max(1, from.height));
+      const move = stageDelta(from, to);
+      const dx = move.dx;
+      const dy = move.dy;
+      const scale = Math.max(0.22, move.scale);
       const finish = () => {
         if (ghost.dataset.landed) return;
         ghost.dataset.landed = "1";
@@ -10108,12 +10265,13 @@
           item.ghost.remove();
           return;
         }
-        const to = dest.getBoundingClientRect();
+        const to = stageFrameOf(dest);
         const from = item.from;
         const ghost = item.ghost;
-        const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-        const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-        const scale = Math.max(0.22, to.height / from.height);
+        const move = stageDelta(from, to);
+        const dx = move.dx;
+        const dy = move.dy;
+        const scale = Math.max(0.22, move.scale);
         const delay = i * 70;
         maxWait = Math.max(maxWait, 560 + delay);
         const finish = () => {
@@ -10179,22 +10337,24 @@
       if (!from || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const target = document.querySelector(`.hand [data-card="${handIndex}"]`);
       if (!target) return;
-      const to = target.getBoundingClientRect();
-      if (!to.width || !to.height || !from.width || !from.height) return;
+      const start = stageFrameFromRect(from);
+      const to = stageFrameOf(target);
+      if (!to.w || !to.h || !start.w || !start.h) return;
       const ghost = target.cloneNode(true);
       const kind = target.classList.contains("attack") ? "attack" : target.classList.contains("block") ? "block" : target.classList.contains("power") ? "power" : "skill";
       ghost.className = `card fly-card ${kind}`;
-      ghost.style.left = `${from.left}px`;
-      ghost.style.top = `${from.top}px`;
-      ghost.style.width = `${from.width}px`;
-      ghost.style.height = `${from.height}px`;
+      ghost.style.left = `${start.left}px`;
+      ghost.style.top = `${start.top}px`;
+      ghost.style.width = `${start.w}px`;
+      ghost.style.height = `${start.h}px`;
       ghost.style.transition = "none";
       ghost.style.transform = "none";
-      document.body.appendChild(ghost);
+      mountFloat(ghost);
       target.style.visibility = "hidden";
-      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-      const scale = to.height / from.height;
+      const move = stageDelta(start, to);
+      const dx = move.dx;
+      const dy = move.dy;
+      const scale = move.scale;
       const fan = parseFloat(target.style.getPropertyValue("--fan")) || 0;
       let done = false;
       const finish = () => {
@@ -11224,7 +11384,7 @@
       const kinds = shuffle(["maxhp", "spd", "mana", "gear", "card"]).slice(0, 3);
       return kinds.map((kind) => {
         if (kind === "maxhp") return { kind, label: "最大HP" };
-        if (kind === "spd") return { kind, label: "手札+1" };
+        if (kind === "spd") return { kind, label: "SPD" };
         if (kind === "mana") return { kind, label: "マナ" };
         if (kind === "gear") return { kind, gear: rollBlessGear(), label: "装備" };
         return { kind: "card", card: rollBlessCard(), label: "カード" };
@@ -11324,10 +11484,10 @@
       }
       if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
-          ? { slot: "hp", name: "最大HP+10", image: "reward-hp.jpg?v=1" }
+          ? { slot: "hp", image: "reward-hp.jpg?v=1", boonSub: "HP+10" }
           : gift.kind === "mana"
             ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
-            : { slot: "spd", name: "手札+1", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
+            : { slot: "spd", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
         return `<div class="${cls}">${gearPopShell(boon.slot, {
           name: boon.name,
           image: boon.image,
@@ -11476,7 +11636,7 @@
     function playBlessArrive() {
       const flash = document.createElement("div");
       flash.className = "screen-flash";
-      document.body.appendChild(flash);
+      mountFloat(flash);
       setTimeout(() => { if (flash.parentNode) flash.remove(); }, 700);
     }
 
@@ -11551,7 +11711,7 @@
       veil.className = reduce ? "depart depart-fast" : "depart";
       veil.setAttribute("role", "status");
       veil.innerHTML = `<img class="depart-art" src="${chosen.art}" alt=""><h1 class="depart-name"><span>${esc(chosen.name)}</span></h1>`;
-      document.body.appendChild(veil);
+      mountFloat(veil);
       if (departTimer) clearTimeout(departTimer);
       departTimer = setTimeout(() => {
         departTimer = null;
@@ -11876,15 +12036,9 @@
       }).replace('class="gear-effect', 'class="gear-effect cast-pop'));
       const box = root.querySelector(".gear-effect.cast-pop");
       if (!box) return;
-      const r = button.getBoundingClientRect();
-      const w = box.offsetWidth || 288;
-      const h = box.offsetHeight || 120;
-      let left = r.right + 12;
-      let top = r.top;
-      if (left + w > window.innerWidth - 8) left = Math.max(8, r.left - 12 - w);
-      if (top + h > window.innerHeight - 8) top = Math.max(8, window.innerHeight - 8 - h);
-      box.style.left = `${Math.round(left)}px`;
-      box.style.top = `${Math.round(top)}px`;
+      box.style.left = "0px";
+      box.style.top = "0px";
+      placeAnchored(box, button, { gap: 12, pad: 8, fallbackW: 288, fallbackH: 120, align: "top" });
     }
 
     function hideCastGear() {
@@ -11948,9 +12102,8 @@
           <h2>パリィ</h2>
           <p>次の攻撃を１回無効にする。重なる。</p>
           <p>ターン終了時に消失。</p>
-          <p>パリィを得ると、いま持っているシールドはすべてなくなる。表示は銀の盾から金の盾へ変わる。</p>
+          <p>パリィを得ると、いま持っているシールドはすべてなくなる。</p>
           <p>パリィがある間、シールドを追加で得ることはできない。</p>
-          <p>2枚目以降は金の盾に2から数字が載る。</p>
         </aside>`;
     }
 
@@ -12001,15 +12154,7 @@
       pop.innerHTML = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
       root.appendChild(pop);
       if (enlarge) return;
-      const rect = button.getBoundingClientRect();
-      const width = pop.offsetWidth || 440;
-      const height = pop.offsetHeight || Math.round(width * (4 / 3));
-      let left = rect.right + 12;
-      if (left + width > window.innerWidth - 8) left = Math.max(8, rect.left - width - 12);
-      let top = rect.top + rect.height / 2 - height / 2;
-      top = Math.max(8, Math.min(window.innerHeight - height - 8, top));
-      pop.style.left = `${Math.round(left)}px`;
-      pop.style.top = `${Math.round(top)}px`;
+      placeAnchored(pop, button, { gap: 12, pad: 8, fallbackW: 440, fallbackH: 520 });
     }
 
     function hideCastCardPop() {
@@ -12699,7 +12844,7 @@
         peek = document.createElement("div");
         peek.className = "log-peek";
         peek.hidden = true;
-        document.body.appendChild(peek);
+        mountFloat(peek);
       }
       host.querySelectorAll("[data-log]").forEach((line) => {
         line.addEventListener("pointerenter", () => {
@@ -12707,12 +12852,14 @@
           if (!card) return;
           const tone = line.dataset.foe === "1" ? "foe" : cardKind(card);
           peek.innerHTML = `<div class="card preview ${tone}">${cardFace(card, false)}</div>`;
-          const rect = line.getBoundingClientRect();
-          const width = 148;
-          const height = Math.round(width * 300 / 204);
           peek.hidden = false;
-          peek.style.left = `${Math.max(8, rect.left - width - 12)}px`;
-          peek.style.top = `${Math.max(8, Math.min(window.innerHeight - height - 8, rect.top + rect.height / 2 - height / 2))}px`;
+          placeAnchored(peek, line, {
+            prefer: "left",
+            gap: 12,
+            pad: 8,
+            width: 148,
+            height: Math.round(148 * 300 / 204),
+          });
         });
         line.addEventListener("pointerleave", () => {
           peek.hidden = true;
@@ -13390,7 +13537,7 @@
     }
 
     function clearFoeDeckPop() {
-      document.querySelectorAll("body > .foe-deck-pop").forEach((el) => el.remove());
+      document.querySelectorAll("#stage-float > .foe-deck-pop, body > .foe-deck-pop").forEach((el) => el.remove());
     }
 
     function bindFoePeek() {
@@ -13402,7 +13549,7 @@
       }
       const pop = root.querySelector(".foe-deck-pop");
       if (!pile || !pop) return;
-      document.body.appendChild(pop);
+      mountFloat(pop);
       let hideTimer = 0;
       const show = () => {
         if (hideTimer) {
@@ -13411,17 +13558,18 @@
         }
         pop.classList.add("open");
         const margin = 8;
-        const width = Math.min(980, window.innerWidth - margin * 2);
+        const bounds = stageBox();
+        const width = Math.min(980, bounds.w - margin * 2);
         pop.style.width = `${width}px`;
-        const pileBox = pile.getBoundingClientRect();
-        let left = pileBox.right - width;
-        left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+        const frame = stageFrameOf(pile);
+        let left = frame.left + frame.w - width;
+        left = Math.max(margin, Math.min(left, bounds.w - width - margin));
         pop.style.left = `${Math.round(left)}px`;
         pop.style.right = "auto";
         const height = pop.offsetHeight;
-        let top = pileBox.top - height - 10;
+        let top = frame.top - height - 10;
         if (top < margin) top = margin;
-        if (top + height > window.innerHeight - margin) top = Math.max(margin, window.innerHeight - height - margin);
+        if (top + height > bounds.h - margin) top = Math.max(margin, bounds.h - height - margin);
         pop.style.top = `${Math.round(top)}px`;
         pop.style.bottom = "auto";
       };
@@ -13758,22 +13906,25 @@
       const layer = document.createElement("div");
       layer.className = "star-home-layer";
       layer.setAttribute("aria-hidden", "true");
-      document.body.appendChild(layer);
+      mountFloat(layer);
+      const hop = 90 / stageScale();
       let left = n;
       for (let i = 0; i < n; i++) {
         const from = points[Math.min(i, points.length - 1)];
-        const to = starHomePoint();
-        const dx = to.x - from.x;
-        const dy = to.y - from.y;
+        const home = starHomePoint();
+        const a = viewportToStage(from.x, from.y);
+        const b = viewportToStage(home.x, home.y);
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
         const el = document.createElement("span");
         el.className = "home-star";
         el.textContent = "★";
-        el.style.left = `${from.x}px`;
-        el.style.top = `${from.y}px`;
+        el.style.left = `${a.x}px`;
+        el.style.top = `${a.y}px`;
         layer.appendChild(el);
         const anim = el.animate([
           { transform: "translate(-50%, -50%) scale(1) rotate(0deg)", opacity: 1, offset: 0 },
-          { transform: `translate(calc(-50% + ${dx * 0.45}px), calc(-50% + ${dy * 0.45 - 90}px)) scale(0.95) rotate(200deg)`, opacity: 1, offset: 0.5 },
+          { transform: `translate(calc(-50% + ${dx * 0.45}px), calc(-50% + ${dy * 0.45 - hop}px)) scale(0.95) rotate(200deg)`, opacity: 1, offset: 0.5 },
           { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3) rotate(420deg)`, opacity: 0.95, offset: 1 },
         ], { duration: 860, delay: 180 + i * 150, easing: "cubic-bezier(0.32, 0.08, 0.2, 1)", fill: "forwards" });
         anim.onfinish = () => {
@@ -13862,14 +14013,15 @@
       const ghost = made.ghost;
       ghost.classList.add("reward-fly");
       const from = made.from;
-      const to = dest.getBoundingClientRect();
-      if (!to.width || !to.height || !from.width || !from.height) {
+      const to = stageFrameOf(dest);
+      if (!to.w || !to.h || !from.w || !from.h) {
         ghost.remove();
         return;
       }
-      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-      const scale = Math.max(0.16, to.height / from.height);
+      const move = stageDelta(from, to);
+      const dx = move.dx;
+      const dy = move.dy;
+      const scale = Math.max(0.16, move.scale);
       let done = false;
       const finish = () => {
         if (done) return;
@@ -14043,25 +14195,26 @@
         overlay.style.transition = "opacity 0.28s ease";
         overlay.style.opacity = "0.12";
       }
-      const from = img.getBoundingClientRect();
-      const to = dest.getBoundingClientRect();
+      const from = stageFrameOf(img);
+      const to = stageFrameOf(dest);
       const ghost = img.cloneNode(true);
       ghost.style.position = "fixed";
       ghost.style.zIndex = "90";
       ghost.style.margin = "0";
       ghost.style.left = `${from.left}px`;
       ghost.style.top = `${from.top}px`;
-      ghost.style.width = `${from.width}px`;
-      ghost.style.height = `${from.height}px`;
+      ghost.style.width = `${from.w}px`;
+      ghost.style.height = `${from.h}px`;
       ghost.style.objectFit = "cover";
       ghost.style.borderRadius = "8px";
+      ghost.style.pointerEvents = "none";
       ghost.style.transition = "left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.55s ease, height 0.55s ease";
-      document.body.appendChild(ghost);
+      mountFloat(ghost);
       requestAnimationFrame(() => requestAnimationFrame(() => {
         ghost.style.left = `${to.left}px`;
         ghost.style.top = `${to.top}px`;
-        ghost.style.width = `${Math.max(to.width, 8)}px`;
-        ghost.style.height = `${Math.max(to.height, 8)}px`;
+        ghost.style.width = `${Math.max(to.w, 8)}px`;
+        ghost.style.height = `${Math.max(to.h, 8)}px`;
       }));
       setTimeout(() => {
         ghost.remove();
@@ -14538,8 +14691,8 @@
     }
     function fitStage() {
       const doc = document.documentElement;
-      const stageW = 1920;
-      const stageH = 1080;
+      const stageW = 2560;
+      const stageH = 1440;
       doc.classList.toggle("iphone-play", iphonePlay);
       if (!iphonePlay && phoneLayout()) {
         doc.classList.add("phone");
@@ -14584,7 +14737,7 @@
     const kwTip = document.createElement("div");
     kwTip.className = "kw-tip";
     kwTip.hidden = true;
-    document.body.appendChild(kwTip);
+    mountFloat(kwTip);
     let kwTipAnchor = null;
     // 手札は乗ると持ち上がる。動きが終わるまで待ってから出す（そのあいだに別のカードへ移ったら出さない）
     const KW_TIP_DELAY = 300;
@@ -14597,25 +14750,10 @@
     }
 
     function placeKwTip(anchor) {
-      const r = anchor.getBoundingClientRect();
-      const w = kwTip.offsetWidth;
-      const h = kwTip.offsetHeight;
-      const pad = 8;
-      const gap = 12;
-      let left = r.right + gap;
-      let sideLeft = false;
-      if (left + w > window.innerWidth - pad) {
-        left = r.left - gap - w;
-        sideLeft = true;
-      }
-      if (left < pad) left = pad;
-      let top = r.top + r.height / 2 - h / 2;
-      top = Math.max(pad, Math.min(window.innerHeight - h - pad, top));
-      kwTip.style.left = `${Math.round(left)}px`;
-      kwTip.style.top = `${Math.round(top)}px`;
-      const arrowY = r.top + r.height / 2 - top;
-      kwTip.style.setProperty("--arrow-y", `${Math.round(Math.max(14, Math.min(h - 14, arrowY)))}px`);
-      kwTip.classList.toggle("left", sideLeft);
+      const placed = placeAnchored(kwTip, anchor, { gap: 12, pad: 8 });
+      const arrowY = placed.frame.cy - placed.top;
+      kwTip.style.setProperty("--arrow-y", `${Math.round(Math.max(14, Math.min(placed.h - 14, arrowY)))}px`);
+      kwTip.classList.toggle("left", placed.sideLeft);
     }
 
     function showKwTip(anchor) {
