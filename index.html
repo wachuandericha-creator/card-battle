@@ -1117,7 +1117,7 @@
       z-index: 9;
       transform: translate(-50%, -50%);
       margin: 0;
-      font-size: clamp(52px, 8vw, 92px);
+      font-size: clamp(52px, 8cqw, 92px);
       font-weight: 800;
       letter-spacing: 0.42em;
       color: #ffd8c8;
@@ -1276,12 +1276,12 @@
       background: transparent !important;
       box-shadow: none;
     }
-    .reward-pick .card.preview { width: min(250px, 24vw); height: auto; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
+    .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
     .reward-pick:hover .card.preview { box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
-    .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100vw - 40px)); padding: 36px 48px 32px; }
+    .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100cqw - 40px)); padding: 36px 48px 32px; }
     .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
-    .reward-pick.gear-pick { width: min(250px, 24vw); padding: 0; border: 0; background: none; color: var(--cream); }
-    .gear-offer { width: min(250px, 24vw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .reward-pick.gear-pick { width: min(250px, 24cqw); padding: 0; border: 0; background: none; color: var(--cream); }
+    .gear-offer { width: min(250px, 24cqw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .gear-offer-card { width: min(240px, 100%); }
     .gear-offer-info { width: 100%; text-align: center; }
     .gear-offer-art { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #1a1410; }
@@ -1348,14 +1348,14 @@
     .menu.shop-floor { justify-content: flex-start; padding-top: calc(18px + 1.2em); overflow-y: auto; }
     .menu.shop-floor .shop-panel { width: min(100%, 1060px); }
     .burn-mark { color: #ffb15c; }
-    .overlay .panel.wide { width: min(960px, calc(100vw - 40px)); max-height: calc(100vh - 40px); overflow: auto; }
-    .overlay .panel.wide.shop-panel { width: min(1060px, calc(100vw - 40px)); }
+    .overlay .panel.wide { width: min(960px, calc(100cqw - 40px)); max-height: calc(100cqh - 40px); overflow: auto; }
+    .overlay .panel.wide.shop-panel { width: min(1060px, calc(100cqw - 40px)); }
     .path-list { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 22px; width: 100%; }
     .overlay.deck-view { z-index: 70; }
     .overlay.deck-view .panel {
-      width: min(1480px, calc(100vw - 20px));
-      height: min(920px, calc(100vh - 16px));
-      max-height: calc(100vh - 16px);
+      width: min(1480px, calc(100cqw - 20px));
+      height: min(920px, calc(100cqh - 16px));
+      max-height: calc(100cqh - 16px);
       padding: 20px 24px 18px;
       overflow: hidden;
       align-items: stretch;
@@ -1428,7 +1428,7 @@
       width: auto;
       max-width: 100%;
       min-width: 0;
-      max-height: calc(100vh - 48px);
+      max-height: calc(100cqh - 48px);
       overflow: auto;
       align-items: stretch;
       text-align: left;
@@ -1611,18 +1611,18 @@
       cursor: pointer;
     }
     @media (max-width: 900px) {
-      .album-screen {
+      html:not(.stage-fit) .album-screen {
         grid-template-columns: 1fr;
         grid-template-rows: minmax(0, 1fr);
       }
-      .album-screen.has-zoom {
+      html:not(.stage-fit) .album-screen.has-zoom {
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(0, 1fr) minmax(280px, 46vh);
+        grid-template-rows: minmax(0, 1fr) minmax(280px, 46cqh);
       }
-      .album-screen .panel {
+      html:not(.stage-fit) .album-screen .panel {
         max-height: none;
       }
-      .art-zoom-side {
+      html:not(.stage-fit) .art-zoom-side {
         min-height: 0;
       }
     }
@@ -1759,7 +1759,7 @@
       font-size: 11px;
       line-height: 1.35;
     }
-    .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 10px max(56px, 12vw) 16px; overflow: hidden; }
+    .cast-screen { position: relative; height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 10px max(56px, 12cqw) 16px; overflow: hidden; }
     .cast-back {
       position: absolute;
       top: 16px;
@@ -1778,10 +1778,10 @@
     .cast-row { display: flex; gap: 8px; }
     .cast-mini { width: 72px; height: 84px; padding: 0; overflow: hidden; border: 2px solid var(--gold); background: #1a1614; }
     .cast-mini .cast-front { width: 72px; height: 84px; }
-    .cast-body { flex: 1; display: grid; grid-template-columns: auto minmax(180px, 34vw) minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+    .cast-body { flex: 1; display: grid; grid-template-columns: auto minmax(180px, 34cqw) minmax(0, 1fr) auto; gap: 16px; align-items: center; }
     .cast-arrow { width: 64px; height: 64px; border-radius: 50%; font-size: 28px; }
     .cast-front { overflow: hidden; background: #120e0c; }
-    .cast-front.big { height: min(78vh, 720px); display: flex; align-items: center; justify-content: center; background: transparent; }
+    .cast-front.big { height: min(78cqh, 720px); display: flex; align-items: center; justify-content: center; background: transparent; }
     .cast-front img { width: 500%; height: 100%; max-width: none; object-fit: cover; object-position: left center; }
     .cast-front img.cast-portrait { width: 100%; height: 100%; max-width: 100%; object-fit: contain; object-position: center center; }
     .cast-mini .cast-front { height: 64px; }
@@ -1812,7 +1812,7 @@
       width: 100%;
       text-align: center;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(36px, 4.4vw, 64px);
+      font-size: clamp(36px, 4.4cqw, 64px);
       font-weight: 800;
       letter-spacing: 0.16em;
       line-height: 1.15;
@@ -1843,8 +1843,8 @@
       color: #f6d48a;
     }
     .cast-pick img {
-      width: min(420px, 46vw);
-      height: min(68vh, 640px);
+      width: min(420px, 46cqw);
+      height: min(68cqh, 640px);
       object-fit: contain;
       filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.45));
     }
@@ -1944,7 +1944,7 @@
     .cast-card-pop {
       position: fixed;
       z-index: 80;
-      width: min(440px, 58vw);
+      width: min(440px, 58cqw);
       pointer-events: none;
       filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.7));
     }
@@ -1952,7 +1952,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: min(520px, 72vw);
+      width: min(520px, 72cqw);
       pointer-events: auto;
     }
     .cast-card-pop .card.preview { width: 100%; height: auto; }
@@ -1982,7 +1982,7 @@
       text-shadow: 0 2px 0 #6a4a16;
     }
     .cast-token.stand img {
-      height: min(26vh, 230px);
+      height: min(26cqh, 230px);
       width: auto;
       object-fit: contain;
       filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.45));
@@ -2012,7 +2012,7 @@
       border-color: rgba(228, 177, 90, 0.38);
     }
     .cast-hero {
-      height: min(22vh, 200px);
+      height: min(22cqh, 200px);
       width: auto;
       margin: 0 auto;
       object-fit: contain;
@@ -2033,7 +2033,7 @@
     }
     .cast-action {
       width: auto;
-      max-width: min(520px, 42vw);
+      max-width: min(520px, 42cqw);
       aspect-ratio: 4 / 5;
       height: 84%;
       min-height: 0;
@@ -2172,12 +2172,12 @@
     .fade-sandwich {
       display: flex;
       align-items: center;
-      gap: clamp(8px, 1.5vw, 14px);
+      gap: clamp(8px, 1.5cqw, 14px);
     }
     .fade-sandwich > .fade-line,
     .fade-sandwich > i.fade-line {
       flex: 0 0 auto;
-      width: clamp(32px, 5vw, 56px);
+      width: clamp(32px, 5cqw, 56px);
       max-width: 56px;
       min-width: 0;
       height: 2px;
@@ -3284,8 +3284,8 @@
       display: none;
       position: fixed;
       z-index: 90;
-      width: min(980px, 74vw);
-      max-height: min(68vh, 640px);
+      width: min(980px, 74cqw);
+      max-height: min(68cqh, 640px);
       padding: 16px 18px 14px;
       overflow: hidden;
       flex-direction: column;
@@ -3501,15 +3501,15 @@
     .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; filter: grayscale(0.25); }
     /* 装備説明はレイアウトを広げず、枠の右に重ねる漆金ポップ */
     .gear-effect:not(.gear-effect-embedded) {
-      width: min(var(--gear-pop-w, 220px), calc(100vw - 20px));
+      width: min(var(--gear-pop-w, 220px), calc(100cqw - 20px));
       min-width: 168px;
-      max-width: min(352px, calc(100vw - 20px));
+      max-width: min(352px, calc(100cqw - 20px));
     }
     .gear-effect {
       position: fixed;
       z-index: 55;
       margin: 0;
-      max-height: min(78vh, 440px);
+      max-height: min(78cqh, 440px);
       box-sizing: border-box;
       padding: 0;
       border: 0;
@@ -3535,7 +3535,7 @@
     .gear-effect-inner {
       position: relative;
       padding: 12px 11px 10px;
-      max-height: min(78vh, 440px);
+      max-height: min(78cqh, 440px);
       overflow: auto;
       box-sizing: border-box;
       text-align: left;
@@ -3649,7 +3649,7 @@
       margin: 0;
       width: auto;
       max-width: 100%;
-      font-size: clamp(15px, 3.6vw, 20px);
+      font-size: clamp(15px, 3.6cqw, 20px);
       font-weight: 800;
       line-height: 1.25;
       color: #ffe7a8;
@@ -3861,7 +3861,7 @@
       .hero-hit.fatal .flash, .hero-hit.fatal .ring, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
         left: 50%;
-        top: 12vh;
+        top: 12cqh;
         opacity: 1;
         transform: translate(calc(-50% + (var(--i) - (var(--n) - 1) / 2) * 110px), 0);
       }
@@ -4119,7 +4119,7 @@
       position: fixed;
       z-index: 1000;
       width: max-content;
-      max-width: min(320px, calc(100vw - 16px));
+      max-width: min(320px, calc(100cqw - 16px));
       padding: 10px 14px;
       border-radius: 12px;
       border: 1px solid rgba(228, 177, 90, 0.9);
@@ -4351,18 +4351,18 @@
       place-items: center;
     }
     .overlay.paths {
-      left: calc(12.5vw + 18px);
-      right: calc(12.5vw + 18px);
+      left: calc(12.5cqw + 18px);
+      right: calc(12.5cqw + 18px);
       top: 84px;
       bottom: 14px;
       background: rgba(10, 8, 7, 0.82);
     }
     .overlay.gear-offer { z-index: 32; }
-    .overlay.gear-offer .panel { width: min(720px, calc(100vw - 32px)); }
+    .overlay.gear-offer .panel { width: min(720px, calc(100cqw - 32px)); }
     .gear-offer-lead { font-size: 22px; font-weight: 800; color: #ffe7a8; margin: 0 0 16px; }
     .gear-compare { display: flex; gap: 14px; justify-content: center; align-items: stretch; flex-wrap: wrap; margin: 0 0 16px; }
     .gear-compare-card {
-      width: min(312px, 44vw);
+      width: min(312px, 44cqw);
       padding: 10px 10px 12px;
       border-radius: 16px;
       background: rgba(20, 14, 10, 0.55);
@@ -4413,7 +4413,7 @@
       flex-direction: column;
       align-items: center;
     }
-    .leave-ask .panel { gap: 8px; min-width: min(420px, calc(100vw - 32px)); }
+    .leave-ask .panel { gap: 8px; min-width: min(420px, calc(100cqw - 32px)); }
     .leave-ask .leave-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .leave-ask .leave-actions button { margin: 0; }
     .overlay h2 { margin: 0 0 8px; font-size: 28px; color: var(--cream); letter-spacing: 0.06em; }
@@ -4457,7 +4457,7 @@
       z-index: 4;
       transform: translateX(-50%);
       margin: 0;
-      font-size: clamp(48px, 8vw, 88px);
+      font-size: clamp(48px, 8cqw, 88px);
       font-weight: 800;
       letter-spacing: 0.36em;
       color: #ffe7a8;
@@ -4466,7 +4466,7 @@
       pointer-events: none;
     }
     .overlay.victory.finale .win-pose {
-      height: min(56vh, 640px);
+      height: min(56cqh, 640px);
       width: auto;
       max-width: 100%;
       object-fit: contain;
@@ -4476,7 +4476,7 @@
       z-index: 2;
     }
     .overlay.victory.finale .win-foe {
-      height: min(34vh, 340px);
+      height: min(34cqh, 340px);
       width: auto;
       max-width: 90%;
       object-fit: contain;
@@ -4490,8 +4490,8 @@
       position: absolute;
       left: 22%;
       top: 0%;
-      width: min(78vh, 640px);
-      height: min(78vh, 640px);
+      width: min(78cqh, 640px);
+      height: min(78cqh, 640px);
       border-radius: 50%;
       background: repeating-conic-gradient(from 0deg, rgba(255, 224, 140, 0.34) 0 8deg, transparent 8deg 16deg);
       mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.9), transparent 70%);
@@ -4534,7 +4534,7 @@
     .overlay.victory.finale .win-spark.s6 { left: 70%; top: 42%; animation-delay: 0.8s; }
     .overlay.victory.finale .panel {
       justify-self: center;
-      max-height: 46vh;
+      max-height: 46cqh;
       overflow: auto;
     }
     .reward-top {
@@ -4571,7 +4571,7 @@
       animation-name: star-settle;
     }
     @keyframes star-settle {
-      0% { opacity: 0; transform: translate(16vw, 10vh) scale(0.2) rotate(-28deg); }
+      0% { opacity: 0; transform: translate(16cqw, 10cqh) scale(0.2) rotate(-28deg); }
       22% { opacity: 1; }
       100% { opacity: 1; transform: none; }
     }
@@ -4606,7 +4606,7 @@
       22% { opacity: 1; }
       100% {
         opacity: 1;
-        transform: translate(calc(-22vw + (var(--i) - (var(--n) - 1) / 2) * 110px), -16vh) scale(1) rotate(0deg);
+        transform: translate(calc(-22cqw + (var(--i) - (var(--n) - 1) / 2) * 110px), -16cqh) scale(1) rotate(0deg);
       }
     }
     /* 報酬を選んだあと、★が上中央の所持表示へ飛んで吸い込まれる */
@@ -4644,8 +4644,8 @@
       min-height: 72px;
     }
     .overlay.paths .panel.wide {
-      width: min(1360px, calc(100vw - 24px));
-      max-height: calc(100vh - 16px);
+      width: min(1360px, calc(100cqw - 24px));
+      max-height: calc(100cqh - 16px);
       padding: 22px 24px 20px;
     }
     .overlay.paths h2 {
@@ -4663,7 +4663,7 @@
       flex: 1 1 0;
       width: 0;
       max-width: none;
-      min-height: min(62vh, 560px);
+      min-height: min(62cqh, 560px);
       padding: 14px 14px 18px;
       border-radius: 18px;
       font-size: 20px;
@@ -4694,7 +4694,7 @@
       color: var(--cream);
       border: 1px solid rgba(228, 177, 90, 0.8);
     }
-    #game { height: 100%; overflow: hidden; }
+    #game { width: 100%; height: 100%; overflow: hidden; container-type: size; container-name: stage; }
     /* 画面は端まで使う。余白の外枠は無い */
     .end-screen {
       height: 100%;
@@ -4709,7 +4709,7 @@
         #120c0a;
     }
     .end-screen.defeat h1 {
-      font-size: clamp(36px, 6vw, 64px);
+      font-size: clamp(36px, 6cqw, 64px);
       letter-spacing: 0.28em;
       text-align: center;
       color: #ffd2c4;
@@ -4729,7 +4729,7 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 18px;
       align-items: end;
-      min-height: 38vh;
+      min-height: 38cqh;
     }
     .end-screen .end-portraits figure {
       margin: 0;
@@ -4739,7 +4739,7 @@
       min-width: 0;
     }
     .end-screen .end-portraits img {
-      height: min(52vh, 620px);
+      height: min(52cqh, 620px);
       width: auto;
       max-width: 100%;
       object-fit: contain;
@@ -4749,11 +4749,11 @@
     .end-screen .end-portraits figure.scene img {
       width: 100%;
       height: auto;
-      max-height: min(42vh, 420px);
+      max-height: min(42cqh, 420px);
       object-position: center center;
     }
     .end-screen .end-portraits figure.foe img {
-      height: min(48vh, 560px);
+      height: min(48cqh, 560px);
       filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(255, 70, 40, 0.35));
     }
     .end-screen .end-portraits figcaption {
@@ -4773,7 +4773,7 @@
     .end-screen .end-log,
     .end-screen .end-deck {
       min-height: 0;
-      max-height: 42vh;
+      max-height: 42cqh;
       overflow: auto;
       padding: 12px 14px;
       border: 1px solid rgba(228, 177, 90, 0.4);
@@ -4793,9 +4793,9 @@
     .end-screen .end-deck .card.preview { width: 92px; }
     .end-screen .end-note { margin: 0; text-align: center; color: var(--muted); }
     @media (max-width: 900px) {
-      .end-screen .end-portraits,
-      .end-screen .end-cols { grid-template-columns: 1fr; }
-      .end-screen .end-portraits img { height: min(34vh, 360px); }
+      html:not(.stage-fit) .end-screen .end-portraits,
+      html:not(.stage-fit) .end-screen .end-cols { grid-template-columns: 1fr; }
+      html:not(.stage-fit) .end-screen .end-portraits img { height: min(34cqh, 360px); }
     }
     .menu {
       height: 100%;
@@ -4831,8 +4831,8 @@
       left: 50%;
       top: 42%;
       z-index: 0;
-      width: min(78vw, 920px);
-      height: min(58vh, 520px);
+      width: min(78cqw, 920px);
+      height: min(58cqh, 520px);
       object-fit: cover;
       object-position: 50% 28%;
       border-radius: 18px;
@@ -4860,7 +4860,7 @@
     .title-embers { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
     .title-embers i {
       position: absolute;
-      bottom: -4vh;
+      bottom: -4cqh;
       left: calc(6% + var(--x, 0) * 1%);
       width: 5px;
       height: 5px;
@@ -4885,14 +4885,14 @@
     @keyframes ember-rise {
       0% { transform: translate(0, 0); opacity: 0; }
       8% { opacity: 0.95; }
-      50% { transform: translate(18px, -50vh); opacity: 0.8; }
-      100% { transform: translate(-10px, -104vh); opacity: 0; }
+      50% { transform: translate(18px, -50cqh); opacity: 0.8; }
+      100% { transform: translate(-10px, -104cqh); opacity: 0; }
     }
     /* ロゴは上中央、操作は画面中央下（端すぎると押しにくい） */
     .title-hero {
       position: absolute;
       z-index: 3;
-      top: clamp(20px, 4.5vh, 48px);
+      top: clamp(20px, 4.5cqh, 48px);
       left: 50%;
       right: auto;
       transform: translateX(-50%);
@@ -4908,7 +4908,7 @@
       align-self: center;
       color: rgba(255, 236, 196, 0.85);
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(11px, 1.1vw, 15px);
+      font-size: clamp(11px, 1.1cqw, 15px);
       letter-spacing: 0.62em;
       text-indent: 0.62em;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
@@ -4927,7 +4927,7 @@
     }
     .title-logo > span {
       display: block;
-      font-size: clamp(44px, 6.4vw, 104px);
+      font-size: clamp(44px, 6.4cqw, 104px);
       letter-spacing: 0.1em;
       text-indent: 0.1em;
       background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 28%, #e2ad4a 52%, #a8731c 60%, #ffe39a 78%, #d9a548 100%);
@@ -4939,7 +4939,7 @@
     }
     .title-logo > span.sub {
       margin-top: 0.12em;
-      font-size: clamp(18px, 2.3vw, 36px);
+      font-size: clamp(18px, 2.3cqw, 36px);
       letter-spacing: 0.46em;
       text-indent: 0.46em;
       background: linear-gradient(180deg, #fff6e0 0%, #f2d48e 45%, #c9953a 100%);
@@ -4951,7 +4951,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      width: min(420px, 56vw);
+      width: min(420px, 56cqw);
       margin: 16px auto 0;
       color: #f0c36a;
       text-shadow: 0 0 10px rgba(240, 195, 106, 0.9);
@@ -4964,7 +4964,7 @@
       z-index: 4;
       left: 50%;
       right: auto;
-      bottom: clamp(56px, 11vh, 108px);
+      bottom: clamp(56px, 11cqh, 108px);
       transform: translateX(-50%);
       display: flex;
       flex-direction: column;
@@ -5023,12 +5023,12 @@
     .title-board {
       position: absolute;
       z-index: 5;
-      top: 4vh;
-      right: max(24px, 3vw);
+      top: 4cqh;
+      right: max(24px, 3cqw);
       bottom: auto;
-      width: min(400px, 36vw);
+      width: min(400px, 36cqw);
       height: auto;
-      max-height: calc(100vh - 8vh);
+      max-height: calc(100cqh - 8cqh);
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -5064,7 +5064,7 @@
       align-items: center;
       gap: 12px;
       text-align: center;
-      font-size: clamp(22px, 2.2vw, 30px);
+      font-size: clamp(22px, 2.2cqw, 30px);
       letter-spacing: 0.22em;
       font-weight: 900;
     }
@@ -5120,7 +5120,7 @@
       justify-content: center;
       line-height: 1;
       transform: translateY(-0.08em);
-      font-size: clamp(18px, 1.5vw, 22px);
+      font-size: clamp(18px, 1.5cqw, 22px);
       color: #ffe9ae;
       text-shadow: 0 0 18px rgba(255, 200, 80, 0.45), 0 2px 0 #5a3d12;
       font-variant-numeric: tabular-nums;
@@ -5227,26 +5227,26 @@
     }
     .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
-      .title-hero { top: 12px; }
-      .title-actions { bottom: 16px; width: min(420px, calc(100% - 32px)); }
-      .title-board {
+      html:not(.stage-fit) .title-hero { top: 12px; }
+      html:not(.stage-fit) .title-actions { bottom: 16px; width: min(420px, calc(100% - 32px)); }
+      html:not(.stage-fit) .title-board {
         top: 8px;
         right: 8px;
-        width: min(240px, 46vw);
-        max-height: calc(100vh - 16px);
+        width: min(240px, 46cqw);
+        max-height: calc(100cqh - 16px);
         margin: 0;
         padding: 10px;
         gap: 8px;
       }
-      .title-board h2 { font-size: 16px; letter-spacing: 0.14em; }
-      .title-board .board-stars b { font-size: 16px; }
-      .title-board .board-goals li { font-size: 13px; padding: 8px 10px; }
-      .title-board .board-foot { grid-template-columns: 1fr; }
+      html:not(.stage-fit) .title-board h2 { font-size: 16px; letter-spacing: 0.14em; }
+      html:not(.stage-fit) .title-board .board-stars b { font-size: 16px; }
+      html:not(.stage-fit) .title-board .board-goals li { font-size: 13px; padding: 8px 10px; }
+      html:not(.stage-fit) .title-board .board-foot { grid-template-columns: 1fr; }
     }
     .menu h1 {
       margin: 0;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(36px, 4vw, 56px);
+      font-size: clamp(36px, 4cqw, 56px);
       font-weight: 800;
       letter-spacing: 0.18em;
       line-height: 1.2;
@@ -5376,7 +5376,7 @@
       left: 8px;
       top: 72px;
       bottom: 12px;
-      width: 12.5vw;
+      width: 12.5cqw;
       min-width: 168px;
       transform: translateX(calc(-100% - 16px));
       transition: transform 0.28s ease;
@@ -5405,8 +5405,8 @@
       align-items: center;
     }
     .event-drawers .drawer-panel {
-      width: min(300px, 46vw);
-      height: min(70vh, 640px);
+      width: min(300px, 46cqw);
+      height: min(70cqh, 640px);
       min-height: 0;
       overflow: auto;
       border-radius: 16px;
@@ -5432,10 +5432,10 @@
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
     .menu.event.shop .shop-have { margin: 0 0 12px; width: 100%; text-align: center; font-size: 28px; font-weight: 900; color: #ffe08a; }
     .menu.event > h1 { grid-area: title; text-align: center; margin: 28px 0 0; }
-    .menu.event > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3vw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
+    .menu.event > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3cqw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
     .overlay.paths .path-now,
     .overlay.paths .path-now .event-floor-num {
-      font-size: clamp(32px, 3vw, 48px);
+      font-size: clamp(32px, 3cqw, 48px);
       font-weight: 900;
       letter-spacing: 0.18em;
       color: #ffe08a;
@@ -5462,7 +5462,7 @@
     }
     .event-floor-call b {
       flex: 0 0 auto;
-      font-size: min(16vw, 168px);
+      font-size: min(16cqw, 168px);
       font-weight: 900;
       letter-spacing: 0.08em;
       color: #f0c36a;
@@ -5475,7 +5475,7 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: stretch;
       align-self: stretch;
-      gap: clamp(10px, 1.4vw, 22px) clamp(4px, 0.8vw, 12px);
+      gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.8cqw, 12px);
       width: 100%;
       max-width: 100%;
       max-height: 100%;
@@ -5508,8 +5508,8 @@
       justify-content: center;
       gap: 14px;
       overflow: hidden;
-      padding-right: clamp(6px, 1vw, 16px);
-      padding-left: clamp(4px, 0.6vw, 12px);
+      padding-right: clamp(6px, 1cqw, 16px);
+      padding-left: clamp(4px, 0.6cqw, 12px);
       box-sizing: border-box;
     }
     .menu.event .event-copy {
@@ -5561,7 +5561,7 @@
       width: auto;
       height: auto;
       max-width: min(94%, 100%);
-      max-height: min(calc(100vh - 132px), 100%);
+      max-height: min(calc(100cqh - 132px), 100%);
       aspect-ratio: auto;
       object-fit: contain;
       object-position: center center;
@@ -5569,15 +5569,15 @@
       box-sizing: border-box;
     }
     .menu.event.bless .event-lead {
-      gap: clamp(10px, 1.4vw, 22px) clamp(4px, 0.6vw, 10px);
+      gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.6cqw, 10px);
     }
     .menu.event.bless .event-side {
       gap: 20px;
-      padding-right: clamp(2px, 0.5vw, 8px);
+      padding-right: clamp(2px, 0.5cqw, 8px);
     }
     .menu.event.bless .event-copy .event-story p,
     .menu.event.bless .event-copy .event-play p {
-      font-size: clamp(21px, 1.95vw, 31px);
+      font-size: clamp(21px, 1.95cqw, 31px);
       line-height: 1.68;
     }
     .menu.event.bless .event-side .event-choice {
@@ -5665,7 +5665,7 @@
       margin: 0;
       text-align: left;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(18px, 1.5vw, 23px);
+      font-size: clamp(18px, 1.5cqw, 23px);
       font-weight: 700;
       line-height: 1.72;
       letter-spacing: 0.05em;
@@ -5678,11 +5678,11 @@
     .menu.event .event-where,
     .menu.event .event-prompt {
       color: #ffe08a;
-      font-size: clamp(20px, 1.72vw, 26px);
+      font-size: clamp(20px, 1.72cqw, 26px);
     }
     .menu.event .event-play p {
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(20px, 1.72vw, 26px);
+      font-size: clamp(20px, 1.72cqw, 26px);
       font-weight: 700;
       line-height: 1.72;
       letter-spacing: 0.05em;
@@ -5722,22 +5722,22 @@
     .menu.event .gift-btn { flex: 1 1 0; width: auto; min-width: 0; }
     .menu.event.bless { justify-content: stretch; overflow: hidden; padding-top: 8px; }
     @media (max-width: 900px) {
-      .menu.event { padding: 8px 4px 12px 8px; }
-      .menu.event .event-lead {
+      html:not(.stage-fit) .menu.event { padding: 8px 4px 12px 8px; }
+      html:not(.stage-fit) .menu.event .event-lead {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr) auto;
         overflow: auto;
         padding: 0;
       }
-      .menu.event .event-art { min-height: 22vh; }
-      .menu.event .event-art .event-picture {
+      html:not(.stage-fit) .menu.event .event-art { min-height: 22cqh; }
+      html:not(.stage-fit) .menu.event .event-art .event-picture {
         width: auto;
         height: auto;
         max-width: min(88%, 100%);
-        max-height: 21vh;
+        max-height: 21cqh;
         object-position: center;
       }
-      .menu.event .event-side { max-width: 100%; justify-self: stretch; padding-right: 6px; }
+      html:not(.stage-fit) .menu.event .event-side { max-width: 100%; justify-self: stretch; padding-right: 6px; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.event,
@@ -5745,8 +5745,8 @@
       position: fixed;
       inset: 0;
       z-index: 20;
-      width: 100vw;
-      height: 100vh;
+      width: 100cqw;
+      height: 100cqh;
       margin: 0;
       box-sizing: border-box;
       justify-content: stretch;
@@ -5777,7 +5777,7 @@
       margin: 0;
     }
     .menu.bless h1 {
-      font-size: clamp(42px, 5vw, 72px);
+      font-size: clamp(42px, 5cqw, 72px);
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
     }
@@ -5789,7 +5789,7 @@
     }
     .menu.event h1 .event-floor-num {
       flex: 0 0 auto;
-      font-size: clamp(32px, 3vw, 48px);
+      font-size: clamp(32px, 3cqw, 48px);
       font-weight: 900;
       letter-spacing: 0.18em;
       color: #ffe08a;
@@ -5884,10 +5884,10 @@
     .dungeon-gate { position: relative; height: 100%; }
     .dungeon-cover {
       position: absolute;
-      top: 4vh;
-      left: 3vw;
-      width: 94vw;
-      height: 92vh;
+      top: 4cqh;
+      left: 3cqw;
+      width: 94cqw;
+      height: 92cqh;
       object-fit: cover;
       border-radius: 16px;
       border: 2px solid #e4b15a;
@@ -5895,14 +5895,14 @@
     }
     .dungeon-gate-name {
       position: absolute;
-      top: 7vh;
+      top: 7cqh;
       left: 0;
       right: 0;
       z-index: 2;
       margin: 0;
       text-align: center;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(64px, 8vw, 120px);
+      font-size: clamp(64px, 8cqw, 120px);
       font-weight: 900;
       letter-spacing: 0.34em;
       color: #ffe7a4;
@@ -5928,7 +5928,7 @@
     .cast-keys h2 {
       margin: 0 0 10px;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(36px, 3.2vw, 52px);
+      font-size: clamp(36px, 3.2cqw, 52px);
       font-weight: 900;
       letter-spacing: 0.28em;
       text-align: center;
@@ -5938,7 +5938,7 @@
     .cast-keys h3 {
       margin: 4px 0 12px;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(40px, 3.6vw, 64px);
+      font-size: clamp(40px, 3.6cqw, 64px);
       font-weight: 900;
       letter-spacing: 0.22em;
       text-align: center;
@@ -5959,7 +5959,7 @@
     .dungeon-enter {
       position: absolute;
       left: 50%;
-      bottom: 8vh;
+      bottom: 8cqh;
       z-index: 2;
       transform: translateX(-50%);
       min-width: 280px;
@@ -5970,7 +5970,7 @@
     .dungeon-gate-lock {
       position: absolute;
       left: 50%;
-      bottom: 8vh;
+      bottom: 8cqh;
       z-index: 2;
       transform: translateX(-50%);
       margin: 0;
@@ -6009,7 +6009,7 @@
       z-index: 2;
       margin: 0;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
-      font-size: clamp(64px, 8vw, 120px);
+      font-size: clamp(64px, 8cqw, 120px);
       font-weight: 900;
       letter-spacing: 0.34em;
       line-height: 1;
@@ -6085,9 +6085,9 @@
     .bless-arrive-art {
       position: relative;
       z-index: 6;
-      height: min(70vh, 780px);
+      height: min(70cqh, 780px);
       width: auto;
-      max-width: 86vw;
+      max-width: 86cqw;
       object-fit: contain;
       animation: bless-angel 2.8s ease forwards;
     }
@@ -6132,7 +6132,7 @@
       0% { opacity: 0; transform: translate3d(0, var(--y), 0) rotate(var(--r)); }
       8% { opacity: 1; }
       46% { opacity: 1; }
-      100% { opacity: 0; transform: translate3d(var(--x), calc(var(--y) + 115vh), 0) rotate(calc(var(--r) + 540deg)); }
+      100% { opacity: 0; transform: translate3d(var(--x), calc(var(--y) + 115cqh), 0) rotate(calc(var(--r) + 540deg)); }
     }
     .challenge-pick {
       height: 100%;
@@ -6154,13 +6154,13 @@
       --cast-job-deck-cols: 5;
       --cast-job-plaque-pad-x: 28px;
       --cast-job-panel-w: calc(var(--cast-job-deck-cols) * var(--cast-job-card-w) + (var(--cast-job-deck-cols) - 1) * var(--cast-job-deck-gap) + var(--cast-job-plaque-pad-x));
-      --cast-keys-w: min(420px, 34vw);
-      --cast-hero-col: clamp(400px, 54vw, 700px);
+      --cast-keys-w: min(420px, 34cqw);
+      --cast-hero-col: clamp(400px, 54cqw, 700px);
       --cast-job-block-w: calc(
-        var(--cast-hero-col) + var(--cast-job-panel-w) + var(--cast-keys-w) + 2 * clamp(12px, 1.8vw, 20px)
+        var(--cast-hero-col) + var(--cast-job-panel-w) + var(--cast-keys-w) + 2 * clamp(12px, 1.8cqw, 20px)
       );
-      padding-left: max(16px, 3vw);
-      padding-right: max(16px, 3vw);
+      padding-left: max(16px, 3cqw);
+      padding-right: max(16px, 3cqw);
       align-items: center;
     }
     /* 上段：絵｜情報板｜キーワード板（板の見た目・中身はそのまま） */
@@ -6175,7 +6175,7 @@
       position: relative;
       display: grid;
       grid-template-columns: var(--cast-hero-col) minmax(0, var(--cast-job-panel-w)) var(--cast-keys-w);
-      gap: clamp(12px, 1.8vw, 20px);
+      gap: clamp(12px, 1.8cqw, 20px);
       width: min(100%, var(--cast-job-block-w));
       max-width: 100%;
       margin-left: auto;
@@ -6286,7 +6286,7 @@
       padding: 10px 14px 12px;
       overflow: hidden;
     }
-    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2vw, 40px); margin-bottom: 6px; }
+    .cast-screen.character-focus .cast-plaque h1 { font-size: clamp(28px, 2.2cqw, 40px); margin-bottom: 6px; }
     .cast-screen.character-focus .cast-mid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -6310,7 +6310,7 @@
       background: none;
       border-radius: 0;
       color: #fff1d8;
-      font-size: clamp(17px, 1.55vw, 21px);
+      font-size: clamp(17px, 1.55cqw, 21px);
       font-weight: 700;
       line-height: 1.58;
       letter-spacing: 0.05em;
@@ -6352,7 +6352,7 @@
     }
     .cast-screen.character-focus .cast-deck-block h2::before,
     .cast-screen.character-focus .cast-deck-block h2::after {
-      width: clamp(32px, 4.5vw, 44px);
+      width: clamp(32px, 4.5cqw, 44px);
     }
     .cast-screen.character-focus .cast-stat-board.cast-vitals {
       flex: 1 1 auto;
@@ -6386,7 +6386,7 @@
       text-align: right;
       justify-self: end;
     }
-    .cast-screen.character-focus .cast-stat-board .hp-line b { font-size: clamp(22px, 2vw, 28px); }
+    .cast-screen.character-focus .cast-stat-board .hp-line b { font-size: clamp(22px, 2cqw, 28px); }
     /* 初期ステ：左列の半分幅（cast-deck／cast-deck-block には触れない） */
     .cast-screen.character-focus .cast-stat-col > .cast-stat-board.cast-vitals {
       width: 50%;
@@ -6638,7 +6638,7 @@
       gap: 4px;
       justify-content: center;
     }
-    .challenge-job .cast-token.mini img { width: min(280px, 26vw); height: min(340px, 38vh); }
+    .challenge-job .cast-token.mini img { width: min(280px, 26cqw); height: min(340px, 38cqh); }
     .challenge-job .cast-token.mini span { font-size: 16px; }
     .challenge-dungeon .dungeon-preview {
       flex: 1 1 auto;
@@ -6648,13 +6648,13 @@
     }
     .challenge-dungeon .dungeon-columns {
       width: 100%;
-      height: min(26vh, 240px);
+      height: min(26cqh, 240px);
       align-self: stretch;
     }
     .dungeon-preview {
       position: relative;
       width: 100%;
-      height: min(52vh, 560px);
+      height: min(52cqh, 560px);
       max-width: 100%;
       border-radius: 0;
       overflow: hidden;
@@ -6689,7 +6689,7 @@
     .dungeon-caption[hidden] { display: none; }
     .dungeon-caption .preview-name {
       margin: 0;
-      font-size: clamp(28px, 3.4vw, 46px);
+      font-size: clamp(28px, 3.4cqw, 46px);
       font-weight: 900;
       letter-spacing: 0.16em;
       color: #fff6e0;
@@ -6704,7 +6704,7 @@
     }
     .dungeon-caption .preview-rank {
       min-height: 1.15em;
-      font-size: clamp(20px, 2.2vw, 28px);
+      font-size: clamp(20px, 2.2cqw, 28px);
       font-weight: 900;
       letter-spacing: 0.12em;
       color: #ffe9ae;
@@ -6712,7 +6712,7 @@
     }
     .dungeon-caption .preview-floor {
       min-height: 1.15em;
-      font-size: clamp(16px, 1.8vw, 22px);
+      font-size: clamp(16px, 1.8cqw, 22px);
       font-weight: 800;
       letter-spacing: 0.08em;
       font-variant-numeric: tabular-nums;
@@ -6724,7 +6724,7 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
       width: min(640px, 100%);
-      height: min(132px, 16vh);
+      height: min(132px, 16cqh);
       max-width: 100%;
       min-height: 0;
       align-self: center;
@@ -6796,7 +6796,7 @@
     .dungeon-facts .dungeon-name-big {
       padding: 8px 6px 10px;
       color: #fff6e0;
-      font-size: clamp(26px, 2.2vw, 36px);
+      font-size: clamp(26px, 2.2cqw, 36px);
       font-weight: 900;
       letter-spacing: 0.18em;
       line-height: 1;
@@ -6839,43 +6839,43 @@
       box-shadow: none;
     }
     @media (max-width: 980px) {
-      .challenge-split { grid-template-columns: 1fr; overflow: auto; }
-      .challenge-job .cast-main { grid-template-columns: minmax(120px, 36%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
-      .challenge-dungeon .dungeon-preview { min-height: 220px; }
+      html:not(.stage-fit) .challenge-split { grid-template-columns: 1fr; overflow: auto; }
+      html:not(.stage-fit) .challenge-job .cast-main { grid-template-columns: minmax(120px, 36%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+      html:not(.stage-fit) .challenge-dungeon .dungeon-preview { min-height: 220px; }
     }
     @media (max-width: 760px) {
-      .cast-screen { padding-left: max(20px, 6vw); padding-right: max(20px, 6vw); }
-      .dungeon-preview { height: 36vh; }
-      .dungeon-columns {
+      html:not(.stage-fit) .cast-screen { padding-left: max(20px, 6cqw); padding-right: max(20px, 6cqw); }
+      html:not(.stage-fit) .dungeon-preview { height: 36cqh; }
+      html:not(.stage-fit) .dungeon-columns {
         grid-template-columns: repeat(3, minmax(0, 1fr));
         width: min(420px, 100%);
         height: 88px;
         gap: 8px;
       }
-      .dungeon-col { min-height: 0; height: 100%; }
-      .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
-      .cast-screen.character-focus .cast-main {
+      html:not(.stage-fit) .dungeon-col { min-height: 0; height: 100%; }
+      html:not(.stage-fit) .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
+      html:not(.stage-fit) .cast-screen.character-focus .cast-main {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(140px, 30vh) minmax(0, 1fr) auto;
+        grid-template-rows: minmax(140px, 30cqh) minmax(0, 1fr) auto;
         gap: 10px;
         width: 100%;
         max-width: none;
-        min-height: min(52vh, 480px);
+        min-height: min(52cqh, 480px);
       }
-      .cast-screen.character-focus .cast-hero-frame {
-        max-height: 30vh;
+      html:not(.stage-fit) .cast-screen.character-focus .cast-hero-frame {
+        max-height: 30cqh;
       }
-      .cast-screen.character-focus .cast-side,
-      .cast-screen.character-focus .cast-keys {
+      html:not(.stage-fit) .cast-screen.character-focus .cast-side,
+      html:not(.stage-fit) .cast-screen.character-focus .cast-keys {
         position: relative;
         width: 100%;
         max-width: none;
         height: auto;
         min-height: 0;
       }
-      .cast-main { grid-template-columns: minmax(0, 1fr); }
-      .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
+      html:not(.stage-fit) .cast-main { grid-template-columns: minmax(0, 1fr); }
+      html:not(.stage-fit) .challenge-job .cast-main { grid-template-columns: minmax(0, 1fr); }
     }
     .small-btn {
       min-width: 0;
@@ -7069,7 +7069,7 @@
     @keyframes gold-rain {
       0% { transform: translateY(0) rotate(12deg); opacity: 0; }
       12% { opacity: 0.9; }
-      100% { transform: translateY(110vh) rotate(18deg); opacity: 0; }
+      100% { transform: translateY(110cqh) rotate(18deg); opacity: 0; }
     }
     @keyframes win-spark {
       0% { opacity: 0; transform: scale(0.2); }
@@ -7113,7 +7113,7 @@
     .turn-call b {
       position: static;
       margin: 0;
-      font-size: min(11vw, 96px);
+      font-size: min(11cqw, 96px);
       font-weight: 800;
       letter-spacing: 0.16em;
       color: #fff8ee;
@@ -7130,7 +7130,7 @@
       justify-content: center;
       gap: 10px;
     }
-    .encounter-call b { font-size: min(8vw, 72px); letter-spacing: 0.12em; }
+    .encounter-call b { font-size: min(8cqw, 72px); letter-spacing: 0.12em; }
     .floor-call .fade-sandwich {
       width: auto;
       max-width: none;
@@ -7139,12 +7139,12 @@
     }
     .floor-call b {
       flex: 0 0 auto;
-      font-size: min(34vw, 420px);
+      font-size: min(34cqw, 420px);
       letter-spacing: 0.06em;
       color: #f0c36a;
     }
     .encounter-stars {
-      font-size: min(6vw, 48px);
+      font-size: min(6cqw, 48px);
       font-weight: 800;
       letter-spacing: 0.2em;
       color: #f0c36a;
@@ -7156,7 +7156,7 @@
         radial-gradient(circle at 50% 50%, rgba(255, 220, 140, 0.55), transparent 46%),
         rgba(70, 40, 8, 0.4);
     }
-    .turn-call.start b { color: #ffe7a8; font-size: min(10vw, 88px); }
+    .turn-call.start b { color: #ffe7a8; font-size: min(10cqw, 88px); }
     .turn-call.resolve {
       background:
         radial-gradient(circle at 50% 50%, rgba(255, 244, 210, 0.42), transparent 46%),
@@ -7242,27 +7242,27 @@
       to { transform: rotate(6deg); }
     }
     @media (max-width: 720px) {
-      .hand .card { height: 100%; }
-      .sprite { width: 100%; height: 100%; }
-      .sprite .eye { top: 30px; width: 13px; height: 13px; }
-      .sprite .eye.l { left: 28px; }
-      .sprite .eye.r { right: 28px; }
-      .end { width: 132px; height: 44px; min-width: 132px; min-height: 44px; max-height: 44px; font-size: 14px; border-radius: 999px; }
-      .mana-orb { width: 36px; height: 100%; max-height: 48px; margin: 0; }
-      .vitals .meter.hp, .vitals .hp-line, .vitals .shield-row { height: 36px; }
-      .vitals .hp-line b, .vitals .shield-line b { font-size: 22px; }
-      .meters { width: 180px; }
-      .title-logo > span { font-size: 40px; }
-      .title-logo > span.sub { font-size: 18px; letter-spacing: 0.3em; }
-      .title-actions > button.primary { min-width: 240px; font-size: 18px; }
-      .cast-title { font-size: 24px; letter-spacing: 0.06em; }
-      .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
-      .cast-main { grid-template-columns: 1fr; overflow: auto; }
-      .cast-action { width: 92%; height: 30vh; }
-      .cast-token.stand img { height: 22vh; }
-      .cast-stand { height: 42vh; }
-      .cast-plaque h1 { font-size: 36px; }
-      .party-band { flex-direction: column; }
+      html:not(.stage-fit) .hand .card { height: 100%; }
+      html:not(.stage-fit) .sprite { width: 100%; height: 100%; }
+      html:not(.stage-fit) .sprite .eye { top: 30px; width: 13px; height: 13px; }
+      html:not(.stage-fit) .sprite .eye.l { left: 28px; }
+      html:not(.stage-fit) .sprite .eye.r { right: 28px; }
+      html:not(.stage-fit) .end { width: 132px; height: 44px; min-width: 132px; min-height: 44px; max-height: 44px; font-size: 14px; border-radius: 999px; }
+      html:not(.stage-fit) .mana-orb { width: 36px; height: 100%; max-height: 48px; margin: 0; }
+      html:not(.stage-fit) .vitals .meter.hp, html:not(.stage-fit) .vitals .hp-line, html:not(.stage-fit) .vitals .shield-row { height: 36px; }
+      html:not(.stage-fit) .vitals .hp-line b, html:not(.stage-fit) .vitals .shield-line b { font-size: 22px; }
+      html:not(.stage-fit) .meters { width: 180px; }
+      html:not(.stage-fit) .title-logo > span { font-size: 40px; }
+      html:not(.stage-fit) .title-logo > span.sub { font-size: 18px; letter-spacing: 0.3em; }
+      html:not(.stage-fit) .title-actions > button.primary { min-width: 240px; font-size: 18px; }
+      html:not(.stage-fit) .cast-title { font-size: 24px; letter-spacing: 0.06em; }
+      html:not(.stage-fit) .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
+      html:not(.stage-fit) .cast-main { grid-template-columns: 1fr; overflow: auto; }
+      html:not(.stage-fit) .cast-action { width: 92%; height: 30cqh; }
+      html:not(.stage-fit) .cast-token.stand img { height: 22cqh; }
+      html:not(.stage-fit) .cast-stand { height: 42cqh; }
+      html:not(.stage-fit) .cast-plaque h1 { font-size: 36px; }
+      html:not(.stage-fit) .party-band { flex-direction: column; }
     }
     html.phone, html.phone body { height: 100%; overflow: hidden; }
     html.phone #game { height: 100%; overflow: hidden; }
@@ -7421,7 +7421,7 @@
       right: auto;
       bottom: auto;
       top: 40px;
-      width: min(300px, 42vw);
+      width: min(300px, 42cqw);
       height: auto;
       max-height: 58%;
     }
@@ -7430,7 +7430,22 @@
     html.phone.land .hand .card:hover {
       transform: none;
     }
-  </style>
+  
+    /* PCは1920×1080の一枚を、ウィンドウに収まる同じ比率で拡縮する。短い辺500px以下は専用配置のまま。 */
+    html.stage-fit #game {
+      width: 1920px;
+      height: 1080px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(var(--fit, 1));
+      transform-origin: center center;
+    }
+    /* 回転ロックのまま。横長の画面を右へ90度回し、縦の画面いっぱいに収める */
+    html.stage-fit.iphone-play #game {
+      transform: translate(-50%, -50%) rotate(90deg) scale(var(--fit, 1));
+    }
+</style>
 </head>
 <body>
   <div id="game"></div>
@@ -7678,6 +7693,8 @@
     let departing = false;
     let departTimer = null;
     let blessTimer = null;
+    let iphonePlay = false;
+    try { iphonePlay = sessionStorage.getItem("card-battle-iphone-play") === "1"; } catch (error) { iphonePlay = false; }
     let screen = "title";
     let battleIndex = 0;
     let showLog = true;
@@ -11750,6 +11767,7 @@
           <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
+              ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play")}
               ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
@@ -14529,19 +14547,36 @@
     }
     function fitStage() {
       const doc = document.documentElement;
-      if (phoneLayout()) {
+      const stageW = 1920;
+      const stageH = 1080;
+      doc.classList.toggle("iphone-play", iphonePlay);
+      if (!iphonePlay && phoneLayout()) {
         doc.classList.add("phone");
         doc.classList.toggle("land", window.innerWidth > window.innerHeight);
-      } else {
-        doc.classList.remove("phone", "land");
+        doc.classList.remove("stage-fit");
+        doc.style.removeProperty("--fit");
+        return;
       }
-      doc.classList.remove("fit");
-      doc.style.removeProperty("--fit");
+      doc.classList.remove("phone", "land");
+      const view = window.visualViewport;
+      const vw = view ? view.width : window.innerWidth;
+      const vh = view ? view.height : window.innerHeight;
+      const scale = iphonePlay
+        ? Math.min(vw / stageH, vh / stageW)
+        : Math.min(vw / stageW, vh / stageH);
+      doc.classList.add("stage-fit");
+      doc.style.setProperty("--fit", String(Number.isFinite(scale) && scale > 0 ? scale : 1));
     }
     window.addEventListener("resize", () => {
       fitStage();
       if (screen === "battle") fitHand();
     });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        fitStage();
+        if (screen === "battle") fitHand();
+      });
+    }
     window.matchMedia("(max-width: 500px), (max-height: 500px)").addEventListener("change", () => {
       fitStage();
       if (screen === "battle") fitHand();
@@ -14786,6 +14821,13 @@
           floorNote = "選んだ奥義が、女の戦士の戦い方に残った。";
           floorPrompt = ultimate === "パリィが重複する" ? "パリィが重なるようになった。" : `奥義は${ultimate}。`;
           render();
+        }
+        if (name === "iphone-play") {
+          iphonePlay = !iphonePlay;
+          try { sessionStorage.setItem("card-battle-iphone-play", iphonePlay ? "1" : "0"); } catch (error) { /* 保存できないブラウザでは、この画面のあいだだけ回す */ }
+          fitStage();
+          render();
+          return;
         }
         if (name === "new") {
           if (!loginWord) { passFrom = "new"; passError = ""; screen = "pass"; render(); }
