@@ -7929,6 +7929,24 @@
           { name: "アタック" },
         ],
       },
+      {
+        name: "ハデス",
+        image: "enemy-hades.png?v=8",
+        tier: 4,
+        rank: "★★★★",
+        hp: 160,
+        atkHidden: 8,
+        defHidden: 6,
+        spd: 2,
+        pattern: [
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "ブロック" },
+          { name: "餌だ", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
+          { name: "死者の軍団", cost: 2, text: "このダンジョンで倒した、同じ★の敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
+        ],
+      },
     ];
     const ENEMY_RENAME = { 荒くれ: "ゴブリン", 重騎士: "ミノタウロス", 仮の相手: "スライム" };
     const DUNGEON = {
@@ -8121,6 +8139,7 @@
     let gearOpen = null;
     let gearHover = "";
     let stolen = [];
+    let runSlain = [];
     let removed = [];
     let beggarGift = [];
     let beggarCut = false;
@@ -8432,6 +8451,7 @@
     }
 
     function hiddenDef(foe) {
+      if (foe && foe.defHidden != null) return Number(foe.defHidden) || 0;
       return HIDDEN_DEF[(foe && foe.rank) || "雑魚"] || 0;
     }
 
@@ -10781,6 +10801,23 @@
         if (addBurn(player, card.burn)) log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
         else log(`${enemy.name}は${card.name}。`, card, true);
       }
+      if (card.legion) {
+        playLegion(card);
+        return;
+      }
+      if (card.stealHand) {
+        takeEnemyHit(card.damage || 5, card);
+        stealOneHand();
+        return;
+      }
+      if (card.hits && card.damage) {
+        const times = Math.max(1, Number(card.hits) || 1);
+        for (let n = 0; n < times; n += 1) {
+          if (player.hp <= 0) break;
+          takeEnemyHit(card.damage, card);
+        }
+        return;
+      }
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
@@ -10802,6 +10839,42 @@
       } else if (!card.damage && !card.block && !card.poison && !card.burnFirst) {
         log(`${enemy.name}は${card.name}。${card.text}`, card, true);
       }
+    }
+
+    function dungeonStar() {
+      if (dungeonName === "深淵") return 3;
+      if (dungeonName === "古城") return 2;
+      return 1;
+    }
+
+    function playLegion(card) {
+      const star = dungeonStar();
+      const rankOf = { スライム: 1, ゴブリン: 1, 物乞い: 1, ちびドラゴン: 2, ミノタウロス: 3 };
+      const pool = runSlain.filter((name) => rankOf[name] === star);
+      if (!pool.length) {
+        log(`${enemy.name}は死者の軍団。同じ★で倒した敵がいない。`, card, true);
+        return;
+      }
+      const who = pool[Math.floor(Math.random() * pool.length)];
+      const trait = who === "スライム"
+        ? { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 }
+        : who === "ゴブリン"
+          ? applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow())
+          : who === "物乞い"
+            ? { ...FOE_ONLY["無心"], name: "無心" }
+            : who === "ちびドラゴン"
+              ? { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" }
+              : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\n20%で45ダメージ", damage: 30, kind: "attack", crit: 45, critChance: 0.2 };
+      log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
+      enemyUseCard(trait);
+    }
+
+    function stealOneHand() {
+      if (!hand.length) return;
+      const index = Math.floor(Math.random() * hand.length);
+      const taken = hand.splice(index, 1)[0];
+      enemyLoop.push({ ...taken });
+      log(`${enemy.name}は${taken.name}を山札に入れた。戦闘が終わると戻る。`, taken, true);
     }
 
     function leaveFoeCard() {
@@ -11064,6 +11137,8 @@
         return;
       }
       if (kind === "win") {
+        const slain = enemyKey(enemy && enemy.name);
+        if (slain && runSlain.indexOf(slain) < 0) runSlain.push(slain);
         prepareReward();
         persistSave(true);
       }
@@ -11331,6 +11406,7 @@
         enemyLoop,
         foeDiscard,
         foePlan,
+        runSlain,
         phase,
         note,
         banner,
@@ -11539,6 +11615,7 @@
       }
       restoreEnemyLoop(data);
       foePlan = Array.isArray(data.foePlan) ? data.foePlan.map((step) => ({ anger: !!step.anger, card: { ...step.card } })) : [];
+      runSlain = Array.isArray(data.runSlain) ? data.runSlain.map((name) => String(name)) : [];
       invalidateFoeAct();
       if (screen === "battle" && phase === "player" && enemy && !foePlan.length && enemyLoop.length) buildFoePlan();
       heroCast = castByName(data.heroCast || "戦士").name;
@@ -12103,6 +12180,7 @@
       gearOpen = null;
       gearOffer = null;
       stolen = [];
+      runSlain = [];
       removed = [];
       beggarGift = [];
       heroCast = castByName(castLock).name;
@@ -13886,14 +13964,17 @@
           const dmg = (Number(card.damage) || 0) + 2;
           card = { ...card, damage: dmg };
         }
-        const blow = scratchEnemyBlow(card, mine, foe);
-        if (!blow) continue;
-        if (!take) take = { raw: 0, hp: 0, parry: false, show: false };
-        take.raw += blow.raw;
-        take.hp += blow.hp;
-        take.show = take.show || blow.show;
-        take.parry = take.parry && blow.parry;
-        if (blow.parry && take.raw === blow.raw) take.parry = true;
+        const times = Math.max(1, Number(card.hits) || 1);
+        for (let n = 0; n < times; n += 1) {
+          const blow = scratchEnemyBlow(card, mine, foe);
+          if (!blow) continue;
+          if (!take) take = { raw: 0, hp: 0, parry: false, show: false };
+          take.raw += blow.raw;
+          take.hp += blow.hp;
+          take.show = take.show || blow.show;
+          take.parry = take.parry && blow.parry;
+          if (blow.parry && take.raw === blow.raw) take.parry = true;
+        }
       }
       return { give: give.show ? give : null, take };
     }
@@ -14424,6 +14505,7 @@
     const LOST_POOL = ["camp", "straight", "search", "beggar", "shop", "unknown", "train"];
 
     function starsForRank(rank) {
+      if (rank === "★★★★") return 4;
       if (rank === "強敵") return 3;
       if (rank === "普通") return 2;
       return 1;
