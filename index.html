@@ -4085,6 +4085,36 @@
     }
     .card:disabled { cursor: default; }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
+    /* 条件を満たして使える、または強くなるカード。手札だけ脈打つ */
+    .hand .card.lit {
+      animation: hand-lit 1.15s ease-in-out infinite;
+    }
+    .hand .card.lit:hover:not(:disabled) { animation: none; }
+    .hand .card.lit.unaffordable { filter: saturate(0.88) brightness(1); }
+    @keyframes hand-lit {
+      0%, 100% {
+        box-shadow:
+          inset 0 0 0 2px var(--genre-line),
+          0 0 8px rgba(255, 214, 110, 0.45),
+          0 10px 24px rgba(0, 0, 0, 0.28);
+      }
+      50% {
+        box-shadow:
+          inset 0 0 0 3px #fff1c2,
+          0 0 18px rgba(255, 214, 90, 0.95),
+          0 0 34px rgba(255, 168, 40, 0.62),
+          0 10px 24px rgba(0, 0, 0, 0.28);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hand .card.lit {
+        animation: none;
+        box-shadow:
+          inset 0 0 0 3px #fff1c2,
+          0 0 16px rgba(255, 214, 90, 0.85),
+          0 10px 24px rgba(0, 0, 0, 0.28);
+      }
+    }
     .card .nameplate {
       position: relative;
       flex: 0 0 auto;
@@ -10337,6 +10367,26 @@
       if (!card.damage && !card.block && !card.expose && !card.nextDraw && !card.burn) log(`${heroName()}は${card.name}。${card.text}`, card);
     }
 
+    // 手札で光る。使えない条件を満たしたとき、または条件で強くなるとき。
+    function handConditionLit(card) {
+      if (!card || !player) return false;
+      if (card.step) return !!player.parryLast;
+      if (card.fullOnly) return player.hp >= player.maxHp;
+      if (card.halfOnly) return hpHalf(player);
+      if (card.headbutt) return inPlay.length > 0;
+      if (card.finisher) return (Number(player.parryHitsLast) || 0) > 0;
+      if (card.kick) return !!(enemy && enemy.block > 0);
+      if (card.fullBonus) return player.hp >= player.maxHp;
+      if (card.safeBonus) return !player.hurtLast;
+      if (card.press) {
+        if ((Number(player.block) || 0) > 0) return true;
+        return (inPlay || []).some((item) => (Number(item.block) || 0) > 0);
+      }
+      if (card.counter) return !(inPlay || []).some((item) => cardKind(item) === "attack");
+      if (card.redTimes) return (inPlay || []).some((item) => cardKind(item) === "attack");
+      return false;
+    }
+
     function cardPlayable(card) {
       if (!card) return false;
       if ((Number(card.cost) || 0) > player.energy) return false;
@@ -15474,6 +15524,7 @@
       const dealNow = fxDeal;
       const cards = hand.map((card, i) => {
         const poor = !cardPlayable(card);
+        const lit = handConditionLit(card);
         const mid = (hand.length - 1) / 2;
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
@@ -15481,7 +15532,7 @@
         const fan = Math.round(t * 8 * 10) / 10;
         const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${lit ? " lit" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
       const overlay = rewardOverlay();
       const leaveOverlay = askLeave
