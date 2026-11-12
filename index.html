@@ -2733,6 +2733,14 @@
       pointer-events: none;
     }
     .hero-shoulder.held .hero-fig { animation: guard-rim 1.45s ease-out both; }
+    .hero-guard.parry .guard-word {
+      color: #fff4c8;
+      text-shadow:
+        0 3px 0 #5c3d08,
+        0 0 12px rgba(255, 210, 90, 0.95),
+        0 0 18px rgba(232, 160, 32, 0.92);
+    }
+    .hero-shoulder.held.gold .hero-fig { animation: parry-rim 1.45s ease-out both; }
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
@@ -7600,10 +7608,25 @@
       }
       100% { filter: none; }
     }
+    @keyframes parry-rim {
+      0% { filter: none; }
+      16% {
+        filter:
+          drop-shadow(0 0 10px rgba(255, 236, 180, 0.95))
+          drop-shadow(0 0 22px rgba(232, 170, 48, 0.92));
+      }
+      48% {
+        filter:
+          drop-shadow(0 0 8px rgba(255, 220, 140, 0.7))
+          drop-shadow(0 0 16px rgba(212, 150, 40, 0.55));
+      }
+      100% { filter: none; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .hero-guard, .hero-guard * { animation: none; }
       .hero-guard .guard-word { opacity: 1; }
-      .hero-shoulder.held .hero-fig { animation: none; }
+      .hero-shoulder.held .hero-fig,
+      .hero-shoulder.held.gold .hero-fig { animation: none; }
     }
     @property --hot-x {
       syntax: "<percentage>";
@@ -9476,8 +9499,10 @@
       return `<svg class="plate-shield" viewBox="0 0 80 96" aria-hidden="true"><path d="M40 8 68 20v26c0 20-11 34-28 42C23 80 12 66 12 46V20Z" fill="${fill}" stroke="${edge}" stroke-width="5"/><path d="M40 16 60 26v18c0 15-8 26-20 32C28 70 20 59 20 44V26Z" fill="none" stroke="${rim}" stroke-width="2.5"/></svg>`;
     }
 
-    function holdGuard() {
-      return `<div class="hero-guard hold" aria-label="ガード"><b class="guard-word">ガード</b></div>`;
+    function holdGuard(kind) {
+      const gold = kind === "parry";
+      const word = gold ? "パリィ" : "ガード";
+      return `<div class="hero-guard hold${gold ? " parry" : ""}" aria-label="${word}"><b class="guard-word">${word}</b></div>`;
     }
 
     function shieldBreakBadge(n) {
@@ -9997,6 +10022,7 @@
         player.parry = stacks - 1;
         onParrySuccess(amount);
         noteHit("player", 0, amount);
+        fxGuard = "parry";
         log(`${enemy.name}は${name}。パリィで無効。`, card, true);
         return;
       }
@@ -11027,7 +11053,7 @@
         const slashCount = fxSlashes.length;
         const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
         return;
       }
@@ -11036,7 +11062,7 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -11166,7 +11192,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -12362,6 +12388,7 @@
       return [
         ["自分", [
           ["guard", "ガード"],
+          ["parry-block", "パリィで防ぐ"],
           ["break", "盾が割れる"],
           ["hurt", "被ダメージ"],
           ["poison-tick", "毒ダメージ"],
@@ -12462,7 +12489,8 @@
       let foe = {};
       let call = "";
       let cls = "";
-      if (id === "guard") hero = { guard: true };
+      if (id === "guard") hero = { guard: "hold" };
+      else if (id === "parry-block") hero = { guard: "parry" };
       else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "hurt") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "poison-tick") hero = { hurt: true, kind: "poison", n: 3, pow: hitPower(3) };
@@ -12504,7 +12532,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard || "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -14198,9 +14226,10 @@
       const hit = poisonHtml + bluntHtml;
       const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick) : "";
       const healHtml = heal ? healFxHtml() : "";
-      const guardHtml = guard === "hold" ? holdGuard() : "";
+      const guarding = guard === "hold" || guard === "parry";
+      const guardHtml = guarding ? holdGuard(guard) : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guarding ? " held" : ""}${guard === "parry" ? " gold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${hurtHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
