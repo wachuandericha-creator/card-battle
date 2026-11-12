@@ -1133,6 +1133,10 @@
     }
     .hero-body .hero-hit.blunt { overflow: visible; }
     .hero-hit.blunt .flash {
+      left: 16%;
+      top: 18%;
+      width: 68%;
+      height: 64%;
       inset: auto;
       background:
         radial-gradient(circle at 38% 62%, rgba(255, 78, 52, 0.82), transparent 44%),
@@ -1141,19 +1145,6 @@
       filter: blur(3px);
       mix-blend-mode: screen;
       animation: poison-mist 1.25s ease-out forwards;
-    }
-    .hero-hit.blunt .flash.big {
-      left: 8%;
-      top: 14%;
-      width: 78%;
-      height: 74%;
-    }
-    .hero-hit.blunt .flash.small {
-      left: 58%;
-      top: 6%;
-      width: 30%;
-      height: 28%;
-      animation-delay: 0.16s;
     }
     .hero-hit.blunt .ember {
       position: absolute;
@@ -1175,29 +1166,22 @@
     /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
     .hero-hit .ring {
       position: absolute;
+      left: 50%;
+      top: 46%;
+      width: calc(70px + var(--pow, 0.35) * 50px);
+      height: calc(70px + var(--pow, 0.35) * 50px);
+      margin: calc((70px + var(--pow, 0.35) * 50px) * -0.5) 0 0 calc((70px + var(--pow, 0.35) * 50px) * -0.5);
       border-radius: 50%;
       border: 4px solid rgba(255, 244, 220, 0.95);
       box-shadow: 0 0 18px rgba(255, 170, 60, 0.85), inset 0 0 12px rgba(255, 220, 140, 0.45);
       opacity: 0;
       animation: blunt-ring 0.55s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
     }
-    .hero-hit .ring.a {
-      left: 46%;
-      top: 48%;
-      width: 128px;
-      height: 128px;
-      margin: -64px 0 0 -64px;
-    }
     .hero-hit .ring.b {
-      left: 70%;
-      top: 28%;
-      width: 52px;
-      height: 52px;
-      margin: -26px 0 0 -26px;
       border-width: 3px;
       border-color: rgba(255, 150, 50, 0.8);
-      animation-delay: 0.18s;
-      animation-duration: 0.48s;
+      animation-delay: 0.08s;
+      animation-duration: 0.68s;
     }
     .hero-hit .star {
       position: absolute;
@@ -1239,39 +1223,14 @@
       z-index: 9;
       transform: translate(-50%, -50%);
       margin: 0;
-      font-size: clamp(64px, 14cqw, 156px);
+      font-size: clamp(52px, 8cqw, 92px);
       font-weight: 800;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
+      letter-spacing: 0.42em;
       color: #ffd8c8;
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
       animation: fatal-call 2.6s ease-out both;
     }
-    .hurt-word {
-      position: absolute;
-      left: 50%;
-      top: -6%;
-      z-index: 7;
-      margin: 0;
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      line-height: 1;
-      white-space: nowrap;
-      color: #fff4f0;
-      text-shadow:
-        0 3px 0 #5a100c,
-        0 0 12px rgba(255, 90, 70, 0.95),
-        0 0 18px rgba(255, 40, 30, 0.85);
-      animation: guard-word 1.45s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
-      pointer-events: none;
-    }
-    .hurt-word.big { font-size: 68px; }
-    .hurt-word.poison {
-      color: #e8ffb0;
-      text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
-    }
-    /* 敵も自分と同じ列の高さ。HP板は上端そろえ。ランクは幅と絵の大きさだけ変える */
+    /* 横に並べ、足元をそろえる。雑魚0.8、普通1.2、強敵とボスは2。大きいほうが枠の高さ。 */
     .enemy-main {
       --foe-scale: 1;
       --cut-x: 50%;
@@ -1310,10 +1269,10 @@
       height: calc(100% * var(--foe-scale));
       max-height: 100%;
     }
-    .enemy-main[data-size="small"] { --foe-scale: 0.86; max-width: min(72%, 340px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
-    .enemy-main[data-size="medium"] { --foe-scale: 0.94; max-width: min(82%, 380px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
-    .enemy-main[data-size="large"] { --foe-scale: 1; max-width: min(88%, 420px); --cut-x: 48%; --cut-y: 42%; --pop-y: 26%; }
-    .enemy-main[data-size="boss"] { --foe-scale: 1.08; max-width: min(96%, 480px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
+    .enemy-main[data-size="small"] { --rank: 0.8; --foe-scale: 0.86; max-width: min(72%, 340px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
+    .enemy-main[data-size="medium"] { --rank: 1.2; --foe-scale: 0.94; max-width: min(82%, 380px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
+    .enemy-main[data-size="large"] { --rank: 2; --foe-scale: 1; max-width: min(88%, 420px); --cut-x: 48%; --cut-y: 42%; --pop-y: 26%; }
+    .enemy-main[data-size="boss"] { --rank: 2; --foe-scale: 1.08; max-width: min(96%, 480px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
     /* 見える高さは自分×ランク。大きいほうが戦闘枠の高さいっぱい。足元は下端でそろえる。 */
     html.stage-fit .duel-side.ally,
     html.stage-fit .duel-side.foe,
@@ -2614,9 +2573,9 @@
       --ang: -45deg;
       --dx: -0.72;
       --dy: 0.72;
-      --len: calc(520px + var(--pow, 0.35) * 340px);
-      --thick: calc(13px + var(--pow, 0.35) * 10px);
-      --glow: calc(16px + var(--pow, 0.35) * 22px);
+      --len: calc(300px + var(--pow, 0.35) * 210px);
+      --thick: calc(7px + var(--pow, 0.35) * 6px);
+      --glow: calc(8px + var(--pow, 0.35) * 14px);
       position: absolute;
       left: var(--cut-x, 50%);
       top: var(--cut-y, 46%);
@@ -2657,9 +2616,9 @@
       clip-path: none;
     }
     .sprite .cut .burst {
-      width: calc(110px + var(--pow, 0.35) * 130px);
-      height: calc(110px + var(--pow, 0.35) * 130px);
-      margin: calc((110px + var(--pow, 0.35) * 130px) * -0.5) 0 0 calc((110px + var(--pow, 0.35) * 130px) * -0.5);
+      width: calc(60px + var(--pow, 0.35) * 80px);
+      height: calc(60px + var(--pow, 0.35) * 80px);
+      margin: calc((60px + var(--pow, 0.35) * 80px) * -0.5) 0 0 calc((60px + var(--pow, 0.35) * 80px) * -0.5);
       border-radius: 50%;
       background: radial-gradient(circle, #fff 0%, #fff4e6 28%, rgba(255, 150, 90, 0.75) 50%, rgba(212, 38, 26, 0) 72%);
       filter: blur(0.5px);
@@ -2719,8 +2678,8 @@
     }
     @keyframes slash-spark {
       0% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(0) scaleX(0.4); }
-      18% { opacity: 1; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 58px)) scaleX(1.5); }
-      100% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 190px)) scaleX(0.7); }
+      18% { opacity: 1; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 34px)) scaleX(1.4); }
+      100% { opacity: 0; transform: rotate(var(--sa, 0deg)) translateX(calc(var(--sd, 1) * 112px)) scaleX(0.6); }
     }
     @keyframes foe-flash {
       0% { filter: none; }
@@ -2763,14 +2722,6 @@
       pointer-events: none;
     }
     .hero-shoulder.held .hero-fig { animation: guard-rim 1.45s ease-out both; }
-    .hero-guard.parry .guard-word {
-      color: #fff4c8;
-      text-shadow:
-        0 3px 0 #5c3d08,
-        0 0 12px rgba(255, 210, 90, 0.95),
-        0 0 18px rgba(232, 160, 32, 0.92);
-    }
-    .hero-shoulder.held.gold .hero-fig { animation: parry-rim 1.45s ease-out both; }
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
@@ -2787,20 +2738,6 @@
       color: #e8ffb0;
       text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
     }
-    .dmg-pop.foe-hit.poison {
-      top: auto;
-      bottom: 72%;
-      left: 50%;
-      margin-bottom: 8px;
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      white-space: nowrap;
-      animation-name: guard-word;
-      animation-duration: 1.45s;
-      animation-timing-function: cubic-bezier(0.16, 0.8, 0.24, 1);
-    }
-    .dmg-pop.foe-hit.poison.big { font-size: 68px; }
     .dmg-pop.me.poison {
       animation-name: dmg-pop-poison;
       animation-duration: 1.15s;
@@ -2814,25 +2751,16 @@
     }
     .poison-hit .mist {
       position: absolute;
+      left: 18%;
+      top: 22%;
+      width: 64%;
+      height: 58%;
       background:
         radial-gradient(circle at 40% 55%, rgba(190, 255, 90, 0.72), transparent 46%),
         radial-gradient(circle at 68% 40%, rgba(170, 70, 240, 0.62), transparent 48%);
       filter: blur(2px);
       mix-blend-mode: screen;
       animation: poison-mist 1.85s ease-out forwards;
-    }
-    .poison-hit .mist.big {
-      left: 12%;
-      top: 18%;
-      width: 70%;
-      height: 64%;
-    }
-    .poison-hit .mist.small {
-      left: 58%;
-      top: 6%;
-      width: 28%;
-      height: 26%;
-      animation-delay: 0.16s;
     }
     .poison-hit .bubble {
       position: absolute;
@@ -2867,125 +2795,25 @@
     .poison-hit .d3 { --px: 4px; height: 24px; animation-delay: 0.1s; }
     .hero-body .hero-hit.poison { overflow: visible; z-index: 4; }
     .sprite.poison { overflow: visible; }
-    .sprite.poison:not(.slash):not(.give) { animation: poison-shudder 1.15s linear; }
+    .sprite.poison:not(.slash) { animation: poison-shudder 1.15s linear; }
+    .hero-shoulder.poison:not(.hurt):not(.held) { animation: poison-shudder 1.15s linear; }
     .sprite.poison img,
     .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
-    .sprite .hurt-word {
-      top: auto;
-      bottom: 72%;
-      margin-bottom: 8px;
-    }
-    .hero-hit.heal { overflow: visible; z-index: 4; }
-    .hero-hit.heal .glow {
+    .poison-stamp {
       position: absolute;
-      left: 16%;
-      top: 14%;
-      width: 68%;
-      height: 72%;
-      background:
-        radial-gradient(circle at 48% 72%, rgba(150, 255, 120, 0.78), transparent 46%),
-        radial-gradient(circle at 42% 38%, rgba(70, 210, 90, 0.42), transparent 44%);
-      filter: blur(2px);
-      mix-blend-mode: screen;
-      animation: poison-mist 1.5s ease-out forwards;
-    }
-    .hero-hit.heal .plus {
-      position: absolute;
-      bottom: 4%;
+      left: 50%;
+      top: 16%;
+      z-index: 6;
       margin: 0;
-      font-size: 46px;
+      font-size: 64px;
       font-weight: 900;
+      letter-spacing: 0.2em;
       line-height: 1;
-      color: #eaffd8;
-      text-shadow: 0 2px 0 #146018, 0 0 12px rgba(90, 230, 80, 0.95);
-      opacity: 0;
-      animation: heal-plus 1.25s ease-out forwards;
-    }
-    .hero-hit.heal .p1 { left: 32%; font-size: 34px; }
-    .hero-hit.heal .p2 { left: 46%; font-size: 58px; animation-delay: 0.1s; }
-    .hero-hit.heal .p3 { left: 60%; font-size: 40px; animation-delay: 0.2s; }
-    .hero-hit.heal .p4 { left: 38%; font-size: 30px; animation-delay: 0.3s; }
-    .hero-hit.heal .p5 { left: 68%; font-size: 44px; animation-delay: 0.06s; }
-    @keyframes heal-plus {
-      0% { opacity: 0; bottom: 2%; transform: translate(-50%, 0) scale(0.65); }
-      14% { opacity: 1; bottom: 8%; transform: translate(-50%, 0) scale(1); }
-      100% { opacity: 0; bottom: 92%; transform: translate(-50%, 0) scale(0.95); }
-    }
-    .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
-    @keyframes heal-glow {
-      0% { filter: none; }
-      22% { filter: drop-shadow(0 0 14px rgba(150, 255, 130, 0.95)) drop-shadow(0 -10px 24px rgba(40, 180, 60, 0.8)); }
-      100% { filter: none; }
-    }
-    .anger-hit {
-      position: absolute;
-      inset: 0;
-      z-index: 5;
+      color: #e8ffb0;
+      text-shadow: 0 4px 0 #3a1460, 0 0 16px rgba(90, 220, 70, 0.95), 0 0 26px rgba(160, 70, 230, 0.85);
+      animation: poison-stamp 1.85s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
       pointer-events: none;
-      overflow: visible;
     }
-    .sprite.anger { overflow: visible; }
-    .sprite.anger img {
-      transform-origin: center bottom;
-      animation: anger-swell 1.45s ease-in-out both;
-    }
-    @keyframes anger-swell {
-      0%, 100% {
-        filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
-        transform: scale(1);
-      }
-      32%, 58% {
-        filter:
-          drop-shadow(0 0 8px rgba(255, 48, 28, 0.95))
-          drop-shadow(0 0 14px rgba(160, 0, 0, 0.55))
-          drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
-        transform: scale(1.1);
-      }
-    }
-    .shield-badge.breaking {
-      overflow: visible;
-      z-index: 5;
-    }
-    .shield-badge.breaking .half {
-      position: absolute;
-      inset: 0;
-      animation: shield-split-left 1.05s ease-in forwards;
-    }
-    .shield-badge.breaking .plate-shield { filter: drop-shadow(0 0 10px rgba(220, 230, 245, 0.85)); }
-    .shield-badge.breaking .half.left { clip-path: inset(0 50% 0 0); animation-name: shield-split-left; }
-    .shield-badge.breaking .half.right { clip-path: inset(0 0 0 50%); animation-name: shield-split-right; }
-    .shield-badge.breaking .crack {
-      position: absolute;
-      left: 48%;
-      top: 8%;
-      width: 4px;
-      height: 84%;
-      background: linear-gradient(#fff, rgba(255, 255, 255, 0));
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-      opacity: 0;
-      animation: shield-crack 0.7s ease-out 0.16s forwards;
-    }
-    @keyframes shield-split-left {
-      0% { opacity: 0; transform: scale(0.7); }
-      14% { opacity: 1; transform: scale(1); }
-      34% { opacity: 1; transform: scale(1); }
-      70% { opacity: 1; transform: translateX(-16px) rotate(-6deg); }
-      100% { opacity: 0; transform: translateX(-28px) rotate(-10deg); }
-    }
-    @keyframes shield-split-right {
-      0% { opacity: 0; transform: scale(0.7); }
-      14% { opacity: 1; transform: scale(1); }
-      34% { opacity: 1; transform: scale(1); }
-      70% { opacity: 1; transform: translateX(16px) rotate(6deg); }
-      100% { opacity: 0; transform: translateX(28px) rotate(10deg); }
-    }
-    @keyframes shield-crack {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { opacity: 0; }
-    }
-    .sprite.break { overflow: visible; }
     .status-chip.poison.fresh { animation: poison-chip 1.35s ease-out; }
     .screen-heal {
       background:
@@ -4096,7 +3924,7 @@
       width: auto;
       max-width: none;
       margin-inline: calc(var(--overlap, 33px) * -0.5);
-      z-index: 1;
+      z-index: var(--hand-z, 1);
     }
     /* 枚数が多いときは重ねる。ホバーは扇の中心から外側へ（端は斜めに出る。傾きは保つ） */
     .hand .card:hover:not(:disabled) {
@@ -7638,25 +7466,10 @@
       }
       100% { filter: none; }
     }
-    @keyframes parry-rim {
-      0% { filter: none; }
-      16% {
-        filter:
-          drop-shadow(0 0 10px rgba(255, 236, 180, 0.95))
-          drop-shadow(0 0 22px rgba(232, 170, 48, 0.92));
-      }
-      48% {
-        filter:
-          drop-shadow(0 0 8px rgba(255, 220, 140, 0.7))
-          drop-shadow(0 0 16px rgba(212, 150, 40, 0.55));
-      }
-      100% { filter: none; }
-    }
     @media (prefers-reduced-motion: reduce) {
       .hero-guard, .hero-guard * { animation: none; }
       .hero-guard .guard-word { opacity: 1; }
-      .hero-shoulder.held .hero-fig,
-      .hero-shoulder.held.gold .hero-fig { animation: none; }
+      .hero-shoulder.held .hero-fig { animation: none; }
     }
     @property --hot-x {
       syntax: "<percentage>";
@@ -7943,7 +7756,7 @@
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
-      キック: "card-kick.jpg?v=1",
+      キック: "card-kick-leg.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
       瞑想: "card-meditate.jpg?v=1",
       ハードブロック: "card-hard-block-f.jpg?v=3",
@@ -7968,49 +7781,53 @@
     const FOE_ONLY = {
       "怒り（敵）": {
         cost: 0,
-        text: "この戦闘中 ATK+1 DEF-1",
+        text: "この戦闘中 ATK+2 DEF-2",
         kind: "foe",
         rage: true,
         foeRage: true,
         image: "card-anger-foe.jpg?v=3",
         stars: 1,
       },
+      無心: {
+        cost: 1,
+        text: "5ダメージ\n相手の手札を1枚盗み、自分の山札に入れる\n戦闘終了時に返す",
+        damage: 5,
+        kind: "attack",
+        stealHand: true,
+        stars: 1,
+      },
     };
     const CARDS = {
-      アタック: { cost: 1, text: "4ダメージ", damage: 4 },
-      チャージアタック: { cost: 2, text: "12ダメージ", damage: 12 },
+      アタック: { cost: 1, text: "5ダメージ", damage: 5 },
+      チャージアタック: { cost: 2, text: "15ダメージ", damage: 15 },
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
-      捨て身の一撃: { cost: 1, text: "8ダメージ\n次に受けるダメージ+4", damage: 8, kind: "attack", expose: 4 },
-      怒り: { cost: 0, text: "ATK+1　DEF-2", kind: "skill", rage: true, flash: true },
-      パリィスラッシュ: { cost: 3, text: "7ダメージ\nパリィを得る", damage: 7, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
-      ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で9ダメージ", damage: 9, kind: "attack", fullBonus: 9 },
-      ジャストミート: { cost: 2, text: "11ダメージ\n前のターンにダメージを受けていないなら+4", damage: 11, kind: "attack", safeBonus: 4 },
-      余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
-      ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
-      シールドアタック: { cost: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
-      ナイフパリィ: { cost: 3, unrated: true, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, unrated: true, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
-      諸刃の剣: { cost: 3, unrated: true, text: "27ダメージ\n次に受ける攻撃を2倍", damage: 27, kind: "attack", doubleNext: true },
-      達人の間合い: { cost: 3, unrated: true, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
-      魔法のパリィ: { cost: 1, unrated: true, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
-      クイックステップ: { cost: 0, unrated: true, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, step: true },
-      自信過剰: { cost: 2, unrated: true, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
-      盾削ぎ: { cost: 2, unrated: true, text: "パリィに成功するたび、相手のDEF-3", kind: "skill", flash: true, shave: 3 },
+      捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
+      パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィを得る", damage: 10, parry: true, kind: "attack" },
+      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
+      ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
+      余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
+      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
+      致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
+      シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
+      ナイフパリィ: { cost: 3, stars: 3, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
+      超集中: { cost: 3, stars: 3, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
+      諸刃の剣: { cost: 2, stars: 2, text: "25ダメージ\n次に受ける攻撃を2倍", damage: 25, kind: "attack", doubleNext: true },
+      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
+      魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
+      クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
+      自信過剰: { cost: 2, stars: 2, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
+      盾削ぎ: { cost: 2, stars: 2, text: "パリィに成功するたび、相手のDEF-3", kind: "skill", flash: true, shave: 3 },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
-      怒り: "パリィ",
       パリィスラッシュ: "パリィ",
       臆病者の構え: "パリィ",
       余裕の構え: "パリィ",
       ガードブレイク: "パリィ",
       致命の一撃: "パリィ",
-      ジャストミート: "パリィ",
       シールドアタック: "パリィ",
       ナイフパリィ: "パリィ",
       超集中: "パリィ",
@@ -8023,21 +7840,29 @@
       ライフフルネスアタック: "ライフフル",
     };
     const COMMON = {
-      頭突き: { cost: 1, text: "3ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 3, kind: "attack", headbutt: true },
+      怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
       キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら+5", damage: 3, kind: "attack", kick: 5 },
-      ツインアタック: { cost: 2, text: "2ダメージを2回", damage: 2, hits: 2, stars: 3, kind: "attack" },
-      ビッグアタック: { cost: 3, text: "20ダメージ", damage: 20, stars: 3, kind: "attack" },
-      瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block" },
-      ハードブロック: { cost: 2, text: "ブロック9", block: 9, kind: "block" },
-      ビッグブロック: { cost: 3, text: "ブロック16", block: 16, kind: "block" },
-      アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4 },
-      反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9 },
+      ツインアタック: { cost: 1, text: "3ダメージを2回", damage: 3, hits: 2, stars: 3, kind: "attack" },
+      ビッグアタック: { cost: 3, text: "30ダメージ", damage: 30, stars: 3, kind: "attack" },
+      ハードブロック: { cost: 2, text: "ブロック12", block: 12, kind: "block" },
+      ビッグブロック: { cost: 3, stars: 2, text: "ブロック25", block: 25, kind: "block" },
       応急手当: { cost: 1, text: "体力を4回復", heal: 4, flash: true, kind: "skill" },
       ベッド: { cost: 2, text: "体力を10回復", heal: 10, kind: "power", power: true },
-      ホテル: { cost: 3, text: "体力を18回復", heal: 18, kind: "power", power: true },
+      ホテル: { cost: 3, stars: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
-    // 敵のATKは板に出す。ランク1（雑魚）+2、普通+6、強敵+9。同じ攻略で同じ敵に会うたびに、二度目から+2ずつ足す。アタックとブロックは基本4にこのATKを足した合計を書く。DEFは0で、板にも出す。
+    // ゲーム未実装。カードリスト・報酬・祝福・お店・敵の山札には出さない。データだけ残す。
+    const UNBUILT = {
+      アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4, stars: 1 },
+      ファイアーボール: { cost: 1, text: "3ダメージ\n相手に炎上+1を与える", damage: 3, burn: 1, kind: "attack", stars: 1 },
+      頭突き: { cost: 1, text: "3ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 3, kind: "attack", headbutt: true, stars: 1 },
+      反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9, stars: 1 },
+      ジャストミート: { cost: 2, text: "11ダメージ\n前のターンにダメージを受けていないなら+4", damage: 11, kind: "attack", safeBonus: 4, stars: 1 },
+      ファイアソード: { cost: 2, text: "先に相手に炎上+1を与える\n7ダメージ", damage: 7, burn: 1, burnFirst: true, kind: "attack", stars: 1 },
+      瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block", stars: 1 },
+    };
+    void UNBUILT;
+    // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会はATK+1。体力は初回のおよそ4分の1を5刻みで足す。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
@@ -8046,7 +7871,7 @@
         image: "enemy-slime.png?v=7",
         tier: 1,
         rank: "雑魚",
-        hp: 43,
+        hp: 40,
         atkHidden: 0,
         pattern: [
           { name: "アタック" },
@@ -8072,18 +7897,18 @@
         image: "enemy-minotaur.png?v=8",
         tier: 3,
         rank: "強敵",
-        hp: 63,
+        hp: 120,
+        atkHidden: 7,
         medal: "minotaur-medal",
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
         rally: true,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
-          { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "ミノスの一撃", cost: 3, text: "16ダメージ\n20%で27ダメージ", damage: 16, kind: "attack", crit: 27, critChance: 0.2 },
-          { name: "タウロスアタック", cost: 2, text: "16ダメージ\n体力が最大の半分以下のときだけ使える", damage: 16, kind: "attack", halfOnly: true },
+          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\n20%で45ダメージ", damage: 30, kind: "attack", crit: 45, critChance: 0.2 },
+          { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true },
         ],
       },
       {
@@ -8091,13 +7916,12 @@
         image: "enemy-dragon.png?v=4",
         tier: 2,
         rank: "普通",
-        hp: 38,
+        hp: 55,
+        atkHidden: 3,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアーボール", cost: 1, text: "3ダメージ\n相手に炎上+1を与える", damage: 3, burn: 1, kind: "attack" },
-          { name: "ファイアソード", cost: 2, text: "先に相手に炎上+1を与える\n7ダメージ", damage: 7, burn: 1, burnFirst: true, kind: "attack" },
           { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" },
         ],
       },
@@ -8105,8 +7929,7 @@
         name: "物乞い",
         image: "enemy-beggar.png?v=2",
         rank: "雑魚",
-        hp: 19,
-        atkHidden: 3,
+        hp: 25,
         pattern: [
           { name: "アタック" },
         ],
@@ -8286,6 +8109,8 @@
     let passFrom = "new";
     let saveNote = "";
     let returnScreen = "title";
+    let fxLabId = "guard";
+    let fxLabTick = 0;
     let askLeave = false;
     let showDeck = false;
     let eventMapOpen = false;
@@ -8324,10 +8149,7 @@
     let lastFoeBlow = null;
     let defeatSnap = null;
     let fxGuard = "";
-    let fxShieldBreak = { player: 0, enemy: 0 };
     let fxHeal = false;
-    let fxLabId = "guard";
-    let fxLabTick = 0;
     let fxHit = null;
     let fxPoisonApply = { player: false, enemy: false };
     let fxDeal = false;
@@ -8366,7 +8188,7 @@
         blurb: "剣と盾を巧みに操る女戦士。敵の攻撃のタイミングを見極め、パリィで受け流す。敵が崩れた隙をついて、強力な一撃で畳みかける。",
         stand: "girl-front.png?v=11",
         chibi: "job-girl.png?v=15",
-        action: "girl-action.jpg?v=5",
+        action: "girl-action.jpg?v=6",
         battle: "girl-battle.png?v=40",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.jpg?v=17",
@@ -8598,7 +8420,19 @@
       const base = foe && foe.atkHidden != null
         ? Number(foe.atkHidden) || 0
         : HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
-      return base + plus * 2;
+      return base + plus;
+    }
+
+    // 再会1回につき、初回体力のおよそ4分の1。5刻み。
+    function reunionHpBonus(foe) {
+      const plus = foe && foe.plus != null ? Number(foe.plus) || 0 : foeRepeat();
+      const base = Number(foe && foe.hp) || 0;
+      const step = Math.round(base / 4 / 5) * 5;
+      return plus * step;
+    }
+
+    function foeBattleHp(foe) {
+      return (Number(foe && foe.hp) || 0) + reunionHpBonus(foe);
     }
 
     function hiddenDef(foe) {
@@ -8654,7 +8488,7 @@
     function syncEnemyDef() {
       if (!enemy) return;
       const foe = enemyNow();
-      const angerCut = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+      const angerCut = enemy.anger ? 2 : 0;
       enemy.def = hiddenDef(foe) - angerCut - (Number(enemy.defCut) || 0);
     }
 
@@ -8890,6 +8724,7 @@
       }
       const prev = roadDoneBelow(now);
       if (prev) {
+        // 下端＝一つ前の階層。そのすぐ上に現在地が見える位置へ
         ol.scrollTop = Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
         return;
       }
@@ -8914,7 +8749,24 @@
       return battleIndex === route.lastIndexOf(DUNGEON.boss);
     }
 
-    // 敵の絵の大きさ：雑魚＝小、普通＝中、強敵＝大、ボス＝小の2倍
+    // 絵の余白。見える体の高さを自分に合わせるときに使う。
+    const FOE_INK = {
+      "enemy-slime.png": { w: 864, h: 1152, top: 133, bottom: 136 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72 },
+      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98 },
+      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25 },
+    };
+
+    function foeInkVars() {
+      const src = String((enemy && enemy.image) || "").split("?")[0];
+      const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0 };
+      const inkH = Math.max(1, ink.h - ink.top - ink.bottom);
+      const mid = (ink.top + inkH / 2) / ink.h;
+      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)}`;
+    }
+
+    // 見える大きさは自分基準。雑魚0.8、普通1.2、強敵とボスは2。大きいほうが枠に収まる。
     function foeSize() {
       if (bossNow()) return "boss";
       const rank = (enemyNow() && enemyNow().rank) || "普通";
@@ -8941,12 +8793,12 @@
       { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=4" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
-      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 10, ignoreTrait: true, effect: "★★★★★　ATK+10。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
+      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える。", image: "gear-battle-counter.jpg?v=6" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 10, statusImmune: true, effect: "★★★★★　DEF+10。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
@@ -9171,10 +9023,7 @@
     }
 
     function starterGear() {
-      const next = emptyGear();
-      next.sword = { ...gearItem("short-sword") };
-      next.shield = { ...gearItem("buckler") };
-      return next;
+      return emptyGear();
     }
 
     function gearItem(id) {
@@ -9335,7 +9184,6 @@
           return { show: true, text, extra: "" };
         }
         if (traitAtk) return { show: true, text: gearTraitOneLine(traitAtk), extra: "" };
-        if (isStarterGear(item)) return { show: true, text: "初期装備", extra: "starter" };
         return { show: true, text: "", extra: "empty-trait" };
       }
       const t = gearTraitOneLine(o.body ?? "");
@@ -9531,21 +9379,8 @@
       return `<svg class="plate-shield" viewBox="0 0 80 96" aria-hidden="true"><path d="M40 8 68 20v26c0 20-11 34-28 42C23 80 12 66 12 46V20Z" fill="${fill}" stroke="${edge}" stroke-width="5"/><path d="M40 16 60 26v18c0 15-8 26-20 32C28 70 20 59 20 44V26Z" fill="none" stroke="${rim}" stroke-width="2.5"/></svg>`;
     }
 
-    function holdGuard(kind) {
-      const gold = kind === "parry";
-      const word = gold ? "パリィ" : "ガード";
-      return `<div class="hero-guard hold${gold ? " parry" : ""}" aria-label="${word}"><b class="guard-word">${word}</b></div>`;
-    }
-
-    function shieldBreakBadge(n) {
-      const plate = plateShieldSvg(false);
-      return `<div class="shield-badge breaking" aria-label="シールド ${n}"><span class="half left">${plate}</span><span class="half right">${plate}</span><i class="crack"></i></div>`;
-    }
-
-    function hurtWord(n, poison) {
-      const big = Number(n) >= 10 ? " big" : "";
-      const kind = poison ? " poison" : "";
-      return `<b class="hurt-word${kind}${big}">${n}ダメージ！</b>`;
+    function holdGuard() {
+      return `<div class="hero-guard hold" aria-label="ガード"><b class="guard-word">ガード</b></div>`;
     }
 
     function heartIcon() {
@@ -9640,9 +9475,9 @@
         return;
       }
       enemy.anger = 1;
-      enemy.atk = hiddenAtk(foe) + 1;
+      enemy.atk = hiddenAtk(foe) + 2;
       syncEnemyDef();
-      log(`${enemy.name}は怒り。ATK+1、DEF-1。`);
+      log(`${enemy.name}は怒り。ATK+2、DEF-2。`);
     }
 
     function recycleEnemyDeck() {
@@ -9939,10 +9774,6 @@
       if (n > 0 && side === "enemy") fxFoeHits.push(n);
     }
 
-    function markShieldBreak(side, result) {
-      if (result && result.blocked > 0 && result.hpLoss > 0) fxShieldBreak[side] = result.blocked;
-    }
-
     // 敵への斬撃エフェクト。1ターンの中で 右上→左下、左上→右下、上→下 の順に回す。
     // 2回攻撃のカードは、この順を2つ進める。
     function slashFoe() {
@@ -10008,10 +9839,8 @@
           }
         }
         if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
-        markShieldBreak("player", result);
       } else if (result.hpLoss || result.blocked) {
         noteHit("enemy", result.hpLoss, stacks, "poison");
-        markShieldBreak("enemy", result);
       }
       log(poisonSentence(name, stacks, 0, result));
       if (hadShield) reflectBattleCounter(amount);
@@ -10026,7 +9855,6 @@
         if (hit.hpLoss || hit.blocked) {
           slashFoe();
           noteHit("enemy", hit.hpLoss, negated);
-          markShieldBreak("enemy", hit);
         }
         log(`ナイフパリィ。${enemy.name}に${negated}ダメージ。`);
       }
@@ -10054,7 +9882,6 @@
         player.parry = stacks - 1;
         onParrySuccess(amount);
         noteHit("player", 0, amount);
-        fxGuard = "parry";
         log(`${enemy.name}は${name}。パリィで無効。`, card, true);
         return;
       }
@@ -10074,7 +9901,6 @@
         }
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
-      markShieldBreak("player", result);
       log(hurtSentence(enemy.name, name, raw + extra, 0, result), card, true);
       if (hadShield) reflectBattleCounter(dealt, card);
     }
@@ -10087,7 +9913,6 @@
       if (hit.hpLoss || hit.blocked) {
         slashFoe();
         noteHit("enemy", hit.hpLoss, reflect);
-        markShieldBreak("enemy", hit);
       }
       log(`${gear.shield.name}。${enemy.name}に${reflect}ダメージ。`, card);
     }
@@ -10195,7 +10020,6 @@
       if (dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
         noteHit("enemy", result.hpLoss, dealt);
-        markShieldBreak("enemy", result);
       }
       log(damageSentence(heroName(), card.name, dealt, result), card);
       // ポイズンソード：アタックカードなら、シールドで防がれても毒
@@ -10225,7 +10049,7 @@
         return;
       }
       if (card.rage) {
-        player.atkMod = (Number(player.atkMod) || 0) + 1;
+        player.atkMod = (Number(player.atkMod) || 0) + 2;
         player.defMod = (Number(player.defMod) || 0) - 2;
         syncGearStats();
         log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。このカードはデッキから削除。戦闘が終わると戻る。`, card);
@@ -11085,7 +10909,7 @@
         const slashCount = fxSlashes.length;
         const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
         return;
       }
@@ -11094,7 +10918,7 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -11118,7 +10942,7 @@
       resolveAt = 0;
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
       const kept = hand.filter((card) => card.keep || isItemCard(card));
-      discard.push(...hand.filter((card) => !card.keep && !isItemCard(card)));
+      discard.push(...hand.filter((card) => !card.keep));
       hand = kept;
       note = "";
       const poisoned = tickPoison("player");
@@ -11224,7 +11048,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, fatalWait, poisonWait);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -11626,16 +11450,16 @@
         enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
         enemy.name = enemyKey(enemy.name);
         const foe = enemyByName(enemy.name);
-        enemy.atk = hiddenAtk(foe) + enemy.anger;
+        const maxFoe = foeBattleHp(foe);
+        enemy.atk = hiddenAtk(foe) + enemy.anger * 2;
         enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
         syncEnemyDef();
-        if (enemy.maxHp !== foe.hp) {
-          enemy.maxHp = foe.hp;
-          if (enemy.hp > foe.hp) enemy.hp = foe.hp;
+        if (enemy.maxHp !== maxFoe) {
+          enemy.maxHp = maxFoe;
+          if (enemy.hp > maxFoe) enemy.hp = maxFoe;
         }
       }
       gear = normalizeGear(data.gear);
-      if (!gear.sword && !gear.shield) gear = starterGear();
       syncGearStats();
       gearOpen = null;
       stolen = Array.isArray(data.stolen) ? data.stolen : [];
@@ -11675,7 +11499,7 @@
         enemy.name = foeLabel();
         enemy.image = foe.image;
         enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
-        enemy.atk = hiddenAtk(foe) + enemy.anger;
+        enemy.atk = hiddenAtk(foe) + enemy.anger * 2;
         enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
         syncEnemyDef();
       }
@@ -11722,7 +11546,8 @@
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foe.hp, maxHp: foe.hp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
+      const foeHp = foeBattleHp(foe);
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -11834,7 +11659,6 @@
         if (result.hpLoss || result.blocked) {
           slashFoe();
           noteHit("enemy", result.hpLoss, item.damage);
-          markShieldBreak("enemy", result);
         }
         log(`${heroName()}は${item.name}を投げた。${enemy.name}に${result.hpLoss}ダメージ。`);
       }
@@ -11900,7 +11724,7 @@
       if (!pick) return "";
       if (pick.kind === "item") return "";
       if (pick.kind === "gear") {
-        if (!gear || !gear.sword) gear = starterGear();
+        if (!gear) gear = emptyGear();
         if (offerWeapon(pick.gear, { source: "gift" })) return "";
         giveGear(pick.gear);
         floorGift = { kind: "gear", gear: { ...pick.gear } };
@@ -11924,7 +11748,7 @@
       playPickCenter(`[data-action="bless-pick"][data-bless="${index}"]`, () => {
         if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
         if (pick.kind === "maxhp") {
-          runBonus.hp = (Number(runBonus.hp) || 0) + 10;
+          runBonus.hp = (Number(runBonus.hp) || 0) + 20;
           floorHp = runMaxHp();
         } else if (pick.kind === "spd") {
           runBonus.spd = (Number(runBonus.spd) || 0) + 1;
@@ -11989,7 +11813,7 @@
       }
       if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
-          ? { slot: "hp", image: "reward-hp.jpg?v=1", boonSub: "HP+10" }
+          ? { slot: "hp", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }
           : gift.kind === "mana"
             ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
             : { slot: "spd", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
@@ -12346,10 +12170,7 @@
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
       const fresh = Boolean(extra && extra.shieldFlash && block > 0);
       const parryFresh = Boolean(extra && extra.parryFlash);
-      const breakingN = extra && Number(extra.shieldBreak) > 0 ? Math.round(Number(extra.shieldBreak)) : 0;
-      const shieldBadge = breakingN
-        ? shieldBreakBadge(breakingN)
-        : (block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "");
+      const shieldBadge = block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
       const parryBadge = parried
         ? `<div class="shield-badge parry-badge${parryFresh ? " fresh" : ""}${extra && extra.parryFromShield ? " from-shield" : ""}" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryStacks ? `<b>${parryN}</b>` : ""}</div>`
         : "";
@@ -12420,7 +12241,6 @@
       return [
         ["自分", [
           ["guard", "ガード"],
-          ["parry-block", "パリィで防ぐ"],
           ["break", "盾が割れる"],
           ["hurt", "被ダメージ"],
           ["poison-tick", "毒ダメージ"],
@@ -12480,17 +12300,12 @@
       const poison = Boolean(opt.poison);
       const anger = Boolean(opt.anger);
       const give = Boolean(opt.stamp);
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+      const broke = Boolean(opt.break);
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
     function fxPlate(id) {
       const name = esc(heroName());
-      if (id === "break") {
-        return `<div class="hero-stack"><section class="battle-plate hero-plate">${shieldBreakBadge(8)}<h2><span class="who">${name}</span></h2></section></div>`;
-      }
-      if (id === "foe-break") {
-        return `<section class="battle-plate foe-plate" data-rank="普通">${shieldBreakBadge(6)}<h2><span class="who">スライム</span></h2></section>`;
-      }
       if (id === "shield") {
         return `<div class="hero-stack"><section class="battle-plate hero-plate shielded"><div class="shield-badge fresh" aria-label="シールド 8">${plateShieldSvg(false)}<b>8</b></div><h2><span class="who">${name}</span></h2></section></div>`;
       }
@@ -12521,9 +12336,8 @@
       let foe = {};
       let call = "";
       let cls = "";
-      if (id === "guard") hero = { guard: "hold" };
-      else if (id === "parry-block") hero = { guard: "parry" };
-      else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6) };
+      if (id === "guard") hero = { guard: true };
+      else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6), break: true };
       else if (id === "hurt") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "poison-tick") hero = { hurt: true, kind: "poison", n: 3, pow: hitPower(3) };
       else if (id === "poison-give") hero = { poisonApply: true };
@@ -12534,7 +12348,7 @@
         cls = " fatal";
       } else if (id === "heal") hero = { heal: true };
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
-      else if (id === "foe-break") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
+      else if (id === "foe-break") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6), break: true };
       else if (id === "slash-multi") foe = { slash: true, dirs: [0, 1, 2], hits: [4, 5, 8] };
       else if (id === "foe-poison") foe = { poison: true, hits: [3] };
       else if (id === "foe-poison-give") foe = { poison: true, stamp: true };
@@ -12564,7 +12378,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard || "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.n || 0, Boolean(hero.heal), Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -12772,16 +12586,15 @@
                 <h2><span>初期ステータス</span></h2>
                 <div class="cast-stat-board cast-vitals" aria-label="初期ステータス">
                   <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>30</b></span></div>
-                  <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>1</b></span></div>
-                  <div class="hp-line stat-def"><span class="lbl">${shieldIcon()}DEF</span><span class="num"><b>1</b></span></div>
+                  <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>0</b></span></div>
+                  <div class="hp-line stat-def"><span class="lbl">${shieldIcon()}DEF</span><span class="num"><b>0</b></span></div>
                   <div class="hp-line stat-spd"><span class="lbl">${bootIcon()}SPD</span><span class="num"><b>${DRAW_PER_TURN}</b></span></div>
                 </div>
               </div>
               <div class="cast-gear-col">
                 <h2><span>初期装備</span></h2>
                 <div class="cast-gear">
-                  ${castGearButton("short-sword")}
-                  ${castGearButton("buckler")}
+                  <p class="cast-blurb">なし</p>
                 </div>
               </div>
             </div>
@@ -13225,7 +13038,7 @@
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
               ${sheetFig("girl-front.png?v=11", "戦士の立ち絵", "cut-ref")}
-              ${sheetFig("girl-action.jpg?v=5", "戦士の一枚絵", "land-ref", "span-2")}
+              ${sheetFig("girl-action.jpg?v=6", "戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
               ${sheetFig("job-girl.png?v=15", "戦士の選択コマ（かわいい）", "cut-ref")}
@@ -13636,7 +13449,7 @@
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
-        placeFoePoisonWords();
+        if (screen === "fx" || screen === "battle") fitFighters();
       });
     }
 
@@ -14040,7 +13853,7 @@
         return;
       }
       if (card.rage) {
-        mine.atk += 1;
+        mine.atk += 2;
         mine.def -= 2;
         return;
       }
@@ -14194,7 +14007,8 @@
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
-      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">You are Dead</div>`);
+      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
+      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${hitNow.kind === "poison" ? " poison" : ""}${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
       if (!calls.length) return "";
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
@@ -14236,20 +14050,11 @@
     }
 
     function poisonFxHtml(stamp) {
-      const word = stamp ? `<b class="hurt-word poison">毒になった！</b>` : "";
-      const liquid = stamp ? "" : `<i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i>`;
-      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist big"></i><i class="mist small"></i>${liquid}</div>`;
+      const word = stamp ? `<b class="poison-stamp">毒</b>` : "";
+      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
-    function healFxHtml() {
-      return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><b class="plus p1">+</b><b class="plus p2">+</b><b class="plus p3">+</b><b class="plus p4">+</b><b class="plus p5">+</b></div>`;
-    }
-
-    function angerFxHtml() {
-      return "";
-    }
-
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, hurtN, heal) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -14257,15 +14062,12 @@
         ? `<div class="hero-hit poison${fatal && poisonTick ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml(!poisonTick)}</div>`
         : "";
       const bluntHtml = blunt
-        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
+        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
-      const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick) : "";
-      const healHtml = heal ? healFxHtml() : "";
-      const guarding = guard === "hold" || guard === "parry";
-      const guardHtml = guarding ? holdGuard(guard) : "";
+      const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${guarding ? " held" : ""}${guard === "parry" ? " gold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -14485,7 +14287,7 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中から無作為に1枚使う。初めて使い切ると怒り（ATK+1、DEF-1。重ねない）。そのあと捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
+      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中から無作為に1枚使う。初めて使い切ると怒り（ATK+2、DEF-2。重ねない）。そのあと捨て札を混ぜて山札に戻す。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
     }
 
     function clearFoeDeckPop() {
@@ -14631,7 +14433,7 @@
     function classCards() {
       if (job !== "戦士" && job !== "パラディン") return [];
       const starter = new Set(CARD_POOL.map(([name]) => name));
-      return Object.keys(WARRIOR).filter((name) => !starter.has(name)).map((name) => ({ ...keepCard({ name, ...WARRIOR[name], stars: 1 }), source: "戦士" }));
+      return Object.keys(WARRIOR).filter((name) => !starter.has(name)).map((name) => ({ ...keepCard({ name, ...WARRIOR[name] }), source: "戦士" }));
     }
 
     function rewardPool() {
@@ -14755,7 +14557,7 @@
       if (slot.kind === "card") {
         stolen.push(keepCard(slot.card));
       } else if (slot.kind === "gear") {
-        if (!gear || !gear.sword) gear = starterGear();
+        if (!gear) gear = emptyGear();
         if (offerWeapon(slot.gear, { source: "shop", shopIndex: index, price })) {
           persistSave(true);
           render();
@@ -14808,7 +14610,7 @@
           : null;
         if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
         if (pick.kind === "gear" && pick.gear) {
-          if (!gear || !gear.sword) gear = starterGear();
+          if (!gear) gear = emptyGear();
           if (offerWeapon(pick.gear, { source: "boss" })) {
             if (flight) flight.ghost.remove();
             persistSave(true);
@@ -15430,7 +15232,7 @@
         const fan = Math.round(t * 8 * 10) / 10;
         const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};z-index:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
       const overlay = rewardOverlay();
       const leaveOverlay = askLeave
@@ -15460,7 +15262,6 @@
       fxParryFromShield = false;
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
-      const breakNow = { player: fxShieldBreak.player, enemy: fxShieldBreak.enemy };
       const healNow = fxHeal;
       const hitNow = fxHit;
       const poisonPlayerNow = fxPoisonApply.player;
@@ -15471,13 +15272,11 @@
       const HIT_GAP = 0.34;
       const cutsHtml = slashesNow.map((dir, i) => {
         const pow = foeHitsNow[i] != null ? hitPower(foeHitsNow[i]) : (hitNow && hitNow.side === "enemy" ? hitPow : "0.35");
-        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></span>`;
+        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`;
       }).join("");
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
-        const poison = foeKind === "poison";
-        const text = poison ? `${n}ダメージ！` : n;
-        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}${poison && n >= 10 ? " big" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
+        return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
       }).join("");
       fxSlash = false;
       fxSlashes = [];
@@ -15485,7 +15284,6 @@
       fxHurt = false;
       fxFatal = false;
       fxGuard = "";
-      fxShieldBreak = { player: 0, enemy: 0 };
       fxHeal = false;
       fxHit = null;
       fxDeal = false;
@@ -15498,6 +15296,7 @@
       const playerShown = Math.round(shownPlayer());
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
+        ${healNow ? `<div class="screen-heal" aria-hidden="true"></div>` : ""}
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -15517,29 +15316,28 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, shieldBreak: breakNow.player, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, shieldBreak: breakNow.enemy, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: 1 })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, healNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
               ${useZoneMarkup()}
             </div>
             <div class="duel-side foe">
-              <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}">
+              <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${(poisonEnemyNow && foeKind !== "poison") ? " give" : ""}${foeAngerShow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 <img src="${esc(enemy.image || "enemy-slime.png?v=7")}" alt="">
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
-                ${foeAngerShow ? angerFxHtml() : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
               </div>
               </div>
@@ -15580,7 +15378,6 @@
       }
       launchPendingPlayClearFly();
       launchFoeTurnTravel();
-      placeFoePoisonWords();
     }
 
     // 手札の重なりを固めてからドローを再生する（冒頭のつまり対策）
@@ -15622,8 +15419,41 @@
       requestAnimationFrame(tick);
     }
 
+    // 自分と敵の見える高さをランク比にし、大きいほうが戦闘の縦いっぱいに収まるようにする。
+    function fitFighters() {
+      const fxPreview = root.querySelector(".fx-lab-preview");
+      if (!document.documentElement.classList.contains("stage-fit") && !fxPreview) return;
+      const ally = root.querySelector(".duel-side.ally");
+      const foeSide = root.querySelector(".duel-side.foe");
+      const hero = root.querySelector(".hero-shoulder");
+      const main = root.querySelector(".enemy-main");
+      if (!ally || !foeSide || !hero || !main) return;
+      const laneW = Math.min(ally.clientWidth, foeSide.clientWidth);
+      const laneH = Math.min(ally.clientHeight, foeSide.clientHeight);
+      if (laneW < 40 || laneH < 40) return;
+      const rank = parseFloat(getComputedStyle(main).getPropertyValue("--rank")) || 1;
+      const imgW = parseFloat(getComputedStyle(main).getPropertyValue("--img-w")) || 864;
+      const inkH = parseFloat(getComputedStyle(main).getPropertyValue("--ink-h")) || 1152;
+      const heroInk = 1068;
+      const heroImg = 864;
+      const headGap = 36;
+      const footGap = 12;
+      const roomH = Math.max(1, laneH - headGap - footGap);
+      const bigger = Math.max(1, rank);
+      const v0 = Math.max(1, Math.min(
+        roomH / bigger,
+        laneW * heroInk / heroImg,
+        laneW * inkH / (rank * imgW)
+      ));
+      hero.style.setProperty("--foot-gap", `${footGap}px`);
+      main.style.setProperty("--foot-gap", `${footGap}px`);
+      hero.style.setProperty("--hero-w", `${v0 * heroImg / heroInk}px`);
+      main.style.setProperty("--foe-w", `${v0 * rank * imgW / inkH}px`);
+    }
+
     // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
     function fitHand() {
+      fitFighters();
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
       const cards = handEl.querySelectorAll(".card");
