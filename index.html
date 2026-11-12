@@ -7506,7 +7506,7 @@
       ジャストミート: { cost: 2, text: "8ダメージ\n前のターンにダメージを受けていないなら+3", damage: 8, kind: "attack", safeBonus: 3 },
       余裕の構え: { cost: 1, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, text: "直前3ターンで、パリィが成功したターンの数×15ダメージ", kind: "attack", finisher: true },
+      致命の一撃: { cost: 3, text: "直前のターンに成功したパリィの数×15ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, unrated: true, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, unrated: true, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
@@ -9245,6 +9245,8 @@
       player.hurtLast = false;
       player.extraDraw = 0;
       player.parryHist = [];
+      player.parryHitsThis = 0;
+      player.parryHitsLast = 0;
       player.parryHitThis = false;
       player.parryLast = false;
       player.knifeReflect = false;
@@ -9374,6 +9376,7 @@
     }
 
     function onParrySuccess(negated) {
+      player.parryHitsThis = (Number(player.parryHitsThis) || 0) + 1;
       player.parryHitThis = true;
       if (player.knifeReflect && negated > 0 && enemy && enemy.hp > 0) {
         const hit = applyDamage(enemy, negated);
@@ -9591,9 +9594,8 @@
         return;
       }
       if (card.finisher) {
-        const hist = Array.isArray(player.parryHist) ? player.parryHist : [];
-        const turns = hist.reduce((sum, ok) => sum + (ok ? 1 : 0), 0);
-        strike(card, turns * 15);
+        const hits = Math.max(0, Number(player.parryHitsLast) || 0);
+        strike(card, hits * 15);
         return;
       }
       if (card.parryAdd) {
@@ -10467,12 +10469,11 @@
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
       if (turn > 1) {
-        const ok = !!player.parryHitThis;
-        player.parryLast = ok;
-        const hist = Array.isArray(player.parryHist) ? player.parryHist.slice() : [];
-        hist.push(ok ? 1 : 0);
-        player.parryHist = hist.slice(-3);
+        const hits = Math.max(0, Number(player.parryHitsThis) || 0);
+        player.parryHitsLast = hits;
+        player.parryLast = hits > 0;
       }
+      player.parryHitsThis = 0;
       player.parryHitThis = false;
       player.knifeReflect = false;
       if (parryCount(player) > 0) {
@@ -10923,7 +10924,9 @@
         player.extraDraw = Math.max(0, Number(player.extraDraw) || 0);
         player.poison = poisonStacks(player);
         if (!Array.isArray(player.parryHist)) player.parryHist = [];
-        player.parryHitThis = !!player.parryHitThis;
+        player.parryHitsThis = Math.max(0, Number(player.parryHitsThis) || (player.parryHitThis ? 1 : 0));
+        player.parryHitsLast = Math.max(0, Number(player.parryHitsLast) || 0);
+        player.parryHitThis = player.parryHitsThis > 0;
         player.parryLast = !!player.parryLast;
         player.knifeReflect = !!player.knifeReflect;
         player.doubleNext = !!player.doubleNext;
@@ -11032,7 +11035,7 @@
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
       battleStartHp = hp;
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0, parryHist: [], parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0, parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -12858,9 +12861,8 @@
         return [Math.max(0, shield)];
       }
       if (card.finisher) {
-        const hist = (player && player.parryHist) || [];
-        const turns = hist.reduce((sum, ok) => sum + (ok ? 1 : 0), 0);
-        return [turns * 15];
+        const hits = Math.max(0, Number(player && player.parryHitsLast) || 0);
+        return [hits * 15];
       }
       if (card.counter) {
         const reds = (inPlay || []).filter((item) => cardKind(item) === "attack").length;
@@ -12923,7 +12925,7 @@
         } else if (card.press) {
           text = text.replace(/自分のシールドの数だけダメージ|ブロックの数だけダメージ(?:\nブロックがなければ0)?/u, `${dmg}ダメージ`);
         } else if (card.finisher) {
-          text = text.replace(/直前3ターンで、パリィが成功したターンの数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
+          text = text.replace(/直前のターンに成功したパリィの数×15ダメージ|直前3ターンで、パリィが成功したターンの数×15ダメージ|消費した数×15ダメージ/u, `${dmg}ダメージ`);
         } else if (card.redTimes) {
           text = text.replace(/プレイエリアの赤いカードの数×\d+ダメージ/u, `${dmg}ダメージ`);
         } else if (card.counter) {
