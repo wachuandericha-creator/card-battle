@@ -1053,6 +1053,10 @@
       mix-blend-mode: screen;
       animation: hero-flash 0.7s ease-out forwards;
     }
+    .hero-hit.blunt .flash {
+      background: radial-gradient(circle at 50% 46%, rgba(255, 90, 70, 0.35), rgba(170, 16, 12, 0.62) 46%, transparent 72%);
+      mix-blend-mode: multiply;
+    }
     /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
     .hero-hit .ring {
       position: absolute;
@@ -1101,7 +1105,7 @@
       opacity: 0;
       animation: blunt-dust 0.7s ease-out forwards;
     }
-    .hero-shoulder.blunt:not(.poison) .hero-fig { animation: hero-recoil 0.42s ease-out; }
+    .hero-shoulder.blunt:not(.poison) .hero-fig { animation: hero-recoil 0.55s ease-out; }
     .hero-hit.fatal .flash { animation-duration: 2.2s; }
     .hero-hit.fatal .ring { animation-duration: 1.6s; }
     .hero-hit.fatal .star { animation-duration: 1.8s; }
@@ -2671,7 +2675,7 @@
     .hero-body .hero-hit.poison { overflow: visible; z-index: 4; }
     .sprite.poison { overflow: visible; }
     .sprite.poison:not(.slash) { animation: poison-shudder 1.15s linear; }
-    .hero-shoulder.poison:not(.hurt) { animation: poison-shudder 1.15s linear; }
+    .hero-shoulder.poison:not(.hurt):not(.held) { animation: poison-shudder 1.15s linear; }
     .sprite.poison img,
     .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
     .poison-stamp {
@@ -6905,10 +6909,11 @@
       100% { opacity: 0; transform: scale(1.25); }
     }
     @keyframes hero-recoil {
-      0% { transform: none; }
-      16% { transform: translateX(-16px) rotate(-4deg) scale(0.96, 1.04); }
-      42% { transform: translateX(5px) rotate(1deg); }
-      100% { transform: none; }
+      0% { transform: none; filter: none; }
+      14% { transform: translateX(-14px) rotate(-3deg); filter: sepia(1) saturate(8) hue-rotate(-28deg) brightness(0.9); }
+      32% { transform: translateX(9px) rotate(2deg); filter: sepia(1) saturate(7) hue-rotate(-18deg) brightness(1.08); }
+      52% { transform: translateX(-5px); filter: sepia(0.85) saturate(6) hue-rotate(-24deg) brightness(0.95); }
+      100% { transform: none; filter: none; }
     }
     @keyframes poison-mist {
       0% { opacity: 0; transform: scale(0.7); }
@@ -9339,7 +9344,6 @@
 
     function takeEnemyHit(raw, card) {
       const name = card && card.name ? card.name : "攻撃";
-      fxStruck = true;
       let amount = Math.max(0, Number(raw) || 0);
       if (player.doubleNext) {
         player.doubleNext = false;
@@ -10160,7 +10164,6 @@
         return;
       }
       if (card.press) {
-        fxStruck = true;
         const amount = enemy.block || 0;
         if (amount > 0) takeEnemyHit(amount, card);
         else log(`${enemy.name}は${card.name}で0ダメージ。`, card, true);
