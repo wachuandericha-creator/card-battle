@@ -5022,39 +5022,62 @@
       padding-top: max(20px, env(safe-area-inset-top));
       padding-bottom: max(28px, env(safe-area-inset-bottom));
     }
-    /* タイトル：一枚絵は大きすぎない枠に収め、演出は残す。操作は中央下 */
+    /* タイトル：絵とボタンで画面を使い、ボタンは大きく離して押しやすく */
     .title-screen {
       position: relative;
       height: 100%;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
+      grid-template-rows: minmax(0, 1fr);
+      align-items: stretch;
+      gap: 28px;
+      padding: 36px 44px 72px 56px;
+      box-sizing: border-box;
       overflow: hidden;
       background:
-        radial-gradient(ellipse 70% 55% at 50% 38%, #2a1c14 0%, transparent 70%),
+        radial-gradient(ellipse 70% 55% at 42% 42%, #2a1c14 0%, transparent 70%),
         #0a0706;
       isolation: isolate;
     }
-    .title-bg {
-      position: absolute;
-      left: 50%;
-      top: 42%;
-      z-index: 0;
-      width: min(78cqw, 920px);
-      height: min(58cqh, 520px);
-      object-fit: cover;
-      object-position: 50% 28%;
-      border-radius: 18px;
+    .title-main {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 3;
+    }
+    .title-stage {
+      position: relative;
+      flex: 1 1 auto;
+      width: min(100%, 1320px);
+      min-height: 240px;
+      border-radius: 22px;
+      overflow: hidden;
       box-shadow:
         0 0 0 1px rgba(228, 177, 90, 0.28),
         0 18px 48px rgba(0, 0, 0, 0.65),
         0 0 80px rgba(255, 140, 60, 0.12);
+    }
+    .title-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 28%;
       animation: title-drift 26s ease-in-out infinite alternate;
-      transform: translate(-50%, -50%) scale(1.02);
+      transform: scale(1.06);
       transform-origin: 50% 40%;
     }
     @keyframes title-drift {
-      0% { transform: translate(-50%, -50%) scale(1.02); }
-      100% { transform: translate(-50%, -52%) scale(1.06); }
+      0% { transform: scale(1.06); }
+      100% { transform: scale(1.12) translateY(-1.5%); }
     }
     .title-vignette {
       position: absolute;
@@ -5096,19 +5119,16 @@
       50% { transform: translate(18px, -50cqh); opacity: 0.8; }
       100% { transform: translate(-10px, -104cqh); opacity: 0; }
     }
-    /* ロゴは上中央、操作は画面中央下（端すぎると押しにくい） */
     .title-hero {
-      position: absolute;
+      position: relative;
       z-index: 3;
-      top: clamp(20px, 4.5cqh, 48px);
-      left: 50%;
-      right: auto;
-      transform: translateX(-50%);
+      flex: none;
+      width: min(100%, 1320px);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      padding: 28px 24px 0;
+      padding: 0;
       pointer-events: none;
     }
     .title-kicker {
@@ -5168,52 +5188,58 @@
     .title-rule i { flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(240, 195, 106, 0.95)); box-shadow: 0 0 8px rgba(240, 195, 106, 0.6); }
     .title-rule i:last-child { background: linear-gradient(90deg, rgba(240, 195, 106, 0.95), transparent); }
     .title-actions {
-      position: absolute;
+      position: relative;
       z-index: 4;
-      left: 50%;
-      right: auto;
-      bottom: clamp(56px, 11cqh, 108px);
-      transform: translateX(-50%);
+      flex: none;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 14px;
+      align-items: stretch;
+      justify-content: center;
+      gap: 16px;
       margin: 0;
       padding: 0;
-      width: min(420px, calc(100% - 64px));
+      width: min(100%, 1320px);
       pointer-events: auto;
     }
     .title-actions > button.primary {
       width: 100%;
       min-width: 0;
-      min-height: 56px;
-      padding: 16px 28px;
-      font-size: 22px;
-      letter-spacing: 0.32em;
-      text-indent: 0.32em;
+      min-height: 112px;
+      padding: 20px 28px;
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
       border-radius: 999px;
       border: 1px solid #ffe6a8;
       background: linear-gradient(180deg, #ffe9ae 0%, #e4b15a 48%, #b9842a 100%);
       color: #2a1c0c;
+      cursor: pointer;
       box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.22), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.75);
       transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
     .title-actions > button.primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 3px rgba(255, 230, 170, 0.45), 0 0 32px rgba(255, 200, 110, 0.55), 0 14px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
-    .title-sub-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; }
-    .title-sub-actions button {
+    .title-sub-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 16px;
       width: 100%;
+    }
+    .title-sub-actions button {
+      flex: 1 1 30%;
       min-width: 0;
-      min-height: 44px;
-      padding: 12px 22px;
-      font-size: 16px;
-      letter-spacing: 0.08em;
+      min-height: 96px;
+      padding: 16px 18px;
+      font-size: 26px;
+      letter-spacing: 0.06em;
       white-space: normal;
       line-height: 1.35;
-      border-radius: 999px;
+      border-radius: 22px;
       border: 1px solid rgba(240, 195, 106, 0.55);
       background: rgba(14, 9, 6, 0.72);
       color: #fff1d2;
+      cursor: pointer;
       backdrop-filter: blur(6px);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
       transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
@@ -5365,14 +5391,17 @@
       .fx-view { order: -1; }
     }
     .title-board {
-      position: absolute;
+      position: relative;
+      grid-column: 2;
+      grid-row: 1;
       z-index: 5;
-      top: 4cqh;
-      right: max(24px, 3cqw);
+      top: auto;
+      right: auto;
       bottom: auto;
-      width: min(400px, 36cqw);
+      width: auto;
       height: auto;
-      max-height: calc(100cqh - 8cqh);
+      max-height: 100%;
+      align-self: start;
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -5571,13 +5600,9 @@
     }
     .title-board .board-empty { margin: 0; color: #c8b48a; font-size: 13px; line-height: 1.4; }
     @media (max-width: 900px) {
-      html:not(.stage-fit) .title-hero { top: 12px; }
-      html:not(.stage-fit) .title-actions { bottom: 16px; width: min(420px, calc(100% - 32px)); }
       html:not(.stage-fit) .title-board {
-        top: 8px;
-        right: 8px;
-        width: min(240px, 46cqw);
-        max-height: calc(100cqh - 16px);
+        width: auto;
+        max-height: none;
         margin: 0;
         padding: 10px;
         gap: 8px;
@@ -6198,7 +6223,7 @@
     .gift-show .gift-img { width: 190px; height: 190px; object-fit: cover; border-radius: 16px; border: 2px solid rgba(228, 177, 90, 0.8); }
     .gift-show b { font-size: 22px; color: #f6d48a; }
     .gift-show small { font-size: 14px; line-height: 1.4; font-weight: 700; max-width: 210px; text-align: center; }
-    .menu button, .title-actions button, .small-btn {
+    .menu button, .small-btn {
       min-width: 220px;
       border-radius: 14px;
       border: 1px solid rgba(228, 177, 90, 0.8);
@@ -6208,7 +6233,7 @@
       padding: 12px 16px;
       cursor: pointer;
     }
-    .menu button.primary, .title-actions button.primary, .small-btn.primary {
+    .menu button.primary, .small-btn.primary {
       background: var(--gold);
       color: #2a2118;
       font-weight: 800;
@@ -7586,7 +7611,6 @@
       html:not(.stage-fit) .meters { width: 180px; }
       html:not(.stage-fit) .title-logo > span { font-size: 40px; }
       html:not(.stage-fit) .title-logo > span.sub { font-size: 18px; letter-spacing: 0.3em; }
-      html:not(.stage-fit) .title-actions > button.primary { min-width: 240px; font-size: 18px; }
       html:not(.stage-fit) .cast-title { font-size: 24px; letter-spacing: 0.06em; }
       html:not(.stage-fit) .cast-detail { grid-template-columns: 1fr; overflow: auto; align-items: start; }
       html:not(.stage-fit) .cast-main { grid-template-columns: 1fr; overflow: auto; }
@@ -7598,6 +7622,25 @@
     }
     html.phone, html.phone body { height: 100%; overflow: hidden; }
     html.phone #game { height: 100%; overflow: hidden; }
+    html.phone .title-screen {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px 12px max(12px, env(safe-area-inset-bottom));
+      overflow: auto;
+    }
+    html.phone .title-main { width: 100%; gap: 8px; justify-content: flex-start; flex: none; min-height: auto; }
+    html.phone .title-stage { width: 100%; height: 22vh; min-height: 112px; flex: none; }
+    html.phone .title-hero,
+    html.phone .title-actions { width: 100%; }
+    html.phone .title-actions { gap: 8px; }
+    html.phone .title-actions > button.primary { min-width: 0; min-height: 52px; font-size: 20px; padding: 12px 16px; }
+    html.phone .title-sub-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    html.phone .title-sub-actions button { flex: none; width: 100%; min-width: 0; min-height: 48px; font-size: 16px; padding: 10px 12px; }
+    html.phone .title-board { position: relative; top: auto; width: 100%; max-height: none; height: auto; flex: none; z-index: 1; }
+    html.phone .title-logo > span { font-size: 34px; }
+    html.phone .title-logo > span.sub { font-size: 16px; letter-spacing: 0.28em; }
+    html.phone .title-rule { width: min(280px, 80%); margin-top: 8px; }
     html.phone button { touch-action: manipulation; }
     html.phone .phone-only { display: inline-flex; }
     .phone-only { display: none; }
@@ -12446,7 +12489,7 @@
     }
 
     function fullscreenLabel() {
-      return fullscreenActive() ? "全画面をやめる" : "全画面";
+      return "全画面";
     }
 
     function toggleFullscreen() {
@@ -12462,10 +12505,12 @@
 
     function paintFullscreenLabels() {
       const on = fullscreenActive();
-      const label = on ? "全画面をやめる" : "全画面";
       root.querySelectorAll('[data-action="fullscreen"]').forEach((btn) => {
-        btn.textContent = label;
-        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.hidden = on;
+        if (!on) {
+          btn.textContent = "全画面";
+          btn.setAttribute("aria-pressed", "false");
+        }
       });
     }
 
@@ -12681,15 +12726,18 @@
     function renderTitle() {
       root.innerHTML = `
         <div class="title-screen">
-          <img class="title-bg" src="title-key.jpg?v=2" alt="">
           <div class="title-vignette" aria-hidden="true"></div>
           <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="title-hero">
-            <p class="title-kicker">WACHUERI CARD GAME</p>
-            <h1 class="title-logo"><span>わちゅえり</span><span class="sub">カードゲーム</span></h1>
-            <div class="title-rule" aria-hidden="true"><i></i><b>◆</b><i></i></div>
-          </div>
-          <div class="title-actions">
+          <div class="title-main">
+            <div class="title-hero">
+              <p class="title-kicker">WACHUERI CARD GAME</p>
+              <h1 class="title-logo"><span>わちゅえり</span><span class="sub">カードゲーム</span></h1>
+              <div class="title-rule" aria-hidden="true"><i></i><b>◆</b><i></i></div>
+            </div>
+            <div class="title-stage">
+              <img class="title-bg" src="title-key.jpg?v=2" alt="">
+            </div>
+            <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
             <div class="title-sub-actions">
               ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play")}
@@ -12699,6 +12747,7 @@
               ${menuButton("設定資料", "sheet")}
               ${menuButton("演出", "fx-lab")}
               ${menuButton("オプション", "settings")}
+              </div>
             </div>
           </div>
           ${titleBoardHtml()}
