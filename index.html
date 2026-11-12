@@ -7882,7 +7882,7 @@
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
-      捨て身の一撃: "card-sacrifice.jpg?v=1",
+      捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=1",
       パリィスラッシュ: "card-parry-slash.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
@@ -7892,7 +7892,7 @@
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
-      諸刃の剣: "card-shield-throw-v3.jpg?v=1",
+      クイックステップ: "card-quick-step.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
@@ -11070,7 +11070,9 @@
       phase = "resolve";
       resolveAt = 0;
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
-      while (hand.length) discard.push(hand.pop());
+      const kept = hand.filter((card) => card.keep || isItemCard(card));
+      discard.push(...hand.filter((card) => !card.keep && !isItemCard(card)));
+      hand = kept;
       note = "";
       const poisoned = tickPoison("player");
       turnCall = "resolve";
@@ -13061,9 +13063,32 @@
       return `<aside class="art-zoom-side" aria-label="${esc(title)}の拡大"><h3>${esc(title)}</h3>${body}${close}</aside>`;
     }
 
+    const UNADOPTED_CARD_ARTS = [
+      ["unadopt-attack-f-b", "アタック", "card-attack-f-b.jpg"],
+      ["unadopt-attack-f-card", "アタック（枠見本）", "card-attack-f-card.png?v=1"],
+      ["unadopt-attack-slash-user", "アタック", "card-attack-slash-user.jpg?v=1"],
+      ["unadopt-attack-slash-v2", "アタック", "card-attack-slash-v2.jpg?v=1"],
+      ["unadopt-attack-slash-v3", "アタック（壁砕き）", "card-attack-slash-v3.jpg?v=1"],
+      ["unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
+      ["unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
+      ["unadopt-pride", "自信過剰", "card-pride.jpg?v=1"],
+      ["unadopt-double-edge", "諸刃の剣（振りかぶり）", "card-double-edge-v7.jpg?v=1"],
+      ["unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
+    ];
+    function unadoptedCardSheet() {
+      return UNADOPTED_CARD_ARTS.map((item) => {
+        const on = albumZoom === item[0];
+        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}の未採用絵を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master land-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
+      }).join("");
+    }
+
     function artZoomSide(name) {
       if (!name) {
         return `<aside class="art-zoom-side" aria-label="全体表示"><h3>全体</h3><p class="art-zoom-note">左を押すと、ここに全体を出します。</p></aside>`;
+      }
+      const unadopted = UNADOPTED_CARD_ARTS.find((item) => item[0] === name);
+      if (unadopted) {
+        return zoomSidePanel(`${unadopted[1]}（未採用）`, `<div class="art-zoom-frame"><img class="art-zoom-img land-ref" src="${unadopted[2]}" alt="${esc(unadopted[1])}"></div>`, false);
       }
       const face = ALBUM_FACE.find((item) => item[0] === name);
       if (face) {
@@ -13264,6 +13289,11 @@
               <section>
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
+              </section>
+              <section>
+                <h3>未採用絵柄</h3>
+                <p class="album-meta">ゲームのカードには載せない候補。押すと右半分に拡大</p>
+                <div class="ref-grid blank-grid">${unadoptedCardSheet()}</div>
               </section>
             </div>
             <div class="album-tabs" role="tablist">${tabs}</div>
