@@ -5050,8 +5050,8 @@
       grid-template-columns: minmax(0, 1fr) minmax(360px, 460px);
       grid-template-rows: minmax(0, 1fr);
       align-items: stretch;
-      gap: 28px;
-      padding: 36px 44px 72px 56px;
+      gap: 12px;
+      padding: 16px 16px 18px;
       box-sizing: border-box;
       overflow: hidden;
       background:
@@ -5067,15 +5067,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 20px;
+      justify-content: stretch;
+      gap: 12px;
       z-index: 3;
     }
     .title-stage {
       position: relative;
       flex: 1 1 auto;
-      width: min(100%, 1320px);
-      min-height: 240px;
+      width: 100%;
+      min-height: 0;
       border-radius: 22px;
       overflow: hidden;
       box-shadow:
@@ -5140,16 +5140,18 @@
       100% { transform: translate(-10px, -104cqh); opacity: 0; }
     }
     .title-hero {
-      position: relative;
-      z-index: 3;
-      flex: none;
-      width: min(100%, 1320px);
+      position: absolute;
+      z-index: 4;
+      left: 0;
+      right: 0;
+      top: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0;
-      padding: 0;
+      padding: 18px 20px 56px;
       pointer-events: none;
+      background: linear-gradient(180deg, rgba(6, 4, 3, 0.82) 0%, rgba(6, 4, 3, 0.46) 58%, transparent 100%);
     }
     .title-kicker {
       margin: 0 0 6px;
@@ -5171,7 +5173,7 @@
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
       font-weight: 800;
       color: #f6d48a;
-      filter: drop-shadow(0 4px 2px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 26px rgba(255, 196, 110, 0.35));
+      filter: drop-shadow(0 3px 0 #2a1a0c) drop-shadow(0 8px 18px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 22px rgba(255, 196, 110, 0.45));
     }
     .title-logo > span {
       display: block;
@@ -5182,7 +5184,7 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      -webkit-text-stroke: 1px rgba(90, 58, 14, 0.75);
+      -webkit-text-stroke: 1.4px rgba(42, 24, 8, 0.92);
       paint-order: stroke fill;
     }
     .title-logo > span.sub {
@@ -5218,7 +5220,7 @@
       gap: 16px;
       margin: 0;
       padding: 0;
-      width: min(100%, 1320px);
+      width: 100%;
       pointer-events: auto;
     }
     .title-actions > button.primary {
@@ -5421,7 +5423,8 @@
       width: auto;
       height: auto;
       max-height: 100%;
-      align-self: start;
+      align-self: stretch;
+      height: 100%;
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -5533,11 +5536,12 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      flex: 0 0 auto;
+      gap: 8px;
+      flex: 1 1 auto;
       min-height: 0;
     }
     .title-board .board-goals li {
+      flex: 0 0 auto;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -5578,7 +5582,8 @@
     .title-board .board-foot {
       position: relative;
       z-index: 1;
-      margin-top: 0;
+      margin-top: auto;
+      flex: 0 0 auto;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
       gap: 12px;
@@ -7913,8 +7918,8 @@
       overflow: auto;
     }
     html.phone .title-main { width: 100%; gap: 8px; justify-content: flex-start; flex: none; min-height: auto; }
-    html.phone .title-stage { width: 100%; height: 22vh; min-height: 112px; flex: none; }
-    html.phone .title-hero,
+    html.phone .title-stage { width: 100%; height: 240px; min-height: 240px; flex: none; }
+    html.phone .title-hero { position: absolute; top: 0; left: 0; right: 0; width: auto; padding: 8px 10px 28px; }
     html.phone .title-actions { width: 100%; }
     html.phone .title-actions { gap: 8px; }
     html.phone .title-actions > button.primary { min-width: 0; min-height: 52px; font-size: 20px; padding: 12px 16px; }
@@ -8175,7 +8180,7 @@
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
-      キック: "card-kick-leg.jpg?v=1",
+      キック: "card-kick-leg.jpg?v=2",
       ツインアタック: "card-twin.jpg?v=1",
       瞑想: "card-meditate.jpg?v=1",
       ハードブロック: "card-hard-block-f.jpg?v=3",
@@ -8672,6 +8677,11 @@
     let fixedRestAt = [];
     let runEnchants = {};
     let cardAlters = [];
+    let cardMastery = [];
+    let masteryOffer = null;
+    let runLevel = 0;
+    let growthLine = "";
+    let dropLine = "";
     let smithBase = -1;
     let smithName = "";
     let hurtRestUsed = false;
@@ -8683,7 +8693,7 @@
     let shopStock = [];
     let gearOffer = null; // 武器を付け替える確認 { item, keep, source, shopIndex, price }
     const MANA = 3;
-    const HP_CAP = 100; // 最大HPの限界。体力が伸びる仕組みを足すときは、この数で止める
+    const HP_CAP = 120; // レベルで伸びる最大HPの上限。祝福の+20は、この上限の外に足す
     const HAND_CAP = 10;
     const DRAW_PER_TURN = 5; /* SPD＝毎ターン引く枚数の基本 */
     const DUNGEON_LIST = [
@@ -9562,8 +9572,8 @@
       const atkMod = Number(player.atkMod) || 0;
       const defMod = Number(player.defMod) || 0;
       const medalAtk = gear.medal && gear.medal.halfAtk && hpHalf(player) ? gear.medal.halfAtk : 0;
-      player.atk = gearStatSum("atk") + atkMod + medalAtk;
-      player.def = gearStatSum("def") + defMod - burnStacks(player);
+      player.atk = gearStatSum("atk") + atkMod + medalAtk + levelStep();
+      player.def = gearStatSum("def") + defMod + levelStep() - burnStacks(player);
     }
 
     function medalIcon() {
@@ -10485,7 +10495,7 @@
       return gain;
     }
 
-    function runDeck() {
+    function deckCore() {
       const cards = [];
       const skip = {};
       for (const card of removed) {
@@ -10508,7 +10518,19 @@
         }
         cards.push({ ...extra });
       }
-      return tuneDeck(cards);
+      return cards;
+    }
+
+    function runDeck() {
+      return tuneDeck(deckCore());
+    }
+
+    function roundMastery(n) {
+      return Math.round((Number(n) || 0) * 1.3);
+    }
+
+    function masteryRow(name, nth) {
+      return cardMastery.find((item) => item && item.name === name && item.nth === nth) || null;
     }
 
     function tuneDeck(cards) {
@@ -10517,7 +10539,7 @@
         if (!card || !card.name) return card;
         const nth = seen[card.name] || 0;
         seen[card.name] = nth + 1;
-        const next = { ...card };
+        const next = { ...card, copyNth: nth };
         const alter = cardAlters.find((item) => item && item.name === card.name && item.nth === nth);
         if (alter) {
           if (alter.text) next.text = alter.text;
@@ -10525,6 +10547,16 @@
           if (alter.block) next.block = alter.block;
           if (alter.heal) next.heal = alter.heal;
           if (alter.fused) next.fused = true;
+        }
+        const picked = (masteryRow(card.name, nth) || {}).picked || "";
+        if (picked === "power") {
+          if (next.damage) next.damage = roundMastery(next.damage);
+          if (next.block) next.block = roundMastery(next.block);
+          if (next.heal) next.heal = roundMastery(next.heal);
+          next.mastered = "power";
+        } else if (picked === "light") {
+          next.cost = Math.max(0, (Number(next.cost) || 0) - 1);
+          next.mastered = "light";
         }
         const kind = runEnchants[card.name];
         if (kind === "fire" && next.damage) next.damage = Number(next.damage) + 2;
@@ -10807,6 +10839,7 @@
 
     function cardPlayable(card) {
       if (!card) return false;
+      if (masteryOffer) return false;
       if ((Number(card.cost) || 0) > player.energy) return false;
       if (card.headbutt && !inPlay.length) return false;
       if (card.halfOnly && !hpHalf(player)) return false;
@@ -10816,6 +10849,7 @@
     }
 
     function playCard(index) {
+      if (masteryOffer) return false;
       if (phase !== "player" || outcome) return false;
       const card = hand[index];
       if (!card) return false;
@@ -10846,6 +10880,7 @@
         resolveCard(card);
         placeUsedCard(card, "hand");
         note = "";
+        noteMastery(card);
         pullFromBracelets();
         if (finishIfStuck()) return true;
         render();
@@ -10860,6 +10895,7 @@
       if (card.keep) card.resolved = false;
       inPlay.push(card);
       note = "";
+      noteMastery(card);
       pullFromBracelets();
       if (finishIfStuck()) return true;
       render();
@@ -10871,6 +10907,7 @@
     }
 
     function finishIfStuck() {
+      if (masteryOffer) return false;
       if (phase !== "player" || outcome || !noPlayableHand()) return false;
       if (!hand.length || autoEndTurn) {
         endTurn();
@@ -10950,6 +10987,58 @@
       const from = handCardBox(index);
       if (!playCard(index)) return;
       if (!playsImmediately(card)) flyCardToPlay(from);
+    }
+
+    function masteryNeed(name) {
+      const def = cardDef(name);
+      const cost = def ? Number(def.cost) || 0 : 0;
+      if (cost <= 0) return 12;
+      if (cost === 1) return 10;
+      if (cost === 2) return 8;
+      return 6;
+    }
+
+    function noteMastery(card) {
+      if (!card || card.copyNth == null || !card.name) return false;
+      let row = masteryRow(card.name, card.copyNth);
+      if (!row) {
+        row = { name: card.name, nth: card.copyNth, plays: 0, picked: "" };
+        cardMastery.push(row);
+      }
+      if (row.picked) return false;
+      row.plays += 1;
+      const need = masteryNeed(card.name);
+      if (row.plays < need) return false;
+      masteryOffer = { name: card.name, nth: card.copyNth, need };
+      return true;
+    }
+
+    function takeMastery(picked) {
+      if (!masteryOffer || (picked !== "power" && picked !== "light")) return;
+      const row = masteryRow(masteryOffer.name, masteryOffer.nth);
+      if (row) row.picked = picked;
+      const name = masteryOffer.name;
+      const nth = masteryOffer.nth;
+      const fresh = runDeck().find((card) => card && card.name === name && card.copyNth === nth);
+      if (fresh) {
+        for (const list of [deck, hand, discard, inPlay, openingDeck, battleExile]) {
+          for (const card of list || []) {
+            if (!card || card.name !== name || card.copyNth !== nth) continue;
+            card.damage = fresh.damage;
+            card.block = fresh.block;
+            card.heal = fresh.heal;
+            card.cost = fresh.cost;
+            card.text = fresh.text;
+            card.fused = fresh.fused;
+            card.mastered = fresh.mastered;
+            card.enchant = fresh.enchant;
+          }
+        }
+      }
+      masteryOffer = null;
+      log(`${name}が熟練した。${picked === "power" ? "強さ" : "軽さ"}。`);
+      persistSave(true);
+      render();
     }
 
     function isItemCard(card) {
@@ -11579,6 +11668,7 @@
     }
 
     function endTurn() {
+      if (masteryOffer) return;
       if (phase !== "player" || outcome || foeRageBusy) return;
       clearTimer();
       if (hasReuseBracelet()) {
@@ -11904,7 +11994,7 @@
 
     function endRun(clearedRun) {
       const item = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonName);
-      const floorsKey = item ? item.floors : 20;
+      const floorsKey = item ? item.floors : floorsOf(dungeonName);
       gear = emptyGear();
       gearOpen = null;
       stolen = [];
@@ -11998,6 +12088,10 @@
         fixedRestAt,
         runEnchants,
         cardAlters,
+        cardMastery,
+        runLevel,
+        growthLine,
+        dropLine,
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
@@ -12046,6 +12140,7 @@
     }
 
     function applySave(data) {
+      runLevel = Math.max(0, Number(data.runLevel) || 0);
       runBonus = data.runBonus && typeof data.runBonus === "object"
         ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0 }
         : emptyRunBonus();
@@ -12080,7 +12175,7 @@
         player.def = player.def || 0;
         player.maxHp = Math.max(runMaxHp(), Number(player.maxHp) || 30);
         player.manaMod = Number(player.manaMod) || runBonus.mana || 0;
-        player.spdMod = Number(player.spdMod) || runBonus.spd || 0;
+        player.spdMod = Number(player.spdMod) || runSpdBonus();
         if (player.hp > player.maxHp) player.hp = player.maxHp;
         player.maxEnergy = Math.min(MANA + (Number(player.manaMod) || 0) + 1, Math.max(MANA + (Number(player.manaMod) || 0), Number(player.maxEnergy) || MANA));
         if (player.energy > player.maxEnergy) player.energy = player.maxEnergy;
@@ -12192,6 +12287,11 @@
       fixedRestAt = Array.isArray(data.fixedRestAt) ? data.fixedRestAt.map((n) => Number(n) || 0) : [];
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
+      cardMastery = Array.isArray(data.cardMastery) ? data.cardMastery : [];
+      masteryOffer = null;
+      runLevel = Math.max(0, Number(data.runLevel) || 0);
+      growthLine = data.growthLine || "";
+      dropLine = data.dropLine || "";
       hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
@@ -12220,7 +12320,7 @@
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
       battleStartHp = hp;
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: Number(runBonus.spd) || 0, parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -12379,8 +12479,40 @@
       return { hp: 0, spd: 0, mana: 0 };
     }
 
+    function levelStep() {
+      return Math.floor((Number(runLevel) || 0) / 3);
+    }
+
+    function levelSpd() {
+      return Math.floor((Number(runLevel) || 0) / 10);
+    }
+
+    function runSpdBonus() {
+      return levelSpd() + Math.max(0, Number(runBonus && runBonus.spd) || 0);
+    }
+
     function runMaxHp() {
-      return 30 + Math.max(0, Number(runBonus && runBonus.hp) || 0);
+      const grown = Math.min(HP_CAP, 30 + (Number(runLevel) || 0) * 3);
+      return grown + Math.max(0, Number(runBonus && runBonus.hp) || 0);
+    }
+
+    function gainLevel() {
+      const before = player ? Number(player.maxHp) || runMaxHp() : runMaxHp();
+      runLevel = (Number(runLevel) || 0) + 1;
+      const nextMax = runMaxHp();
+      const grew = Math.max(0, nextMax - before);
+      if (player) {
+        player.maxHp = nextMax;
+        player.hp = Math.min(nextMax, (Number(player.hp) || 0) + grew);
+        player.spdMod = runSpdBonus();
+        syncGearStats();
+      }
+      floorHp = player ? player.hp : Math.min(nextMax, (Number(floorHp) || 0) + grew);
+      const bits = [`レベル${runLevel}`];
+      if (grew) bits.push(`最大HP+${grew}`);
+      if (runLevel % 3 === 0) bits.push("ATK+1　DEF+1");
+      if (runLevel % 10 === 0) bits.push("SPD+1");
+      growthLine = bits.join("　");
     }
 
     function rollBlessPicks() {
@@ -12640,14 +12772,17 @@
 
     function fuseSmith(matIndex) {
       if ((Number(meta.stars) || 0) < 3) return;
-      const cards = runDeck();
-      const base = cards[smithBase];
-      const mat = cards[matIndex];
-      if (!base || !mat || base.fused || smithBase === matIndex) return;
-      const baseCost = Number(base.cost) || 0;
-      const matCost = Number(mat.cost) || 0;
+      const raw = deckCore();
+      const shown = runDeck();
+      const base = raw[smithBase];
+      const mat = raw[matIndex];
+      const baseShown = shown[smithBase];
+      const matShown = shown[matIndex];
+      if (!base || !mat || !baseShown || !matShown || baseShown.fused || smithBase === matIndex) return;
+      const baseCost = Number(baseShown.cost) || 0;
+      const matCost = Number(matShown.cost) || 0;
       if (baseCost < 2 || matCost >= baseCost) return;
-      const nth = cards.slice(0, smithBase).filter((card) => card.name === base.name).length;
+      const nth = raw.slice(0, smithBase).filter((card) => card.name === base.name).length;
       const alter = { name: base.name, nth, text: `${base.text || ""} ${mat.text || ""}`.replace(/\s+/g, " ").trim(), fused: true };
       const damage = (Number(base.damage) || 0) + (Number(mat.damage) || 0);
       const block = (Number(base.block) || 0) + (Number(mat.block) || 0);
@@ -12839,6 +12974,13 @@
       bankStars();
       battleTotal = route.length;
       cleared = false;
+      runLevel = 0;
+      runEnchants = {};
+      cardAlters = [];
+      cardMastery = [];
+      masteryOffer = null;
+      growthLine = "";
+      dropLine = "";
       runBonus = emptyRunBonus();
       runEntrance = true;
       gear = starterGear();
@@ -12853,7 +12995,7 @@
       jobsHad = ["戦士"];
       ultimate = "";
       runEnded = null;
-      enterNode(30);
+      enterNode(runMaxHp());
       persistSave(true);
     }
 
@@ -13232,13 +13374,13 @@
           <div class="title-vignette" aria-hidden="true"></div>
           <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="title-main">
-            <div class="title-hero">
-              <p class="title-kicker">WACHUERI CARD GAME</p>
-              <h1 class="title-logo"><span>わちゅえり</span><span class="sub">カードゲーム</span></h1>
-              <div class="title-rule" aria-hidden="true"><i></i><b>◆</b><i></i></div>
-            </div>
             <div class="title-stage">
               <img class="title-bg" src="title-key.jpg?v=2" alt="">
+              <div class="title-hero">
+                <p class="title-kicker">WACHUERI CARD GAME</p>
+                <h1 class="title-logo"><span>わちゅえり</span><span class="sub">カードゲーム</span></h1>
+                <div class="title-rule" aria-hidden="true"><i></i><b>◆</b><i></i></div>
+              </div>
             </div>
             <div class="title-actions">
             ${menuButton("攻略する", "new", true)}
@@ -15481,9 +15623,47 @@
       render();
     }
 
+    function rollVictoryExtra() {
+      const boss = typeof bossNow === "function" && bossNow();
+      const roll = Math.random();
+      const none = boss ? 0.30 : 0.50;
+      const gearP = boss ? 0.40 : 0.25;
+      const itemP = boss ? 0.20 : 0.15;
+      if (roll < none) return "";
+      if (roll < none + gearP) {
+        const item = shuffle(GEAR_ITEMS)[0];
+        if (!item) return "";
+        if (!gear) gear = emptyGear();
+        giveGear(item);
+        return `${item.name}を手に入れた。`;
+      }
+      if (roll < none + gearP + itemP) {
+        const names = ["ベッド", "ホテル", "臆病者の構え"].filter((name) => cardDef(name));
+        const name = shuffle(names)[0];
+        if (!name) return "";
+        const def = cardDef(name);
+        stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
+        return `${name}を手に入れた。`;
+      }
+      const names = [];
+      for (const card of runDeck()) {
+        if (!card || !card.name || names.indexOf(card.name) >= 0 || runEnchants[card.name]) continue;
+        names.push(card.name);
+      }
+      if (!names.length) return "";
+      const name = shuffle(names)[0];
+      const kinds = ["fire", "water", "light"];
+      const kind = kinds[Math.floor(Math.random() * kinds.length)];
+      runEnchants[name] = kind;
+      const label = kind === "fire" ? "火" : kind === "water" ? "水" : "光";
+      return `${name}に、${label}のエンチャント。`;
+    }
+
     function prepareReward() {
       if (rewardReady) return;
       rewardReady = true;
+      gainLevel();
+      dropLine = rollVictoryExtra();
       const foe = enemyNow();
       const medal = bossNow() && foe.medal ? gearItem(foe.medal) : null;
       // ボスも道中と同じく★をもらう（メダルは追加でもらえる）
@@ -16084,6 +16264,16 @@
       return gift.item;
     }
 
+    function victoryGrowthHtml() {
+      return [growthLine, dropLine].filter(Boolean).map((line) => `<p class="victory-count">${esc(line)}</p>`).join("");
+    }
+
+    function masteryOverlay() {
+      if (!masteryOffer) return "";
+      const offer = masteryOffer;
+      return `<div class="overlay"><div class="panel"><h2>熟練</h2><p>${esc(offer.name)}を${offer.need}回使った。この1枚だけ、強さか軽さを一度だけ選ぶ。</p><div class="event-actions">${menuButton("強さ　数字を1.3倍", "mastery-power", true)}${menuButton("軽さ　マナ-1", "mastery-light", true)}</div></div></div>`;
+    }
+
     function victoryStars() {
       const count = starBurst;
       if (!count) return { flash: "", stars: "" };
@@ -16114,7 +16304,7 @@
           return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "boss") {
         const live = takeRare("reward");
@@ -16133,7 +16323,7 @@
           return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p><div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "paths") {
         return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div>`;
@@ -16203,7 +16393,7 @@
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${lit ? " lit" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
-      const overlay = rewardOverlay();
+      const overlay = `${masteryOverlay()}${rewardOverlay()}`;
       const leaveOverlay = askLeave
         ? `<div class="overlay leave-ask"><div class="panel">
             <h2>タイトルに戻る？</h2>
@@ -16745,6 +16935,8 @@
           render();
         }
         if (name === "smith-elem") enchantSmith(action.dataset.elem || "");
+        if (name === "mastery-power") takeMastery("power");
+        if (name === "mastery-light") takeMastery("light");
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
         if (name === "bless-skip") advance(1);
         if (name === "beggar-pick") pickBeggar(Number(action.dataset.index));
