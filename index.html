@@ -5964,6 +5964,13 @@
       width: 100%;
       height: 100%;
     }
+    .fx-lab-preview .battle-screen.no-log {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "hud"
+        "arena"
+        "hand";
+    }
     .fx-lab-preview .fx-lab-hand {
       position: relative;
     }
@@ -6005,11 +6012,7 @@
       100% { transform: translateY(-70px) scale(1.08); filter: sepia(1) saturate(6) brightness(1.7); opacity: 0; }
     }
     .fx-lab-preview .fx-deal.hand {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      transform: none;
+      position: relative;
       pointer-events: none;
     }
     .fx-lab-preview .fx-end {
@@ -14634,7 +14637,9 @@
     // 戦闘画面の名前と体力の板。自分と敵で同じ作り（左の帯の色だけ違う）。
     function plateMarkup(cls, who, name, tag, shownHp, maxHp, block, extra) {
       const low = maxHp > 0 && shownHp / maxHp <= 0.3 ? " low" : "";
-      const parryN = who === "player" && typeof player !== "undefined" && player ? parryCount(player) : 0;
+      const parryN = extra && extra.parry != null
+        ? Math.max(0, Number(extra.parry) || 0)
+        : (who === "player" && typeof player !== "undefined" && player ? parryCount(player) : 0);
       const parried = parryN > 0;
       const parryStacks = parryN >= 2;
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
@@ -14808,18 +14813,57 @@
       return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="${img}" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
+    function fxLabFoeDef() {
+      return enemyByName(fxLabFoeName) || ENEMIES[0];
+    }
+
     function fxPlate(id) {
-      const name = esc(heroName());
-      if (id === "shield") {
-        return `<div class="hero-stack"><section class="battle-plate hero-plate shielded"><div class="shield-badge fresh" aria-label="シールド 8">${plateShieldSvg(false)}<b>8</b></div><h2><span class="who">${name}</span></h2></section></div>`;
+      const foe = fxLabFoeDef();
+      const heroBlock = id === "shield" || id === "break" ? 8 : 0;
+      const heroHp = id === "fatal" ? 0 : (id === "hurt" || id === "poison-tick" || id === "break" ? 18 : 30);
+      const heroThreat = id === "hurt" || id === "break" ? 6 : id === "poison-tick" ? 3 : id === "fatal" ? 12 : 0;
+      const hero = plateMarkup("hero-plate", "player", heroName(), "", heroHp, 30, heroBlock, {
+        shieldFlash: id === "shield",
+        parry: id === "parry" ? 1 : 0,
+        parryFlash: id === "parry",
+        threat: heroThreat,
+        badges: id === "poison-chip" ? statusChip("poison", "毒", 2, POISON_NOTE, true) : "",
+        atk: gearStatSum("atk"),
+        def: gearStatSum("def"),
+        spd: DRAW_PER_TURN,
+      });
+      const foeHp = foeBattleHp(foe);
+      const foeBlock = id === "foe-break" ? 6 : 0;
+      const foePlate = plateMarkup("foe-plate", "enemy", foe.name, "", foeHp, foeHp, foeBlock, {
+        crack: id === "foe-break",
+        attrs: ` data-rank="${esc(foe.rank || "普通")}"`,
+        stars: "★".repeat(starsForRank(foe.rank || "普通")),
+        atk: hiddenAtk(foe),
+        def: hiddenDef(foe),
+        spd: 1,
+      });
+      return `<div class="hero-stack">${hero}<div class="plate-gear">${gearMarkup()}</div></div>${foePlate}`;
+    }
+
+    function fxLabPiles(name) {
+      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(name)}の山札 6">${foePileFace(6, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="捨て札 1">${foePileFace(1, true)}<div class="pile-label">捨て札</div></div></div>`;
+    }
+
+    function fxLabHand(id) {
+      const mana = `<div class="mana-dock"><div class="mana-read" aria-label="マナ残り 3"><b>3</b></div></div>`;
+      if (id === "deal") {
+        const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
+        return `${mana}<div class="hand fx-deal">${cards}</div>`;
       }
-      if (id === "parry") {
-        return `<div class="hero-stack"><section class="battle-plate hero-plate parried"><div class="shield-badge parry-badge fresh" aria-label="パリィ">${plateShieldSvg(true)}</div><h2><span class="who">${name}</span></h2></section></div>`;
-      }
-      if (id === "poison-chip") {
-        return `<div class="hero-stack"><section class="battle-plate hero-plate"><h2><span class="who">${name}</span><span class="plate-badges">${statusChip("poison", "毒", 2, POISON_NOTE, true)}</span></h2></section></div>`;
-      }
-      return "";
+      const names = ["アタック", "ブロック", "パリィ"];
+      const cards = names.map((name, i) => {
+        const base = cardDef(name);
+        if (!base) return "";
+        const card = { name, ...base };
+        const fan = (i - 1) * 8;
+        return `<button type="button" class="card ${cardKind(card)}" disabled style="--fan:${fan}deg;--drop:0px;--hand-z:${i + 1}">${cardFace(card, false)}</button>`;
+      }).join("");
+      return `${mana}<div class="hand">${cards}</div>`;
     }
 
     function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
@@ -14873,23 +14917,14 @@
         call = `<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`;
         cls = " shake";
       }
-      let handHtml = "";
-      if (id === "deal") {
-        const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
-        handHtml = `<div class="hand fx-deal">${cards}</div>`;
-      } else if (id === "end-ready") {
-        handHtml = "";
-      }
+      const handHtml = id === "victory" ? "" : fxLabHand(id);
       if (id === "victory") {
         return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play">${fxVictory()}</div></div>`;
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
-      const mid = id === "anger"
-        ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>`
-        : id === "end-ready"
-          ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"></div></div><button type="button" class="vs-mark spent" aria-label="ターン終了">VS</button></div>`
-          : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
+      const mid = `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half">${foeCard}</div></div><button type="button" class="vs-mark${id === "end-ready" ? " spent" : ""}" aria-label="ターン終了">VS</button></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
