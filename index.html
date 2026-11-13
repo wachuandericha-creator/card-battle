@@ -296,7 +296,6 @@
       gap: 2px;
       padding: 14px 8px 6px;
       pointer-events: none;
-      background: linear-gradient(180deg, rgba(8, 6, 4, 0) 0%, rgba(8, 6, 4, 0.65) 32%, rgba(8, 6, 4, 0.94) 100%);
     }
     .road-floor {
       flex: 0 0 auto;
@@ -326,6 +325,7 @@
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       position: relative;
+      z-index: 40;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
@@ -14342,10 +14342,8 @@
       }).join("");
     }
 
-    function eventShell(body, paths) {
-      const buttons = paths
-        ? ""
-        : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+    function eventShell(body) {
+      const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}`;
     }
@@ -14356,7 +14354,7 @@
         return;
       }
       if (floorPhase === "paths") {
-        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`, true);
+        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`);
         runEntrance = false;
         return;
       }
@@ -16579,10 +16577,10 @@
             </div>
             ${starCountHtml(shownStarCount())}
             <div class="hud-actions">
-              ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="deck">デッキ確認</button>`}
+              <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
-              ${rewardStep === "paths" ? "" : `<button type="button" class="small-btn" data-action="ask-title" ${phase === "player" ? "" : "disabled"}>タイトル</button>`}
+              <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" || rewardStep === "paths" ? "" : "disabled"}>タイトル</button>
             </div>
           </header>
           <div class="battle-bands" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
