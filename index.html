@@ -2080,9 +2080,6 @@
     .style-genres figcaption { text-align: center; font-size: 12px; }
     .style-genres img.style-master { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: fill; display: block; }
     .album-top { min-width: 0; }
-    .album-top .worn-head { margin: 14px 0 6px; text-align: center; font-size: 14px; letter-spacing: 0.08em; }
-    .style-genres.worn { width: 100%; max-width: 100%; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .style-genres.worn figure { min-width: 0; }
     .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
@@ -5624,6 +5621,24 @@
     }
     .end-floors b { color: #e4b15a; }
     .ending-note { margin: 8px 0 14px; color: #d9c7a4; font-size: 14px; line-height: 1.45; }
+    .records-screen { width: min(760px, calc(100vw - 32px)); text-align: left; }
+    .records-screen h1 { text-align: center; }
+    .records-list { display: flex; flex-direction: column; gap: 8px; margin: 0 0 16px; }
+    .records-item {
+      display: block;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.45);
+      background: rgba(0, 0, 0, 0.28);
+      color: #fff6e4;
+      text-align: left;
+      cursor: pointer;
+    }
+    .records-item .record-name { display: block; font-size: 22px; font-weight: 800; color: #ffe7a8; }
+    .records-item .record-line { display: block; margin-top: 4px; font-size: 15px; }
+    .record-more { margin: 8px 0 0; font-size: 14px; line-height: 1.45; color: #fff6e4; }
+    .records-screen .pass-box { margin: 0 auto 12px; }
     @media (max-width: 800px) {
       .ending { grid-template-columns: 1fr; grid-template-rows: 36vh minmax(0, 1fr); }
       .ending-card { border-left: 0; border-top: 2px solid #e4b15a; }
@@ -10160,6 +10175,10 @@
     let cleared = false;
     let runEnded = null;
     let loginWord = "";
+    let recordRuns = null;
+    let recordNote = "";
+    let recordOpen = -1;
+    let recordBusy = false;
     let passError = "";
     let passFrom = "new";
     let saveNote = "";
@@ -10216,6 +10235,7 @@
     let fxNoMana = false;
     let turnCall = "";
     const SAVE_KEY = "card-battle-save-v1";
+    const CLEAR_INBOX_URL = "";
     const LIVE_KEY = "card-battle-live-v1";
     const SETTINGS_KEY = "card-battle-settings-v1";
     const OPTION_EVENT_KINDS = [
@@ -13937,6 +13957,67 @@
       bankStars();
       persistMeta();
       persistSave(true);
+      sendRunSheet();
+    }
+
+    function runSheetPayload() {
+      const sealed = runSheet && runSheet.sealed;
+      if (!sealed) return null;
+      return {
+        player: sealed.player || "",
+        result: sealed.result === "win" ? "win" : "lose",
+        hero: sealed.hero || "",
+        dungeon: sealed.dungeon || "",
+        floors: Number(sealed.floors) || 0,
+        reached: sealed.reached || "",
+        level: Number(sealed.level) || 0,
+        hp: Number(sealed.hp) || 0,
+        maxHp: Number(sealed.maxHp) || 0,
+        atk: Number(sealed.atk) || 0,
+        def: Number(sealed.def) || 0,
+        spd: Number(sealed.spd) || 0,
+        bless: sealed.bless || "",
+        gear: sealed.gear || {},
+        deck: sealed.deck || [],
+        steps: sealed.steps || [],
+        meets: sealed.meets || {},
+        longest: sealed.longest || "",
+        killer: sealed.killer || "",
+        stars: Number(sealed.stars) || 0,
+        at: new Date().toISOString(),
+      };
+    }
+
+    function sendRunSheet() {
+      const body = runSheetPayload();
+      if (!CLEAR_INBOX_URL || !body) return;
+      fetch(CLEAR_INBOX_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(body),
+      }).catch(() => {});
+    }
+
+    function loadRunRecords(word) {
+      return new Promise((resolve) => {
+        if (!CLEAR_INBOX_URL) {
+          resolve({ ok: false, empty: true });
+          return;
+        }
+        const cb = "cardBattleRuns" + Date.now();
+        const script = document.createElement("script");
+        const timer = setTimeout(() => { cleanup(); resolve({ ok: false }); }, 8000);
+        window[cb] = (data) => { cleanup(); resolve(data || { ok: false }); };
+        function cleanup() {
+          clearTimeout(timer);
+          try { delete window[cb]; } catch (error) { window[cb] = undefined; }
+          if (script.parentNode) script.remove();
+        }
+        script.onerror = () => { cleanup(); resolve({ ok: false }); };
+        script.src = `${CLEAR_INBOX_URL}?word=${encodeURIComponent(word)}&callback=${cb}`;
+        document.head.appendChild(script);
+      });
     }
 
     function loadSettings() {
@@ -14380,7 +14461,7 @@
       if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.svg?v=1" };
       if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.svg?v=1" };
       if (elem === "dark") return { name: "闇", sub: "キーワード", image: "enchant-dark.svg?v=1" };
-      return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=1" };
+      return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=2" };
     }
 
     function darkWordLabel(id) {
@@ -14958,6 +15039,7 @@
         longest: longest ? `${longest.name} ${longest.turns}ターン` : "なし",
         killer: clearedRun ? "" : (runSheet.killer || ""),
         stars: Math.max(0, Number(meta.stars) || 0),
+        player: loginWord || "",
         victoryArt: heroItem().victory,
         defeatArt: heroItem().defeat,
       };
@@ -15843,6 +15925,7 @@
               ${menuButton("確率", "odds", false, false, "", titleIcon("dice"))}
               ${menuButton("演出", "fx-lab", false, false, "", titleIcon("spark"))}
               ${menuButton("オプション", "settings", false, false, "", titleIcon("sliders"))}
+              ${menuButton("統計", "records", false, false, "", titleIcon("stats"))}
               </div>
             </div>
           </div>
@@ -16964,8 +17047,6 @@
               <section>
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
-                <h4 class="worn-head">アタックの熟練</h4>
-                <div class="style-genres worn">${cardStyleSheet(WORN_ATTACK_STYLE)}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -16988,6 +17069,49 @@
     function renderDefeat() {
       if (!defeatSnap) defeatSnap = captureDefeat();
       root.innerHTML = endingFrame(false);
+    }
+
+    function recordDeckLine(deck) {
+      return (deck || []).map((row) => {
+        const bits = [`${row.name}×${row.n}`];
+        if (row.master) bits.push(row.master);
+        if (row.ench) bits.push(row.ench);
+        if (row.dark) bits.push(row.dark);
+        return bits.join(" ");
+      }).join("　") || "なし";
+    }
+
+    function renderRecords() {
+      const ask = !recordRuns;
+      const rows = (recordRuns || []).map((run, index) => {
+        const open = recordOpen === index;
+        const result = run.result === "win" ? "踏破" : "敗北";
+        const name = run.player || "なまえなし";
+        const gear = run.gear || {};
+        const more = open ? `<p class="record-more">祝福 ${esc(run.bless || "なし")}<br>装備 剣 ${esc(gear.sword || "なし")}　盾 ${esc(gear.shield || "なし")}　左 ${esc(gear.braceletL || "なし")}　右 ${esc(gear.braceletR || "なし")}　メダル ${esc(gear.medal || "なし")}<br>ステータス ATK ${Number(run.atk) || 0}　DEF ${Number(run.def) || 0}　SPD ${Number(run.spd) || 0}　残HP ${Number(run.hp) || 0}/${Number(run.maxHp) || 0}<br>デッキ ${esc(recordDeckLine(run.deck))}<br>いちばん長い戦い ${esc(run.longest || "なし")}${run.result === "win" ? "" : `<br>倒された相手 ${esc(run.killer || "なし")}`}</p>` : "";
+        return `<button type="button" class="records-item" data-action="records-open" data-index="${index}"><span class="record-name">${esc(name)}</span><span class="record-line">${esc(result)}　${esc(run.dungeon || "")}　${esc(run.reached || "")} / ${Number(run.floors) || 0}F　レベル${Number(run.level) || 0}　★${Number(run.stars) || 0}</span>${more}</button>`;
+      }).join("");
+      const body = !CLEAR_INBOX_URL
+        ? `<p>記録の受け皿が、まだつながっていません。</p>`
+        : ask
+          ? `<p>管理の言葉を入れてください。</p><div class="pass-box"><input id="record-word" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">${recordNote ? `<p class="pass-error">${esc(recordNote)}</p>` : ""}${recordBusy ? `<p>開いています。</p>` : menuButton("開く", "records-ok", true)}</div>`
+          : `<div class="records-list">${rows || `<p>まだ記録はありません。</p>`}</div>`;
+      root.innerHTML = `
+        <div class="menu records-screen">
+          <h1>統計</h1>
+          ${body}
+          ${menuButton("もどる", "title")}
+        </div>`;
+      const input = root.querySelector("#record-word");
+      if (input) {
+        input.focus();
+        input.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          const button = root.querySelector('[data-action="records-ok"]');
+          if (button) button.click();
+        });
+      }
     }
 
     function renderAccount() {
@@ -17208,6 +17332,7 @@
       else if (screen === "fx") renderFxLab();
       else if (screen === "confirm") renderConfirm();
       else if (screen === "clear") renderClear();
+      else if (screen === "records") renderRecords();
       else if (screen === "floor") {
         renderFloor();
         paintGearOffer();
@@ -17367,16 +17492,6 @@
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
-      ["style-worn-attack-basic", "熟練 基本", "frame-basic-attack-worn.jpg?v=1"],
-      ["style-worn-attack-star1", "熟練 ★", "frame-red-over-copper-worn.jpg?v=1"],
-      ["style-worn-attack-star2", "熟練 ★★", "frame-red-over-silver-worn.jpg?v=1"],
-      ["style-worn-attack-star3", "熟練 ★★★", "frame-red-over-gold-worn.jpg?v=1"],
-    ];
-    const WORN_ATTACK_STYLE = [
-      ["style-worn-attack-basic", "熟練 基本", "frame-basic-attack-worn.jpg?v=1"],
-      ["style-worn-attack-star1", "熟練 ★", "frame-red-over-copper-worn.jpg?v=1"],
-      ["style-worn-attack-star2", "熟練 ★★", "frame-red-over-silver-worn.jpg?v=1"],
-      ["style-worn-attack-star3", "熟練 ★★★", "frame-red-over-gold-worn.jpg?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -20125,6 +20240,43 @@
           else { castPicked = false; screen = "character"; render(); }
         }
         if (name === "account") { if (!loginWord) return; screen = "account"; render(); }
+        if (name === "records") {
+          recordRuns = null;
+          recordNote = "";
+          recordOpen = -1;
+          recordBusy = false;
+          screen = "records";
+          render();
+          return;
+        }
+        if (name === "records-ok") {
+          const input = root.querySelector("#record-word");
+          const word = input ? input.value : "";
+          if (!word) { recordNote = "入れてください。"; render(); return; }
+          if (!/^[ぁ-んー]+$/.test(word)) { recordNote = "ひらがなだけで、空白は入れない。"; render(); return; }
+          recordBusy = true;
+          recordNote = "";
+          render();
+          loadRunRecords(word).then((data) => {
+            recordBusy = false;
+            if (!data || !data.ok) {
+              recordRuns = null;
+              recordNote = data && data.empty ? "記録の受け皿が、まだつながっていません。" : "開けません。";
+            } else {
+              recordRuns = Array.isArray(data.runs) ? data.runs.slice().reverse() : [];
+              recordNote = "";
+              recordOpen = -1;
+            }
+            render();
+          });
+          return;
+        }
+        if (name === "records-open") {
+          const index = Number(action.dataset.index);
+          recordOpen = recordOpen === index ? -1 : index;
+          render();
+          return;
+        }
         if (name === "logout") logout();
         if (name === "wipe-ask") { screen = "wipe"; render(); }
         if (name === "wipe-again") { screen = "wipe2"; render(); }
