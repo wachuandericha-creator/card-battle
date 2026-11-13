@@ -9418,6 +9418,7 @@
     let floorPhase = "show";
     let floorGift = null;
     let blessPicks = [];
+    let trainPicks = [];
     let blessEnchantAt = -1;
     let blessCardName = "";
     let enchantPop = "";
@@ -9869,7 +9870,7 @@
       boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
-    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card", "enchant"];
+    const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
 
     function fillSpan(span) {
@@ -13484,7 +13485,6 @@
         if (picks.length >= 3) break;
         if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
         else if (kind === "spd") picks.push({ kind, label: "SPD" });
-        else if (kind === "mana") picks.push({ kind, label: "マナ" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
         else if (kind === "enchant" && enchantTargets(true).length) {
@@ -13535,8 +13535,6 @@
           floorHp = runMaxHp();
         } else if (pick.kind === "spd") {
           runBonus.spd = (Number(runBonus.spd) || 0) + 1;
-        } else if (pick.kind === "mana") {
-          runBonus.mana = (Number(runBonus.mana) || 0) + 1;
         } else if (!takeGift(pick)) {
           return;
         }
@@ -13620,14 +13618,66 @@
       return best;
     }
 
-    function grantTrain() {
-      const build = playerBuild();
-      const names = Object.keys(CARD_BUILD).filter((name) => CARD_BUILD[name] === build && WARRIOR[name]);
-      const pool = names.length ? names : Object.keys(WARRIOR);
-      const name = pickWeighted(pool, (cardName) => rarityWeight((WARRIOR[cardName] && WARRIOR[cardName].stars) || 1));
+    function trainCard(name) {
       const def = WARRIOR[name];
-      if (!def) return "";
-      return takeGift({ kind: "card", card: keepCard({ name, ...def, stars: def.stars || 1 }) });
+      if (!def) return null;
+      return keepCard({ name, ...def, stars: def.stars || 1 });
+    }
+
+    function drawTrainNames(pool, picked) {
+      const left = pool.filter((name) => picked.indexOf(name) < 0 && WARRIOR[name]);
+      while (picked.length < 3 && left.length) {
+        const name = pickWeighted(left, (cardName) => rarityWeight((WARRIOR[cardName] && WARRIOR[cardName].stars) || 1));
+        const at = left.indexOf(name);
+        if (at < 0) break;
+        left.splice(at, 1);
+        picked.push(name);
+      }
+    }
+
+    function rollTrainPicks() {
+      const build = playerBuild();
+      const inBuild = Object.keys(CARD_BUILD).filter((name) => CARD_BUILD[name] === build && WARRIOR[name]);
+      const rest = Object.keys(WARRIOR).filter((name) => inBuild.indexOf(name) < 0);
+      const names = [];
+      drawTrainNames(inBuild, names);
+      drawTrainNames(rest, names);
+      return names.map(trainCard).filter(Boolean);
+    }
+
+    function maxOneMastery() {
+      const open = runDeck().filter((card) => {
+        if (!card || !card.name || card.copyNth == null) return false;
+        const row = masteryRow(card.name, card.copyNth);
+        return !row || !row.picked;
+      });
+      const card = shuffle(open)[0];
+      if (!card) return null;
+      let row = masteryRow(card.name, card.copyNth);
+      if (!row) {
+        row = { name: card.name, nth: card.copyNth, plays: 0, picked: "" };
+        cardMastery.push(row);
+      }
+      const need = masteryNeed(card.name);
+      row.plays = need;
+      masteryOffer = { name: card.name, nth: card.copyNth, need, source: "train" };
+      return card;
+    }
+
+    function takeTrain(index) {
+      if (floorKind !== "修行" || floorPhase !== "train") return;
+      const card = trainPicks[index];
+      if (!card) return;
+      if (!takeGift({ kind: "card", card })) return;
+      const grown = maxOneMastery();
+      trainPicks = [];
+      floorPhase = "show";
+      floorPrompt = grown
+        ? `${card.name}を受け取った。${grown.name}が熟練の回数に達した。`
+        : `${card.name}を受け取った。熟練できるカードは無かった。`;
+      log(floorPrompt);
+      persistSave(true);
+      render();
     }
 
     function grantExplore() {
@@ -13720,6 +13770,7 @@
       blessEnchantAt = -1;
       blessCardName = "";
       enchantPop = "";
+      trainPicks = [];
       beggarCut = false;
       beggarPick = -1;
       ultimatePicks = [];
@@ -13773,9 +13824,11 @@
         }
       } else if (kind === "修行") {
         floorKind = "修行";
-        const gotCard = grantTrain();
+        floorPhase = "train";
+        trainPicks = rollTrainPicks();
         floorNote = "女の戦士は汗を飛ばしながら素振りを続け、新しい技が腕に残った。";
-        floorPrompt = gotCard ? `${playerBuild()}のカードを1枚もらった。` : "もらえるカードは無かった。";
+        floorPrompt = trainPicks.length ? "カードを一つ選べ。" : "もらえるカードは無かった。";
+        if (!trainPicks.length) floorPhase = "show";
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
         beggarGift = [];
@@ -14005,6 +14058,7 @@
       cardAlters = [];
       cardMastery = [];
       masteryOffer = null;
+      trainPicks = [];
       growthLine = "";
       dropLine = "";
       runBonus = emptyRunBonus();
@@ -14537,7 +14591,7 @@
         const boss = VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード", enchant: "エンチャント" };
+      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", gear: "装備", card: "カード", enchant: "エンチャント" };
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2).map((item) => item.name);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -14640,7 +14694,7 @@
             ${oddsTable(["出来事", "出るもの"], [
               ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
               ["探索", "装備を1つ。装備一覧から同じ確率"],
-              ["修行", "いちばん多いビルドのカードを1枚。レアリティの重み。無ければ戦士のカード全部"],
+              ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。足りなければ戦士のカード。レアリティの重み。もらったあと、未熟練の1枚が必要回数に達する"],
               ["お店", "カード2枚と装備2つ。カードはレアリティの重み。装備は装備一覧から同じ確率"],
             ])}
           </section>
@@ -15486,7 +15540,7 @@
     function eventShell(body) {
       const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}${enchantPickOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${deckOverlay()}${enchantPickOverlay()}`;
     }
 
     function renderFloor() {
@@ -15542,6 +15596,9 @@
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
+      const train = floorKind === "修行" && floorPhase === "train"
+        ? `<div class="gift-row">${trainPicks.map((card, i) => `<button type="button" class="gift-btn" data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false)}</button>`).join("")}</div>`
+        : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
@@ -15553,7 +15610,7 @@
       const shopMode = floorKind === "お店";
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art">${art}</div>` : "";
-      const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}${bless}`;
+      const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}${bless}${train}`;
       const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-side">${title}<div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
@@ -16640,7 +16697,7 @@
       smith: { name: "鍛冶屋", text: "合成は★3。エンチャントは★2。★が無いと使えない。", image: "path-smith.svg?v=2" },
       job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=9" },
-      train: { name: "修行", text: "自分のビルドのカードを1枚もらう。", image: "path-train.jpg?v=5" },
+      train: { name: "修行", text: "カードを3つから1つ選ぶ。デッキの1枚が熟練する。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
       skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
       detour: { name: "回り道", text: "カードと装備の報酬。戦闘が1回増える。" },
@@ -17599,7 +17656,10 @@
     function masteryOverlay() {
       if (!masteryOffer) return "";
       const offer = masteryOffer;
-      return `<div class="overlay"><div class="panel"><h2>熟練</h2><p>${esc(offer.name)}を${offer.need}回使った。この1枚だけ、強さか軽さを一度だけ選ぶ。</p><div class="event-actions">${menuButton("強さ　数字を1.3倍", "mastery-power", true)}${menuButton("軽さ　マナ-1", "mastery-light", true)}</div></div></div>`;
+      const lead = offer.source === "train"
+        ? `${esc(offer.name)}が、修行で熟練の回数に達した。この1枚だけ、強さか軽さを一度だけ選ぶ。`
+        : `${esc(offer.name)}を${offer.need}回使った。この1枚だけ、強さか軽さを一度だけ選ぶ。`;
+      return `<div class="overlay"><div class="panel"><h2>熟練</h2><p>${lead}</p><div class="event-actions">${menuButton("強さ　数字を1.3倍", "mastery-power", true)}${menuButton("軽さ　マナ-1", "mastery-light", true)}</div></div></div>`;
     }
 
     function victoryStars() {
@@ -18290,6 +18350,7 @@
         if (name === "mastery-power") takeMastery("power");
         if (name === "mastery-light") takeMastery("light");
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
+        if (name === "train-pick") takeTrain(Number(action.dataset.train));
         if (name === "bless-enchant-pick") {
           blessCardName = action.dataset.name || "";
           render();
