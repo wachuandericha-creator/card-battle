@@ -14459,10 +14459,11 @@
         return `<div class="${cls}">${gearPopShell(face.slot, {
           name: face.name,
           image: face.image,
-          body: face.body,
-          kind: "祝福",
-          likeGear: true,
-          embedded: true,
+        body: face.body,
+        kind: "祝福",
+        rarity: gearRarityText(face),
+        likeGear: true,
+        embedded: true,
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
@@ -14513,6 +14514,7 @@
           image: face.image,
           body: face.body,
           kind: "祝福",
+          rarity: gearRarityText(face),
           likeGear: true,
         });
       }
@@ -16268,14 +16270,14 @@
     }
 
     function blessGearOpts(kind, elem) {
-      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。" };
-      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。" };
-      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。" };
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。", stars: 3 };
+      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。", stars: 3 };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。", stars: 5 };
       const face = enchantFace(elem);
       let body = "キーワードが一つ付く。";
       if (face.sub === "ATK+2" || face.sub === "DEF+2") body = face.sub;
       else if (face.sub === "マナ-1") body = "マナが1減る。";
-      return { slot: "enchant", name: face.name, image: face.image, body };
+      return { slot: "enchant", name: face.name, image: face.image, body, stars: 3 };
     }
 
     function sheetGearBoonCard(slot, o) {
@@ -16284,6 +16286,7 @@
         image: o.image,
         body: o.body || "",
         kind: "祝福",
+        rarity: gearRarityText(o),
         likeGear: true,
         embedded: true,
         sheetPop: true,
@@ -16620,7 +16623,8 @@
       const blessLevels = [];
       const blessButtons = floorPhase === "bless"
         ? blessPicks.map((pick, i) => {
-          const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
+          const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
+          const lv = blessLive ? rareLevel(entity) : 0;
           if (lv) blessLevels.push(lv);
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
         })
