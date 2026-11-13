@@ -188,7 +188,7 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      flex: 0 0 calc((100% - 42px) / 8 - 6px);
+      flex: 0 0 calc((100% - 24px) / 5 - 10px);
       min-height: 0;
       padding: 5px;
       overflow: hidden;
@@ -257,17 +257,17 @@
     .road-key {
       position: absolute;
       z-index: 5;
-      top: 7px;
-      right: 7px;
-      width: 26px;
-      height: 26px;
+      top: 8px;
+      right: 8px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
       color: #ffe7a4;
       filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
       pointer-events: none;
     }
-    .road-key svg { width: 22px; height: 22px; display: block; }
+    .road-key svg { width: 42px; height: 42px; display: block; transform: rotate(90deg); }
     .road-back {
       position: absolute;
       z-index: 6;
@@ -9022,6 +9022,8 @@
     let floorPhase = "show";
     let floorGift = null;
     let blessPicks = [];
+    let blessEnchantAt = -1;
+    let blessCardName = "";
     let floorHp = 30;
     let runBonus = { hp: 0, spd: 0, mana: 0 };
     let runEntrance = false;
@@ -9410,7 +9412,7 @@
       boss: { none: 0.3, gear: 0.4, item: 0.2 },
     };
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
-    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card"];
+    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
 
     function fillSpan(span) {
@@ -9611,7 +9613,7 @@
       if (isBlessingFloor0()) return Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
       const prev = roadDoneBelow(now);
       if (prev) return Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
-      const row = now.offsetHeight || ol.clientHeight / 8;
+      const row = now.offsetHeight || ol.clientHeight / 5;
       return Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
     }
 
@@ -10134,7 +10136,7 @@
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
-      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd";
+      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant";
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
@@ -12929,15 +12931,38 @@
       growthLine = bits.join("　");
     }
 
+    function enchantFace(elem) {
+      if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.svg?v=1" };
+      if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.svg?v=1" };
+      return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=1" };
+    }
+
+    function enchantTargets() {
+      const names = [];
+      for (const card of runDeck()) {
+        if (!card || !card.name || names.indexOf(card.name) >= 0) continue;
+        if (card.name === "アタック" || card.name === "ブロック") continue;
+        if (runEnchants[card.name]) continue;
+        names.push(card.name);
+      }
+      return names;
+    }
+
     function rollBlessPicks() {
-      const kinds = shuffle(BLESS_KINDS).slice(0, 3);
-      return kinds.map((kind) => {
-        if (kind === "maxhp") return { kind, label: "最大HP" };
-        if (kind === "spd") return { kind, label: "SPD" };
-        if (kind === "mana") return { kind, label: "マナ" };
-        if (kind === "gear") return { kind, gear: rollBlessGear(), label: "装備" };
-        return { kind: "card", card: rollBlessCard(), label: "カード" };
-      });
+      const picks = [];
+      for (const kind of shuffle(BLESS_KINDS)) {
+        if (picks.length >= 3) break;
+        if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
+        else if (kind === "spd") picks.push({ kind, label: "SPD" });
+        else if (kind === "mana") picks.push({ kind, label: "マナ" });
+        else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
+        else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
+        else if (kind === "enchant" && enchantTargets().length) {
+          const elem = shuffle(["fire", "water", "light"])[0];
+          picks.push({ kind, elem, label: enchantFace(elem).name });
+        }
+      }
+      return picks;
     }
 
     function takeGift(pick) {
@@ -12967,6 +12992,14 @@
       if (!pick) return;
       playPickCenter(`[data-action="bless-pick"][data-bless="${index}"]`, () => {
         if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
+        if (pick.kind === "enchant") {
+          if (!enchantTargets().length) return;
+          blessEnchantAt = index;
+          blessCardName = "";
+          floorPhase = "bless-card";
+          render();
+          return;
+        }
         if (pick.kind === "maxhp") {
           runBonus.hp = (Number(runBonus.hp) || 0) + 20;
           floorHp = runMaxHp();
@@ -12980,6 +13013,43 @@
         blessPicks = [];
         finishEvent();
       });
+    }
+
+    function confirmBlessEnchant() {
+      if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless-card") return;
+      const pick = blessPicks[blessEnchantAt];
+      const name = blessCardName;
+      if (!pick || pick.kind !== "enchant" || !name) return;
+      if (name === "アタック" || name === "ブロック" || runEnchants[name]) return;
+      if (enchantTargets().indexOf(name) < 0) return;
+      runEnchants[name] = pick.elem;
+      const face = enchantFace(pick.elem);
+      log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}。`);
+      blessPicks = [];
+      blessEnchantAt = -1;
+      blessCardName = "";
+      floorPhase = "show";
+      persistSave(true);
+      finishEvent();
+    }
+
+    function blessEnchantHtml() {
+      const pick = blessPicks[blessEnchantAt];
+      const face = pick && pick.kind === "enchant" ? enchantFace(pick.elem) : null;
+      const seen = {};
+      const cards = [];
+      for (const card of runDeck()) {
+        if (!card || !card.name || seen[card.name]) continue;
+        if (enchantTargets().indexOf(card.name) < 0) continue;
+        seen[card.name] = true;
+        cards.push(card);
+      }
+      const rows = cards.map((card) => {
+        const picked = blessCardName === card.name ? " picked" : "";
+        return `<button type="button" class="beggar-card${picked}" data-action="bless-enchant-pick" data-name="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
+      }).join("");
+      const lead = face ? `${face.name}　${face.sub}` : "";
+      return `<p>どれにしますか。${esc(lead)}。アタックとブロックには付けられない。</p><div class="deck-cards beggar-cards">${rows || "<p>付けられるカードは無い。</p>"}</div><div class="event-actions">${menuButton("決定", "bless-enchant-ok", true, !blessCardName)}${menuButton("もどる", "bless-enchant-back")}</div>`;
     }
 
     function cardBuildName(name) {
@@ -13030,6 +13100,13 @@
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
+      }
+      if (gift.kind === "enchant") {
+        const face = enchantFace(gift.elem);
+        return `<div class="${cls}">${gearPopShell("enchant", {
+          image: face.image,
+          boonSub: face.sub,
+        })}</div>`;
       }
       if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
@@ -13096,6 +13173,8 @@
       eventFloorCall = false;
       floorGift = null;
       blessPicks = [];
+      blessEnchantAt = -1;
+      blessCardName = "";
       beggarCut = false;
       beggarPick = -1;
       ultimatePicks = [];
@@ -13216,6 +13295,7 @@
 
     function enchantSmith(kind) {
       if ((Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
+      if (smithName === "アタック" || smithName === "ブロック") return;
       if (kind !== "fire" && kind !== "water" && kind !== "light") return;
       runEnchants[smithName] = kind;
       meta.stars -= 2;
@@ -13249,15 +13329,9 @@
         return `<p>${esc(base ? base.name : "")}に足すカード。素材は消える。★3。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
       }
       if (floorPhase === "smith-name") {
-        const names = [];
-        for (const card of cards) {
-          if (names.indexOf(card.name) < 0) names.push(card.name);
-        }
-        const rows = names.map((name) => {
-          const haveEnchant = runEnchants[name] ? "　付与済み" : "";
-          return `<button type="button" data-action="smith-name" data-name="${esc(name)}" ${runEnchants[name] ? "disabled" : ""}>${esc(name)}${haveEnchant}</button>`;
-        }).join("");
-        return `<p>エンチャントするカード名。★2。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
+        const names = enchantTargets();
+        const rows = names.map((name) => `<button type="button" data-action="smith-name" data-name="${esc(name)}">${esc(name)}</button>`).join("");
+        return `<p>エンチャントするカード名。アタックとブロックには付けられない。★2。所持 ★${have}</p><div class="event-actions">${rows || "<p>付けられるカードは無い。</p>"}${menuButton("もどる", "smith-back")}</div>`;
       }
       if (floorPhase === "smith-elem") {
         const rows = [
@@ -13896,7 +13970,7 @@
         const boss = key === "enchant" ? 1 - VICTORY_EXTRA.boss.none - VICTORY_EXTRA.boss.gear - VICTORY_EXTRA.boss.item : VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード" };
+      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード", enchant: "エンチャント" };
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2).map((item) => item.name);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -13945,7 +14019,7 @@
             <ul>
               <li>装備は、装備一覧から同じ確率です。</li>
               <li>アイテムは、${EXTRA_ITEM_NAMES.join("、")}から同じ確率です。</li>
-              <li>エンチャントは、火・水・光が同じ確率です。まだ付いていないカード名から選びます。</li>
+              <li>エンチャントは、火・水・光が同じ確率です。アタックとブロック以外で、まだ付いていないカード名から選びます。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -13955,6 +14029,11 @@
               <li>それぞれの種類が出る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
             </ul>
             ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
+            <ul>
+              <li>エンチャントは、火・水・光から同じ確率で一つ出ます。</li>
+              <li>選ぶとデッキが出ます。アタックとブロック以外で、まだ付いていないカード名を一つ決めて決定します。</li>
+              <li>付けられるカードが無いときは、エンチャントは出ません。</li>
+            </ul>
             <h3>装備（★2以上）</h3>
             ${oddsChips(blessGear)}
             <h3>カード（★2以上）</h3>
