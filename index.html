@@ -5067,7 +5067,6 @@
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
     .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
-    .album-screen .card .card-fit.k-attack { --frame-img: url("frame-spike-gold.png?v=5"); }
     .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
     .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
     .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
@@ -9605,7 +9604,7 @@
       パリィ: "card-parry.jpg?v=16",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=1",
-      パリィスラッシュ: "card-parry-slash.jpg?v=1",
+      パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ライフフルネスアタック: "card-lifefull.jpg?v=2",
       ジャストミート: "card-justmeat.jpg?v=1",
@@ -9614,7 +9613,7 @@
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
-      自信過剰: "card-pride.jpg?v=1",
+      自信過剰: "card-pride-v4.jpg?v=2",
       達人の間合い: "card-deep-focus.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
@@ -9640,6 +9639,11 @@
       ファイアーボール: "card-fireball.jpg?v=1",
       ファイアソード: "card-firesword.jpg?v=1",
       ファイアパラダイス: "card-fireparadise.jpg?v=1",
+      無心: "card-mushin.jpg?v=1",
+      餌だ: "card-bait.jpg?v=1",
+      さぼる: "card-slack.jpg?v=1",
+      弱者の意地: "card-spite.jpg?v=1",
+      死者の軍団: "card-legion.jpg?v=1",
       "怒り（敵）": "card-anger-foe.jpg?v=3",
     };
     function cardArtSrc(name) {
@@ -9673,14 +9677,14 @@
       パリィ: { cost: 2, stars: 1, text: "パリィ+1を得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィ+1を得る", damage: 10, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
+      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "skill", flash: true, coward: true },
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
       余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィ+1を得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "skill", parryAdd: 3 },
+      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "block", parryAdd: 3 },
       諸刃の剣: { cost: 2, stars: 2, text: "次に受けるダメージが２倍になる。", damage: 25, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
@@ -9734,7 +9738,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=8",
+        image: "enemy-slime.png?v=9",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9748,7 +9752,7 @@
       },
       {
         name: "ゴブリン",
-        image: "enemy-goblin.png?v=4",
+        image: "enemy-goblin.png?v=10",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9762,6 +9766,7 @@
       },
       {
         name: "コボルド",
+        image: "enemy-kobold.png?v=5",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9777,7 +9782,7 @@
       },
       {
         name: "ミノタウロス",
-        image: "enemy-minotaur.png?v=8",
+        image: "enemy-minotaur.png?v=10",
         tier: 3,
         rank: "強敵",
         stature: "huge",
@@ -9797,7 +9802,7 @@
       },
       {
         name: "ちびドラゴン",
-        image: "enemy-dragon.png?v=4",
+        image: "enemy-dragon.png?v=6",
         tier: 2,
         rank: "普通",
         stature: "small",
@@ -9812,6 +9817,7 @@
       },
       {
         name: "トロール",
+        image: "enemy-troll.png?v=4",
         tier: 2,
         rank: "普通",
         stature: "huge",
@@ -9826,7 +9832,7 @@
       },
       {
         name: "物乞い",
-        image: "enemy-beggar.png?v=2",
+        image: "enemy-beggar.png?v=4",
         rank: "雑魚",
         stature: "same",
         hp: 25,
@@ -10564,11 +10570,50 @@
       return list[list.length - 1];
     }
 
-    function rarityWeight(stars) {
+    const RARITY_RATE = { 1: 0.6, 2: 0.3, 3: 0.1 };
+
+    function rarityBand(stars) {
       const n = Math.max(1, Number(stars) || 1);
-      if (n <= 1) return 4;
+      if (n <= 1) return 1;
       if (n === 2) return 2;
-      return 1;
+      return 3;
+    }
+
+    // 先にレアリティ（★60%・★★30%・★★★以上10%）。その★のカードから均等。無い★は、残りの比率で引き直す。
+    function pickRarityCard(list, starsOf) {
+      if (!list.length) return null;
+      const star = starsOf || ((item) => item && item.stars);
+      const bands = new Map();
+      for (const item of list) {
+        const band = rarityBand(star(item));
+        const bucket = bands.get(band) || [];
+        bucket.push(item);
+        bands.set(band, bucket);
+      }
+      const present = [...bands.keys()];
+      let total = 0;
+      for (const band of present) total += RARITY_RATE[band] || 0;
+      let roll = Math.random() * (total || 1);
+      let chosen = present[present.length - 1];
+      for (const band of present) {
+        roll -= RARITY_RATE[band] || 0;
+        if (roll < 0) { chosen = band; break; }
+      }
+      const bucket = bands.get(chosen) || list;
+      return bucket[Math.floor(Math.random() * bucket.length)];
+    }
+
+    function takeRarityCards(list, count, starsOf) {
+      const left = list.slice();
+      const out = [];
+      while (out.length < count && left.length) {
+        const pick = pickRarityCard(left, starsOf);
+        const at = left.indexOf(pick);
+        if (at < 0) break;
+        left.splice(at, 1);
+        out.push(pick);
+      }
+      return out;
     }
 
     function enchantWeight(id) {
@@ -10624,7 +10669,7 @@
       boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
     const LOOT_LOW_RATE = 0.7;
-    const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
+    const EXTRA_ITEM_NAMES = ["ベッド", "ホテル"];
     const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
 
@@ -10888,11 +10933,13 @@
 
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
-      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 30, right: 858 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72, left: 154, right: 780 },
-      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0, left: 36, right: 862 },
-      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98, left: 18, right: 862 },
-      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25, left: 94, right: 718 },
+      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 29, right: 857 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 20, bottom: 38, left: 15, right: 825 },
+      "enemy-kobold.png": { w: 864, h: 1152, top: 30, bottom: 18, left: 146, right: 701 },
+      "enemy-minotaur.png": { w: 864, h: 1152, top: 52, bottom: 78, left: 70, right: 851 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 123, bottom: 154, left: 33, right: 863 },
+      "enemy-troll.png": { w: 864, h: 1152, top: 64, bottom: 29, left: 27, right: 863 },
+      "enemy-beggar.png": { w: 864, h: 1152, top: 30, bottom: 32, left: 94, right: 718 },
       "enemy-hades.png": { w: 864, h: 1152, top: 86, bottom: 133, left: 44, right: 856 },
     };
 
@@ -10954,12 +11001,12 @@
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=6" },
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=7" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=7" },
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
     ];
 
     function gearRarityText(item) {
@@ -11303,9 +11350,9 @@
       if (item.ignoreTrait) return gearPunctLines("相手の特性を無視してダメージを与える");
       if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
       if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
-      if (item.carryMana) return gearPunctLines("使わなかったマナを次のターンへ持ち越す（持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える）");
-      if (item.halfAtk) return gearPunctLines("自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える");
-      if (item.halfMana) return gearPunctLines("自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える");
+      if (item.carryMana) return gearPunctLines("未使用マナを次のターンに持ち越す。");
+      if (item.halfAtk) return gearPunctLines("体力が半分以下の時、ATK+2。");
+      if (item.halfMana) return gearPunctLines("ターン開始時に体力が半分以下ならマナ+1。");
       let text = String(item.effect || "");
       text = text.replace(/★+/g, "").replace(/ボス/g, "");
       text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
@@ -12358,9 +12405,9 @@
         const now = gainThorns(player, card.thorns);
         log(`${heroName()}は${card.name}。トゲ${now}。`, card);
       }
-      if (card.power && card.coward) {
+      if (card.coward) {
         player.guardThrough = true;
-        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。`, card);
+        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。戦闘が終わると戻る。`, card);
         return;
       }
       if (card.rage) {
@@ -14110,7 +14157,7 @@
       const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }))
         .concat(classCards())
         .filter((card) => (Number(card.stars) || 1) >= 2);
-      const pick = pickWeighted(offers, (card) => rarityWeight(card.stars)) || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
+      const pick = pickRarityCard(offers) || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
       return keepCard(pick);
     }
     function emptyRunBonus() {
@@ -14386,7 +14433,7 @@
     function drawTrainNames(pool, picked) {
       const left = pool.filter((name) => picked.indexOf(name) < 0 && WARRIOR[name]);
       while (picked.length < 3 && left.length) {
-        const name = pickWeighted(left, (cardName) => rarityWeight((WARRIOR[cardName] && WARRIOR[cardName].stars) || 1));
+        const name = pickRarityCard(left, (cardName) => (WARRIOR[cardName] && WARRIOR[cardName].stars) || 1);
         const at = left.indexOf(name);
         if (at < 0) break;
         left.splice(at, 1);
@@ -14461,6 +14508,7 @@
           image: face.image,
           body: face.body,
           kind: "祝福",
+          rarity: gearRarityText(face),
           likeGear: true,
           embedded: true,
         })}</div>`;
@@ -14513,6 +14561,7 @@
           image: face.image,
           body: face.body,
           kind: "祝福",
+          rarity: gearRarityText(face),
           likeGear: true,
         });
       }
@@ -15438,6 +15487,15 @@
       return `<div class="odds-names">${names.map((name) => `<span>${esc(name)}</span>`).join("")}</div>`;
     }
 
+    function rarityBandRate(cards) {
+      const bands = new Set(cards.map((card) => rarityBand(card.stars)));
+      let total = 0;
+      for (const band of bands) total += RARITY_RATE[band] || 0;
+      const rate = new Map();
+      for (const band of bands) rate.set(band, total ? (RARITY_RATE[band] || 0) / total : 0);
+      return rate;
+    }
+
     function rarityRows(cards) {
       const groups = new Map();
       for (const card of cards) {
@@ -15446,24 +15504,35 @@
         row.names.push(card.name);
         groups.set(stars, row);
       }
-      const list = [...groups.values()];
-      const total = list.reduce((sum, row) => sum + rarityWeight(row.stars) * row.names.length, 0) || 1;
-      return list.sort((a, b) => a.stars - b.stars).map((row) => [
-        "★".repeat(row.stars),
-        String(rarityWeight(row.stars)),
-        pct((rarityWeight(row.stars) * row.names.length) / total),
-        row.names.join("、"),
-      ]);
+      const rate = rarityBandRate(cards);
+      return [...groups.values()].sort((a, b) => a.stars - b.stars).map((row) => {
+        const band = rate.get(rarityBand(row.stars)) || 0;
+        return [
+          "★".repeat(row.stars),
+          pct(band),
+          pct(row.names.length ? band / row.names.length : 0),
+          row.names.join("、"),
+        ];
+      });
     }
 
     function rarityShareRows(cards) {
-      const total = cards.reduce((sum, card) => sum + rarityWeight(card.stars), 0) || 1;
-      return cards.map((card) => [
-        card.name,
-        "★".repeat(Math.max(1, Number(card.stars) || 1)),
-        String(rarityWeight(card.stars)),
-        pct(rarityWeight(card.stars) / total),
-      ]);
+      const rate = rarityBandRate(cards);
+      const counts = new Map();
+      for (const card of cards) {
+        const band = rarityBand(card.stars);
+        counts.set(band, (counts.get(band) || 0) + 1);
+      }
+      return cards.map((card) => {
+        const band = rarityBand(card.stars);
+        const share = rate.get(band) || 0;
+        return [
+          card.name,
+          "★".repeat(Math.max(1, Number(card.stars) || 1)),
+          pct(share),
+          pct(counts.get(band) ? share / counts.get(band) : 0),
+        ];
+      });
     }
 
     function renderOdds() {
@@ -15499,12 +15568,15 @@
           const def = COMMON[name] || WARRIOR[name] || {};
           return (Number(def.stars) || 1) >= 2;
         });
-      const rewardCards = Object.keys(COMMON)
-        .concat(Object.keys(WARRIOR).filter((name) => !starterNames.has(name)))
-        .map((name) => {
-          const def = COMMON[name] || WARRIOR[name] || {};
-          return { name, stars: Number(def.stars) || 1 };
-        });
+      const rewardCards = (names, book) => names.map((name) => {
+        const def = book[name] || {};
+        return { name, stars: Number(def.stars) || 1 };
+      });
+      const commonReward = rewardCards(Object.keys(COMMON), COMMON);
+      const warriorReward = rewardCards(
+        Object.keys(WARRIOR).filter((name) => !starterNames.has(name)),
+        WARRIOR,
+      );
       const foeRows = DUNGEON_LIST.map((dungeon) => [
         dungeon.name,
         dungeon.rank,
@@ -15548,7 +15620,7 @@
             <ul>
               <li>★と、カード3枚をもらいます。</li>
               <li>カードは共通・戦士・その敵から1枚ずつです。足りない分は全体から補います。</li>
-              <li>同じ枠の中は、レアリティの重みで出ます。★の重み4、★★は2、★★★以上は1です。</li>
+              <li>枠の中では、先にレアリティを引きます。★60%、★★30%、★★★以上10%です。そのあと、当たった★のカードから均等に1枚です。その★が無いときは、残りの比率で引き直します。</li>
               <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
             </ul>
             ${oddsTable(["追加", "道中", "ボス"], extraRows)}
@@ -15559,14 +15631,20 @@
               <li>出るときは品を1つ。低レア70%、高レア30%です。</li>
               <li>ミノタウロスは低レアがメダル★★★、高レアが腕輪★★★★です。</li>
             </ul>
-            <h3>報酬カードのレアリティ</h3>
-            ${oddsTable(["★", "重み", "この表での割合", "カード"], rarityRows(rewardCards))}
+            <h3>報酬カード（枠ごと）</h3>
             <ul>
-              <li>敵のカードも同じ重みです。出る名前は、その戦闘の敵によります。</li>
+              <li>3枚は、共通・戦士・その敵から1枚ずつです。下の割合は、その枠の中だけです。3枠を足した割合ではありません。</li>
+              <li>敵の枠は、その戦闘の山札にあるカードだけです。名前は敵によります。重みは同じです。</li>
+            </ul>
+            <h3>共通</h3>
+            ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(commonReward))}
+            <h3>戦士</h3>
+            ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(warriorReward))}
+            <ul>
               <li>装備は、装備一覧から同じ確率です。</li>
             </ul>
-            <h3>アイテム（レアリティの重み）</h3>
-            ${oddsTable(["カード", "★", "重み", "割合"], rarityShareRows(itemCards))}
+            <h3>アイテム（先にレアリティ）</h3>
+            ${oddsTable(["カード", "★", "レアリティ", "1枚の割合"], rarityShareRows(itemCards))}
             <h3>エンチャントの属性</h3>
             ${oddsTable(["属性", "重み", "割合"], enchantRows)}
             <ul>
@@ -15589,8 +15667,8 @@
             </ul>
             <h3>装備（★2以上）</h3>
             ${oddsChips(blessGear)}
-            <h3>カード（★2以上・レアリティの重み）</h3>
-            ${oddsTable(["★", "重み", "この表での割合", "カード"], rarityRows(blessCards.map((name) => {
+            <h3>カード（★2以上・先にレアリティ）</h3>
+            ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(blessCards.map((name) => {
               const def = COMMON[name] || WARRIOR[name] || {};
               return { name, stars: Number(def.stars) || 1 };
             })))}
@@ -15600,8 +15678,8 @@
             ${oddsTable(["出来事", "出るもの"], [
               ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
               ["探索", "装備を1つ。装備一覧から同じ確率"],
-              ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。足りなければ戦士のカード。レアリティの重み。もらったあと、未熟練の1枚が必要回数に達する"],
-              ["お店", "カード2枚と装備2つ。カードはレアリティの重み。装備は装備一覧から同じ確率"],
+              ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。足りなければ戦士のカード。先にレアリティ（60/30/10）。もらったあと、未熟練の1枚が必要回数に達する"],
+              ["お店", "カード2枚と装備2つ。カードは先にレアリティ（60/30/10）。装備は装備一覧から同じ確率"],
             ])}
           </section>
           ${menuButton("タイトルへ", "title")}
@@ -16268,14 +16346,14 @@
     }
 
     function blessGearOpts(kind, elem) {
-      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。" };
-      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。" };
-      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。" };
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。", stars: 3 };
+      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。", stars: 3 };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。", stars: 5 };
       const face = enchantFace(elem);
       let body = "キーワードが一つ付く。";
       if (face.sub === "ATK+2" || face.sub === "DEF+2") body = face.sub;
       else if (face.sub === "マナ-1") body = "マナが1減る。";
-      return { slot: "enchant", name: face.name, image: face.image, body };
+      return { slot: "enchant", name: face.name, image: face.image, body, stars: 3 };
     }
 
     function sheetGearBoonCard(slot, o) {
@@ -16284,6 +16362,7 @@
         image: o.image,
         body: o.body || "",
         kind: "祝福",
+        rarity: gearRarityText(o),
         likeGear: true,
         embedded: true,
         sheetPop: true,
@@ -16323,14 +16402,14 @@
             <p class="album-meta">画像を押すと右半分に拡大</p>
             <h3>敵</h3>
             <div class="ref-grid">
-              ${sheetFig("enemy-slime.png?v=8", "スライム", "enemy-ref")}
-              ${sheetFig("enemy-goblin.png?v=4", "ゴブリン", "enemy-ref")}
-              ${sheetSlot("コボルド", "戦闘に出る。絵は未作成")}
-              ${sheetSlot("トロール", "戦闘に出る。絵は未作成")}
-              ${sheetFig("enemy-minotaur.png?v=8", "ミノタウロス", "enemy-ref")}
-              ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-slime.png?v=9", "スライム", "enemy-ref")}
+              ${sheetFig("enemy-goblin.png?v=10", "ゴブリン", "enemy-ref")}
+              ${sheetFig("enemy-kobold.png?v=5", "コボルド", "enemy-ref")}
+              ${sheetFig("enemy-troll.png?v=4", "トロール", "enemy-ref")}
+              ${sheetFig("enemy-minotaur.png?v=10", "ミノタウロス", "enemy-ref")}
+              ${sheetFig("enemy-dragon.png?v=6", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
-              ${sheetFig("enemy-beggar.png?v=2", "物乞い", "enemy-ref")}
+              ${sheetFig("enemy-beggar.png?v=4", "物乞い", "enemy-ref")}
               ${sheetFig("enemy-hades.png?v=8", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
@@ -16620,7 +16699,8 @@
       const blessLevels = [];
       const blessButtons = floorPhase === "bless"
         ? blessPicks.map((pick, i) => {
-          const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
+          const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
+          const lv = blessLive ? rareLevel(entity) : 0;
           if (lv) blessLevels.push(lv);
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
         })
@@ -16842,7 +16922,7 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-spike-gold.png?v=5"],
+      ["style-red", "アタック", "frame-metal-red.png?v=7"],
       ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
       ["style-green", "アイテム", "frame-metal-green.png?v=5"],
@@ -16850,10 +16930,22 @@
       ["style-star1", "★", "frame-spike-copper.png?v=5"],
       ["style-star2", "★★", "frame-spike-silver.png?v=5"],
       ["style-star3", "★★★", "frame-spike-gold.png?v=5"],
-      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=11"],
-      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=11"],
-      ["style-over-gold", "金", "frame-blue-over-gold.png?v=11"],
-      ["style-over-black", "黒", "frame-blue-over-black.png?v=11"],
+      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=14"],
+      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=14"],
+      ["style-over-gold", "金", "frame-blue-over-gold.png?v=14"],
+      ["style-over-black", "黒", "frame-blue-over-black.png?v=15"],
+      ["style-red-over-copper", "赤・銅", "frame-red-over-copper.png?v=1"],
+      ["style-red-over-silver", "赤・銀", "frame-red-over-silver.png?v=1"],
+      ["style-red-over-gold", "赤・金", "frame-red-over-gold.png?v=1"],
+      ["style-red-over-black", "赤・黒", "frame-red-over-black.png?v=1"],
+      ["style-yellow-over-copper", "黄・銅", "frame-yellow-over-copper.png?v=1"],
+      ["style-yellow-over-silver", "黄・銀", "frame-yellow-over-silver.png?v=1"],
+      ["style-yellow-over-gold", "黄・金", "frame-yellow-over-gold.png?v=1"],
+      ["style-yellow-over-black", "黄・黒", "frame-yellow-over-black.png?v=1"],
+      ["style-green-over-copper", "緑・銅", "frame-green-over-copper.png?v=1"],
+      ["style-green-over-silver", "緑・銀", "frame-green-over-silver.png?v=1"],
+      ["style-green-over-gold", "緑・金", "frame-green-over-gold.png?v=1"],
+      ["style-green-over-black", "緑・黒", "frame-green-over-black.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -17849,12 +17941,12 @@
       const seen = new Set();
       for (const source of ["共通", "戦士", "敵"]) {
         const pool = all.filter((card) => card.source === source && !seen.has(card.name));
-        const card = pickWeighted(pool, (item) => rarityWeight(item.stars));
+        const card = pickRarityCard(pool);
         if (card) { picks.push(card); seen.add(card.name); }
       }
       while (picks.length < 3) {
         const pool = all.filter((card) => !seen.has(card.name));
-        const card = pickWeighted(pool, (item) => rarityWeight(item.stars));
+        const card = pickRarityCard(pool);
         if (!card) break;
         picks.push(card);
         seen.add(card.name);
@@ -18006,7 +18098,7 @@
     }
 
     function rollShopStock() {
-      const cards = takeWeighted(classCards(), 2, (card) => rarityWeight(card.stars)).map((card) => ({ kind: "card", card }));
+      const cards = takeRarityCards(classCards(), 2).map((card) => ({ kind: "card", card }));
       const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item }));
       return cards.concat(items).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
     }
@@ -18051,7 +18143,7 @@
       }
       if (kind === "item") {
         const names = EXTRA_ITEM_NAMES.filter((name) => cardDef(name));
-        const name = pickWeighted(names, (itemName) => rarityWeight((cardDef(itemName) || {}).stars));
+        const name = pickRarityCard(names, (itemName) => (cardDef(itemName) || {}).stars);
         if (!name) return "";
         const def = cardDef(name);
         stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
