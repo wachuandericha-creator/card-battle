@@ -10885,19 +10885,22 @@
 
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
-      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72 },
-      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0 },
-      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98 },
-      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25 },
+      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 30, right: 858 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72, left: 154, right: 780 },
+      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0, left: 36, right: 862 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98, left: 18, right: 862 },
+      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25, left: 94, right: 718 },
+      "enemy-hades.png": { w: 864, h: 1152, top: 86, bottom: 133, left: 44, right: 856 },
     };
 
     function foeInkVars(image) {
       const src = String(image != null ? image : (enemy && enemy.image) || "").split("?")[0];
-      const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0 };
+      const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0, left: 0, right: 864 };
       const inkH = Math.max(1, ink.h - ink.top - ink.bottom);
       const mid = (ink.top + inkH / 2) / ink.h;
-      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)}`;
+      const inkLeft = ink.left || 0;
+      const inkRight = ink.right || ink.w;
+      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)};--ink-left:${inkLeft};--ink-right:${inkRight}`;
     }
 
     // 絵の大きさは強さではなくキャラ。small は腰、same は自分と同じ、huge は画面いっぱい。
@@ -18997,6 +19000,23 @@
       main.style.setProperty("--foot-gap", `${footGap}px`);
       hero.style.setProperty("--hero-w", `${heroW}px`);
       main.style.setProperty("--foe-w", `${foeW}px`);
+      main.style.marginLeft = "0px";
+      const field = ally.parentElement;
+      if (!field) return;
+      const fieldRect = field.getBoundingClientRect();
+      const scale = fieldRect.width / field.clientWidth || 1;
+      const heroFig = hero.querySelector(".hero-fig") || hero;
+      const foeFig = main.querySelector("img") || main;
+      const heroRect = heroFig.getBoundingClientRect();
+      const foeRect = foeFig.getBoundingClientRect();
+      if (heroRect.width < 8 || foeRect.width < 8) return;
+      const heroInkLeft = 64;
+      const inkRight = parseFloat(getComputedStyle(main).getPropertyValue("--ink-right")) || imgW;
+      const heroVisLeft = (heroRect.left - fieldRect.left) / scale + (heroRect.width / scale) * (heroInkLeft / heroImg);
+      const foeVisRight = (foeRect.left - fieldRect.left) / scale + (foeRect.width / scale) * (inkRight / imgW);
+      const leftGap = heroVisLeft;
+      const rightGap = field.clientWidth - foeVisRight;
+      main.style.marginLeft = `${Math.round(rightGap - leftGap)}px`;
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
