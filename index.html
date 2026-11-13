@@ -253,6 +253,41 @@
     .road-node.now.tone-other > i {
       box-shadow: none;
     }
+    .road-key {
+      position: absolute;
+      z-index: 5;
+      top: 7px;
+      right: 7px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      color: #ffe7a4;
+      filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
+      pointer-events: none;
+    }
+    .road-key svg { width: 22px; height: 22px; display: block; }
+    .road-back {
+      position: absolute;
+      z-index: 6;
+      left: 10px;
+      right: 10px;
+      bottom: 8px;
+      margin: 0;
+      padding: 8px 8px 9px;
+      border: 0;
+      border-radius: 999px;
+      background: #ffe14a;
+      color: #3a2208;
+      font-family: var(--log-serif);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      box-shadow: 0 2px 0 #6a4512;
+      cursor: pointer;
+    }
+    .road-back[hidden] { display: none; }
     .road-node.now::after {
       content: "現在地";
       position: absolute;
@@ -9348,29 +9383,100 @@
         const fixed = !!node && roadFixed(node, i);
         const tone = known ? (fixed ? "fight" : roadTone(node)) : "";
         const name = known && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}${name}</span></li>`;
+        const key = fixed ? `<span class="road-key" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10.8 12H20.2M17.2 12v3.1M20.2 12v2.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>` : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}${key}<span class="road-cap">${capFloor}${name}</span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
-      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol></section>`;
+      return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol><button type="button" class="road-back" data-action="road-home" hidden>現在地に戻る</button></section>`;
     }
 
-    function placeRoad() {
-      const ol = document.querySelector(".road-map ol");
-      const now = ol && ol.querySelector(".road-node.now");
-      if (!ol || !now) return;
-      if (isBlessingFloor0()) {
-        ol.scrollTop = Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
-        return;
-      }
+    let roadHold = null;
+
+    function roadHomeTop(ol, now) {
+      if (isBlessingFloor0()) return Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
       const prev = roadDoneBelow(now);
-      if (prev) {
-        // 下端＝一つ前の階層。そのすぐ上に現在地が見える位置へ
-        ol.scrollTop = Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
+      if (prev) return Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
+      const row = ol.clientHeight / 5;
+      return Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
+    }
+
+    function syncRoadHomeButton(ol) {
+      const map = ol.closest(".road-map");
+      const btn = map && map.querySelector(".road-back");
+      const now = ol.querySelector(".road-node.now");
+      if (!btn || !now) return;
+      const home = roadHomeTop(ol, now);
+      const away = ol.scrollTop < home - 28;
+      btn.hidden = !away;
+    }
+
+    function bindRoadScroll(ol) {
+      if (ol.dataset.roadBound) return;
+      ol.dataset.roadBound = "1";
+      ol.addEventListener("scroll", () => {
+        if (ol.dataset.roadMoving === "1") {
+          roadHold.top = ol.scrollTop;
+        } else {
+          roadHold = { index: battleIndex, top: ol.scrollTop, home: roadHold ? roadHold.home : ol.scrollTop, moving: false };
+        }
+        syncRoadHomeButton(ol);
+      }, { passive: true });
+    }
+
+    function smoothScrollOl(ol, to) {
+      const from = ol.scrollTop;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || Math.abs(to - from) < 2) {
+        ol.scrollTop = to;
+        roadHold = { index: battleIndex, top: to, home: to, moving: false };
+        syncRoadHomeButton(ol);
         return;
       }
-      const row = ol.clientHeight / 5;
-      ol.scrollTop = Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
+      const start = performance.now();
+      const ms = 680;
+      ol.dataset.roadMoving = "1";
+      roadHold = { index: battleIndex, top: from, home: to, moving: true };
+      const tick = (now) => {
+        if (!ol.isConnected) return;
+        const k = Math.min(1, (now - start) / ms);
+        const e = 1 - Math.pow(1 - k, 3);
+        ol.scrollTop = from + (to - from) * e;
+        if (k < 1) requestAnimationFrame(tick);
+        else {
+          ol.dataset.roadMoving = "";
+          roadHold = { index: battleIndex, top: to, home: to, moving: false };
+          syncRoadHomeButton(ol);
+        }
+      };
+      requestAnimationFrame(tick);
+    }
+
+    function placeRoad(mode) {
+      document.querySelectorAll(".road-map ol").forEach((ol) => {
+        const now = ol.querySelector(".road-node.now");
+        if (!now) return;
+        bindRoadScroll(ol);
+        const home = roadHomeTop(ol, now);
+        const same = roadHold && roadHold.index === battleIndex;
+        if (mode !== "home" && mode !== "instant" && same) {
+          if (ol.dataset.roadMoving === "1") return;
+          ol.scrollTop = roadHold.top;
+          roadHold.home = home;
+          syncRoadHomeButton(ol);
+          return;
+        }
+        if (mode !== "instant" && roadHold && Math.abs((same ? roadHold.top : roadHold.home) - home) > 2) {
+          ol.scrollTop = same ? roadHold.top : roadHold.home;
+        }
+        if (mode === "instant" || !roadHold) {
+          ol.scrollTop = home;
+          roadHold = { index: battleIndex, top: home, home, moving: false };
+          syncRoadHomeButton(ol);
+          return;
+        }
+        smoothScrollOl(ol, home);
+      });
     }
 
     function schedulePlaceRoad() {
@@ -16300,7 +16406,7 @@
         settled = true;
         done();
       };
-      placeRoad();
+      placeRoad("instant");
       const dest = pathLandNode();
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || !shot || !shot.frame || !dest || !("animate" in Element.prototype)) {
@@ -17071,6 +17177,7 @@
       if (action) {
         const name = action.dataset.action;
         if (name === "fullscreen") { toggleFullscreen(); return; }
+        if (name === "road-home") { placeRoad("home"); return; }
         if (name === "title") goTitle();
         if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
