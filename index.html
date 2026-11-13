@@ -8127,9 +8127,9 @@
       pointer-events: none;
     }
     .dungeon-facts .dungeon-name-big {
-      padding: 12px 8px 14px;
+      padding: 10px 8px 12px;
       color: #fff6e0;
-      font-size: clamp(32px, 2.8cqw, 46px);
+      font-size: clamp(28px, 2.3cqw, 38px);
       font-weight: 900;
       letter-spacing: 0.18em;
       line-height: 1;
@@ -8235,10 +8235,10 @@
     }
     .cast-screen.dungeon-screen .dungeon-stage {
       position: relative;
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       align-self: stretch;
       width: 100%;
-      height: min(38cqh, 100%);
+      height: auto;
       min-height: 0;
       border-radius: 22px;
       overflow: hidden;
@@ -8264,9 +8264,9 @@
     }
     .cast-screen.dungeon-screen .dungeon-columns {
       width: 100%;
-      height: auto;
-      min-height: 280px;
-      flex: 1 1 auto;
+      height: 27cqh;
+      min-height: 0;
+      flex: 0 0 auto;
       align-self: stretch;
       margin-top: 0;
     }
@@ -8324,16 +8324,63 @@
     .cast-screen.dungeon-screen .dungeon-key {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 10px;
       width: 100%;
       text-align: left;
     }
-    .cast-screen.dungeon-screen .dungeon-board .dungeon-note {
+    .cast-screen.dungeon-screen .dungeon-key h2 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      color: #f0c36a;
+      font-size: clamp(26px, 2.2cqw, 34px);
+      font-weight: 800;
+      letter-spacing: 0.14em;
+    }
+    .cast-screen.dungeon-screen .dungeon-key h2 span { flex: 0 0 auto; }
+    .cast-screen.dungeon-screen .dungeon-key h2::before,
+    .cast-screen.dungeon-screen .dungeon-key h2::after {
+      content: "";
+      flex: 0 0 auto;
+      width: clamp(32px, 4.5cqw, 44px);
+      height: 2px;
+    }
+    .cast-screen.dungeon-screen .dungeon-key h2::before {
+      background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9));
+    }
+    .cast-screen.dungeon-screen .dungeon-key h2::after {
+      background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent);
+    }
+    .cast-screen.dungeon-screen .dungeon-blurb-wrap {
+      margin: 0;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
+    }
+    .cast-screen.dungeon-screen .dungeon-blurb {
       margin: 0;
       text-align: left;
-      font-size: clamp(26px, 2.2cqw, 34px);
-      letter-spacing: 0.14em;
+      color: #fff8e8;
+      font-size: clamp(20px, 1.85cqw, 26px);
+      font-weight: 800;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    }
+    .cast-screen.dungeon-screen .dungeon-board .dungeon-foes figcaption,
+    .cast-screen.dungeon-screen .dungeon-board .dungeon-clears figcaption {
+      margin-top: 6px;
+      color: #fff8e8;
+      font-size: clamp(18px, 1.5cqw, 22px);
+      font-weight: 800;
+      line-height: 1.45;
+      letter-spacing: 0.04em;
     }
     .cast-screen.dungeon-screen .dungeon-board .dungeon-foes,
     .cast-screen.dungeon-screen .dungeon-board .dungeon-clears,
@@ -15246,7 +15293,7 @@
 
     function dungeonClearFaces(floors) {
       const names = clearNames(floors);
-      if (!names.length) return `<p class="dungeon-note">踏破したキャラは、まだいません</p>`;
+      if (!names.length) return `<div class="dungeon-blurb-wrap"><p class="dungeon-blurb">踏破したキャラは、まだいません。</p></div>`;
       return `<div class="dungeon-clears">${names.map((name) => {
         const who = castByName(name);
         return `<figure><img src="${esc(who.chibi)}" alt=""><figcaption>${esc(who.name)}</figcaption></figure>`;
@@ -15289,11 +15336,11 @@
           </div>
           <aside class="dungeon-board">
             <section class="dungeon-key">
-              <p class="dungeon-note foe-label">登場する敵</p>
+              <h2><span>登場する敵</span></h2>
               <div class="dungeon-foes">${dungeonEnemyFaces()}</div>
             </section>
             <section class="dungeon-key">
-              <p class="dungeon-note clear-label">踏破したキャラ</p>
+              <h2><span>踏破したキャラ</span></h2>
               <div class="dungeon-clear-slot"></div>
             </section>
           </aside>
