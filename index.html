@@ -4069,15 +4069,15 @@
     .gear-effect .item-use:disabled { opacity: 0.45; cursor: default; filter: grayscale(0.25); }
     /* 装備説明はレイアウトを広げず、枠の右に重ねる漆金ポップ */
     .gear-effect:not(.gear-effect-embedded) {
-      width: min(var(--gear-pop-w, 220px), calc(100cqw - 20px));
-      min-width: 168px;
+      width: max-content;
+      min-width: 0;
       max-width: min(352px, calc(100cqw - 20px));
     }
     .gear-effect {
       position: fixed;
       z-index: 55;
       margin: 0;
-      max-height: min(78cqh, 440px);
+      max-height: none;
       box-sizing: border-box;
       padding: 0;
       border: 0;
@@ -4102,9 +4102,8 @@
     .gear-effect::after { content: none; }
     .gear-effect-inner {
       position: relative;
-      padding: 12px 11px 10px;
-      max-height: min(78cqh, 440px);
-      overflow: auto;
+      padding: 8px;
+      overflow: visible;
       box-sizing: border-box;
       text-align: left;
     }
@@ -4124,6 +4123,65 @@
       gap: 10px 12px;
       align-items: center;
       margin: 0 0 10px;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: max-content;
+      max-width: 100%;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-head {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+      margin: 0;
+      width: max-content;
+      max-width: 100%;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-artcol {
+      width: 84px;
+      flex: 0 0 84px;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-meta,
+    .gear-effect:not(.center-boon) .gear-effect-titles {
+      align-items: flex-start;
+      text-align: left;
+      width: auto;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-name { text-align: left; }
+    .gear-effect:not(.center-boon) .gear-effect-rest {
+      width: 0;
+      min-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-chiprow {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      width: 100%;
+      min-height: 0;
+      margin-top: 0;
+    }
+    .gear-effect-chiprow > span.kind {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: #ffe7a8;
+      background: linear-gradient(180deg, rgba(255, 230, 170, 0.14), rgba(0, 0, 0, 0.35));
+      border: 1px solid rgba(228, 177, 90, 0.55);
+      white-space: nowrap;
     }
     .gear-effect-chiprow {
       display: flex;
@@ -10223,7 +10281,7 @@
 
     const JOB_CHANGE_FLOORS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
 
-    // 0層目は祝福。ボスとその直前の休憩だけ固定。ほかの階は空欄で、選ぶときに袋から入れる。
+    // 0層目は祝福。1Fは戦闘固定。ボスとその直前の休憩も固定。ほかの階は空欄で、選ぶときに袋から入れる。
     function buildRoute(floors, name) {
       const route = new Array(floors + 1).fill(null);
       route[0] = "出来事:祝福";
@@ -10346,6 +10404,7 @@
       const name = String(node || "");
       if (name === "出来事:祝福" || name === DUNGEON.boss) return true;
       if (name === "出来事:キャンプ" && fixedRestAt.indexOf(index) >= 0) return true;
+      if (index === 1 && route[0] === "出来事:祝福" && (!node || !isEventNode(name))) return true;
       if (!Array.isArray(pathBag)) {
         const num = floorAt[index] != null ? floorAt[index] : index;
         if (name === "出来事:ジョブ") return true;
@@ -10381,15 +10440,20 @@
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
         const visited = state !== "ahead";
-        const known = !!node && (visited || roadFixed(node, i) || roadPlacedAhead(i));
-        const face = known ? roadFace(node) : { label: "" };
+        const slotFixed = roadFixed(node, i);
+        const known = node
+          ? (visited || slotFixed || roadPlacedAhead(i))
+          : slotFixed;
+        const face = known
+          ? (node ? roadFace(node) : { src: "path-fight.jpg?v=5", label: "戦闘" })
+          : { label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i aria-hidden="true"></i>`;
         const capFloor = `<span class="road-floor">${floor}</span>`;
-        const fixed = !!node && roadFixed(node, i);
+        const fixed = slotFixed;
         const tone = known ? (fixed ? "fight" : roadTone(node)) : "";
         const name = known && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
         const lock = fixed
@@ -10959,11 +11023,9 @@
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const slotIco = boon
-        ? ""
-        : `<div class="gear-effect-slotico" title="${esc(gearSlotLabel(slotKey))}" aria-label="${esc(gearSlotLabel(slotKey))}">${gearSlotIcon(slotKey)}</div>`;
+      const kindChip = boon ? "" : `<span class="kind">${esc(gearSlotLabel(slotKey))}</span>`;
       const stats = o.item ? gearStatChips(o.item) : "";
-      const chipRow = boon ? stats : `<div class="gear-effect-chiprow">${slotIco}${stats}</div>`;
+      const chipRow = (kindChip || stats) ? `<div class="gear-effect-chiprow">${kindChip}${stats}</div>` : "";
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
