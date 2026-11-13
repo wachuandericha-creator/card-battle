@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>わちゅえりカードゲーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@900&display=swap" />
   <style>
     :root {
       --hand-scale: 0.64;
@@ -552,12 +554,75 @@
       padding: 2px 0 4px;
     }
     .use-board {
+      position: relative;
       pointer-events: auto;
       flex: 1 1 auto;
       min-height: 0;
       width: 100%;
       display: block;
       z-index: 6;
+    }
+    .vs-mark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 8;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      padding: 0 0.12em;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      font-family: Cinzel, "Times New Roman", "Yu Mincho", serif;
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(56px, 7.4cqw, 104px);
+      letter-spacing: 0.08em;
+      line-height: 0.8;
+      color: transparent;
+      background-image: linear-gradient(185deg, #fff8e4 0%, #f3d48a 38%, #c4842a 72%, #7a4a16 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 4px 0 #2a1608) drop-shadow(0 0 10px rgba(255, 214, 130, 0.45));
+    }
+    .vs-mark:disabled {
+      cursor: default;
+      opacity: 0.55;
+      filter: drop-shadow(0 3px 0 #1a1008);
+    }
+    .vs-mark:not(:disabled):hover {
+      filter: drop-shadow(0 4px 0 #2a1608) drop-shadow(0 0 16px rgba(255, 230, 160, 0.85));
+    }
+    .vs-mark.burn {
+      background-image: linear-gradient(185deg, #fffef6 0%, #ffe08a 22%, #ff7a22 58%, #ff2a00 100%);
+      animation: vs-burn 0.48s ease-in-out infinite alternate;
+    }
+    .vs-mark.burn::after {
+      content: "";
+      position: absolute;
+      left: -18%;
+      right: -18%;
+      top: 8%;
+      bottom: -30%;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 80%, rgba(255, 236, 180, 0.95), transparent 46%),
+        radial-gradient(ellipse at 28% 70%, rgba(255, 120, 20, 0.75), transparent 52%),
+        radial-gradient(ellipse at 74% 62%, rgba(255, 40, 0, 0.7), transparent 50%);
+      filter: blur(5px);
+      animation: vs-flame 0.36s ease-in-out infinite alternate;
+    }
+    @keyframes vs-burn {
+      from { filter: drop-shadow(0 0 8px #ff6a14) drop-shadow(0 0 18px rgba(255, 70, 0, 0.85)) drop-shadow(0 4px 0 #3a1208); }
+      to { filter: drop-shadow(0 0 14px #fff4d0) drop-shadow(0 0 28px #ff8a20) drop-shadow(0 0 42px #ff2400) drop-shadow(0 4px 0 #3a1208); }
+    }
+    @keyframes vs-flame {
+      from { transform: scale(0.92, 1); opacity: 0.72; }
+      to { transform: scale(1.08, 1.16); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vs-mark.burn, .vs-mark.burn::after { animation: none; }
     }
     .use-split {
       min-width: 0;
@@ -1474,6 +1539,8 @@
     .gear-offer-art { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #1a1410; }
     .gear-offer-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .gear-offer .gear-effect,
+    .reward-gear { display: flex; justify-content: center; margin: 0 0 14px; }
+    .reward-gear .gear-effect,
     .reward-pick .gear-effect {
       position: relative;
       left: auto;
@@ -9676,6 +9743,7 @@
     let runLevel = 0;
     let growthLine = "";
     let dropLine = "";
+    let victoryGear = null;
     let smithBase = -1;
     let smithName = "";
     let hurtRestUsed = false;
@@ -13212,6 +13280,7 @@
         runLevel,
         growthLine,
         dropLine,
+        victoryGear,
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
@@ -13414,6 +13483,7 @@
       runLevel = Math.max(0, Number(data.runLevel) || 0);
       growthLine = data.growthLine || "";
       dropLine = data.dropLine || "";
+      victoryGear = data.victoryGear && data.victoryGear.name ? data.victoryGear : null;
       hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
@@ -14326,6 +14396,7 @@
       trainPicks = [];
       growthLine = "";
       dropLine = "";
+      victoryGear = null;
       runBonus = emptyRunBonus();
       runEntrance = true;
       gear = starterGear();
@@ -14570,7 +14641,7 @@
         ]],
         ["手札", [
           ["deal", "ドロー"],
-          ["end-ready", "ターン終了"],
+          ["end-ready", "VS"],
         ]],
         ["終わり", [
           ["victory", "勝利"],
@@ -14673,13 +14744,17 @@
         const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
         handHtml = `<div class="hand fx-deal">${cards}</div>`;
       } else if (id === "end-ready") {
-        handHtml = `<div class="end ready fx-end">ターン終了</div>`;
+        handHtml = "";
       }
       if (id === "victory") {
         return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play">${fxVictory()}</div></div>`;
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
-      const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
+      const mid = id === "anger"
+        ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>`
+        : id === "end-ready"
+          ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"></div></div><button type="button" class="vs-mark burn" aria-label="ターン終了">VS</button></div>`
+          : "";
       const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
@@ -16690,6 +16765,7 @@
           <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
           <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div></div>
         </div>
+        ${vsMarkup()}
       </div>`;
     }
 
@@ -16707,8 +16783,10 @@
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
 
-    function endButtonMarkup() {
-      return `<button type="button" class="end${phase === "player" && !foeRageBusy && noPlayableHand() ? " ready" : ""}" data-end ${phase === "player" && !foeRageBusy ? "" : "disabled"}>ターン終了</button>`;
+    function vsMarkup() {
+      const live = phase === "player" && !foeRageBusy && !outcome;
+      const spent = live && (Number(player.energy) || 0) <= 0 && (Number(player.maxEnergy) || 0) > 0;
+      return `<button type="button" class="vs-mark${spent ? " burn" : ""}" data-end aria-label="ターン終了"${live ? "" : " disabled"}>VS</button>`;
     }
 
     let heroImage = null;
@@ -17323,6 +17401,7 @@
     }
 
     function rollVictoryExtra() {
+      victoryGear = null;
       const boss = typeof bossNow === "function" && bossNow();
       const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
       const kind = pickWeighted(Object.keys(table), (key) => table[key]);
@@ -17331,6 +17410,7 @@
         if (!item) return "";
         if (!gear) gear = emptyGear();
         giveGear(item);
+        victoryGear = item;
         return `${item.name}を手に入れた。`;
       }
       if (kind === "item") {
@@ -18011,6 +18091,11 @@
       return gift.item;
     }
 
+    function victoryGearHtml() {
+      if (!victoryGear) return "";
+      return `<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`;
+    }
+
     function victoryGrowthHtml() {
       return [growthLine, dropLine].filter(Boolean).map((line) => `<p class="victory-count">${esc(line)}</p>`).join("");
     }
@@ -18061,7 +18146,7 @@
           return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGearHtml()}${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "boss") {
         const live = takeRare("reward");
@@ -18080,7 +18165,7 @@
           return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}${victoryGearHtml()}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
@@ -18268,7 +18353,6 @@
           <div class="handbar">
               <div class="mana-dock">${pips()}</div>
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
-              ${pathPick ? "" : endButtonMarkup()}
             </div>
         </div>
         ${roadMapHtml()}
