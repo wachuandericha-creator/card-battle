@@ -4679,13 +4679,21 @@
       right: calc(12.5cqw + 18px);
       top: 84px;
       bottom: 14px;
-      background: rgba(6, 4, 3, 0.32);
+      background: transparent;
+      pointer-events: none;
     }
     .overlay.paths .panel,
     .overlay.paths .panel.wide {
-      background: transparent;
-      border: 0;
-      box-shadow: none;
+      pointer-events: auto;
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(255, 220, 140, 0.18), transparent 58%),
+        rgba(32, 22, 14, 0.94);
+      border: 3px solid #e4b15a;
+      border-radius: 22px;
+      box-shadow:
+        0 0 0 2px #5c3a12,
+        inset 0 1px 0 rgba(255, 241, 196, 0.28),
+        0 18px 36px rgba(0, 0, 0, 0.45);
     }
     .overlay.paths .path-list button {
       animation: path-pop 0.52s cubic-bezier(0.16, 0.84, 0.32, 1) both;
@@ -5030,9 +5038,10 @@
       min-height: 72px;
     }
     .overlay.paths .panel.wide {
-      width: min(1360px, calc(100cqw - 24px));
+      width: fit-content;
+      max-width: min(1360px, calc(100cqw - 24px));
       max-height: calc(100cqh - 16px);
-      padding: 22px 24px 20px;
+      padding: 22px 28px 24px;
     }
     .overlay.paths h2 {
       margin: 0 0 4px;
