@@ -9315,6 +9315,7 @@
     let beggarCut = false;
     let beggarPick = -1;
     let beggarBattle = false;
+    let eventBattleSeen = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
     let manaFireGen = 0;
@@ -9742,10 +9743,69 @@
       return parts.join("");
     }
 
-    function rollRank(tier) {
-      const names = (DUNGEON.pools[tier] || DUNGEON.pools[1] || []).filter((name) => name !== DUNGEON.boss);
+    function rollRank() {
+      const names = combatNames(dungeonName, eventBattleSeen);
       if (!names.length) return "スライム";
       return names[Math.floor(Math.random() * names.length)];
+    }
+
+    function enemyStar(foe) {
+      return Number(foe.tier) || starsForRank(foe.rank);
+    }
+
+    function dungeonStarCount(name) {
+      const item = DUNGEON_LIST.find((dungeon) => dungeon.name === (name || dungeonName));
+      return String((item && item.rank) || "★").split("★").length - 1;
+    }
+
+    function combatNames(name, withBeggar) {
+      const star = dungeonStarCount(name);
+      return ENEMIES.filter((foe) => {
+        if (enemyStar(foe) !== star) return false;
+        if (foe.name === "ハデス") return false;
+        if (foe.name === "物乞い" && !withBeggar) return false;
+        return true;
+      }).map((foe) => foe.name);
+    }
+
+    function pickWeighted(list, weightOf) {
+      if (!list.length) return null;
+      let total = 0;
+      const weights = list.map((item) => {
+        const weight = Math.max(0, Number(weightOf(item)) || 0);
+        total += weight;
+        return weight;
+      });
+      if (total <= 0) return list[Math.floor(Math.random() * list.length)];
+      let roll = Math.random() * total;
+      for (let i = 0; i < list.length; i += 1) {
+        roll -= weights[i];
+        if (roll < 0) return list[i];
+      }
+      return list[list.length - 1];
+    }
+
+    function rarityWeight(stars) {
+      const n = Math.max(1, Number(stars) || 1);
+      if (n <= 1) return 4;
+      if (n === 2) return 2;
+      return 1;
+    }
+
+    function enchantWeight(id) {
+      return id === "light" ? 2 : 3;
+    }
+
+    function takeWeighted(list, count, weightOf) {
+      const left = list.slice();
+      const out = [];
+      while (out.length < count && left.length) {
+        const pick = pickWeighted(left, weightOf);
+        const at = left.indexOf(pick);
+        if (at < 0) break;
+        out.push(left.splice(at, 1)[0]);
+      }
+      return out;
     }
 
     function freshRoute() {
@@ -9781,8 +9841,8 @@
 
     const PATH_FILL = ["search", "beggar", "shop", "camp", "train", "lost", "unknown", "smith"];
     const VICTORY_EXTRA = {
-      road: { none: 0.5, gear: 0.25, item: 0.15 },
-      boss: { none: 0.3, gear: 0.4, item: 0.2 },
+      road: { none: 0.7, gear: 0.1, item: 0.1, enchant: 0.1 },
+      boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
     const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card", "enchant"];
@@ -12864,6 +12924,7 @@
         removed,
         beggarGift,
         beggarBattle,
+        eventBattleSeen,
         battleTotal,
         route,
         dungeonFloors,
@@ -13025,6 +13086,7 @@
       removed = Array.isArray(data.removed) ? data.removed.filter((card) => card && card.name) : [];
       beggarGift = Array.isArray(data.beggarGift) ? data.beggarGift.filter((card) => card && card.name) : [];
       beggarBattle = !!data.beggarBattle;
+      eventBattleSeen = !!data.eventBattleSeen;
       if (Array.isArray(data.route) && data.route.length) {
         route = data.route.map((name) => {
           if (!name) return null;
@@ -13204,7 +13266,7 @@
       const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }))
         .concat(classCards())
         .filter((card) => (Number(card.stars) || 1) >= 2);
-      const pick = offers[Math.floor(Math.random() * offers.length)] || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
+      const pick = pickWeighted(offers, (card) => rarityWeight(card.stars)) || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
       return keepCard(pick);
     }
     function itemSlotWith(flag) {
@@ -13328,6 +13390,7 @@
       if (id === "parry") return "パリィ";
       if (id === "poison") return "毒";
       if (id === "burn") return "炎上";
+      if (id === "crit") return "クリティカル50%";
       return "クイック";
     }
 
@@ -13340,6 +13403,7 @@
       if (!card.parry) list.push("parry");
       if (!card.poison) list.push("poison");
       if (!card.burn) list.push("burn");
+      if (!card.critChance) list.push("crit");
       return list;
     }
 
@@ -13358,6 +13422,9 @@
       } else if (id === "burn") {
         if (!card.burn) card.burn = 1;
         if (!String(card.text || "").includes("炎上")) card.text = `${card.text || ""}\n炎上+1`.trim();
+      } else if (id === "crit") {
+        if (!card.critChance) card.critChance = 50;
+        if (!/クリティカル\d+%/u.test(String(card.text || ""))) card.text = `${card.text || ""}\nクリティカル50%`.trim();
       }
     }
 
@@ -13377,11 +13444,10 @@
       return word;
     }
 
-    function enchantTargets(allowBasic) {
+    function enchantTargets() {
       const names = [];
       for (const card of runDeck()) {
         if (!card || !card.name || names.indexOf(card.name) >= 0) continue;
-        if (!allowBasic && (card.name === "アタック" || card.name === "ブロック")) continue;
         if (runEnchants[card.name]) continue;
         names.push(card.name);
       }
@@ -13398,7 +13464,7 @@
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
         else if (kind === "enchant" && enchantTargets(true).length) {
-          const elem = shuffle(ENCHANT_ELEMS)[0];
+          const elem = pickWeighted(ENCHANT_ELEMS, enchantWeight);
           picks.push({ kind, elem, label: enchantFace(elem).name });
         }
       }
@@ -13460,7 +13526,7 @@
       const pick = blessPicks[blessEnchantAt];
       const name = blessCardName;
       if (!pick || pick.kind !== "enchant" || !name) return;
-      if (runEnchants[name] || enchantTargets(true).indexOf(name) < 0) return;
+      if (runEnchants[name] || enchantTargets().indexOf(name) < 0) return;
       const word = grantEnchant(name, pick.elem);
       if (pick.elem === "dark" && !word) return;
       const face = enchantFace(pick.elem);
@@ -13484,7 +13550,6 @@
         }).join("");
         return `<div class="overlay deck-view enchant-pick"><div class="panel"><h2>${esc(smithName)}</h2><p class="deck-lead">どれを付けますか。</p><div class="enchant-actions">${wired}</div>${menuButton("もどる", "enchant-back")}</div></div>`;
       }
-      const allowBasic = enchantPop === "bless";
       const pick = enchantPop === "bless" ? blessPicks[blessEnchantAt] : null;
       const face = pick && pick.kind === "enchant" ? enchantFace(pick.elem) : null;
       const pickedName = enchantPop === "bless" ? blessCardName : smithName;
@@ -13492,7 +13557,7 @@
       const cards = [];
       for (const card of runDeck()) {
         if (!card || !card.name || seen[card.name]) continue;
-        if (enchantTargets(allowBasic).indexOf(card.name) < 0) continue;
+        if (enchantTargets().indexOf(card.name) < 0) continue;
         seen[card.name] = true;
         cards.push(card);
       }
@@ -13502,7 +13567,7 @@
         return `<button type="button" class="enchant-card${picked}" data-action="${action}" data-name="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
       }).join("");
       const title = enchantPop === "bless" ? "どれにしますか" : "エンチャント";
-      const lead = face ? `${face.name}　${face.sub}` : "アタックとブロックには付けられない。";
+      const lead = face ? `${face.name}　${face.sub}` : "カードを一つ選ぶ。";
       const ok = enchantPop === "bless" ? "bless-enchant-ok" : "smith-enchant-ok";
       return `<div class="overlay deck-view enchant-pick"><div class="panel"><h2>${esc(title)}</h2><p class="deck-lead">${esc(lead)}</p><div class="deck-scroll"><div class="deck-cards">${rows || `<p class="deck-empty">付けられるカードは無い。</p>`}</div></div><div class="enchant-actions">${menuButton("決定", ok, true, !pickedName)}${menuButton("もどる", "enchant-back")}</div></div></div>`;
     }
@@ -13535,7 +13600,7 @@
       const build = playerBuild();
       const names = Object.keys(CARD_BUILD).filter((name) => CARD_BUILD[name] === build && WARRIOR[name]);
       const pool = names.length ? names : Object.keys(WARRIOR);
-      const name = shuffle(pool)[0];
+      const name = pickWeighted(pool, (cardName) => rarityWeight((WARRIOR[cardName] && WARRIOR[cardName].stars) || 1));
       const def = WARRIOR[name];
       if (!def) return "";
       return takeGift({ kind: "card", card: keepCard({ name, ...def, stars: def.stars || 1 }) });
@@ -13752,7 +13817,6 @@
     function enchantSmith(kind) {
       if (enchantPop !== "smith-elem") return;
       if ((Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
-      if (smithName === "アタック" || smithName === "ブロック") return;
       const word = grantEnchant(smithName, kind);
       if (!word && kind === "dark") return;
       if (!runEnchants[smithName]) return;
@@ -13824,6 +13888,7 @@
 
     function beginBeggarFight() {
       beggarBattle = true;
+      eventBattleSeen = true;
       startBattle(floorHp);
     }
 
@@ -13911,6 +13976,7 @@
       cleared = false;
       runLevel = 0;
       runEnchants = {};
+      eventBattleSeen = false;
       runEnchantWords = {};
       cardAlters = [];
       cardMastery = [];
@@ -14394,6 +14460,34 @@
       return `<div class="odds-names">${names.map((name) => `<span>${esc(name)}</span>`).join("")}</div>`;
     }
 
+    function rarityRows(cards) {
+      const groups = new Map();
+      for (const card of cards) {
+        const stars = Math.max(1, Number(card.stars) || 1);
+        const row = groups.get(stars) || { stars, names: [] };
+        row.names.push(card.name);
+        groups.set(stars, row);
+      }
+      const list = [...groups.values()];
+      const total = list.reduce((sum, row) => sum + rarityWeight(row.stars) * row.names.length, 0) || 1;
+      return list.sort((a, b) => a.stars - b.stars).map((row) => [
+        "★".repeat(row.stars),
+        String(rarityWeight(row.stars)),
+        pct((rarityWeight(row.stars) * row.names.length) / total),
+        row.names.join("、"),
+      ]);
+    }
+
+    function rarityShareRows(cards) {
+      const total = cards.reduce((sum, card) => sum + rarityWeight(card.stars), 0) || 1;
+      return cards.map((card) => [
+        card.name,
+        "★".repeat(Math.max(1, Number(card.stars) || 1)),
+        String(rarityWeight(card.stars)),
+        pct(rarityWeight(card.stars) / total),
+      ]);
+    }
+
     function renderOdds() {
       const spanRows = [];
       for (const dungeon of DUNGEON_LIST) {
@@ -14414,8 +14508,8 @@
       const otherShare = pct(1 / PATH_FILL.length);
       const extraRows = ["なし", "装備", "アイテム", "エンチャント"].map((name) => {
         const key = name === "なし" ? "none" : name === "装備" ? "gear" : name === "アイテム" ? "item" : "enchant";
-        const road = key === "enchant" ? 1 - VICTORY_EXTRA.road.none - VICTORY_EXTRA.road.gear - VICTORY_EXTRA.road.item : VICTORY_EXTRA.road[key];
-        const boss = key === "enchant" ? 1 - VICTORY_EXTRA.boss.none - VICTORY_EXTRA.boss.gear - VICTORY_EXTRA.boss.item : VICTORY_EXTRA.boss[key];
+        const road = VICTORY_EXTRA.road[key];
+        const boss = VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
       const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード", enchant: "エンチャント" };
@@ -14427,8 +14521,24 @@
           const def = COMMON[name] || WARRIOR[name] || {};
           return (Number(def.stars) || 1) >= 2;
         });
-      const pools = [1, 2].map((tier) => [tier === 1 ? "前半" : "後半", (DUNGEON.pools[tier] || []).join("、") || "なし"]);
-      const halfCave = 14;
+      const rewardCards = Object.keys(COMMON)
+        .concat(Object.keys(WARRIOR).filter((name) => !starterNames.has(name)))
+        .map((name) => {
+          const def = COMMON[name] || WARRIOR[name] || {};
+          return { name, stars: Number(def.stars) || 1 };
+        });
+      const foeRows = DUNGEON_LIST.map((dungeon) => [
+        dungeon.name,
+        dungeon.rank,
+        combatNames(dungeon.name, false).join("、") || "なし",
+        combatNames(dungeon.name, true).join("、") || "なし",
+      ]);
+      const itemCards = EXTRA_ITEM_NAMES.filter((name) => cardDef(name)).map((name) => ({
+        name,
+        stars: Number((cardDef(name) || {}).stars) || 1,
+      }));
+      const enchantTotal = ENCHANT_ELEMS.reduce((sum, id) => sum + enchantWeight(id), 0) || 1;
+      const enchantRows = ENCHANT_ELEMS.map((id) => [enchantFace(id).name, String(enchantWeight(id)), pct(enchantWeight(id) / enchantTotal)]);
       root.innerHTML = `
         <div class="menu odds-screen">
           <h1>確率</h1>
@@ -14449,25 +14559,34 @@
           <section class="odds-block">
             <h2>戦闘の相手</h2>
             <ul>
-              <li>1階は必ずスライムです。</li>
-              <li>洞窟は2〜${halfCave}階が前半、${halfCave + 1}階から後半です。</li>
-              <li>古城と深淵は、最大階の半分まで前半、そのあと後半です。</li>
-              <li>前半・後半の中では、どれも同じ確率です。ボスは出ません。</li>
+              <li>道中は、そのダンジョンの★と同じ敵が同じ確率で出ます。階では分けません。</li>
+              <li>物乞いだけは、そのランでイベント戦闘をしたあとの道中に入ります。</li>
+              <li>ボス戦の相手は固定です。ハデスは出しません。</li>
             </ul>
-            ${oddsTable(["時期", "出る敵"], pools)}
+            ${oddsTable(["ダンジョン", "★", "イベント戦闘の前", "イベント戦闘のあと"], foeRows)}
           </section>
           <section class="odds-block">
             <h2>勝利</h2>
             <ul>
               <li>★と、カード3枚をもらいます。</li>
               <li>カードは共通・戦士・その敵から1枚ずつです。足りない分は全体から補います。</li>
+              <li>同じ枠の中は、レアリティの重みで出ます。★の重み4、★★は2、★★★以上は1です。</li>
               <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
             </ul>
             ${oddsTable(["追加", "道中", "ボス"], extraRows)}
+            <h3>報酬カードのレアリティ</h3>
+            ${oddsTable(["★", "重み", "この表での割合", "カード"], rarityRows(rewardCards))}
             <ul>
+              <li>敵のカードも同じ重みです。出る名前は、その戦闘の敵によります。</li>
               <li>装備は、装備一覧から同じ確率です。</li>
-              <li>アイテムは、${EXTRA_ITEM_NAMES.join("、")}から同じ確率です。</li>
-              <li>エンチャントは、火・水・光・闇が同じ確率です。アタックとブロック以外で、まだ付いていないカード名から選びます。闇は、そのカードにまだ無いキーワードを一つ足します。</li>
+            </ul>
+            <h3>アイテム（レアリティの重み）</h3>
+            ${oddsTable(["カード", "★", "重み", "割合"], rarityShareRows(itemCards))}
+            <h3>エンチャントの属性</h3>
+            ${oddsTable(["属性", "重み", "割合"], enchantRows)}
+            <ul>
+              <li>付けるカード名は、まだ付いていないものから同じ確率です。どのカード名にも付きます。</li>
+              <li>闇は、そのカードにまだ無いキーワードを一つ足します。クリティカルは50%です。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -14478,23 +14597,26 @@
             </ul>
             ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
             <ul>
-              <li>エンチャントは、火・水・光・闇から同じ確率で一つ出ます。</li>
-              <li>選ぶと、デッキ確認と同じポップが出ます。アタックとブロックにも付けられます。一つ決めて決定します。</li>
-              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上のうち、そのカードにまだ無いものを一つ足します。毒は+1、炎上は+1です。</li>
+              <li>エンチャントは、上の属性の重みで一つ出ます。光が少し出にくいです。</li>
+              <li>選ぶと、デッキ確認と同じポップが出ます。どのカードにも付けられます。一つ決めて決定します。</li>
+              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+1、炎上は+1、クリティカルは50%です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
             <h3>装備（★2以上）</h3>
             ${oddsChips(blessGear)}
-            <h3>カード（★2以上）</h3>
-            ${oddsChips(blessCards)}
+            <h3>カード（★2以上・レアリティの重み）</h3>
+            ${oddsTable(["★", "重み", "この表での割合", "カード"], rarityRows(blessCards.map((name) => {
+              const def = COMMON[name] || WARRIOR[name] || {};
+              return { name, stars: Number(def.stars) || 1 };
+            })))}
           </section>
           <section class="odds-block">
             <h2>そのほか</h2>
             ${oddsTable(["出来事", "出るもの"], [
               ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
               ["探索", "装備を1つ。装備一覧から同じ確率"],
-              ["修行", "いちばん多いビルドのカードを1枚。同じ確率。無ければ戦士のカード全部"],
-              ["お店", "カード2枚と装備2つ。カードは戦士の報酬、装備は装備一覧。どれも同じ確率"],
+              ["修行", "いちばん多いビルドのカードを1枚。レアリティの重み。無ければ戦士のカード全部"],
+              ["お店", "カード2枚と装備2つ。カードはレアリティの重み。装備は装備一覧から同じ確率"],
             ])}
           </section>
           ${menuButton("タイトルへ", "title")}
@@ -16549,16 +16671,19 @@
     // ふだんの3枚は、共通・クラス専用・敵のカードの3プールから1枚ずつ。足りないプールは全体から補う。
     function rewardTrio() {
       const all = rewardPool();
-      const pools = ["共通", "戦士", "敵"].map((source) => shuffle(all.filter((card) => card.source === source)));
       const picks = [];
       const seen = new Set();
-      for (const pool of pools) {
-        const card = pool.find((item) => !seen.has(item.name));
+      for (const source of ["共通", "戦士", "敵"]) {
+        const pool = all.filter((card) => card.source === source && !seen.has(card.name));
+        const card = pickWeighted(pool, (item) => rarityWeight(item.stars));
         if (card) { picks.push(card); seen.add(card.name); }
       }
-      for (const card of shuffle(all)) {
-        if (picks.length >= 3) break;
-        if (!seen.has(card.name)) { picks.push(card); seen.add(card.name); }
+      while (picks.length < 3) {
+        const pool = all.filter((card) => !seen.has(card.name));
+        const card = pickWeighted(pool, (item) => rarityWeight(item.stars));
+        if (!card) break;
+        picks.push(card);
+        seen.add(card.name);
       }
       return shuffle(picks);
     }
@@ -16675,7 +16800,7 @@
     }
 
     function rollShopStock() {
-      const cards = shuffle(classCards()).slice(0, 2).map((card) => ({ kind: "card", card }));
+      const cards = takeWeighted(classCards(), 2, (card) => rarityWeight(card.stars)).map((card) => ({ kind: "card", card }));
       const items = shuffle(GEAR_ITEMS).slice(0, 2).map((item) => ({ kind: "gear", gear: item }));
       return cards.concat(items).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
     }
@@ -16708,33 +16833,30 @@
     function rollVictoryExtra() {
       const boss = typeof bossNow === "function" && bossNow();
       const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
-      const roll = Math.random();
-      const none = table.none;
-      const gearP = table.gear;
-      const itemP = table.item;
-      if (roll < none) return "";
-      if (roll < none + gearP) {
+      const kind = pickWeighted(Object.keys(table), (key) => table[key]);
+      if (kind === "gear") {
         const item = shuffle(GEAR_ITEMS)[0];
         if (!item) return "";
         if (!gear) gear = emptyGear();
         giveGear(item);
         return `${item.name}を手に入れた。`;
       }
-      if (roll < none + gearP + itemP) {
+      if (kind === "item") {
         const names = EXTRA_ITEM_NAMES.filter((name) => cardDef(name));
-        const name = shuffle(names)[0];
+        const name = pickWeighted(names, (itemName) => rarityWeight((cardDef(itemName) || {}).stars));
         if (!name) return "";
         const def = cardDef(name);
         stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
         return `${name}を手に入れた。`;
       }
-      const names = enchantTargets(false);
+      if (kind !== "enchant") return "";
+      const names = enchantTargets();
       if (!names.length) return "";
       const name = shuffle(names)[0];
-      const kind = shuffle(ENCHANT_ELEMS)[0];
-      const word = grantEnchant(name, kind);
+      const elem = pickWeighted(ENCHANT_ELEMS, enchantWeight);
+      const word = grantEnchant(name, elem);
       if (!runEnchants[name]) return "";
-      const face = enchantFace(kind);
+      const face = enchantFace(elem);
       const added = word ? `　${word}` : "";
       return `${name}に、${face.name}のエンチャント。${face.sub}${added}。`;
     }
@@ -17082,10 +17204,7 @@
     }
 
     function dungeonEnemy() {
-      const n = nextFloorNumber();
-      if (n <= 1) return "スライム";
-      if (dungeonName === "洞窟") return rollRank(n <= 14 ? 1 : 2);
-      return rollRank(n <= Math.ceil(dungeonFloors / 2) ? 1 : 2);
+      return rollRank();
     }
 
     function placeNext(node) {
