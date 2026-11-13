@@ -1270,6 +1270,8 @@
     .status-chip.burn b { color: #e8c8a0; }
     .status-chip.parry { border-color: rgba(212, 168, 74, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
     .status-chip.parry b { color: #f0e0b8; }
+    .status-chip.thorns { border-color: rgba(110, 150, 70, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
+    .status-chip.thorns b { color: #d5e8c4; }
     .status-chip.focus { border-color: rgba(212, 168, 74, 0.65); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
     .status-chip.focus b { color: #f0e0b8; }
     .status-chip.anger { border-color: rgba(220, 70, 40, 0.75); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55); }
@@ -4937,6 +4939,7 @@
     .card .text .hint[data-word="炎上"] { color: #c0392b; }
     .card .text .hint[data-word="クリティカル"] { color: #d35400; }
     .card .text .hint[data-word="パリィ"] { color: #2f6fbe; }
+    .card .text .hint[data-word="トゲ"] { color: #4f7a3a; }
     .card .text .hint[data-word="クイック"],
     .card .text .hint[data-word="キープ"],
     .card .text .hint[data-word="フラッシュ"],
@@ -9867,6 +9870,7 @@
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。";
+    const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
@@ -10332,6 +10336,9 @@
       if (kind === "parry") {
         return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4l13 13M20 4L7 17" stroke="#dff0ff" stroke-width="3" stroke-linecap="round"/><path d="M4 4l13 13M20 4L7 17" stroke="#6fb0ff" stroke-width="1.2" stroke-linecap="round"/><path d="M15 18.6l2.4-2.4 2.6 2.6-2.4 2.4zM9 18.6l-2.4-2.4L4 18.8l2.4 2.4z" fill="#c9a24a"/></svg>`;
       }
+      if (kind === "thorns") {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l1.8 6.2H18l-1.2 3.4 2.4 6.4h-3.2L12 14.2 7.9 18.2H4.8l2.4-6.4L6 8.4h4.2z" fill="#d7ecc0"/><path d="M12 4.2l1.1 3.8h2.6l-.8 2.2 1.5 4.2h-2L12 12.2 9.6 14.4H7.7l1.5-4.2-.8-2.2H11z" fill="#4f7a3a"/></svg>`;
+      }
       if (kind === "focus") {
         return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#ffd67a" stroke-width="2"/><circle cx="12" cy="12" r="1.6" fill="#fff3c4"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke="#ffd67a" stroke-width="2" stroke-linecap="round"/></svg>`;
       }
@@ -10353,6 +10360,8 @@
       if (burn) parts.push(statusChip("burn", "炎上", burn, BURN_NOTE));
       const parry = parryCount(target);
       if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
+      const thorns = Math.max(0, Number(target.thorns) || 0);
+      if (thorns) parts.push(statusChip("thorns", "トゲ", thorns > 1 ? thorns : 0, THORN_NOTE));
       if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
       return parts.join("");
     }
@@ -11573,7 +11582,8 @@
       return enemyLoop[Math.min(intentIndex, enemyLoop.length - 1)];
     }
 
-    function applyDamage(target, amount) {
+    function applyDamage(target, amount, fromThorns) {
+      const hadHp = target.hp > 0;
       const before = Math.max(0, Number(target.block) || 0);
       const blocked = Math.min(before, amount);
       target.block -= blocked;
@@ -11584,7 +11594,30 @@
         if (target === player) fxBreakPlayer = true;
         else fxBreakEnemy = true;
       }
+      if (!fromThorns && hadHp && amount > 0) retaliateThorns(target);
       return { blocked, hpLoss };
+    }
+
+    function gainThorns(who, add) {
+      if (!who) return 0;
+      const n = Math.max(1, Math.floor(Number(add) || 1));
+      who.thorns = Math.max(0, Number(who.thorns) || 0) + n;
+      return who.thorns;
+    }
+
+    function retaliateThorns(target) {
+      const stacks = Math.max(0, Number(target && target.thorns) || 0);
+      if (!stacks) return;
+      const other = target === player ? enemy : target === enemy ? player : null;
+      if (!other || other.hp <= 0) return;
+      const hit = applyDamage(other, stacks, true);
+      if (hit.hpLoss || hit.blocked) {
+        if (other === enemy) slashFoe();
+        noteHit(other === player ? "player" : "enemy", hit.hpLoss, stacks);
+      }
+      const who = target === player ? heroName() : (enemy && enemy.name) || "相手";
+      const foeName = other === player ? heroName() : (enemy && enemy.name) || "相手";
+      log(`${who}のトゲ。${foeName}に${stacks}ダメージ。`);
     }
 
     function shownEnemy() {
@@ -12147,6 +12180,10 @@
 
     function resolveCard(card) {
       syncGearStats();
+      if (card.thorns) {
+        const now = gainThorns(player, card.thorns);
+        log(`${heroName()}は${card.name}。トゲ${now}。`, card);
+      }
       if (card.power && card.coward) {
         player.guardThrough = true;
         log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。`, card);
@@ -12923,6 +12960,10 @@
         log(`${enemy.name}は${card.name}。体力が半分より上なので、使えない。`, card, true);
         return;
       }
+      if (card.thorns) {
+        const now = gainThorns(enemy, card.thorns);
+        log(`${enemy.name}は${card.name}。トゲ${now}。`, card, true);
+      }
       if (card.press) {
         const amount = enemy.block || 0;
         if (amount > 0) takeEnemyHit(amount, card);
@@ -13675,6 +13716,7 @@
         player.burn = burnStacks(player);
         player.focus = 0;
         player.parry = player.parry === true ? 1 : Math.max(0, Number(player.parry) || 0);
+        player.thorns = Math.max(0, Number(player.thorns) || 0);
         player.atkMod = Number(player.atkMod) || 0;
         player.defMod = Number(player.defMod) || 0;
         player.expose = Number(player.expose) || 0;
@@ -13697,6 +13739,7 @@
         enemy.hit = false;
         enemy.poison = poisonStacks(enemy);
         enemy.burn = burnStacks(enemy);
+        enemy.thorns = Math.max(0, Number(enemy.thorns) || 0);
         enemy.rallied = !!enemy.rallied;
         enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
         enemy.name = enemyKey(enemy.name);
@@ -13807,12 +13850,12 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
       const foeHp = foeBattleHp(foe);
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, thorns: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -13940,6 +13983,7 @@
       if (id === "poison") return "毒+3";
       if (id === "burn") return "炎上+3";
       if (id === "crit") return "クリティカル50%";
+      if (id === "thorns") return "トゲ+1";
       return "クイック";
     }
 
@@ -13953,6 +13997,7 @@
       if (!card.poison) list.push("poison");
       if (!card.burn) list.push("burn");
       if (!card.critChance) list.push("crit");
+      if (!card.thorns) list.push("thorns");
       return list;
     }
 
@@ -13974,6 +14019,9 @@
       } else if (id === "crit") {
         if (!card.critChance) card.critChance = 50;
         if (!/クリティカル\d+%/u.test(String(card.text || ""))) card.text = `${card.text || ""}\nクリティカル50%`.trim();
+      } else if (id === "thorns") {
+        if (!card.thorns) card.thorns = 1;
+        if (!String(card.text || "").includes("トゲ")) card.text = `${card.text || ""}\nトゲ+1を得る`.trim();
       }
     }
 
@@ -14459,7 +14507,7 @@
         cardMastery = Array.isArray(cardMastery) ? cardMastery : [];
       }
       const maxHp = runMaxHp();
-      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       syncGearStats();
       floorHp = maxHp;
     }
@@ -15251,7 +15299,7 @@
             ${oddsTable(["属性", "重み", "割合"], enchantRows)}
             <ul>
               <li>付けるカード名は、まだ付いていないものから同じ確率です。どのカード名にも付きます。</li>
-              <li>闇は、そのカードにまだ無いキーワードを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
+              <li>闇は、そのカードにまだ無いキーワードを一つ足します。毒は+3、炎上は+3、クリティカルは50%、トゲは+1です。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -16566,7 +16614,7 @@
       if ("、。！？…・）】」』ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮー％%".includes(next)) return false;
       if ("（「『【〈《".includes(prev)) return false;
       if (next === "×" || prev === "×") return false;
-      if ((next === "+" || next === "＋") && text.slice(Math.max(0, i - 3), i) === "パリィ") return false;
+      if ((next === "+" || next === "＋") && (text.slice(Math.max(0, i - 3), i) === "パリィ" || text.slice(Math.max(0, i - 2), i) === "トゲ")) return false;
       if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
       if (/[0-9０-９%％]/.test(next) && i >= 6 && text.slice(i - 6, i) === "クリティカル") return false;
       if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
@@ -16681,42 +16729,22 @@
       const kwLine = (word, note, key) => `<span class="kw-line hint" data-word="${esc(key || word)}">${word}<i>${esc(note)}</i></span>`;
       const keywords = [];
       const item = isItemCard(card);
-      const kept = [];
-      let critPct = card.critChance ? String(card.critChance) : "";
-      String(rawNote || "").split("\n").forEach((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-        const critHit = trimmed.match(/クリティカル(\d+)%/u);
-        if (critHit) {
-          critPct = critHit[1];
-          const rest = trimmed.replace(/クリティカル\d+%/u, "").trim();
-          if (rest) kept.push(rest);
-          return;
-        }
-        if (card.poison && /^相手に毒\+\d+を与える$/u.test(trimmed)) return;
-        if (card.burn && /炎上\+\d+/u.test(trimmed)) {
-          const rest = trimmed.replace(/炎上\+\d+/u, "").replace(/にを/gu, "に").trim();
-          if (rest === "先に相手に与える") kept.push(rest);
-          else if (rest && rest !== "相手に与える") kept.push(rest);
-          return;
-        }
-        kept.push(trimmed);
-      });
-      let noteText = cardNoteHtml(kept.join("\n"));
+      let noteText = cardNoteHtml(rawNote);
       const hintWord = (text, word, note) => {
         if (!word || !note || !text.includes(word)) return text;
         return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
       };
       noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
+      noteText = hintWord(noteText, "トゲ", THORN_NOTE);
+      noteText = hintWord(noteText, "毒", POISON_NOTE);
+      noteText = hintWord(noteText, "炎上", BURN_NOTE);
+      noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
-      if (card.poison) keywords.push(kwLine(`毒+${card.poison}`, POISON_NOTE, "毒"));
-      if (card.burn) keywords.push(kwLine(`炎上+${card.burn}`, BURN_NOTE, "炎上"));
-      if (critPct) keywords.push(kwLine(`クリティカル${critPct}%`, CRIT_NOTE, "クリティカル"));
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
@@ -16750,12 +16778,14 @@
       return `<div${attrs}><div class="card preview ${tone}" aria-label="${label}">${cardFace(card, live, foe)}</div></div>`;
     }
 
-    function scratchApply(target, amount) {
+    function scratchApply(target, amount, fromThorns) {
       const n = Math.max(0, Number(amount) || 0);
+      const hadHp = target.hp > 0;
       const blocked = Math.min(Math.max(0, target.block), n);
       target.block -= blocked;
       const hpLoss = n - blocked;
       target.hp = Math.max(0, target.hp - hpLoss);
+      if (!fromThorns && hadHp && n > 0 && target.thorns > 0 && target.opp) scratchApply(target.opp, target.thorns, true);
       return { raw: n, hpLoss };
     }
 
@@ -16800,12 +16830,16 @@
         guardThrough: !!player.guardThrough,
         parryHitsLast: Math.max(0, Number(player.parryHitsLast) || 0),
         masterOnce: !!player.masterOnce,
+        thorns: Math.max(0, Number(player.thorns) || 0),
       };
       const foe = {
         hp: enemy.hp,
         maxHp: enemy.maxHp,
         block: Math.max(0, Number(enemy.block) || 0),
+        thorns: Math.max(0, Number(enemy.thorns) || 0),
       };
+      mine.opp = foe;
+      foe.opp = mine;
       const foeHadBlock = foe.block > 0;
       const poison = Math.max(0, Number(player.poison) || 0);
       if (poison) {
@@ -16856,6 +16890,7 @@
 
     function scratchPlayerCard(card, mine, foe, queue, give) {
       if (!card) return;
+      if (card.thorns) mine.thorns += Number(card.thorns) || 1;
       if (card.power) {
         if (card.coward) mine.guardThrough = true;
         return;
@@ -16967,6 +17002,7 @@
     }
 
     function scratchEnemyBlow(card, mine, foe) {
+      if (card && card.thorns && !(card.halfOnly && !(foe.hp <= foe.maxHp / 2))) foe.thorns += Number(card.thorns) || 1;
       if (!card || card.halfOnly && !(foe.hp <= foe.maxHp / 2) || !card.damage) return null;
       let swing = Math.max(0, Number(card.damage) || 0);
       if (card.kick && mine.block > 0) swing += Number(card.kick) || 0;
@@ -17352,6 +17388,7 @@
       if (card.focus) next.focus = card.focus;
       if (card.parry) next.parry = true;
       if (card.poison) next.poison = Number(card.poison) || 1;
+      if (card.thorns) next.thorns = Number(card.thorns) || 1;
       if (card.press) next.press = true;
       if (card.power) next.power = true;
       if (card.rage) next.rage = true;
