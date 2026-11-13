@@ -4743,6 +4743,21 @@
       height: 100%;
       object-fit: cover;
     }
+    .path-enter {
+      position: absolute;
+      z-index: 90;
+      margin: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 0 0 4px #ffe7a0;
+      pointer-events: none;
+    }
+    .path-enter img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .road-node.path-inbound > img,
     .road-node.path-inbound > i { opacity: 0; }
     .road-node.path-land { animation: path-slot 0.42s ease-out; }
@@ -17615,10 +17630,48 @@
         if (ghost.parentNode) ghost.remove();
         dest.classList.remove("path-inbound");
         dest.classList.add("path-land");
-        setTimeout(finish, 1500);
+        const face = dest.querySelector("img, i") || dest;
+        enterFromPath(shot && shot.src, stageFrameOf(face), finish);
       };
       anim.onfinish = land;
       setTimeout(land, 1400);
+    }
+
+    function enterFromPath(src, frame, done) {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || !src || !frame || !frame.w || !frame.h || !("animate" in Element.prototype)) {
+        done();
+        return;
+      }
+      const box = stageBox();
+      const veil = document.createElement("div");
+      veil.className = "path-enter";
+      veil.setAttribute("aria-hidden", "true");
+      const pic = document.createElement("img");
+      pic.alt = "";
+      pic.src = src;
+      veil.appendChild(pic);
+      veil.style.left = `${frame.cx}px`;
+      veil.style.top = `${frame.cy}px`;
+      veil.style.width = `${frame.w}px`;
+      veil.style.height = `${frame.h}px`;
+      mountFloat(veil);
+      const dx = box.w / 2 - frame.cx;
+      const dy = box.h / 2 - frame.cy;
+      const scale = Math.max(box.w / frame.w, box.h / frame.h) * 1.12;
+      let opened = false;
+      const open = () => {
+        if (opened) return;
+        opened = true;
+        done();
+      };
+      const anim = veil.animate([
+        { transform: "translate(-50%, -50%) scale(1)", opacity: 1, offset: 0 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`, opacity: 1, offset: 0.68 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${scale})`, opacity: 0, offset: 1 },
+      ], { duration: 920, easing: "cubic-bezier(0.45, 0.05, 0.2, 1)", fill: "forwards" });
+      anim.onfinish = () => { if (veil.parentNode) veil.remove(); };
+      setTimeout(open, 640);
     }
 
     function beginPathFlight(id, place, step) {
