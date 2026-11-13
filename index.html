@@ -205,43 +205,6 @@
       color: #ffe7a4;
       text-shadow: 0 3px 0 #000;
     }
-    .road-node > i.road-unknown-mark {
-      grid-template-rows: auto 1fr;
-      align-content: center;
-      gap: 2px;
-      padding: 8px 4px 12px;
-    }
-    .road-ahead-floor {
-      font-size: 28px;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: 0.06em;
-      color: #ffe7a4;
-      text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.9);
-    }
-    .road-unknown-q {
-      font-size: 44px;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .road-inlay-floor {
-      position: absolute;
-      z-index: 2;
-      top: 10px;
-      left: 10px;
-      padding: 2px 8px 3px;
-      border-radius: 6px;
-      background: rgba(8, 6, 4, 0.72);
-      color: #ffe7a4;
-      font-size: 24px;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: 0.05em;
-      text-shadow: 0 2px 0 #000;
-      pointer-events: none;
-    }
-    .road-node.now .road-inlay-floor,
-    .road-node.done .road-inlay-floor { display: none; }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
     .road-node.tone-fight img,
@@ -9110,17 +9073,13 @@
         const face = known ? roadFace(node) : { mark: "？", label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
-        const unknownAhead = state === "ahead" && !known;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
-          : unknownAhead
-            ? `<i class="road-unknown-mark" aria-label="${esc(floor)} 未定"><span class="road-ahead-floor">${floor}</span><b class="road-unknown-q">？</b></i>`
-            : `<i>${esc(face.mark || "")}</i>`;
-        const inlayFloor = state === "ahead" && face.src ? `<span class="road-inlay-floor">${floor}</span>` : "";
-        const capFloor = unknownAhead ? "" : `<span class="road-floor">${floor}</span>`;
+          : `<i aria-label="${esc(floor)} 未定">${esc(face.mark || "？")}</i>`;
+        const capFloor = `<span class="road-floor">${floor}</span>`;
         const fixed = roadFixed(node, i);
         const tone = known ? roadTone(node) : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}${inlayFloor}<span class="road-cap">${capFloor}<span class="road-name">${esc(face.label || "")}</span></span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}<span class="road-name">${esc(face.label || "")}</span></span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
