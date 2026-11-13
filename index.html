@@ -9342,6 +9342,7 @@
     let saveNote = "";
     let returnScreen = "title";
     let fxLabId = "guard";
+    let fxLabFoeName = "スライム";
     let fxLabTick = 0;
     let askLeave = false;
     let showDeck = false;
@@ -10173,6 +10174,19 @@
       if (rank === "雑魚") return "small";
       if (rank === "強敵") return "large";
       return "medium";
+    }
+
+    function fxLabFoeSize(name) {
+      const foe = enemyByName(name || fxLabFoeName);
+      const rank = String(foe.rank || "普通");
+      if (rank === "★★★★" || foe.name === DUNGEON.boss) return "boss";
+      if (rank === "雑魚") return "small";
+      if (rank === "強敵") return "large";
+      return "medium";
+    }
+
+    function fxLabFoeImage(name) {
+      return (enemyByName(name || fxLabFoeName).image) || "enemy-slime.png?v=7";
     }
 
     function addDetourFight() {
@@ -13964,13 +13978,40 @@
     }
 
     function optionEventActive() {
-      if (!player || screen !== "settings") return false;
-      return returnScreen === "battle" || returnScreen === "floor";
+      return screen === "settings";
+    }
+
+    function ensureOptionRun() {
+      if (player) return;
+      if (!route.length) {
+        battleIndex = 0;
+        route = ["スライム"];
+        battleTotal = Math.max(battleTotal || 0, 1);
+        dungeonName = dungeonName || "洞窟";
+        runLevel = Number(runLevel) || 0;
+        runBonus = runBonus && typeof runBonus === "object" ? runBonus : emptyRunBonus();
+        gear = gear && gear.sword ? gear : starterGear();
+        heroCast = heroCast || castByName(castLock).name;
+        job = job || "戦士";
+        jobsHad = jobsHad && jobsHad.length ? jobsHad : ["戦士"];
+        stolen = Array.isArray(stolen) ? stolen : [];
+        removed = Array.isArray(removed) ? removed : [];
+        runEnchants = runEnchants || {};
+        runEnchantWords = runEnchantWords || {};
+        cardAlters = Array.isArray(cardAlters) ? cardAlters : [];
+        cardMastery = Array.isArray(cardMastery) ? cardMastery : [];
+      }
+      const maxHp = runMaxHp();
+      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      syncGearStats();
+      floorHp = maxHp;
     }
 
     function launchOptionEvent(kind) {
-      if (!kind || !player) return;
-      beginFloorEvent(kind, player.hp);
+      if (!kind) return;
+      ensureOptionRun();
+      const hp = player ? player.hp : runMaxHp();
+      beginFloorEvent(kind, hp);
       enterFloorScreen();
     }
 
@@ -14359,7 +14400,9 @@
       const anger = Boolean(opt.anger);
       const give = Boolean(opt.stamp);
       const broke = Boolean(opt.break);
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+      const size = fxLabFoeSize(fxLabFoeName);
+      const img = esc(fxLabFoeImage(fxLabFoeName));
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="${img}" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
     function fxPlate(id) {
@@ -14386,7 +14429,8 @@
       const pose = heroItem().victory;
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
       const stars = Array.from({ length: 3 }, (_, i) => `<span class="fly-star" style="--i:${i};--n:3">★</span>`).join("");
-      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt=""><img class="win-foe" src="enemy-slime.png?v=7" alt=""></div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
+      const winFoe = esc(fxLabFoeImage(fxLabFoeName));
+      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt=""><img class="win-foe" src="${winFoe}" alt=""></div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
     }
 
     function fxStage(id) {
@@ -14449,7 +14493,11 @@
         const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
         return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
-      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
+      const foePick = ENEMIES.map((row) => {
+        const on = row.name === fxLabFoeName ? " on" : "";
+        return `<button type="button" class="${on.trim()}" data-action="fx-foe" data-foe-name="${esc(row.name)}">${esc(row.name)}</button>`;
+      }).join("");
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><h2>敵（サイズ比較）</h2>${foePick}<button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
       placeFoePoisonWords();
     }
 
@@ -14532,8 +14580,8 @@
         ? menuButton("メダルを10個にする（見た目確認）", "medal-look", true)
         : `<button type="button" disabled>メダルを10個にする（見た目確認・戦闘中のみ）</button>`;
       const eventBlock = optionEventActive()
-        ? `<div class="settings-events"><h2>イベントを起こす</h2>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
-        : `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">攻略中に戦闘またはイベント画面からオプションを開いたとき使えます。</p></div>`;
+        ? `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">タイトルから開いたときは、試し用のランを足してからイベント画面へ進みます。</p>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
+        : "";
       root.innerHTML = `
         <div class="menu settings-screen">
           <h1>オプション</h1>
@@ -18271,6 +18319,13 @@
           render();
         }
         if (name === "fx-replay") {
+          fxLabTick += 1;
+          screen = "fx";
+          render();
+        }
+        if (name === "fx-foe") {
+          const pick = action.dataset.foeName || "スライム";
+          if (enemyByName(pick)) fxLabFoeName = enemyByName(pick).name;
           fxLabTick += 1;
           screen = "fx";
           render();
