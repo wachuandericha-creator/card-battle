@@ -9023,6 +9023,26 @@
     }
     function floorMax() { return dungeonFloors; }
     function floorLabel() { return `最大${floorMax()}Ｆ`; }
+
+    // イベント戦闘。階層は進まない。階のアニメも「2Ｆ」も出さない。
+    // 物乞いは、物乞いイベント（遭遇で物乞いになったときも含む）に付随する。
+    function eventBattleKind() {
+      if (beggarBattle) return "物乞い";
+      return "";
+    }
+
+    function isEventBattle() {
+      return !!eventBattleKind();
+    }
+
+    function openBattleIntro() {
+      const eventFight = isEventBattle();
+      floorCall = !eventFight;
+      encounter = eventFight;
+      intentShown = false;
+      render();
+      timer = setTimeout(eventFight ? beginEncounter : showEncounter, eventFight ? 1600 : 1400);
+    }
     function insertAhead(node) {
       const at = Math.min(Math.max(battleIndex + 1, 0), route.length);
       route.splice(at, 0, node);
@@ -12091,20 +12111,16 @@
       turn = 0;
       startEnemyLoop(true);
       phase = "intro";
-      floorCall = true;
-      encounter = false;
-      intentShown = false;
       intentArrive = false;
       note = "";
       banner = "";
       outcome = null;
       askLeave = false;
       logLines = [];
-      if (beggarBattle) log("物乞いが襲ってきた。");
+      if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
       saveNote = "";
       buildDeck();
-      render();
-      timer = setTimeout(showEncounter, 1400);
+      openBattleIntro();
     }
 
     function showEncounter() {
@@ -12683,11 +12699,7 @@
         render();
         timer = setTimeout(startPlayerTurn, 650);
       } else if (screen === "battle" && phase === "intro" && !outcome) {
-        floorCall = true;
-        encounter = false;
-        intentShown = false;
-        render();
-        timer = setTimeout(showEncounter, 1400);
+        openBattleIntro();
       } else {
         render();
       }
