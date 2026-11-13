@@ -2062,8 +2062,7 @@
       margin: 0 0 12px;
     }
     .album-top h3 { margin: 0 0 8px; text-align: center; font-size: 18px; letter-spacing: 0.12em; }
-    .album-top .album-backs { max-width: 420px; }
-    .album-top .album-backs .ref-grid { margin: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sheet-backs { max-width: 420px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .style-genres {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2080,6 +2079,10 @@
     .style-genres figure { margin: 0; max-width: none; }
     .style-genres figcaption { text-align: center; font-size: 12px; }
     .style-genres img.style-master { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: fill; display: block; }
+    .album-top { min-width: 0; }
+    .album-top .worn-head { margin: 14px 0 6px; text-align: center; font-size: 14px; letter-spacing: 0.08em; }
+    .style-genres.worn { width: 100%; max-width: 100%; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .style-genres.worn figure { min-width: 0; }
     .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
@@ -5537,6 +5540,94 @@
       justify-self: center;
       max-height: 46cqh;
       overflow: auto;
+    }
+    .ending {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(320px, 460px);
+      background: #100c0a;
+      color: #fff6e4;
+    }
+    .ending-art {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .ending-art .ending-pose {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+    .ending-banner {
+      position: absolute;
+      left: 50%;
+      top: 22px;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: clamp(42px, 6vw, 76px);
+      font-weight: 800;
+      letter-spacing: 0.34em;
+      color: #ffe7a8;
+      text-shadow: 0 3px 0 #4a3010, 0 0 18px rgba(0, 0, 0, 0.85);
+      pointer-events: none;
+    }
+    .ending-lose .ending-banner { color: #ffd2c4; text-shadow: 0 3px 0 #4a0c08, 0 0 18px rgba(0, 0, 0, 0.85); }
+    .ending-card {
+      min-height: 0;
+      overflow: auto;
+      padding: 22px 20px 28px;
+      background: linear-gradient(180deg, rgba(48, 32, 20, 0.97), rgba(16, 10, 8, 0.98));
+      border-left: 2px solid #e4b15a;
+      text-align: left;
+    }
+    .ending-lose .ending-card { border-left-color: #c45a48; }
+    .ending-lead { margin: 0 0 14px; font-size: 22px; font-weight: 800; color: #ffe7a8; line-height: 1.4; }
+    .ending-lose .ending-lead { color: #ffd2c4; }
+    .end-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 16px; }
+    .end-chip {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(228, 177, 90, 0.35);
+    }
+    .end-chip span { display: block; color: #e4b15a; font-size: 12px; letter-spacing: 0.08em; }
+    .end-chip b { display: block; margin-top: 2px; font-size: 20px; color: #fff6e4; }
+    .end-block { margin: 0 0 14px; }
+    .end-block h3 { margin: 0 0 6px; color: #e4b15a; font-size: 14px; letter-spacing: 0.12em; }
+    .end-block p { margin: 0; color: #fff6e4; font-size: 16px; line-height: 1.45; }
+    .end-gear { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .end-gear div { padding: 6px 8px; border-radius: 8px; background: rgba(0, 0, 0, 0.22); }
+    .end-gear span { display: block; color: #e4b15a; font-size: 12px; }
+    .end-gear b { font-size: 15px; font-weight: 800; color: #fff6e4; }
+    .end-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .end-pills span {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(228, 177, 90, 0.4);
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .end-floors { list-style: none; margin: 0; padding: 0; }
+    .end-floors li {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 8px;
+      margin: 0 0 6px;
+      font-size: 15px;
+      line-height: 1.35;
+    }
+    .end-floors b { color: #e4b15a; }
+    .ending-note { margin: 8px 0 14px; color: #d9c7a4; font-size: 14px; line-height: 1.45; }
+    @media (max-width: 800px) {
+      .ending { grid-template-columns: 1fr; grid-template-rows: 36vh minmax(0, 1fr); }
+      .ending-card { border-left: 0; border-top: 2px solid #e4b15a; }
+      .ending-lose .ending-card { border-top-color: #c45a48; }
     }
     .reward-top {
       display: flex;
@@ -9660,7 +9751,6 @@
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ライフフルネスアタック: "card-lifefull.jpg?v=2",
-      ジャストミート: "card-justmeat.jpg?v=1",
       余裕の構え: "card-poise.jpg?v=1",
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
@@ -9670,19 +9760,14 @@
       達人の間合い: "card-deep-focus.jpg?v=1",
       超集中: "card-ultra-focus-v6.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
-      集中: "card-focus.jpg?v=1",
-      頭突き: "card-headbutt.jpg?v=1",
       キック: "card-kick-leg.jpg?v=2",
       ビッグアタック: "card-big-attack-smash.jpg?v=1",
       クイックステップ: "card-quick-step.jpg?v=2",
       魔法のパリィ: "card-magic-parry.jpg?v=1",
       盾削ぎ: "card-shield-shave.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
-      瞑想: "card-meditate.jpg?v=1",
       ハードブロック: "card-hard-block-f.jpg?v=3",
       ビッグブロック: "card-big-block-f.jpg?v=3",
-      アタックアタック: "card-attack-attack.jpg?v=1",
-      反撃の一手: "card-counter.jpg?v=1",
       応急手当: "card-first-aid.jpg?v=1",
       ベッド: "card-bed.jpg?v=1",
       ホテル: "card-hotel.jpg?v=1",
@@ -9690,13 +9775,11 @@
       スライム粘液: "card-slime-goo.jpg?v=1",
       ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
-      ファイアーボール: "card-fireball.jpg?v=1",
-      ファイアソード: "card-firesword.jpg?v=1",
-      ファイアパラダイス: "card-fireparadise.jpg?v=1",
+      ファイアパラダイス: "card-fireparadise-v2.jpg?v=1",
       無心: "card-mushin.jpg?v=1",
       餌だ: "card-bait-v3.jpg?v=1",
       さぼる: "card-slack.jpg?v=1",
-      弱者の意地: "card-spite.jpg?v=1",
+      弱者の意地: "card-spite-v4.jpg?v=1",
       死者の軍団: "card-legion.jpg?v=1",
       "怒り（敵）": "card-anger-foe.jpg?v=3",
     };
@@ -9775,17 +9858,6 @@
       ホテル: { cost: 3, stars: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
     };
-    // ゲーム未実装。カードリスト・報酬・祝福・お店・敵の山札には出さない。データだけ残す。
-    const UNBUILT = {
-      アタックアタック: { cost: 0, text: "プレイエリアの赤いカードの数×4ダメージ", kind: "attack", redTimes: 4, stars: 1 },
-      ファイアーボール: { cost: 1, text: "3ダメージ\n相手に炎上+1を与える", damage: 3, burn: 1, kind: "attack", stars: 1 },
-      頭突き: { cost: 1, text: "3ダメージ\nプレイエリアの自分のカードを廃棄すると使える", damage: 3, kind: "attack", headbutt: true, stars: 1 },
-      反撃の一手: { cost: 1, text: "プレイエリアにアタックがないとき、9ダメージ", kind: "attack", counter: 9, stars: 1 },
-      ジャストミート: { cost: 2, text: "11ダメージ\n前のターンにダメージを受けていないなら+4", damage: 11, kind: "attack", safeBonus: 4, stars: 1 },
-      ファイアソード: { cost: 2, text: "先に相手に炎上+1を与える\n7ダメージ", damage: 7, burn: 1, burnFirst: true, kind: "attack", stars: 1 },
-      瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block", stars: 1 },
-    };
-    void UNBUILT;
     // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会1回につきATK+2・体力+2。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
@@ -9909,7 +9981,7 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "餌だ", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
+          { name: "餌だ!!", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
           { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
         ],
       },
@@ -10165,6 +10237,7 @@
     let job = "戦士";
     let castPicked = false;
     let castHover = "";
+    let castPose = false;
     let castLock = "戦士";
     let castLit = false;
     let dungeonLit = false;
@@ -10174,7 +10247,8 @@
         name: "戦士",
         blurb: "剣と盾を巧みに操る女の戦士。敵の攻撃のタイミングを見極め、パリィで受け流す。崩れた隙に、強力な一撃を入れる。",
         stand: "girl-front-v2.png?v=1",
-        chibi: "job-girl-v2.png?v=1",
+        chibi: "job-girl-hands-down.png?v=1",
+        chibiHot: "job-girl-v2.png?v=1",
         action: "girl-action.jpg?v=6",
         battle: "girl-battle-v42.png?v=1",
         battleRatio: "3 / 4",
@@ -10222,6 +10296,8 @@
     let cardMastery = [];
     let masteryOffer = null;
     let runLevel = 0;
+    let runTracing = false;
+    let runSheet = null;
     let growthLine = "";
     let dropLine = "";
     let victoryGear = null;
@@ -12371,16 +12447,49 @@
       resolveAt = 0;
     }
 
+    function sameHeldCard(a, b) {
+      if (!a || !b) return false;
+      if (a === b) return true;
+      return a.uid != null && a.uid === b.uid;
+    }
+
+    function heldAlready(card) {
+      return hand.some((held) => sameHeldCard(held, card));
+    }
+
+    // 手札に残しているカードは、捨て札と山札から外す。同じ札を引き直して手札が増えるのを止める。
+    function settleKeptHand() {
+      const next = [];
+      for (const card of hand) {
+        if (!card || next.some((held) => sameHeldCard(held, card))) continue;
+        next.push(card);
+      }
+      hand = next;
+      const drop = (card) => !heldAlready(card);
+      discard = discard.filter(drop);
+      deck = deck.filter(drop);
+    }
+
+    function refillDeck() {
+      discard = discard.filter((card) => !heldAlready(card));
+      if (!discard.length) return false;
+      deck = shuffle(discard);
+      discard = [];
+      log(`${heroName()}は捨て札を山札に戻した。`);
+      return true;
+    }
+
     function draw(n) {
       for (let i = 0; i < n; i++) {
         if (hand.length >= HAND_CAP) break;
-        if (!deck.length) {
-          if (!discard.length) break;
-          deck = shuffle(discard);
-          discard = [];
-          log(`${heroName()}は捨て札を山札に戻した。`);
+        let card = null;
+        while (!card) {
+          if (!deck.length && !refillDeck()) return;
+          const next = deck.pop();
+          if (!next || heldAlready(next)) continue;
+          card = next;
         }
-        hand.push(deck.pop());
+        hand.push(card);
       }
     }
 
@@ -12388,15 +12497,13 @@
       if (hand.length >= HAND_CAP) return null;
       const take = () => {
         for (let i = deck.length - 1; i >= 0; i--) {
-          if (cardKind(deck[i]) === kind) return deck.splice(i, 1)[0];
+          if (cardKind(deck[i]) === kind && !heldAlready(deck[i])) return deck.splice(i, 1)[0];
         }
         return null;
       };
       let card = take();
       if (!card && !deck.length && discard.length) {
-        deck = shuffle(discard);
-        discard = [];
-        log(`${heroName()}は捨て札を山札に戻した。`);
+        if (!refillDeck()) return null;
         card = take();
       }
       if (!card) return null;
@@ -13506,8 +13613,9 @@
       resolveAt = 0;
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
       const kept = hand.filter((card) => card.keep || isItemCard(card));
-      discard.push(...hand.filter((card) => !card.keep));
+      discard.push(...hand.filter((card) => !card.keep && !isItemCard(card)));
       hand = kept;
+      settleKeptHand();
       note = "";
       const poisoned = tickPoison("player");
       turnCall = "resolve";
@@ -13557,6 +13665,7 @@
       if (carried > 0) log(`${heroName()}は持ち越したマナ${carried}（オレンジ）。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
       player.extraDraw = 0;
+      settleKeptHand();
       draw(DRAW_PER_TURN + (Number(player.spdMod) || 0) + extra);
       pullFromBracelets();
       fxDeal = true;
@@ -13580,6 +13689,7 @@
       fxFatal = false;
       log(kind === "win" ? `${heroName()}は${enemy.name}を倒した。` : `${heroName()}は倒された。`);
       if (kind === "lose") {
+        closeFightStep("lose");
         defeatSnap = captureDefeat();
         endRun(false);
         screen = "defeat";
@@ -13587,6 +13697,7 @@
         return;
       }
       if (kind === "win") {
+        closeFightStep("win");
         const slain = enemyKey(enemy && enemy.name);
         if (slain && runSlain.indexOf(slain) < 0) runSlain.push(slain);
         prepareReward();
@@ -13809,12 +13920,13 @@
     }
 
     function endRun(clearedRun) {
+      runEnded = clearedRun ? "win" : "lose";
+      sealRunSheet(!!clearedRun);
       const item = DUNGEON_LIST.find((dungeon) => dungeon.name === dungeonName);
       const floorsKey = item ? item.floors : floorsOf(dungeonName);
       gear = emptyGear();
       gearOpen = null;
       stolen = [];
-      runEnded = clearedRun ? "win" : "lose";
       if (clearedRun) cleared = true;
       clearLive();
       meta.uses += 1;
@@ -13867,6 +13979,7 @@
         foeDiscard,
         foePlan,
         runSlain,
+        runSheet,
         phase,
         note,
         banner,
@@ -14095,6 +14208,8 @@
       restoreEnemyLoop(data);
       foePlan = Array.isArray(data.foePlan) ? data.foePlan.map((step) => ({ anger: !!step.anger, card: { ...step.card } })) : [];
       runSlain = Array.isArray(data.runSlain) ? data.runSlain.map((name) => String(name)) : [];
+      runSheet = normalizeRunSheet(data.runSheet);
+      runTracing = !runSheet.sealed;
       invalidateFoeAct();
       if (screen === "battle" && phase === "player" && enemy && !foePlan.length && enemyLoop.length) buildFoePlan();
       heroCast = castByName(data.heroCast || "戦士").name;
@@ -14125,6 +14240,7 @@
       shopStock = Array.isArray(data.shopStock) ? data.shopStock : [];
       gearOffer = data.gearOffer && data.gearOffer.item ? data.gearOffer : null;
       if (outcome === "win" && !rewardReady) prepareReward();
+      settleKeptHand();
       saveNote = "";
       bindShown();
     }
@@ -14147,6 +14263,7 @@
       const foe = enemyNow();
       const foeHp = foeBattleHp(foe);
       enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, thorns: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, rallied: false, hit: false };
+      pushFightStep();
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -14401,6 +14518,7 @@
         } else if (!takeGift(pick)) {
           return;
         }
+        noteBless(blessChoiceText(pick));
         blessPicks = [];
         finishEvent();
       });
@@ -14414,6 +14532,7 @@
       if (runEnchants[name] || enchantTargets().indexOf(name) < 0) return;
       const word = grantEnchant(name, pick.elem);
       if (pick.elem === "dark" && !word) return;
+      noteBless(blessChoiceText(pick, name, word));
       const face = enchantFace(pick.elem);
       const added = word ? `　${word}` : "";
       log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}${added}。`);
@@ -14677,7 +14796,248 @@
       if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
     }
 
+    function emptyRunSheet() {
+      return { bless: "", steps: [], meets: [], fights: [], killer: "", sealed: null };
+    }
+
+    function normalizeRunSheet(raw) {
+      const sheet = emptyRunSheet();
+      if (!raw || typeof raw !== "object") return sheet;
+      sheet.bless = typeof raw.bless === "string" ? raw.bless : "";
+      sheet.steps = Array.isArray(raw.steps) ? raw.steps : [];
+      sheet.meets = Array.isArray(raw.meets) ? raw.meets : [];
+      sheet.fights = Array.isArray(raw.fights) ? raw.fights : [];
+      sheet.killer = typeof raw.killer === "string" ? raw.killer : "";
+      sheet.sealed = raw.sealed && typeof raw.sealed === "object" ? raw.sealed : null;
+      return sheet;
+    }
+
+    function sheetOpen() {
+      return runTracing && runSheet && !runSheet.sealed;
+    }
+
+    function sheetEventName(kind) {
+      if (kind === "キャンプ") return "休憩";
+      if (kind === "未知") return "遭遇";
+      if (kind === "祝福") return "祝福";
+      return kind || "出来事";
+    }
+
+    function markFloorStep(name) {
+      if (!sheetOpen()) return;
+      runSheet.steps.push({ floor: `${floorNo()}F`, name: name || "出来事", note: "" });
+    }
+
+    function pushFightStep() {
+      if (!sheetOpen()) return;
+      const foe = beggarBattle ? "物乞い" : foeLabel();
+      const name = beggarBattle ? "物乞い戦" : (bossNow() ? "ボス" : "戦闘");
+      runSheet.steps.push({ floor: `${floorNo()}F`, name, note: foe, fight: true, done: false });
+    }
+
+    function closeFightStep(kind) {
+      if (!sheetOpen()) return;
+      const foe = enemy && enemy.name ? enemy.name : "敵";
+      const turns = Math.max(0, Number(turn) || 0);
+      const left = player ? Math.max(0, Math.round(Number(player.hp) || 0)) : 0;
+      let row = null;
+      for (let i = runSheet.steps.length - 1; i >= 0; i--) {
+        if (runSheet.steps[i].fight && !runSheet.steps[i].done) {
+          row = runSheet.steps[i];
+          break;
+        }
+      }
+      if (!row) {
+        row = { floor: `${floorNo()}F`, name: "戦闘", note: "", fight: true };
+        runSheet.steps.push(row);
+      }
+      row.done = true;
+      row.note = `${foe}　${kind === "win" ? "勝利" : "敗北"}　${turns}ターン　残HP ${left}`;
+      runSheet.meets.push(foe);
+      runSheet.fights.push({ name: foe, turns, left });
+      if (kind === "lose") runSheet.killer = foe;
+    }
+
+    function blessChoiceText(pick, cardName, darkWord) {
+      if (!pick) return "";
+      if (pick.kind === "maxhp") return "最大HP+20";
+      if (pick.kind === "spd") return "SPD+1";
+      if (pick.kind === "gear") return (pick.gear && pick.gear.name) || "装備";
+      if (pick.kind === "card") return (pick.card && pick.card.name) || "カード";
+      if (pick.kind === "enchant") {
+        const face = enchantFace(pick.elem);
+        const on = cardName ? `${cardName}に${face.name}` : face.name;
+        return darkWord ? `${on}（${darkWord}）` : on;
+      }
+      return pick.label || "";
+    }
+
+    function noteBless(text) {
+      if (!sheetOpen() || !text) return;
+      for (let i = runSheet.steps.length - 1; i >= 0; i--) {
+        const row = runSheet.steps[i];
+        if (row.name !== "祝福" || row.note) continue;
+        row.note = text;
+        if (row.floor === "0F") runSheet.bless = text;
+        return;
+      }
+      if (!runSheet.bless) runSheet.bless = text;
+    }
+
+    function gearSheetName(item) {
+      if (!item || !item.name) return "なし";
+      const n = Number(item.stars) || 0;
+      return n > 0 ? `${item.name} ${"★".repeat(n)}` : item.name;
+    }
+
+    function deckSheetRows() {
+      const rows = [];
+      const index = {};
+      for (const card of runDeck()) {
+        if (!card || !card.name) continue;
+        const ench = card.enchant ? enchantFace(card.enchant).name : "";
+        const dark = card.enchant === "dark" && runEnchantWords[card.name] ? darkWordLabel(runEnchantWords[card.name]) : "";
+        const master = card.mastered === "power" ? "強" : card.mastered === "light" ? "軽" : "";
+        const key = `${card.name}|${ench}|${dark}|${master}`;
+        if (index[key] == null) {
+          index[key] = rows.length;
+          rows.push({ name: card.name, n: 0, ench, dark, master });
+        }
+        rows[index[key]].n += 1;
+      }
+      return rows;
+    }
+
+    function sealRunSheet(clearedRun) {
+      if (!runSheet) runSheet = emptyRunSheet();
+      if (runSheet.sealed) return;
+      const meets = {};
+      for (const name of runSheet.meets) meets[name] = (meets[name] || 0) + 1;
+      let longest = null;
+      for (const fight of runSheet.fights) {
+        if (!longest || fight.turns > longest.turns) longest = fight;
+      }
+      const hp = player ? Math.max(0, Math.round(Number(player.hp) || 0)) : 0;
+      const maxHp = player ? Math.round(Number(player.maxHp) || runMaxHp()) : runMaxHp();
+      const atk = player ? Math.round(Number(player.atk) || 0) : 0;
+      const def = player ? Math.round(Number(player.def) || 0) : 0;
+      const spd = DRAW_PER_TURN + (player ? Math.max(0, Number(player.spdMod) || 0) : runSpdBonus());
+      const steps = runSheet.steps.map((row) => ({
+        floor: row.floor,
+        name: row.name,
+        note: row.note || "",
+      }));
+      const reached = steps.length ? steps[steps.length - 1].floor : `${floorNo()}F`;
+      const medal = gear && gear.medal && gear.medal.name
+        ? gearSheetName(gear.medal)
+        : (Math.floor(Number(gear && gear.medals) || 0) > 0 ? `×${Math.floor(Number(gear.medals) || 0)}` : "なし");
+      runSheet.sealed = {
+        hero: heroName(),
+        dungeon: dungeonName,
+        floors: dungeonFloors,
+        result: clearedRun ? "win" : "lose",
+        reached,
+        stops: steps.length,
+        level: Number(runLevel) || 0,
+        hp,
+        maxHp,
+        atk,
+        def,
+        spd,
+        bless: runSheet.bless || "なし",
+        gear: {
+          sword: gearSheetName(gear && gear.sword),
+          shield: gearSheetName(gear && gear.shield),
+          braceletL: gearSheetName(gear && gear.braceletL),
+          braceletR: gearSheetName(gear && gear.braceletR),
+          medal,
+        },
+        deck: deckSheetRows(),
+        steps,
+        meets,
+        longest: longest ? `${longest.name} ${longest.turns}ターン` : "なし",
+        killer: clearedRun ? "" : (runSheet.killer || ""),
+        stars: Math.max(0, Number(meta.stars) || 0),
+        victoryArt: heroItem().victory,
+        defeatArt: heroItem().defeat,
+      };
+      runTracing = false;
+    }
+
+    function endChip(label, value) {
+      return `<div class="end-chip"><span>${esc(label)}</span><b>${esc(String(value))}</b></div>`;
+    }
+
+    function endPills(items) {
+      if (!items.length) return `<p>なし</p>`;
+      return `<div class="end-pills">${items.map((text) => `<span>${esc(text)}</span>`).join("")}</div>`;
+    }
+
+    function runSheetHtml() {
+      const sealed = runSheet && runSheet.sealed;
+      if (!sealed) return `<p class="ending-lead">この攻略の記録は無い。</p>`;
+      const win = sealed.result === "win";
+      const gear = sealed.gear || {};
+      const killer = sealed.killer || "";
+      const lead = win
+        ? `${sealed.dungeon || ""}を抜けた`
+        : (killer ? `${killer}に倒された` : `${sealed.dungeon || ""}で倒された`);
+      const deck = (sealed.deck || []).map((row) => {
+        const bits = [`${row.name}×${row.n}`];
+        if (row.master) bits.push(row.master);
+        if (row.ench) bits.push(row.ench);
+        if (row.dark) bits.push(row.dark);
+        return bits.join(" ");
+      });
+      const meet = Object.keys(sealed.meets || {}).map((name) => `${name}×${sealed.meets[name]}`);
+      const gearRows = [
+        ["剣", gear.sword || "なし"],
+        ["盾", gear.shield || "なし"],
+        ["左", gear.braceletL || "なし"],
+        ["右", gear.braceletR || "なし"],
+        ["メダル", gear.medal || "なし"],
+      ].map(([label, name]) => `<div><span>${esc(label)}</span><b>${esc(name)}</b></div>`).join("");
+      const floors = (sealed.steps || []).map((row) => `<li><b>${esc(row.floor)}</b><span>${esc(row.name)}${row.note ? `　${esc(row.note)}` : ""}</span></li>`).join("");
+      return `<p class="ending-lead">${esc(lead)}</p>
+        <div class="end-chips">
+          ${endChip("レベル", Number(sealed.level) || 0)}
+          ${endChip("残HP", `${Number(sealed.hp) || 0}/${Number(sealed.maxHp) || 0}`)}
+          ${endChip("最終★", Number(sealed.stars) || 0)}
+          ${endChip("到達", `${sealed.reached || ""} / ${Number(sealed.floors) || 0}F`)}
+        </div>
+        <section class="end-block"><h3>祝福</h3><p>${esc(sealed.bless || "なし")}</p></section>
+        <section class="end-block"><h3>装備</h3><div class="end-gear">${gearRows}</div></section>
+        <section class="end-block"><h3>ステータス</h3><p>ATK ${Number(sealed.atk) || 0}　DEF ${Number(sealed.def) || 0}　SPD ${Number(sealed.spd) || 0}</p></section>
+        <section class="end-block"><h3>デッキ</h3>${endPills(deck)}</section>
+        <section class="end-block"><h3>会った敵</h3>${endPills(meet)}</section>
+        <section class="end-block"><h3>いちばん長い戦い</h3><p>${esc(sealed.longest || "なし")}</p></section>
+        ${win ? "" : `<section class="end-block"><h3>倒された相手</h3><p>${esc(killer || "なし")}</p></section>`}
+        <section class="end-block"><h3>道</h3><ol class="end-floors">${floors}</ol></section>`;
+    }
+
+    function endingFrame(win) {
+      const sealed = runSheet && runSheet.sealed;
+      const art = win
+        ? ((sealed && sealed.victoryArt) || heroItem().victory)
+        : ((sealed && sealed.defeatArt) || (defeatSnap && defeatSnap.defeatArt) || heroItem().defeat);
+      const banner = win ? "踏破" : "敗北";
+      const packs = `余った★${Number(meta.lastStars) || 0}は、5つにつきカードパック1つ。${Number(meta.lastPacks) || 0}個になった。端数は消えた。`;
+      const after = win ? `${packs}パックの中身は、まだ開かない。次の攻略は★0から。` : `${packs}初期デッキに戻った。装備を失った。`;
+      return `<div class="ending ${win ? "ending-win" : "ending-lose"}">
+        <div class="ending-art"><img class="ending-pose" src="${esc(art)}" alt=""><p class="ending-banner">${banner}</p></div>
+        <div class="ending-card">
+          ${runSheetHtml()}
+          <p class="ending-note">${esc(after)}</p>
+          <div class="gear-offer-actions">
+            ${menuButton("カードリスト", "album")}
+            ${menuButton("キャラクター選択へ", "character", true)}
+          </div>
+        </div>
+      </div>`;
+    }
+
     function beginFloorEvent(kind, keepHp) {
+      markFloorStep(sheetEventName(kind));
       floorHp = keepHp == null ? runMaxHp() : Math.min(runMaxHp(), keepHp);
       floorKind = kind;
       floorNote = "";
@@ -15010,6 +15370,8 @@
       gearOffer = null;
       stolen = [];
       runSlain = [];
+      runSheet = emptyRunSheet();
+      runTracing = true;
       removed = [];
       beggarGift = [];
       heroCast = castByName(castLock).name;
@@ -15908,6 +16270,12 @@
         const picked = token.dataset.cast === castLock;
         token.classList.toggle("locked", jobPick ? castLit && picked : picked);
         token.classList.toggle("shown", token.dataset.cast === name);
+        const tokenImg = token.classList.contains("cast-token") ? token.querySelector("img") : null;
+        if (tokenImg) {
+          const item = castByName(token.dataset.cast);
+          const hot = castLit || castPose;
+          tokenImg.src = hot && item.chibiHot ? item.chibiHot : item.chibi;
+        }
       });
       paintChallengeStart();
       const decide = root.querySelector('[data-action="open-dungeon"]');
@@ -15980,13 +16348,16 @@
       root.querySelectorAll("[data-cast]").forEach((token) => {
         token.addEventListener("pointerenter", () => {
           const next = token.dataset.cast || "";
-          if (castHover === next) return;
+          const pose = token.classList.contains("cast-token");
+          if (castHover === next && castPose === pose) return;
           castHover = next;
+          castPose = pose;
           paintCast();
         });
         token.addEventListener("pointerleave", () => {
           if (castHover !== token.dataset.cast) return;
           castHover = "";
+          castPose = false;
           paintCast();
         });
       });
@@ -16088,6 +16459,7 @@
         </button>`).join("");
       castShown = "";
       castLit = false;
+      castPose = false;
       const jobTitle = fadeSandwichMarkup(`<span class="cast-title-name">挑戦するキャラを選んでください</span>`, { tag: "h1", className: "cast-title" });
       root.innerHTML = `
         <div class="cast-screen character-focus">
@@ -16474,16 +16846,6 @@
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
             </div>
-            <h3>カード（画像待ち）</h3>
-            <p class="album-meta">絵柄データが空のカード。枠だけ残す。あとから絵をはめる。</p>
-            <div class="ref-grid">
-              ${sheetSlot("無心")}
-              ${sheetSlot("餌だ")}
-              ${sheetSlot("さぼる")}
-              ${sheetSlot("弱者の意地")}
-              ${sheetSlot("死者の軍団")}
-              ${sheetSlot("超集中")}
-            </div>
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front-v2.png?v=1", "キャラデザ", "cut-ref")}
@@ -16500,7 +16862,8 @@
               ${sheetFig("girl-action.jpg?v=6", "戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl-v2.png?v=1", "戦士の選択コマ（かわいい）", "cut-ref")}
+              ${sheetFig("job-girl-hands-down.png?v=1", "戦士の選択コマ（手を下ろす）", "cut-ref")}
+              ${sheetFig("job-girl-v2.png?v=1", "戦士の選択コマ（手を上げる）", "cut-ref")}
             </div>
             <h3>装備</h3>
             ${sheetGearInline()}
@@ -16543,6 +16906,8 @@
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
+            <h3>裏面</h3>
+            <div class="ref-grid sheet-backs">${sheetBackFaces()}</div>
             <h3>カードスタイル</h3>
             <p class="album-meta">ジャンルごとに5列。同じ形の棘</p>
             ${cardStyleColumns("sheet")}
@@ -16599,10 +16964,8 @@
               <section>
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
-              </section>
-              <section class="album-backs">
-                <h3>裏面</h3>
-                <div class="ref-grid">${albumFaceSheet()}</div>
+                <h4 class="worn-head">アタックの熟練</h4>
+                <div class="style-genres worn">${cardStyleSheet(WORN_ATTACK_STYLE)}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -16623,30 +16986,8 @@
     }
 
     function renderDefeat() {
-      const snap = defeatSnap || captureDefeat();
-      const logHtml = logLinesHtml(snap.log);
-      const deckHtml = deckGroup("この戦闘のデッキ", snap.deck || []);
-      root.innerHTML = `
-        <div class="end-screen defeat">
-          <h1>倒された</h1>
-          <p class="end-why">${esc(snap.why || `${snap.foeName || "敵"}に倒された。`)}</p>
-          <div class="end-portraits">
-            <figure class="scene">
-              <img src="${esc(snap.defeatArt || heroItem().defeat)}" alt="">
-              <figcaption>${esc(snap.hero || heroName())}</figcaption>
-            </figure>
-            <figure class="foe">
-              ${snap.foeImage ? `<img src="${esc(snap.foeImage)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
-              <figcaption>${esc(snap.foeName || "敵")}${snap.foeHp ? `　HP ${esc(snap.foeHp)}` : ""}</figcaption>
-            </figure>
-          </div>
-          <div class="end-cols">
-            <div class="end-log battle-log"><h2>ログ</h2>${logHtml || ""}</div>
-            <div class="end-deck">${deckHtml}</div>
-          </div>
-          <p class="end-note">${esc(snap.dungeon || dungeonName)}　${esc(snap.floor || "")}　初期デッキに戻った。装備を失った。余った★${Number(meta.lastStars) || 0}はカードパック${Number(meta.lastPacks) || 0}個。端数は消えた。使いこみ ${meta.uses}</p>
-          ${menuButton("キャラクター選択へ", "character", true)}
-        </div>`;
+      if (!defeatSnap) defeatSnap = captureDefeat();
+      root.innerHTML = endingFrame(false);
     }
 
     function renderAccount() {
@@ -16793,19 +17134,7 @@
     }
 
     function renderClear() {
-      root.innerHTML = `
-        <div class="overlay victory finale clear-finale">
-          ${victoryStage("踏破")}
-          <div class="panel wide reward-panel">
-            <h2>踏破</h2>
-            <p class="victory-count">${esc(dungeonName)}を抜けた。解放が進んだ。</p>
-            <p>余った★${Number(meta.lastStars) || 0}は、5つにつきカードパック1つ。${Number(meta.lastPacks) || 0}個になった。端数は消えた。パックの中身は、まだ開かない。次の攻略は★0から。</p>
-            <div class="gear-offer-actions">
-              ${menuButton("カードリスト", "album")}
-              ${menuButton("キャラクター選択へ", "character", true)}
-            </div>
-          </div>
-        </div>`;
+      root.innerHTML = endingFrame(true);
     }
 
     function hideLogPeek() {
@@ -17038,6 +17367,16 @@
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
+      ["style-worn-attack-basic", "熟練 基本", "frame-basic-attack-worn.jpg?v=1"],
+      ["style-worn-attack-star1", "熟練 ★", "frame-red-over-copper-worn.jpg?v=1"],
+      ["style-worn-attack-star2", "熟練 ★★", "frame-red-over-silver-worn.jpg?v=1"],
+      ["style-worn-attack-star3", "熟練 ★★★", "frame-red-over-gold-worn.jpg?v=1"],
+    ];
+    const WORN_ATTACK_STYLE = [
+      ["style-worn-attack-basic", "熟練 基本", "frame-basic-attack-worn.jpg?v=1"],
+      ["style-worn-attack-star1", "熟練 ★", "frame-red-over-copper-worn.jpg?v=1"],
+      ["style-worn-attack-star2", "熟練 ★★", "frame-red-over-silver-worn.jpg?v=1"],
+      ["style-worn-attack-star3", "熟練 ★★★", "frame-red-over-gold-worn.jpg?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -17046,11 +17385,8 @@
       ["back-player", "裏面", "card-back.jpg?v=3"],
       ["back-foe", "敵の裏面", "card-back-foe.jpg?v=1"],
     ];
-    function albumFaceSheet() {
-      return ALBUM_FACE.map((item) => {
-        const on = albumZoom === item[0];
-        return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(item[1])}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="back-ref" src="${item[2]}" alt="${esc(item[1])}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
-      }).join("");
+    function sheetBackFaces() {
+      return ALBUM_FACE.map((item) => sheetFig(item[2], item[1], "back-ref")).join("");
     }
     function cardStyleSheet(list) {
       return (list || CARD_STYLE).map((item) => {
