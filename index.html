@@ -256,7 +256,7 @@
     .road-node.now.tone-other > i {
       box-shadow: none;
     }
-    .road-key {
+    .road-lock {
       position: absolute;
       z-index: 5;
       top: 8px;
@@ -269,7 +269,7 @@
       filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
       pointer-events: none;
     }
-    .road-key svg { width: 42px; height: 42px; display: block; transform: scaleX(-1) rotate(90deg); }
+    .road-lock svg { width: 40px; height: 40px; display: block; }
     .road-back {
       position: absolute;
       z-index: 6;
@@ -1586,8 +1586,6 @@
     .reward-gear { display: flex; justify-content: center; margin: 0 0 14px; }
     .reward-gear .gear-effect,
     .gear-offer .gear-effect,
-    .reward-gear { display: flex; justify-content: center; margin: 0 0 14px; }
-    .reward-gear .gear-effect,
     .reward-pick .gear-effect {
       position: relative;
       left: auto;
@@ -10397,11 +10395,13 @@
         const fixed = !!node && roadFixed(node, i);
         const tone = known ? (fixed ? "fight" : roadTone(node)) : "";
         const name = known && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
-        const key = fixed ? `<span class="road-key" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10.8 12H20.2M17.2 12v3.1M20.2 12v2.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>` : "";
+        const lock = fixed
+          ? `<span class="road-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5.5" y="11" width="13" height="9.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8.5 11V8.6a3.5 3.5 0 0 1 7 0V11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="15.6" r="1.5" fill="currentColor"/></svg></span>`
+          : "";
         const here = state === "now"
           ? `<span class="road-here-mark" aria-label="現在地"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.7 2 6 4.8 6 8.2c0 4.5 6 13.8 6 13.8s6-9.3 6-13.8C18 4.8 15.3 2 12 2zm0 5.4a2.7 2.7 0 1 1 0 5.4 2.7 2.7 0 0 1 0-5.4z" fill="currentColor"/></svg><b>現在地</b></span>`
           : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${here}${icon}${key}<span class="road-cap">${capFloor}${name}</span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${here}${icon}${lock}<span class="road-cap">${capFloor}${name}</span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
