@@ -2056,14 +2056,30 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
     .album-top {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+      display: flex;
+      flex-direction: column;
       gap: 14px;
       margin: 0 0 12px;
     }
     .album-top h3 { margin: 0 0 8px; text-align: center; font-size: 18px; letter-spacing: 0.12em; }
-    .album-top .ref-grid,
-    .album-top .blank-grid { margin: 0; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); }
+    .album-top .album-backs { max-width: 420px; }
+    .album-top .album-backs .ref-grid { margin: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .style-genres {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px 10px;
+      margin: 0;
+    }
+    .style-genres h4 {
+      margin: 0 0 6px;
+      text-align: center;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+    .style-genres .style-col { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+    .style-genres figure { margin: 0; max-width: none; }
+    .style-genres figcaption { text-align: center; font-size: 12px; }
+    .style-genres img.style-master { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: fill; display: block; }
     .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
@@ -5066,15 +5082,25 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
-    .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
-    .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
-    .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
+    .card .card-fit.k-attack.r1 { --frame-img: url("frame-red-over-copper.png?v=1"); }
+    .card .card-fit.k-attack.r2 { --frame-img: url("frame-red-over-silver.png?v=1"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=4"); }
+    .card .card-fit.k-block.r1 { --frame-img: url("frame-blue-over-copper.png?v=14"); }
+    .card .card-fit.k-block.r2 { --frame-img: url("frame-blue-over-silver.png?v=14"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-blue-over-gold.png?v=17"); }
+    .card .card-fit.k-skill.r1 { --frame-img: url("frame-yellow-over-copper.png?v=1"); }
+    .card .card-fit.k-skill.r2 { --frame-img: url("frame-yellow-over-silver.png?v=1"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-yellow-over-gold.png?v=4"); }
+    .card .card-fit.k-power.r1 { --frame-img: url("frame-green-over-copper.png?v=1"); }
+    .card .card-fit.k-power.r2 { --frame-img: url("frame-green-over-silver.png?v=1"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-green-over-gold.png?v=4"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
-    .card .card-fit.k-foe { --frame-img: url("frame-metal-navy.png?v=4"); }
+    .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=1"); }
+    .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=1"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=2"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
@@ -6709,7 +6735,7 @@
       grid-column: 1 / -1;
       width: 100%;
       flex: 0 0 auto;
-      padding: 4px 12px 0;
+      padding: clamp(40px, 4.5cqh, 72px) 12px 0;
       box-sizing: border-box;
     }
     .menu.event .event-title > h1 {
@@ -7262,6 +7288,28 @@
       flex: 0 0 auto;
       height: auto;
       align-self: center;
+    }
+    .menu.event.bless .gift-row { flex-wrap: wrap; justify-content: center; }
+    .menu.event.bless .gift-btn:has(.gear-effect) {
+      width: 240px;
+      min-width: 240px;
+      max-width: 240px;
+      flex: 0 0 240px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      align-self: flex-start;
+    }
+    .menu.event.bless .gift-btn .gear-effect,
+    .menu.event.bless .gift-btn .gear-effect.bless-gear,
+    .menu.event.bless .gift-btn .gear-effect.bless-gear .gear-effect-inner {
+      width: 240px;
+      max-width: 240px;
+    }
+    .menu.event.bless .gift-btn .gear-effect-rest {
+      width: 100%;
+      min-width: 0;
     }
     .menu.event .gift-pick .card.preview,
     .menu.event .gift-show .card.preview,
@@ -8233,16 +8281,10 @@
       font-size: clamp(17px, 1.4cqw, 22px);
       font-weight: 600;
       letter-spacing: 0.02em;
-      line-height: 1.5;
+      line-height: 1.25;
     }
-    .cast-screen.character-focus .cast-board .cast-keys p.lead {
-      font-size: clamp(26px, 2.15cqw, 34px);
-      font-weight: 700;
-      line-height: 1.35;
-      letter-spacing: 0.01em;
-    }
-    .cast-screen.character-focus .cast-board .cast-key p + p { margin-top: 4px; }
-    .cast-screen.character-focus .cast-board .cast-keys p.tail { margin-top: 10px; }
+    .cast-screen.character-focus .cast-board .cast-key p + p { margin-top: 2px; }
+    .cast-screen.character-focus .cast-board .cast-keys p.tail { margin-top: 2px; }
     .cast-screen.character-focus .cast-board .cast-mid {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -9252,6 +9294,8 @@
         rgba(40, 28, 12, 0.45);
     }
     .turn-call.resolve b { color: #fff6d8; letter-spacing: 0.22em; }
+    .enemy-main.staged,
+    .battle-plate.foe-plate.staged { opacity: 0; }
     .enemy-main.arrive { animation: foe-arrive 1.05s cubic-bezier(0.16, 0.84, 0.32, 1) both; }
     @keyframes foe-arrive {
       0% { transform: translate(36%, 10%) scale(0.58); opacity: 0; }
@@ -9619,6 +9663,7 @@
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
       自信過剰: "card-pride-v4.jpg?v=2",
       達人の間合い: "card-deep-focus.jpg?v=1",
+      超集中: "card-ultra-focus-v6.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
@@ -9644,7 +9689,7 @@
       ファイアソード: "card-firesword.jpg?v=1",
       ファイアパラダイス: "card-fireparadise.jpg?v=1",
       無心: "card-mushin.jpg?v=1",
-      餌だ: "card-bait.jpg?v=1",
+      餌だ: "card-bait-v3.jpg?v=1",
       さぼる: "card-slack.jpg?v=1",
       弱者の意地: "card-spite.jpg?v=1",
       死者の軍団: "card-legion.jpg?v=1",
@@ -9756,7 +9801,7 @@
       },
       {
         name: "ゴブリン",
-        image: "enemy-goblin.png?v=10",
+        image: "enemy-goblin.png?v=16",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9770,7 +9815,7 @@
       },
       {
         name: "コボルド",
-        image: "enemy-kobold.png?v=5",
+        image: "enemy-kobold.png?v=6",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9786,7 +9831,7 @@
       },
       {
         name: "ミノタウロス",
-        image: "enemy-minotaur.png?v=10",
+        image: "enemy-minotaur.png?v=11",
         tier: 3,
         rank: "強敵",
         stature: "huge",
@@ -9806,7 +9851,7 @@
       },
       {
         name: "ちびドラゴン",
-        image: "enemy-dragon.png?v=6",
+        image: "enemy-dragon.png?v=7",
         tier: 2,
         rank: "普通",
         stature: "small",
@@ -9821,7 +9866,7 @@
       },
       {
         name: "トロール",
-        image: "enemy-troll.png?v=4",
+        image: "enemy-troll.png?v=9",
         tier: 2,
         rank: "普通",
         stature: "huge",
@@ -9846,7 +9891,7 @@
       },
       {
         name: "ハデス",
-        image: "enemy-hades.png?v=8",
+        image: "enemy-hades.png?v=9",
         tier: 4,
         rank: "★★★★",
         stature: "huge",
@@ -10175,6 +10220,7 @@
     let growthLine = "";
     let dropLine = "";
     let victoryGear = null;
+    let victoryEnchant = null;
     let smithBase = -1;
     let smithName = "";
     let hurtRestUsed = false;
@@ -10938,13 +10984,13 @@
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
       "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 29, right: 857 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 20, bottom: 38, left: 15, right: 825 },
-      "enemy-kobold.png": { w: 864, h: 1152, top: 30, bottom: 18, left: 146, right: 701 },
-      "enemy-minotaur.png": { w: 864, h: 1152, top: 52, bottom: 78, left: 70, right: 851 },
-      "enemy-dragon.png": { w: 864, h: 1152, top: 123, bottom: 154, left: 33, right: 863 },
-      "enemy-troll.png": { w: 864, h: 1152, top: 64, bottom: 29, left: 27, right: 863 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 49, bottom: 78, left: 49, right: 790 },
+      "enemy-kobold.png": { w: 864, h: 1152, top: 27, bottom: 15, left: 144, right: 704 },
+      "enemy-minotaur.png": { w: 864, h: 1152, top: 50, bottom: 75, left: 67, right: 853 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 120, bottom: 150, left: 27, right: 863 },
+      "enemy-troll.png": { w: 864, h: 1152, top: 39, bottom: 42, left: 23, right: 776 },
       "enemy-beggar.png": { w: 864, h: 1152, top: 30, bottom: 32, left: 94, right: 718 },
-      "enemy-hades.png": { w: 864, h: 1152, top: 86, bottom: 133, left: 44, right: 856 },
+      "enemy-hades.png": { w: 864, h: 1152, top: 84, bottom: 131, left: 41, right: 857 },
     };
 
     function foeInkVars(image) {
@@ -13857,6 +13903,7 @@
         growthLine,
         dropLine,
         victoryGear,
+        victoryEnchant,
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
@@ -14062,6 +14109,7 @@
       growthLine = data.growthLine || "";
       dropLine = data.dropLine || "";
       victoryGear = data.victoryGear && data.victoryGear.name ? data.victoryGear : null;
+      victoryEnchant = data.victoryEnchant && data.victoryEnchant.elem ? data.victoryEnchant : null;
       hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
@@ -14949,6 +14997,7 @@
       growthLine = "";
       dropLine = "";
       victoryGear = null;
+      victoryEnchant = null;
       runBonus = emptyRunBonus();
       runEntrance = true;
       gear = starterGear();
@@ -15079,7 +15128,8 @@
       const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk, "stat-atk") : "";
       const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def, "stat-def") : "";
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
-      return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
+      const quiet = extra && extra.quiet ? " staged" : "";
+      return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block, extra && extra.threat)}
         ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
@@ -16407,14 +16457,14 @@
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=9", "スライム", "enemy-ref")}
-              ${sheetFig("enemy-goblin.png?v=10", "ゴブリン", "enemy-ref")}
-              ${sheetFig("enemy-kobold.png?v=5", "コボルド", "enemy-ref")}
-              ${sheetFig("enemy-troll.png?v=4", "トロール", "enemy-ref")}
-              ${sheetFig("enemy-minotaur.png?v=10", "ミノタウロス", "enemy-ref")}
-              ${sheetFig("enemy-dragon.png?v=6", "ちびドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-goblin.png?v=16", "ゴブリン", "enemy-ref")}
+              ${sheetFig("enemy-kobold.png?v=6", "コボルド", "enemy-ref")}
+              ${sheetFig("enemy-troll.png?v=9", "トロール", "enemy-ref")}
+              ${sheetFig("enemy-minotaur.png?v=11", "ミノタウロス", "enemy-ref")}
+              ${sheetFig("enemy-dragon.png?v=7", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.png?v=4", "物乞い", "enemy-ref")}
-              ${sheetFig("enemy-hades.png?v=8", "ハデス", "enemy-ref")}
+              ${sheetFig("enemy-hades.png?v=9", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
@@ -16488,6 +16538,9 @@
             </div>
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
+            <h3>カードスタイル</h3>
+            <p class="album-meta">ジャンルごとに5列。同じ形の棘</p>
+            ${cardStyleColumns("sheet")}
           </div>
           ${sheetZoomSide()}
         </div>`;
@@ -16540,9 +16593,9 @@
       const albumTop = albumTab === "未採用" ? "" : `<div class="album-top">
               <section>
                 <h3>カードスタイル</h3>
-                <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
+                ${cardStyleColumns("album")}
               </section>
-              <section>
+              <section class="album-backs">
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
@@ -16706,7 +16759,10 @@
           const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
           const lv = blessLive ? rareLevel(entity) : 0;
           if (lv) blessLevels.push(lv);
-          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
+          const inner = pick.kind === "card"
+            ? `<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}`
+            : giftMarkup(pick, false);
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}${inner}</button>`;
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
@@ -16728,7 +16784,6 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
-      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") bindBlessPop();
       runEntrance = false;
     }
 
@@ -16834,7 +16889,34 @@
         fitCardNames();
         fitCardEffects();
         if (screen === "fx" || screen === "battle") fitFighters();
+        armFoeArrive(8);
       });
+    }
+
+    // 階の表示中は敵を出さない。位置を決めてから、登場は一度だけ。
+    function armFoeArrive(tries) {
+      if (screen !== "battle" || !encounter || floorCall) return;
+      const arriving = root.querySelector(".enemy-main.staged");
+      if (!arriving || !arriving.isConnected) return;
+      const img = arriving.querySelector("img");
+      if (img && !img.complete) {
+        img.addEventListener("load", () => armFoeArrive(8), { once: true });
+        return;
+      }
+      fitFighters();
+      const foeFig = arriving.querySelector("img") || arriving;
+      const heroFig = root.querySelector(".hero-fig");
+      const foeW = foeFig.getBoundingClientRect().width;
+      const heroW = heroFig ? heroFig.getBoundingClientRect().width : 10;
+      if ((foeW < 8 || heroW < 8) && tries > 0) {
+        requestAnimationFrame(() => armFoeArrive(tries - 1));
+        return;
+      }
+      const plate = root.querySelector(".foe-plate.staged");
+      if (plate) plate.classList.remove("staged");
+      arriving.classList.remove("staged");
+      void arriving.offsetWidth;
+      arriving.classList.add("arrive");
     }
 
     // 効果欄はカードごと。余白は固定。そのカードの中では説明と数字を同じ大きさ、アイコンも同じ大きさ（文字より大きい）にする。
@@ -16926,30 +17008,31 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-metal-red.png?v=7"],
-      ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
-      ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
-      ["style-green", "アイテム", "frame-metal-green.png?v=5"],
-      ["style-navy", "紺", "frame-metal-navy.png?v=4"],
-      ["style-star1", "★", "frame-spike-copper.png?v=5"],
-      ["style-star2", "★★", "frame-spike-silver.png?v=5"],
-      ["style-star3", "★★★", "frame-spike-gold.png?v=5"],
-      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=14"],
-      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=14"],
-      ["style-over-gold", "金", "frame-blue-over-gold.png?v=14"],
-      ["style-over-black", "黒", "frame-blue-over-black.png?v=15"],
-      ["style-red-over-copper", "赤・銅", "frame-red-over-copper.png?v=1"],
-      ["style-red-over-silver", "赤・銀", "frame-red-over-silver.png?v=1"],
-      ["style-red-over-gold", "赤・金", "frame-red-over-gold.png?v=1"],
-      ["style-red-over-black", "赤・黒", "frame-red-over-black.png?v=1"],
-      ["style-yellow-over-copper", "黄・銅", "frame-yellow-over-copper.png?v=1"],
-      ["style-yellow-over-silver", "黄・銀", "frame-yellow-over-silver.png?v=1"],
-      ["style-yellow-over-gold", "黄・金", "frame-yellow-over-gold.png?v=1"],
-      ["style-yellow-over-black", "黄・黒", "frame-yellow-over-black.png?v=1"],
-      ["style-green-over-copper", "緑・銅", "frame-green-over-copper.png?v=1"],
-      ["style-green-over-silver", "緑・銀", "frame-green-over-silver.png?v=1"],
-      ["style-green-over-gold", "緑・金", "frame-green-over-gold.png?v=1"],
-      ["style-green-over-black", "緑・黒", "frame-green-over-black.png?v=1"],
+      ["style-basic-foe", "敵 基本", "frame-basic-foe.png?v=1"],
+      ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=1"],
+      ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=1"],
+      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=2"],
+      ["style-navy-black", "敵 ボス", "frame-navy-over-black.png?v=1"],
+      ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=1"],
+      ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=1"],
+      ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=1"],
+      ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=1"],
+      ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=14"],
+      ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=14"],
+      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=17"],
+      ["style-over-black", "ブロック ボス", "frame-blue-over-black.png?v=15"],
+      ["style-red-over-copper", "アタック ★", "frame-red-over-copper.png?v=1"],
+      ["style-red-over-silver", "アタック ★★", "frame-red-over-silver.png?v=1"],
+      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=4"],
+      ["style-red-over-black", "アタック ボス", "frame-red-over-black.png?v=1"],
+      ["style-yellow-over-copper", "スキル ★", "frame-yellow-over-copper.png?v=1"],
+      ["style-yellow-over-silver", "スキル ★★", "frame-yellow-over-silver.png?v=1"],
+      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=4"],
+      ["style-yellow-over-black", "スキル ボス", "frame-yellow-over-black.png?v=1"],
+      ["style-green-over-copper", "アイテム ★", "frame-green-over-copper.png?v=1"],
+      ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
+      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
+      ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -16970,6 +17053,24 @@
         const aria = styleLabel(item[0], item[1]);
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(aria)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(aria)}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
+    }
+    const STYLE_GENRES = [
+      ["アタック", ["style-basic-attack", "style-red-over-copper", "style-red-over-silver", "style-red-over-gold", "style-red-over-black"]],
+      ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black"]],
+      ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black"]],
+      ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
+      ["敵", ["style-basic-foe", "style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black"]],
+    ];
+    function cardStyleColumns(mode) {
+      const byId = {};
+      CARD_STYLE.forEach((item) => { byId[item[0]] = item; });
+      return `<div class="style-genres">${STYLE_GENRES.map((group) => {
+        const items = group[1].map((id) => byId[id]).filter(Boolean);
+        const body = mode === "sheet"
+          ? items.map((item) => sheetFig(item[2], item[1], "style-master")).join("")
+          : cardStyleSheet(items);
+        return `<section class="style-col"><h4>${esc(group[0])}</h4>${body}</section>`;
+      }).join("")}</div>`;
     }
 
     function costOrbs(cost) {
@@ -18134,6 +18235,7 @@
 
     function rollVictoryExtra() {
       victoryGear = null;
+      victoryEnchant = null;
       const boss = typeof bossNow === "function" && bossNow();
       const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
       const kind = pickWeighted(Object.keys(table), (key) => table[key]);
@@ -18162,6 +18264,7 @@
       if (!runEnchants[name]) return "";
       const face = enchantFace(elem);
       const added = word ? `　${word}` : "";
+      victoryEnchant = { kind: "enchant", elem };
       return `${name}に、${face.name}のエンチャント。${face.sub}${added}。`;
     }
 
@@ -18828,8 +18931,10 @@
     }
 
     function victoryGearHtml() {
-      if (!victoryGear) return "";
-      return `<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`;
+      const bits = [];
+      if (victoryGear) bits.push(`<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`);
+      if (victoryEnchant && victoryEnchant.elem) bits.push(`<div class="reward-gear">${giftMarkup(victoryEnchant, true)}</div>`);
+      return bits.join("");
     }
 
     function victoryGrowthHtml() {
@@ -19062,7 +19167,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
@@ -19075,7 +19180,7 @@
               ${useZoneMarkup()}
             </div>
             <div class="duel-side foe">
-              <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
+              <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
@@ -19200,12 +19305,23 @@
       main.style.marginLeft = "0px";
       const field = ally.parentElement;
       if (!field) return;
+      const motions = main.classList.contains("arrive") ? main.getAnimations() : [];
+      const heldAt = motions.map((anim) => anim.currentTime);
+      motions.forEach((anim) => {
+        anim.pause();
+        const dur = anim.effect && anim.effect.getComputedTiming().duration;
+        if (typeof dur === "number") anim.currentTime = dur;
+      });
       const fieldRect = field.getBoundingClientRect();
       const scale = fieldRect.width / field.clientWidth || 1;
       const heroFig = hero.querySelector(".hero-fig") || hero;
       const foeFig = main.querySelector("img") || main;
       const heroRect = heroFig.getBoundingClientRect();
       const foeRect = foeFig.getBoundingClientRect();
+      motions.forEach((anim, i) => {
+        anim.currentTime = heldAt[i];
+        anim.play();
+      });
       if (heroRect.width < 8 || foeRect.width < 8) return;
       const heroInkLeft = 64;
       const inkRight = parseFloat(getComputedStyle(main).getPropertyValue("--ink-right")) || imgW;
@@ -19276,8 +19392,9 @@
       const minX = Math.min(...rel.map((p) => p.x));
       const minY = Math.min(...rel.map((p) => p.y));
       const rect = el.getBoundingClientRect();
-      const vx = rect.left - minX - ox;
-      const vy = rect.top - minY - oy;
+      const scale = stageScale();
+      const vx = rect.left - (minX + ox) * scale;
+      const vy = rect.top - (minY + oy) * scale;
       if (!stageOn()) return { left: vx, top: vy, w, h };
       const p = viewportToStage(vx, vy);
       return { left: p.x, top: p.y, w, h };
@@ -19291,6 +19408,7 @@
       }
       if (handPopCard && handPopCard !== card) handPopCard.style.opacity = "";
       handPopCard = card;
+      const face = card.getAttribute("style") || "";
       card.style.opacity = "0";
       const key = `${card.dataset.card}|${card.className}|${card.innerHTML.length}`;
       let pop = document.getElementById("hand-pop");
@@ -19300,11 +19418,12 @@
         next.className = `${card.className} hand-pop`;
         next.dataset.key = key;
         next.innerHTML = card.innerHTML;
-        next.style.cssText = card.getAttribute("style") || "";
+        next.style.cssText = face;
         if (pop) pop.remove();
         mountFloat(next);
         pop = next;
       }
+      pop.style.opacity = "1";
       const box = handLayoutBox(card);
       pop.style.left = `${box.left}px`;
       pop.style.top = `${box.top}px`;
