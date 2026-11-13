@@ -1627,12 +1627,13 @@
       height: 72px;
       display: grid;
       place-items: center;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 32%, #fffef4 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
-      color: #140800;
-      font-size: 40px;
-      text-shadow: none;
-      box-shadow: 0 0 16px rgba(255, 190, 60, 0.75);
+      border-radius: 0;
+      background: url("mana-hex-yellow.png?v=1") center / contain no-repeat;
+      color: #fff8e8;
+      -webkit-text-stroke: 1.5px #1a0806;
+      font-size: 34px;
+      text-shadow: 0 1px 0 #1a0806;
+      box-shadow: none;
     }
     .reward-pick {
       display: flex;
@@ -3730,31 +3731,19 @@
       height: 84px;
       display: grid;
       place-items: center;
-      border-radius: 50%;
-      font-size: 52px;
+      border-radius: 0;
+      font-size: 44px;
       line-height: 1;
       font-weight: 900;
-      color: #fff;
+      color: #fff8e8;
       -webkit-text-stroke: 2px #1a0806;
-      text-shadow: 0 2px 0 #1a0806, 0 0 8px #1a0806;
-      background:
-        radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
-      box-shadow:
-        inset 0 0 0 3px rgba(255, 220, 160, 0.35),
-        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
-        0 0 0 7px #24180f,
-        0 0 0 10px #d7b56a,
-        0 0 0 13px #140e0a,
-        0 0 22px rgba(255, 70, 24, 0.72);
+      text-shadow: 0 2px 0 #1a0806, 0 0 6px #1a0806;
+      background: url("mana-hex-yellow.png?v=1") center / contain no-repeat;
+      box-shadow: none;
     }
     .mana-read.has-temp b {
-      box-shadow:
-        inset 0 0 0 3px rgba(210, 230, 255, 0.7),
-        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
-        0 0 0 7px #1a2430,
-        0 0 0 10px #8eb4e0,
-        0 0 0 13px #140e0a,
-        0 0 22px rgba(120, 180, 255, 0.7);
+      filter: drop-shadow(0 0 6px rgba(140, 190, 255, 0.95));
+      box-shadow: none;
     }
     .mana-read .mana-temp {
       position: absolute;
@@ -9606,6 +9595,9 @@
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
       キック: "card-kick-leg.jpg?v=2",
+      ビッグアタック: "card-big-attack-smash.jpg?v=1",
+      クイックステップ: "card-attack-f-b.jpg?v=1",
+      魔法のパリィ: "card-magic-parry.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
       瞑想: "card-meditate.jpg?v=1",
       ハードブロック: "card-hard-block-f.jpg?v=3",
@@ -9686,7 +9678,6 @@
       クイックステップ: "パリィ",
       自信過剰: "パリィ",
       盾削ぎ: "パリィ",
-      ライフフルネスアタック: "ライフフル",
     };
     const COMMON = {
       怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
@@ -9748,10 +9739,9 @@
         tier: 1,
         rank: "雑魚",
         stature: "small",
-        hp: 30,
+        hp: 25,
         atkHidden: 0,
         spd: 2,
-        home: "洞窟",
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -9801,7 +9791,6 @@
         stature: "huge",
         hp: 90,
         atkHidden: 0,
-        home: "洞窟",
         pattern: [
           { name: "アタック" },
           { name: "チャージアタック" },
@@ -9835,7 +9824,7 @@
           { name: "ブロック" },
           { name: "ブロック" },
           { name: "餌だ", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
-          { name: "死者の軍団", cost: 2, text: "このダンジョンで倒した、同じ★の敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
+          { name: "死者の軍団", cost: 2, text: "この攻略で倒した、同じ★の敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
         ],
       },
     ];
@@ -10498,9 +10487,10 @@
       const star = dungeonStarCount(name);
       return ENEMIES.filter((foe) => {
         if (foe.name === "ハデス") return false;
+        if (foe.name === "物乞い" && !withBeggar) return false;
+        if (name === "洞窟") return true;
         if (foe.home) return foe.home === name;
         if (enemyStar(foe) !== star) return false;
-        if (foe.name === "物乞い" && !withBeggar) return false;
         return true;
       }).map((foe) => foe.name);
     }
@@ -13150,7 +13140,7 @@
 
     function playLegion(card) {
       const star = dungeonStar();
-      const rankOf = { スライム: 1, ゴブリン: 1, コボルド: 1, 物乞い: 1, ちびドラゴン: 2, ミノタウロス: 3 };
+      const rankOf = { スライム: 1, ゴブリン: 1, コボルド: 1, 物乞い: 1, ちびドラゴン: 2, トロール: 2, ミノタウロス: 3 };
       const pool = runSlain.filter((name) => rankOf[name] === star);
       if (!pool.length) {
         log(`${enemy.name}は死者の軍団。同じ★で倒した敵がいない。`, card, true);
@@ -15406,7 +15396,7 @@
           <section class="odds-block">
             <h2>戦闘の相手</h2>
             <ul>
-              <li>道中は、そのダンジョンの★と同じ敵が同じ確率で出ます。階では分けません。</li>
+              <li>いまは洞窟の道中だけ、実装済みの敵が均等に出ます（古城・深淵のプールは未決定）。階では分けません。</li>
               <li>物乞いだけは、そのランでイベント戦闘をしたあとの道中に入ります。</li>
               <li>ボス戦の相手は固定です。ハデスは出しません。</li>
             </ul>
@@ -16063,7 +16053,7 @@
       [2, "unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
       [3, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
       [4, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
-      [5, "unadopt-quick-step", "クイックステップ", "card-attack-f-b.jpg?v=1"],
+      [5, "unadopt-quick-step-old", "クイックステップ（旧）", "card-quick-step.jpg?v=1"],
     ];
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
