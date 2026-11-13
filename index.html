@@ -3944,35 +3944,9 @@
     }
     .foe-pile .pile-label,
     .foe-discard .pile-label { font-size: 16px; letter-spacing: 0.08em; white-space: nowrap; }
-    .foe-pile:hover .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
-    .foe-deck-pop {
-      display: none;
-      position: fixed;
-      z-index: 90;
-      width: min(980px, 74cqw);
-      max-height: min(68cqh, 640px);
-      padding: 16px 18px 14px;
-      overflow: hidden;
-      flex-direction: column;
-      border-radius: 16px;
-      background: rgba(16, 11, 9, 0.96);
-      border: 2px solid #e4c27a;
-      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
-      pointer-events: auto;
-    }
-    .foe-deck-pop.open { display: flex; }
-    .foe-deck-pop h2 {
-      margin: 0 0 6px;
-      text-align: center;
-      font-size: 28px;
-      letter-spacing: 0.12em;
-      color: #ffe7a8;
-    }
-    .foe-deck-pop p { margin: 0 0 10px; text-align: center; color: #d9c7a4; font-size: 15px; line-height: 1.45; }
-    .foe-deck-pop .deck-scroll { flex: 1 1 auto; min-height: 0; overflow: auto; }
-    .foe-deck-pop .deck-group h3 { margin: 0 0 10px; text-align: center; color: var(--gold); font-size: 18px; }
-    .foe-deck-pop .deck-cards { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-    .foe-deck-pop .card.preview { width: min(168px, 22%); height: auto; }
+    .foe-pile:hover .pile-card,
+    .foe-pile:focus-visible .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
+    .overlay.foe-deck-view .deck-lead { margin: 0 0 12px; text-align: center; color: #d9c7a4; font-size: 15px; line-height: 1.45; }
     .foe-peek {
       position: absolute;
       right: 8px;
@@ -4601,9 +4575,21 @@
       margin-inline: calc(var(--overlap, 33px) * -0.5);
       z-index: var(--hand-z, 1);
     }
-    /* 枚数が多いときは重ねる。ホバーは扇の中心から外側へ（端は斜めに出る。傾きは保つ） */
+    /* 枚数が多いときは重ねる。見た目だけ扇の中心から外側へ（端は斜め。傾きは保つ）。判定は元のカードのまま */
     .hand .card:hover:not(:disabled) {
+      transform: translateY(var(--drop, 0px)) rotate(var(--fan, 0deg));
+      z-index: var(--hand-z, 1);
+    }
+    #stage-float .hand-pop {
+      position: absolute;
+      margin: 0;
+      z-index: 30;
+      pointer-events: none;
+      height: auto;
+      max-height: none;
+      flex: none;
       --hand-lift: 96px;
+      transform-origin: center bottom;
       transform:
         translate(
           calc(sin(var(--fan, 0deg)) * var(--hand-lift) * 2.6),
@@ -4611,7 +4597,6 @@
         )
         rotate(var(--fan, 0deg))
         scale(1.14);
-      z-index: 80;
       box-shadow:
         inset 0 0 0 3px #1c1814,
         inset 0 0 0 5px var(--genre-line, #c8b48a),
@@ -12346,6 +12331,7 @@
 
     function playCard(index) {
       if (masteryOffer) return false;
+      if (showDeck || showFoeDeck) return false;
       if (phase !== "player" || outcome) return false;
       const card = hand[index];
       if (!card) return false;
@@ -13163,6 +13149,7 @@
 
     function endTurn() {
       if (masteryOffer) return;
+      if (showDeck || showFoeDeck) return;
       if (phase !== "player" || outcome || foeRageBusy) return;
       clearTimer();
       if (hasReuseBracelet()) {
@@ -16321,6 +16308,7 @@
     function render() {
       hideLogPeek();
       clearFoeDeckPop();
+      clearHandPop();
       if (screen === "title") {
         renderTitle();
         paintFullscreenLabels();
@@ -17281,6 +17269,13 @@
       return `<div class="overlay deck-view"><div class="panel"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
+    function foeDeckOverlay() {
+      if (!showFoeDeck || outcome || askLeave || !enemy) return "";
+      const n = sourcePattern().length;
+      const lead = "毎ターン、残りの中からSPDの枚数だけ無作為に置く。置けない枠は怒りが代わりに入る（ATK+2、DEF-2。1回だけ）。置いたあと、捨て札を山札に戻す。残りの枠があれば、戻した山札から引く。";
+      return `<div class="overlay deck-view foe-deck-view"><div class="panel wide"><h2>${esc(enemy.name)}の山札</h2><p class="deck-lead">${lead}</p><div class="deck-scroll"><section class="deck-group"><h3>${n}枚</h3>${foeDeckCards()}</section></div><button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
+    }
+
     // 敵の行動パターン（山札）。順番は見せず、中身だけ。
     function foeDeckCards() {
       const cards = sortedCards(sourcePattern());
@@ -17298,57 +17293,11 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(enemy.name)}の山札 ${left}枚">${foePileFace(left, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div><div class="foe-deck-pop"><h2>${esc(enemy.name)}の山札</h2><p>毎ターン、残りの中からSPDの枚数だけ無作為に置く。置けない枠は怒りが代わりに入る（ATK+2、DEF-2。1回だけ）。置いたあと、捨て札を山札に戻す。残りの枠があれば、戻した山札から引く。</p><div class="deck-scroll"><section class="deck-group"><h3>${sourcePattern().length}枚</h3>${foeDeckCards()}</section></div></div></div>`;
+      return `<div class="foe-piles"><button type="button" class="foe-pile${showFoeDeck ? " open" : ""}" data-action="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚を見る" aria-pressed="${showFoeDeck ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div></div>`;
     }
 
     function clearFoeDeckPop() {
       document.querySelectorAll("#stage-float > .foe-deck-pop, body > .foe-deck-pop").forEach((el) => el.remove());
-    }
-
-    function bindFoePeek() {
-      const pile = root.querySelector(".foe-pile");
-      const peek = root.querySelector(".foe-peek");
-      if (pile && peek) {
-        pile.addEventListener("pointerenter", () => { peek.hidden = false; });
-        pile.addEventListener("pointerleave", () => { peek.hidden = true; });
-      }
-      const pop = root.querySelector(".foe-deck-pop");
-      if (!pile || !pop) return;
-      mountFloat(pop);
-      let hideTimer = 0;
-      const show = () => {
-        if (hideTimer) {
-          clearTimeout(hideTimer);
-          hideTimer = 0;
-        }
-        pop.classList.add("open");
-        const margin = 8;
-        const bounds = stageBox();
-        const width = Math.min(980, bounds.w - margin * 2);
-        pop.style.width = `${width}px`;
-        const frame = stageFrameOf(pile);
-        let left = frame.left + frame.w - width;
-        left = Math.max(margin, Math.min(left, bounds.w - width - margin));
-        pop.style.left = `${Math.round(left)}px`;
-        pop.style.right = "auto";
-        const height = pop.offsetHeight;
-        let top = frame.top - height - 10;
-        if (top < margin) top = margin;
-        if (top + height > bounds.h - margin) top = Math.max(margin, bounds.h - height - margin);
-        pop.style.top = `${Math.round(top)}px`;
-        pop.style.bottom = "auto";
-      };
-      const scheduleHide = () => {
-        if (hideTimer) clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => {
-          hideTimer = 0;
-          pop.classList.remove("open");
-        }, 120);
-      };
-      pile.addEventListener("pointerenter", show);
-      pile.addEventListener("pointerleave", scheduleHide);
-      pop.addEventListener("pointerenter", show);
-      pop.addEventListener("pointerleave", scheduleHide);
     }
 
     const PATHS = {
@@ -18605,6 +18554,7 @@
         ${showLog ? `<aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml}</div></aside>` : ""}
         </div>
         ${deckOverlay()}
+        ${foeDeckOverlay()}
         ${overlay}
         ${leaveOverlay}`;
       player.hit = false;
@@ -18612,7 +18562,6 @@
       persistLive();
       kickHp();
       bindLogPeek();
-      bindFoePeek();
       bindGearHover();
       startManaFires();
       paintGear();
@@ -18738,6 +18687,62 @@
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
       syncPiles();
     }
+    function clearHandPop() {
+      const pop = document.getElementById("hand-pop");
+      if (pop) pop.remove();
+    }
+
+    function handLayoutBox(el) {
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
+      const ox = w / 2;
+      const oy = h;
+      const raw = getComputedStyle(el).transform;
+      const m = !raw || raw === "none" ? new DOMMatrix() : new DOMMatrix(raw);
+      const rel = [[0, 0], [w, 0], [w, h], [0, h]].map(([x, y]) => m.transformPoint(new DOMPoint(x - ox, y - oy)));
+      const minX = Math.min(...rel.map((p) => p.x));
+      const minY = Math.min(...rel.map((p) => p.y));
+      const rect = el.getBoundingClientRect();
+      const vx = rect.left - minX - ox;
+      const vy = rect.top - minY - oy;
+      if (!stageOn()) return { left: vx, top: vy, w, h };
+      const p = viewportToStage(vx, vy);
+      return { left: p.x, top: p.y, w, h };
+    }
+
+    function showHandPop(card) {
+      const phoneLand = document.documentElement.classList.contains("phone") && document.documentElement.classList.contains("land");
+      if (!card || card.disabled || card.classList.contains("deal") || card.closest(".hand.deal-pending") || phoneLand) {
+        clearHandPop();
+        return;
+      }
+      const key = `${card.dataset.card}|${card.className}|${card.innerHTML.length}`;
+      let pop = document.getElementById("hand-pop");
+      if (!pop || pop.dataset.key !== key) {
+        const next = document.createElement("div");
+        next.id = "hand-pop";
+        next.className = `${card.className} hand-pop`;
+        next.dataset.key = key;
+        next.innerHTML = card.innerHTML;
+        next.style.cssText = card.getAttribute("style") || "";
+        if (pop) pop.remove();
+        mountFloat(next);
+        pop = next;
+      }
+      const box = handLayoutBox(card);
+      pop.style.left = `${box.left}px`;
+      pop.style.top = `${box.top}px`;
+      pop.style.width = `${box.w}px`;
+      pop.style.height = `${box.h}px`;
+    }
+
+    document.addEventListener("pointermove", (event) => {
+      const el = event.target instanceof Element ? event.target : null;
+      const card = el && el.closest(".hand .card");
+      if (!card) clearHandPop();
+      else showHandPop(card);
+    });
+
     function phoneLayout() {
       return Math.min(window.innerWidth, window.innerHeight) <= 500;
     }
@@ -18895,12 +18900,12 @@
         if (name === "fullscreen") { toggleFullscreen(); return; }
         if (name === "road-home") { placeRoad("home"); return; }
         if (name === "title") goTitle();
-        if (name === "ask-title") { askLeave = true; showDeck = false; render(); }
+        if (name === "ask-title") { askLeave = true; showDeck = false; showFoeDeck = false; render(); }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
         if (name === "toggle-deck") { eventDeckOpen = !eventDeckOpen; render(); }
-        if (name === "deck") { showDeck = true; render(); }
+        if (name === "deck") { showFoeDeck = false; showDeck = true; render(); }
         if (name === "close-deck") { showDeck = false; render(); }
-        if (name === "foe-deck") { showFoeDeck = true; render(); }
+        if (name === "foe-deck") { showDeck = false; showFoeDeck = true; render(); }
         if (name === "close-foe-deck") { showFoeDeck = false; render(); }
         if (name === "foe-starter") { openFoeStarter(action.dataset.foe || ""); return; }
         if (name === "close-foe-starter") { closeFoeStarter(); return; }
