@@ -4157,7 +4157,7 @@
       display: flex;
       flex-direction: row;
       align-items: flex-start;
-      gap: 0;
+      gap: 8px;
       margin: 0;
       width: max-content;
       max-width: 100%;
@@ -4169,19 +4169,33 @@
     .gear-effect:not(.center-boon) .gear-effect-meta {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       justify-content: flex-start;
       gap: 3px;
       width: auto;
-      flex: 0 0 auto;
-      min-width: 0;
+      flex: 1 1 auto;
+      min-width: max-content;
       text-align: left;
     }
     .gear-effect:not(.center-boon) .gear-effect-meta .gear-effect-chiprow {
-      width: auto;
-      justify-content: flex-start;
+      width: 100%;
+      justify-content: flex-end;
     }
-    .gear-effect:not(.center-boon) .gear-effect-name { text-align: left; }
+    .gear-effect:not(.center-boon) .gear-effect-name {
+      text-align: left;
+      width: auto;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-stars {
+      width: 100%;
+      text-align: right;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-body {
+      min-height: calc(1.42em * 3);
+      width: 100%;
+      box-sizing: border-box;
+    }
     .gear-effect:not(.center-boon) .gear-effect-rest {
       width: 0;
       min-width: 100%;
