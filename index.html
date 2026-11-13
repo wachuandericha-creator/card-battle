@@ -5769,13 +5769,13 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* イベント画面：左半分＝挿絵（黄枠・全体が見える）、右半分＝物語・ゲーム説明・操作（お店はゲーム説明だけ） */
+    /* イベント画面：上に大きな挿絵、下に物語と押しやすい選択肢。お店だけ左に挿絵、右に品 */
     .menu.event {
       width: 100%;
       height: 100%;
-      padding: 8px 4px 12px 10px;
-      --event-art: 1fr;
-      --event-side: 1fr;
+      padding: 6px 8px 10px;
+      --event-art: 1.28fr;
+      --event-side: 0.9fr;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
@@ -5784,53 +5784,81 @@
         "lead";
       align-items: stretch;
       justify-items: stretch;
-      gap: 8px 12px;
+      gap: 6px 12px;
       overflow: hidden;
     }
     .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
     .menu.event.shop .event-choice {
-      justify-content: flex-start;
-      overflow: auto;
+      justify-content: stretch;
+      align-items: stretch;
+      overflow: hidden;
       min-height: 0;
-      padding: 8px 16px 12px;
+      height: 100%;
+      padding: 0;
+      gap: 8px;
     }
     .menu.event.shop .shop-row {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      justify-content: center;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      justify-content: stretch;
       align-items: stretch;
       width: 100%;
-      gap: 18px;
+      height: 100%;
+      min-height: 0;
+      flex: 1 1 auto;
+      margin: 0;
+      gap: 12px;
     }
     .menu.event.shop .shop-slot {
       width: auto;
       min-width: 0;
       min-height: 0;
-      overflow: visible;
-      display: flex;
-      flex-direction: column;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto auto;
       align-items: center;
-      gap: 8px;
-      padding: 12px 12px 14px;
+      justify-items: center;
+      gap: 6px;
+      padding: 10px 10px 12px;
       border: 2px solid #e4c27a;
       border-radius: 18px;
       background: rgba(16, 11, 9, 0.55);
       box-shadow: 0 0 0 1px #5c3d12;
     }
-    .menu.event.shop .shop-slot .card.preview { width: min(240px, 100%); }
+    .menu.event.shop .shop-slot .card.preview {
+      width: min(210px, 92%);
+      max-height: 100%;
+      align-self: center;
+    }
     .menu.event.shop .shop-slot .gear-effect {
       position: relative;
       left: auto;
       top: auto;
-      width: min(260px, 100%);
-      max-width: 260px;
-      max-height: none;
+      width: min(100%, 320px);
+      max-width: 100%;
+      max-height: 100%;
+      overflow: auto;
       pointer-events: none;
     }
-    .menu.event.shop .shop-slot .gear-effect-art { width: 112px; height: 112px; }
-    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 112px 1fr; }
+    .menu.event.shop .shop-slot .gear-effect-art { width: 96px; height: 96px; }
+    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 96px 1fr; }
     .menu.event.shop .shop-slot .shop-ribbon { display: none; }
-    .menu.event.shop .shop-have { margin: 0 0 12px; }
+    .menu.event.shop .shop-slot > span {
+      margin: 0;
+      font-size: clamp(18px, 1.5cqw, 24px);
+    }
+    .menu.event.shop .shop-slot .shop-buy,
+    .menu.event.shop .shop-slot .shop-sold {
+      width: 100%;
+      min-height: 56px;
+      margin: 0;
+      padding: 10px 12px;
+      box-sizing: border-box;
+      font-size: clamp(18px, 1.45cqw, 22px);
+      border-radius: 14px;
+    }
+    .menu.event.shop .shop-have { margin: 0; }
     .event-map {
       position: fixed;
       z-index: 45;
@@ -5891,8 +5919,8 @@
       color: #fff3c4;
     }
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
-    .menu.event.shop .shop-have { margin: 0 0 12px; width: 100%; text-align: center; font-size: 28px; font-weight: 900; color: #ffe08a; }
-    .menu.event > h1 { grid-area: title; text-align: center; margin: 28px 0 0; }
+    .menu.event.shop .shop-have { margin: 0; width: 100%; text-align: center; font-size: clamp(22px, 2cqw, 30px); font-weight: 900; color: #ffe08a; }
+    .menu.event > h1 { grid-area: title; text-align: center; margin: 8px 0 0; }
     .menu.event > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3cqw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
     .overlay.paths .path-now,
     .overlay.paths .path-now .event-floor-num {
@@ -5933,18 +5961,23 @@
     .menu.event .event-lead {
       grid-area: lead;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, var(--event-art)) minmax(220px, var(--event-side));
       align-items: stretch;
       align-self: stretch;
-      gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.8cqw, 12px);
+      gap: 10px 16px;
       width: 100%;
       max-width: 100%;
       max-height: 100%;
       justify-self: stretch;
       min-height: 0;
       overflow: hidden;
-      padding: 0 2px 0 0;
+      padding: 0;
       box-sizing: border-box;
+    }
+    .menu.event.shop .event-lead {
+      grid-template-columns: minmax(240px, 0.96fr) minmax(0, 1.04fr);
+      grid-template-rows: minmax(0, 1fr);
     }
     .menu.event .event-art {
       position: relative;
@@ -5958,20 +5991,31 @@
     }
     .menu.event .event-lead.no-art {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
     }
     .menu.event .event-side {
       min-width: 0;
       min-height: 0;
       max-width: none;
       justify-self: stretch;
+      display: grid;
+      grid-template-columns: minmax(0, 0.86fr) minmax(260px, 1.2fr);
+      align-items: stretch;
+      justify-content: stretch;
+      gap: 12px 18px;
+      overflow: hidden;
+      padding: 2px 6px 4px 2px;
+      box-sizing: border-box;
+    }
+    .menu.event.shop .event-side {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      gap: 14px;
-      overflow: hidden;
-      padding-right: clamp(6px, 1cqw, 16px);
-      padding-left: clamp(4px, 0.6cqw, 12px);
-      box-sizing: border-box;
+      gap: 8px;
+      padding: 2px 4px 4px 8px;
+    }
+    .menu.event.beggar .event-side {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
     }
     .menu.event .event-copy {
       min-width: 0;
@@ -5984,18 +6028,25 @@
     .menu.event .event-copy .event-split { width: 100%; }
     .menu.event .event-side .event-choice {
       grid-area: auto;
-      height: auto;
+      height: 100%;
       max-height: none;
       overflow: auto;
-      padding: 0 2px 0 0;
+      padding: 2px 2px 2px 0;
       width: 100%;
       min-height: 0;
+      align-items: stretch;
+      justify-content: center;
     }
     .menu.event .event-side .gift-btn {
-      min-width: 0;
-      max-width: none;
-      flex: 1 1 0;
+      min-width: 180px;
+      max-width: 280px;
+      flex: 1 1 200px;
+      height: auto;
+      max-height: none;
+      overflow: visible;
+      align-self: center;
     }
+    .menu.event .gift-pick { width: 100%; }
     .menu.event .event-picture {
       grid-area: picture;
       width: auto;
@@ -6021,8 +6072,8 @@
       display: block;
       width: auto;
       height: auto;
-      max-width: min(94%, 100%);
-      max-height: min(calc(100cqh - 132px), 100%);
+      max-width: 100%;
+      max-height: 100%;
       aspect-ratio: auto;
       object-fit: contain;
       object-position: center center;
@@ -6048,41 +6099,54 @@
       padding: 10px 12px 14px;
     }
     .menu.event.bless .gift-pick .card.preview {
-      width: min(272px, 100%);
+      width: 100%;
+      max-width: 210px;
+      height: auto;
     }
     .menu.event.bless .gift-pick .gift-img {
-      width: min(272px, 100%);
+      width: min(180px, 100%);
       height: auto;
       aspect-ratio: 1;
     }
+    .menu.event .gift-btn .gear-effect.center-boon .gear-effect-art {
+      width: 156px;
+      height: 156px;
+    }
+    .menu.event.shop .event-side .event-copy { flex: 0 0 auto; }
+    .menu.event.shop .event-side .event-choice {
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 0;
+      overflow: hidden;
+    }
     .menu.event.bless .gift-btn .gear-effect-art {
-      width: 96px;
-      height: 96px;
+      width: 120px;
+      height: 120px;
     }
     .menu.event.bless .gift-btn .gear-effect-head {
-      grid-template-columns: 96px 1fr;
+      grid-template-columns: 120px 1fr;
     }
     .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) {
-      --gear-pop-w: min(220px, 100%) !important;
-      font-size: 12px;
+      --gear-pop-w: min(250px, 100%) !important;
+      font-size: 14px;
     }
     .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-name {
-      font-size: 15px;
+      font-size: 18px;
     }
     .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-stars {
-      font-size: 11px;
+      font-size: 13px;
     }
     .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-body {
-      font-size: 12px;
-      padding: 6px 8px;
+      font-size: 14px;
+      padding: 8px 8px;
       text-align: left;
     }
     .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-art {
-      width: 88px;
-      height: 88px;
+      width: 120px;
+      height: 120px;
     }
     .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-head {
-      grid-template-columns: 88px 1fr;
+      grid-template-columns: 120px 1fr;
     }
     .menu.event .event-choice {
       grid-area: choice;
@@ -6169,36 +6233,101 @@
     .menu.event.search {
       grid-template-columns: minmax(0, 1fr);
     }
-    .menu.event.search .event-choice { padding-right: 4%; padding-left: 4%; gap: 10px; }
-    .menu.event.search .gift-show { width: min(280px, 100%); max-width: 280px; align-self: center; }
+    .menu.event.search .event-choice { padding-right: 4px; padding-left: 4px; gap: 16px; }
+    .menu.event.search .gift-show { width: min(260px, 48%); max-width: 270px; align-self: center; }
     .menu.event .event-choice > button,
-    .menu.event .event-actions { width: auto; align-self: flex-start; }
+    .menu.event .event-actions { width: min(100%, 440px); align-self: center; }
     .menu.event .event-choice > button,
-    .menu.event .event-actions button { width: auto; min-width: 0; align-self: flex-start; padding: 10px 18px; }
-    .menu.event .event-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .menu.event .event-actions button {
+      width: 100%;
+      min-width: 0;
+      min-height: 64px;
+      align-self: stretch;
+      padding: 14px 22px;
+      font-size: clamp(20px, 1.7cqw, 28px);
+      border-radius: 16px;
+    }
+    .menu.event .event-actions { display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 12px; }
     .menu.event .event-actions button { min-width: 0; }
+    .menu.event .event-choice:has(.gift-show) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 16px 20px;
+    }
+    .menu.event .event-choice:has(.gift-show) .gift-show {
+      width: min(260px, 48%);
+      max-width: 270px;
+      align-self: center;
+    }
+    .menu.event .event-choice:has(.gift-show) .gift-show .card.preview,
+    .menu.event .event-choice:has(.gift-show) .gift-show .gift-img {
+      width: min(220px, 100%);
+      height: auto;
+    }
+    .menu.event .event-choice:has(.gift-show) .event-actions,
+    .menu.event .event-choice:has(.gift-show) > button {
+      width: min(100%, 340px);
+      flex: 1 1 220px;
+      align-self: center;
+    }
+    .menu.event.beggar .beggar-cards {
+      width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      justify-content: flex-start;
+      gap: 12px;
+      padding-bottom: 6px;
+    }
+    .menu.event.beggar .beggar-card .card.preview { width: 168px; max-width: none; }
+    .menu.event.beggar .event-actions {
+      flex-direction: row;
+      width: min(100%, 860px);
+      align-self: center;
+      gap: 16px;
+    }
+    .menu.event.beggar .event-actions button {
+      flex: 1 1 0;
+      min-height: 68px;
+      white-space: nowrap;
+      font-size: clamp(18px, 1.4cqw, 24px);
+    }
     .menu.event .beggar-card.picked .card.preview { outline: 4px solid #ffe08a; outline-offset: 2px; }
-    .menu.event .gift-row,
-    .menu.event .shop-row { width: 100%; justify-content: space-between; }
-    .menu.event .gift-btn { flex: 1 1 0; width: auto; min-width: 0; }
+    .menu.event .gift-row { width: 100%; height: auto; min-height: 0; flex: 0 1 auto; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 14px; }
+    .menu.event .shop-row { width: 100%; justify-content: stretch; }
+    .menu.event .gift-btn { flex: 1 1 200px; width: auto; min-width: 180px; max-width: 280px; height: auto; align-self: center; }
     .menu.event.bless { justify-content: stretch; overflow: hidden; padding-top: 8px; }
     @media (max-width: 900px) {
       html:not(.stage-fit) .menu.event { padding: 8px 4px 12px 8px; }
-      html:not(.stage-fit) .menu.event .event-lead {
+      html:not(.stage-fit) .menu.event .event-lead,
+      html:not(.stage-fit) .menu.event.shop .event-lead {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(0, 1fr) auto;
-        overflow: auto;
+        grid-template-rows: minmax(160px, 32cqh) minmax(0, 1fr);
+        overflow: hidden;
         padding: 0;
       }
-      html:not(.stage-fit) .menu.event .event-art { min-height: 22cqh; }
+      html:not(.stage-fit) .menu.event .event-art { min-height: 0; }
       html:not(.stage-fit) .menu.event .event-art .event-picture {
         width: auto;
         height: auto;
-        max-width: min(88%, 100%);
-        max-height: 21cqh;
+        max-width: 100%;
+        max-height: 100%;
         object-position: center;
       }
-      html:not(.stage-fit) .menu.event .event-side { max-width: 100%; justify-self: stretch; padding-right: 6px; }
+      html:not(.stage-fit) .menu.event .event-side,
+      html:not(.stage-fit) .menu.event.shop .event-side,
+      html:not(.stage-fit) .menu.event.beggar .event-side {
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 100%;
+        justify-self: stretch;
+        padding-right: 6px;
+        overflow: auto;
+      }
+      html:not(.stage-fit) .menu.event .gift-row { flex-wrap: wrap; }
+      html:not(.stage-fit) .menu.event.shop .shop-row { grid-template-rows: none; height: auto; }
     }
     .menu.bless { justify-content: flex-start; overflow-y: auto; padding-top: calc(16px + 1.2em); gap: 10px; }
     .menu.event,
