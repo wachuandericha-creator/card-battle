@@ -10790,15 +10790,14 @@
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
       { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=7" },
     ];
-    // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「戦利品」。
+    // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティは★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 3, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
     ];
 
     function gearRarityText(item) {
       if (!item) return "";
-      if (item.boss) return "戦利品";
       const n = Number(item.stars) || 0;
       return n > 0 ? "★".repeat(n) : "";
     }
@@ -11216,7 +11215,7 @@
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
-      const starsClass = rarity === "戦利品" ? "gear-effect-stars boss" : "gear-effect-stars";
+      const starsClass = "gear-effect-stars";
       const art = o.image
         ? `<img src="${esc(o.image)}" alt="">`
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotKey)}</span>`;
@@ -11224,7 +11223,8 @@
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const kindChip = boon ? "" : `<span class="kind">${esc(gearSlotLabel(slotKey))}</span>`;
+      const kindLabel = (o.item && o.item.boss) ? "戦利品" : gearSlotLabel(slotKey);
+      const kindChip = boon ? "" : `<span class="kind">${esc(kindLabel)}</span>`;
       const stats = boon && o.item ? gearStatChips(o.item) : "";
       const chipRow = boon ? stats : (kindChip ? `<div class="gear-effect-chiprow">${kindChip}</div>` : "");
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
