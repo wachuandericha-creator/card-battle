@@ -11172,7 +11172,7 @@
       const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
       const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=3";
-      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="メダル"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
+      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="戦利品"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
       return `<div class="gear-board">${sword}${shield}${left}${right}${medals}</div>`;
     }
 
@@ -11180,7 +11180,7 @@
       if (slotId === "sword") return "剣";
       if (slotId === "shield") return "盾";
       if (slotId === "braceletL" || slotId === "braceletR" || slotId === "braceletAny") return "アクセサリー";
-      if (slotId === "medal") return "メダル";
+      if (slotId === "medal") return "戦利品";
       if (slotId === "hp") return "体力";
       if (slotId === "mana") return "マナ";
       if (slotId === "spd") return "SPD";
@@ -15208,8 +15208,8 @@
         ? menuButton(`手札を${HAND_CAP}枚にする（見た目確認）`, "fill-hand-look", true)
         : `<button type="button" disabled>手札を${HAND_CAP}枚にする（見た目確認・戦闘中のみ）</button>`;
       const medalBtn = inBattle
-        ? menuButton("メダルを10個にする（見た目確認）", "medal-look", true)
-        : `<button type="button" disabled>メダルを10個にする（見た目確認・戦闘中のみ）</button>`;
+        ? menuButton("戦利品を10個にする（見た目確認）", "medal-look", true)
+        : `<button type="button" disabled>戦利品を10個にする（見た目確認・戦闘中のみ）</button>`;
       const eventBlock = optionEventActive()
         ? `<div class="settings-events"><h2>イベントを起こす</h2><p class="settings-note">タイトルから開いたときは、試し用のランを足してからイベント画面へ進みます。</p>${OPTION_EVENT_KINDS.map(([routeKind, label]) => `<button type="button" class="primary" data-action="option-event" data-event-kind="${esc(routeKind)}">${esc(label)}</button>`).join("")}</div>`
         : "";
@@ -17821,7 +17821,7 @@
       dropLine = rollVictoryExtra();
       const foe = enemyNow();
       const medal = bossNow() && foe.medal ? gearItem(foe.medal) : null;
-      // ボスも道中と同じく★をもらう。メダルは、その敵にメダルがあるときだけ追加
+      // ボスも道中と同じく★をもらう。戦利品は、その敵に枠があるときだけ追加
       rewardStars = foe.tier || starsForRank(foe.rank);
       starBurst = rewardStars;
       pendingStars = rewardStars;
