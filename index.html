@@ -7325,7 +7325,7 @@
       align-self: start;
       flex: 0 0 auto;
     }
-    .cast-screen.character-focus .cast-plaque h2 { margin: 8px 0 6px; font-size: 15px; }
+    .cast-screen.character-focus .cast-plaque h2 { margin: 8px 0 6px; font-size: clamp(26px, 2.2cqw, 34px); letter-spacing: 0.14em; }
     .cast-screen.character-focus .cast-gear-col {
       min-width: 0;
       display: grid;
@@ -7481,7 +7481,7 @@
       pointer-events: none;
       justify-content: center;
       gap: 14px;
-      font-size: clamp(22px, 2.1cqw, 36px);
+      font-size: clamp(28px, 2.8cqw, 48px);
       letter-spacing: 0.08em;
       color: #f6d48a;
       background: none;
@@ -7499,6 +7499,15 @@
       top: 16px;
       left: 16px;
       width: min(280px, 46%);
+    }
+    .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
+      margin: 0 0 6px;
+      text-align: center;
+      color: #f0c36a;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-board.cast-vitals {
       width: 100%;
@@ -7542,10 +7551,10 @@
       filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.55));
     }
     .cast-screen.character-focus .cast-title.fade-sandwich > .fade-line {
-      flex: 1 1 auto;
-      width: auto;
-      max-width: none;
-      min-width: 20px;
+      flex: 0 0 auto;
+      width: clamp(120px, 12cqw, 220px);
+      max-width: 220px;
+      min-width: 0;
       height: 2px;
     }
     .cast-screen.character-focus .cast-roster {
@@ -7643,28 +7652,31 @@
     }
     .cast-screen.character-focus .cast-board .cast-key {
       border: 1px solid rgba(228, 177, 90, 0.9);
-      border-radius: 16px;
-      padding: 12px 16px 14px;
+      border-radius: 12px;
+      padding: 8px 12px 10px;
       background:
         radial-gradient(120% 60% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 60%),
         linear-gradient(180deg, #2a2019 0%, #1a1310 42%, #120d0b 100%);
       box-shadow:
-        0 0 0 3px #15100d,
-        0 0 0 4px rgba(228, 177, 90, 0.55);
+        0 0 0 1px #15100d,
+        0 0 0 2px rgba(228, 177, 90, 0.7);
     }
     .cast-screen.character-focus .cast-board .cast-keys h2,
     .cast-screen.character-focus .cast-board .cast-keys h3 {
-      margin: 0 0 8px;
+      margin: 0 0 4px;
       width: 100%;
       text-align: center;
       align-self: center;
-      font-size: clamp(36px, 3cqw, 48px);
-      letter-spacing: 0.22em;
+      font-size: clamp(32px, 2.4cqw, 40px);
+      line-height: 1.15;
+      letter-spacing: 0.18em;
     }
     .cast-screen.character-focus .cast-board .cast-keys p {
       margin: 0;
       width: 100%;
       text-align: left;
+      font-size: clamp(16px, 1.35cqw, 20px);
+      line-height: 1.45;
     }
     .cast-screen.character-focus .cast-board .cast-key p + p { margin-top: 4px; }
     .cast-screen.character-focus .cast-board .cast-mid {
@@ -7685,6 +7697,16 @@
       width: 100%;
       max-width: none;
       align-self: stretch;
+    }
+    .cast-screen.character-focus .cast-board .cast-gear .cast-blurb {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      text-align: center;
+      font-size: clamp(22px, 1.9cqw, 30px);
+      font-weight: 800;
+      letter-spacing: 0.12em;
     }
     .cast-screen.character-focus .cast-board .cast-deck {
       width: 100%;
@@ -8109,10 +8131,10 @@
       filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.55));
     }
     .cast-screen.dungeon-screen .cast-title.fade-sandwich > .fade-line {
-      flex: 1 1 auto;
-      width: auto;
-      max-width: none;
-      min-width: 20px;
+      flex: 0 0 auto;
+      width: clamp(120px, 12cqw, 220px);
+      max-width: 220px;
+      min-width: 0;
       height: 2px;
     }
     .cast-screen.dungeon-screen .dungeon-stage {
@@ -8989,7 +9011,7 @@
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。効果は重なる。ターンが終わると消える。パリィを得ると、持っているシールドはすべてなくなる。パリィがあるあいだは、シールドを追加できない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィを得る", damage: 10, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
@@ -9274,7 +9296,7 @@
     let foeDiscard = [];
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "次の攻撃を１回無効にする。重なる。ターン終了時に消失。パリィを得ると、いま持っているシールドはすべてなくなる。パリィがある間、シールドを追加で得ることはできない。";
+    const PARRY_NOTE = "次の攻撃を１回無効にする。効果は重なる。ターンが終わると消える。パリィを得ると、持っているシールドはすべてなくなる。パリィがあるあいだは、シールドを追加できない。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
@@ -9395,7 +9417,7 @@
     const CAST = [
       {
         name: "戦士",
-        blurb: "剣と盾を巧みに操る女戦士。敵の攻撃のタイミングを見極め、パリィで受け流す。敵が崩れた隙をついて、強力な一撃で畳みかける。",
+        blurb: "剣と盾を巧みに操る女の戦士。敵の攻撃のタイミングを見極め、パリィで受け流す。崩れた隙に、強力な一撃を入れる。",
         stand: "girl-front-v2.png?v=1",
         chibi: "job-girl-v2.png?v=1",
         action: "girl-action.jpg?v=6",
@@ -14788,7 +14810,7 @@
       if (!text) return "";
       const parts = String(text).split(/。/).map((s) => s.trim()).filter(Boolean);
       if (!parts.length) return `<p class="cast-blurb">${esc(text)}</p>`;
-      return parts.map((part, i) => `<p class="cast-blurb">${esc(part)}${i < parts.length - 1 ? "。" : ""}</p>`).join("");
+      return parts.map((part) => `<p class="cast-blurb">${esc(part)}。</p>`).join("");
     }
 
     function castOnArtMarkup(item) {
@@ -14797,6 +14819,7 @@
         : "";
       return `
         <div class="cast-on-stats">
+          <p class="cast-stat-caption">初期ステータス</p>
           <div class="cast-stat-board cast-vitals" aria-label="初期ステータス">
             <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>30</b></span></div>
             <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>0</b></span></div>
@@ -14811,7 +14834,6 @@
       return `
         <div class="cast-side">
           <div class="cast-plaque">
-            <h1><span>${esc(item.name)}</span></h1>
             <div class="cast-mid">
               <div class="cast-gear-col">
                 <h2><span>初期装備</span></h2>
@@ -14829,10 +14851,10 @@
         <aside class="cast-keys" aria-label="キーワード">
           <section class="cast-key">
             <h2>パリィ</h2>
-            <p>次の攻撃を１回無効にする。重なる。</p>
-            <p>ターン終了時に消失。</p>
-            <p>パリィを得ると、いま持っているシールドはすべてなくなる。</p>
-            <p>パリィがある間、シールドを追加で得ることはできない。</p>
+            <p>次の攻撃を１回無効にする。効果は重なる。</p>
+            <p>ターンが終わると消える。</p>
+            <p>パリィを得ると、持っているシールドはすべてなくなる。</p>
+            <p>パリィがあるあいだは、シールドを追加できない。</p>
           </section>
         </aside>`;
     }
