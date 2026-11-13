@@ -8137,10 +8137,20 @@
       width: max-content;
       max-width: 100%;
       text-align: left;
-      font-size: clamp(16px, 1.35cqw, 20px);
-      line-height: 1.45;
+      font-family: "Yu Gothic", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+      font-size: clamp(17px, 1.4cqw, 22px);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      line-height: 1.7;
     }
-    .cast-screen.character-focus .cast-board .cast-key p + p { margin-top: 10px; }
+    .cast-screen.character-focus .cast-board .cast-keys p.lead {
+      font-size: clamp(26px, 2.15cqw, 34px);
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0.01em;
+    }
+    .cast-screen.character-focus .cast-board .cast-key p + p { margin-top: 8px; }
+    .cast-screen.character-focus .cast-board .cast-keys p.tail { margin-top: 16px; }
     .cast-screen.character-focus .cast-board .cast-mid {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -9567,7 +9577,7 @@
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "次の攻撃を１回無効にする。効果は重なる。ターンが終わると消える。パリィを得ると、持っているシールドはすべてなくなる。パリィがあるあいだは、シールドを追加できない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィを得る", damage: 10, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
@@ -9851,7 +9861,7 @@
     let foeDiscard = [];
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "次の攻撃を１回無効にする。効果は重なる。ターンが終わると消える。パリィを得ると、持っているシールドはすべてなくなる。パリィがあるあいだは、シールドを追加できない。";
+    const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
@@ -15389,10 +15399,11 @@
         <aside class="cast-keys" aria-label="キーワード">
           <section class="cast-key">
             <h2>パリィ</h2>
-            <p>次の攻撃を１回無効にする。効果は重なる。</p>
-            <p>ターンが終わると消える。</p>
-            <p>パリィを得ると、持っているシールドはすべてなくなる。</p>
-            <p>パリィがあるあいだは、シールドを追加できない。</p>
+            <p class="lead">敵から受けるダメージを1度だけ無効にする。</p>
+            <p>重複可。</p>
+            <p>ターン終了時に消滅</p>
+            <p>パリィ状態は、所持中のシールドをすべて破壊し、<br>追加でシールドを得ることはできない。</p>
+            <p class="tail">パリィのタイミングを見極めた戦士にシールドは不要だ。</p>
           </section>
         </aside>`;
     }
