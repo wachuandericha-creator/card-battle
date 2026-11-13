@@ -2079,6 +2079,8 @@
     .style-genres figure { margin: 0; max-width: none; }
     .style-genres figcaption { text-align: center; font-size: 12px; }
     .style-genres img.style-master { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: fill; display: block; }
+    .album-top .trial-head { margin: 14px 0 6px; text-align: center; font-size: 14px; letter-spacing: 0.08em; }
+    .style-genres.trial { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .album-top { min-width: 0; }
     .album-top .card.preview { width: 100%; }
     .album-screen .panel {
@@ -10267,8 +10269,8 @@
         name: "戦士",
         blurb: "剣と盾を巧みに操る女の戦士。敵の攻撃のタイミングを見極め、パリィで受け流す。崩れた隙に、強力な一撃を入れる。",
         stand: "girl-front-v2.png?v=1",
-        chibi: "job-girl-hands-down.png?v=1",
-        chibiHot: "job-girl-v2.png?v=1",
+        chibi: "job-girl-hands-down.png?v=2",
+        chibiHot: "job-girl-v2.png?v=2",
         action: "girl-action.jpg?v=6",
         battle: "girl-battle-v42.png?v=1",
         battleRatio: "3 / 4",
@@ -14458,9 +14460,9 @@
     const ENCHANT_ELEMS = ["fire", "water", "light", "dark"];
 
     function enchantFace(elem) {
-      if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.svg?v=1" };
-      if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.svg?v=1" };
-      if (elem === "dark") return { name: "闇", sub: "キーワード", image: "enchant-dark.svg?v=1" };
+      if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.jpg?v=1" };
+      if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.jpg?v=1" };
+      if (elem === "dark") return { name: "闇", sub: "キーワード", image: "enchant-dark.jpg?v=1" };
       return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=2" };
     }
 
@@ -16945,8 +16947,8 @@
               ${sheetFig("girl-action.jpg?v=6", "戦士の一枚絵", "land-ref", "span-2")}
             </div>
             <div class="ref-grid">
-              ${sheetFig("job-girl-hands-down.png?v=1", "戦士の選択コマ（手を下ろす）", "cut-ref")}
-              ${sheetFig("job-girl-v2.png?v=1", "戦士の選択コマ（手を上げる）", "cut-ref")}
+              ${sheetFig("job-girl-hands-down.png?v=2", "戦士の選択コマ（手を下ろす）", "cut-ref")}
+              ${sheetFig("job-girl-v2.png?v=2", "戦士の選択コマ（手を上げる）", "cut-ref")}
             </div>
             <h3>装備</h3>
             ${sheetGearInline()}
@@ -17047,6 +17049,8 @@
               <section>
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
+                <h4 class="trial-head">アタック ボス　棘を右へ</h4>
+                <div class="style-genres trial">${cardStyleSheet([["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=1"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -17492,6 +17496,7 @@
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
+      ["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
