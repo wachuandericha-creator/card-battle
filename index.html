@@ -7593,8 +7593,17 @@
       height: auto;
       z-index: 2;
     }
+    .cast-screen.character-focus .cast-actions > button {
+      flex: 0.72 1 0;
+      width: auto;
+      height: auto;
+      min-height: 96px;
+      padding: 16px 18px;
+      font-size: clamp(22px, 1.8cqw, 30px);
+    }
     .cast-screen.character-focus .cast-actions > button.cast-start {
-      width: 100%;
+      flex: 1.45 1 0;
+      width: auto;
       height: auto;
       min-height: 96px;
       padding: 16px 28px;
@@ -8086,7 +8095,7 @@
     .cast-screen.dungeon-screen {
       display: grid;
       grid-template-columns: minmax(0, 1.2fr) minmax(400px, 0.72fr);
-      grid-template-rows: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
       align-items: stretch;
       justify-items: stretch;
       gap: 16px;
@@ -8099,6 +8108,8 @@
       padding: 56px 64px 48px;
     }
     .cast-screen.dungeon-screen .dungeon-play {
+      grid-column: 1;
+      grid-row: 2;
       min-width: 0;
       min-height: 0;
       height: 100%;
@@ -8109,13 +8120,15 @@
     }
     .cast-screen.dungeon-screen .cast-title {
       position: static;
+      grid-column: 1 / -1;
+      grid-row: 1;
       flex: 0 0 auto;
       width: 100%;
-      margin: 0;
+      margin: 0 0 8px;
       padding: 0 8px;
       justify-content: center;
       gap: 14px;
-      font-size: clamp(22px, 2.1cqw, 36px);
+      font-size: clamp(28px, 2.8cqw, 48px);
       letter-spacing: 0.08em;
       color: #f6d48a;
       background: none;
@@ -8142,7 +8155,10 @@
     }
     .cast-screen.dungeon-screen .dungeon-stage {
       position: relative;
-      flex: 1 1 auto;
+      flex: 0 0 auto;
+      align-self: center;
+      width: 94%;
+      height: min(60cqh, 100%);
       min-height: 0;
       border-radius: 22px;
       overflow: hidden;
@@ -8172,6 +8188,7 @@
       min-height: 168px;
       flex: 0 0 auto;
       align-self: stretch;
+      margin-top: auto;
     }
     .cast-screen.dungeon-screen .cast-actions {
       position: static;
@@ -8198,6 +8215,8 @@
       letter-spacing: 0.14em;
     }
     .cast-screen.dungeon-screen .dungeon-board {
+      grid-column: 2;
+      grid-row: 2;
       min-width: 0;
       min-height: 0;
       height: 100%;
@@ -8233,8 +8252,8 @@
     .cast-screen.dungeon-screen .dungeon-board .dungeon-note {
       margin: 0;
       text-align: left;
-      font-size: clamp(20px, 1.6cqw, 26px);
-      letter-spacing: 0.12em;
+      font-size: clamp(26px, 2.2cqw, 34px);
+      letter-spacing: 0.14em;
     }
     .cast-screen.dungeon-screen .dungeon-board .dungeon-foes,
     .cast-screen.dungeon-screen .dungeon-board .dungeon-clears,
@@ -8277,11 +8296,12 @@
       html:not(.stage-fit) .cast-screen.character-focus .cast-board { grid-column: 1; grid-row: 3; }
       html:not(.stage-fit) .cast-screen.dungeon-screen {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(280px, 46cqh) auto;
+        grid-template-rows: auto minmax(240px, 42cqh) auto;
         overflow: auto;
         padding: 12px;
       }
-      html:not(.stage-fit) .cast-screen.dungeon-screen .dungeon-play { min-height: 280px; }
+      html:not(.stage-fit) .cast-screen.dungeon-screen .dungeon-play { grid-row: 2; min-height: 240px; }
+      html:not(.stage-fit) .cast-screen.dungeon-screen .dungeon-board { grid-column: 1; grid-row: 3; }
       html:not(.stage-fit) .cast-screen.character-focus .cast-main {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -15125,6 +15145,7 @@
             <div class="cast-stage"><div class="cast-hero-slot"></div></div>
             <div class="cast-roster many">${tokens}</div>
             <div class="cast-actions">
+              <button type="button" class="cast-back" data-action="title">タイトルへ</button>
               <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
             </div>
           </div>
@@ -15169,8 +15190,8 @@
       const dungeonTitle = fadeSandwichMarkup(`<span class="cast-title-name">ダンジョンを選択してください</span>`, { tag: "h1", className: "cast-title" });
       root.innerHTML = `
         <div class="cast-screen dungeon-screen">
+          ${dungeonTitle}
           <div class="dungeon-play">
-            ${dungeonTitle}
             <div class="dungeon-stage">
               <div class="dungeon-preview">
                 <img alt="" hidden>
@@ -15182,6 +15203,7 @@
             </div>
             <div class="dungeon-columns">${columns}</div>
             <div class="cast-actions">
+              <button type="button" class="cast-back" data-action="character">ジョブ選択へ</button>
               <button type="button" class="primary cast-start" data-action="dungeon-enter" disabled>挑戦開始</button>
             </div>
           </div>
