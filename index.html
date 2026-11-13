@@ -1139,11 +1139,11 @@
     .shield-break .half svg { width: 100%; height: 100%; display: block; }
     .shield-break .half.left {
       clip-path: inset(0 50% 0 0);
-      animation: shield-half-left 0.62s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      animation: shield-half-left 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
     .shield-break .half.right {
       clip-path: inset(0 0 0 50%);
-      animation: shield-half-right 0.62s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      animation: shield-half-right 1.05s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
     }
     @keyframes shield-half-left {
       0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
@@ -1327,7 +1327,7 @@
       mix-blend-mode: screen;
       animation: hero-flash 0.7s ease-out forwards;
     }
-    .hero-body .hero-hit.blunt { overflow: visible; }
+    .hero-body .hero-hit.blunt { overflow: visible; z-index: 5; }
     .hero-hit.blunt .flash,
     .hero-hit.blunt .ember,
     .hero-hit.blunt .dust { display: none; }
@@ -1435,7 +1435,7 @@
       letter-spacing: 0.42em;
       color: #ffd8c8;
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
-      animation: fatal-call 2.6s ease-out both;
+      animation: fatal-call 4.6s ease-out both;
     }
     /* 横に並べ、足元をそろえる。雑魚0.8、普通1.2、強敵とボスは2。大きいほうが枠の高さ。 */
     .enemy-main {
@@ -9050,10 +9050,10 @@
       100% { transform: scale(1.08); }
     }
     @keyframes fatal-call {
-      0% { opacity: 0; transform: translate(-50%, -40%) scale(0.7); letter-spacing: 0.08em; }
-      22% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
-      70% { opacity: 1; }
-      100% { opacity: 0.2; transform: translate(-50%, -58%) scale(1); }
+      0% { opacity: 0; transform: translate(-50%, -40%) scale(0.62); letter-spacing: 0.04em; }
+      48% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); letter-spacing: 0.42em; }
+      78% { opacity: 1; letter-spacing: 0.42em; }
+      100% { opacity: 0.2; transform: translate(-50%, -54%) scale(1); letter-spacing: 0.42em; }
     }
     @keyframes pose-slam {
       0% { opacity: 0; transform: translateY(36px) scale(1.22); filter: brightness(2.2); }
@@ -14870,7 +14870,7 @@
       const broke = Boolean(opt.break);
       const size = fxLabFoeSize(fxLabFoeName);
       const img = esc(fxLabFoeImage(fxLabFoeName));
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="${img}" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.48 : 0) : ""}</div></div></div>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="${img}" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
     }
 
     function fxLabFoeDef() {
@@ -14985,7 +14985,7 @@
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
       const mid = `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half">${foeCard}</div></div><button type="button" class="vs-mark${id === "end-ready" ? " spent" : ""}" aria-label="ターン終了">VS</button></div>`;
-      const hitPop = hero.n ? playerHitPop(hero.n, hero.kind, hero.fatal, hero.n >= 9, hero.break ? 0.48 : 0) : "";
+      const hitPop = hero.n ? playerHitPop(hero.n, hero.kind, hero.fatal, hero.n >= 9, hero.break ? 0.7 : 0) : "";
       const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold), hitPop)}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
@@ -18507,14 +18507,14 @@
       const breakEnemyNow = fxBreakEnemy;
       fxBreakPlayer = false;
       fxBreakEnemy = false;
-      const foePopWait = breakEnemyNow ? 0.48 : 0;
+      const foePopWait = breakEnemyNow ? 0.7 : 0;
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
         const text = foeKind === "poison" ? `${n}ダメージ！` : n;
         return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08 + foePopWait).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
       }).join("");
       const playerPop = hurtNow && hitNow && hitNow.side === "player"
-        ? playerHitPop(hitNow.n, hitNow.kind, fatalNow, player && hitNow.n >= player.maxHp * 0.3, breakPlayerNow ? 0.48 : 0)
+        ? playerHitPop(hitNow.n, hitNow.kind, fatalNow, player && hitNow.n >= player.maxHp * 0.3, breakPlayerNow ? 0.7 : 0)
         : "";
       fxSlash = false;
       fxSlashes = [];
