@@ -9574,7 +9574,7 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-aura.jpg?v=1",
+      アタック: "card-attack-f.jpg?v=2",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
@@ -9702,7 +9702,7 @@
       瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block", stars: 1 },
     };
     void UNBUILT;
-    // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会はATK+1。体力は初回のおよそ4分の1を5刻みで足す。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
+    // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会1回につきATK+2・体力+2。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
@@ -10333,15 +10333,13 @@
       const base = foe && foe.atkHidden != null
         ? Number(foe.atkHidden) || 0
         : HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
-      return base + plus;
+      return base + plus * 2;
     }
 
-    // 再会1回につき、初回体力のおよそ4分の1。5刻み。
+    // 再会1回につき体力+2。
     function reunionHpBonus(foe) {
       const plus = foe && foe.plus != null ? Number(foe.plus) || 0 : foeRepeat();
-      const base = Number(foe && foe.hp) || 0;
-      const step = Math.round(base / 4 / 5) * 5;
-      return plus * step;
+      return plus * 2;
     }
 
     function foeBattleHp(foe) {
@@ -10468,10 +10466,36 @@
       return parts.join("");
     }
 
+    function combatsFinished() {
+      let n = 0;
+      for (let i = 0; i < battleIndex; i++) {
+        if (route[i] && !isEventNode(route[i])) n += 1;
+      }
+      return n;
+    }
+
+    function maxEnemyTierForFloor(floorNum) {
+      if (combatsFinished() === 0) return 1;
+      const floors = dungeonFloors || 30;
+      const p = Math.max(1, Number(floorNum) || 1) / floors;
+      if (p <= 1 / 3) return 1;
+      if (p <= 2 / 3) return 2;
+      return 3;
+    }
+
     function rollRank() {
-      const names = combatNames(dungeonName, eventBattleSeen);
+      const tierCap = maxEnemyTierForFloor(floorForNextCombat());
+      const names = combatNames(dungeonName, eventBattleSeen, tierCap);
       if (!names.length) return "スライム";
       return names[Math.floor(Math.random() * names.length)];
+    }
+
+    function floorForNextCombat() {
+      try {
+        return nextFloorNumber();
+      } catch (_) {
+        return Number(floorAt[battleIndex]) || 1;
+      }
     }
 
     function enemyStar(foe) {
@@ -10483,11 +10507,13 @@
       return String((item && item.rank) || "★").split("★").length - 1;
     }
 
-    function combatNames(name, withBeggar) {
+    function combatNames(name, withBeggar, tierCap) {
       const star = dungeonStarCount(name);
+      const cap = tierCap == null ? 99 : Number(tierCap) || 1;
       return ENEMIES.filter((foe) => {
         if (foe.name === "ハデス") return false;
         if (foe.name === "物乞い" && !withBeggar) return false;
+        if (enemyStar(foe) > cap) return false;
         if (name === "洞窟") return true;
         if (foe.home) return foe.home === name;
         if (enemyStar(foe) !== star) return false;
@@ -13132,32 +13158,29 @@
       }
     }
 
-    function dungeonStar() {
-      if (dungeonName === "深淵") return 3;
-      if (dungeonName === "古城") return 2;
-      return 1;
+    function legionTraitFor(who) {
+      if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 };
+      if (who === "ゴブリン") return applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow());
+      if (who === "物乞い") return { ...FOE_ONLY["無心"], name: "無心" };
+      if (who === "ちびドラゴン") return { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" };
+      if (who === "コボルド") return { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true };
+      if (who === "ミノタウロス") {
+        return { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+      }
+      if (who === "トロール") {
+        return { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 1, slack: true };
+      }
+      return null;
     }
 
     function playLegion(card) {
-      const star = dungeonStar();
-      const rankOf = { スライム: 1, ゴブリン: 1, コボルド: 1, 物乞い: 1, ちびドラゴン: 2, トロール: 2, ミノタウロス: 3 };
-      const pool = runSlain.filter((name) => rankOf[name] === star);
+      const pool = runSlain.filter((name) => name !== "ハデス" && legionTraitFor(name));
       if (!pool.length) {
-        log(`${enemy.name}は死者の軍団。同じ★で倒した敵がいない。`, card, true);
+        log(`${enemy.name}は死者の軍団。この攻略で使える特徴がない。`, card, true);
         return;
       }
       const who = pool[Math.floor(Math.random() * pool.length)];
-      const trait = who === "スライム"
-        ? { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 }
-        : who === "ゴブリン"
-          ? applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow())
-          : who === "物乞い"
-            ? { ...FOE_ONLY["無心"], name: "無心" }
-            : who === "ちびドラゴン"
-              ? { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" }
-              : who === "コボルド"
-                ? { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true }
-                : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+      const trait = legionTraitFor(who);
       log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
       enemyUseCard(trait);
     }
@@ -15396,7 +15419,7 @@
           <section class="odds-block">
             <h2>戦闘の相手</h2>
             <ul>
-              <li>いまは洞窟の道中だけ、実装済みの敵が均等に出ます（古城・深淵のプールは未決定）。階では分けません。</li>
+              <li>洞窟：1Fの初戦は★だけ。階がボス階の1/3を超えると★★が混ざり、2/3を超えると★★★も。プールは全員（物乞いはイベント後）。古城・深淵は未決定。</li>
               <li>物乞いだけは、そのランでイベント戦闘をしたあとの道中に入ります。</li>
               <li>ボス戦の相手は固定です。ハデスは出しません。</li>
             </ul>
@@ -16054,6 +16077,7 @@
       [3, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
       [4, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
       [5, "unadopt-quick-step-old", "クイックステップ（旧）", "card-quick-step.jpg?v=1"],
+      [6, "unadopt-attack-aura", "アタック（オーラ案）", "card-attack-aura.jpg?v=1"],
     ];
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
