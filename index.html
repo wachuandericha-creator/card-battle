@@ -18226,13 +18226,17 @@
 
     function flyPathIntoMap(shot, done) {
       let settled = false;
+      let ghost = null;
+      let dest = null;
       const finish = () => {
         if (settled) return;
         settled = true;
+        if (ghost && ghost.parentNode) ghost.remove();
+        if (dest) dest.classList.remove("path-inbound");
         done();
       };
       placeRoad("instant");
-      const dest = pathLandNode();
+      dest = pathLandNode();
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || !shot || !shot.frame || !dest || !("animate" in Element.prototype)) {
         finish();
@@ -18246,7 +18250,7 @@
         return;
       }
       dest.classList.add("path-inbound");
-      const ghost = document.createElement("div");
+      ghost = document.createElement("div");
       ghost.className = "path-flyer";
       ghost.setAttribute("aria-hidden", "true");
       const pic = document.createElement("img");
@@ -18267,16 +18271,9 @@
         { transform: "translate(-50%, -50%) scale(1.06)", opacity: 1, offset: 0 },
         { transform: `translate(calc(-50% + ${dx * 0.34}px), calc(-50% + ${dy * 0.18 - arc}px)) scale(0.74)`, opacity: 1, offset: 0.46 },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${sx}, ${sy})`, opacity: 1, offset: 1 },
-      ], { duration: 1080, easing: "cubic-bezier(0.18, 0.74, 0.16, 1)", fill: "forwards" });
-      const land = () => {
-        if (!ghost.isConnected && dest.classList.contains("path-land")) return;
-        if (ghost.parentNode) ghost.remove();
-        dest.classList.remove("path-inbound");
-        dest.classList.add("path-land");
-        setTimeout(finish, 420);
-      };
-      anim.onfinish = land;
-      setTimeout(land, 1400);
+      ], { duration: 1000, easing: "cubic-bezier(0.18, 0.74, 0.16, 1)", fill: "forwards" });
+      anim.onfinish = finish;
+      setTimeout(finish, 1000);
     }
 
     function beginPathFlight(id, place, step) {
@@ -18284,14 +18281,15 @@
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       rewardStep = "lifting";
       const go = () => {
-        const img = document.querySelector(`[data-action="reward-path"][data-path="${id}"] img`);
+        const button = document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
+        const img = button && button.querySelector("img");
         const live = img ? { frame: stageFrameOf(img), src: img.getAttribute("src") || "" } : shot;
+        if (button) button.style.visibility = "hidden";
         rewardStep = "flying";
-        if (place) place();
-        render();
         requestAnimationFrame(() => requestAnimationFrame(() => {
           flyPathIntoMap(live, () => {
             rewardStep = "done";
+            if (place) place();
             advance(step);
             schedulePlaceRoad();
           });
