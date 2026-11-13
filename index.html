@@ -9585,7 +9585,7 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-f.jpg?v=2",
+      アタック: "card-attack-aura.jpg?v=2",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
@@ -9720,7 +9720,7 @@
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=7",
+        image: "enemy-slime.png?v=8",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -10874,7 +10874,7 @@
 
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
-      "enemy-slime.png": { w: 864, h: 1152, top: 133, bottom: 136 },
+      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64 },
       "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72 },
       "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0 },
       "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98 },
@@ -16089,7 +16089,7 @@
       [3, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
       [4, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
       [5, "unadopt-attack-f-b", "クイックステップ候補", "card-attack-f-b.jpg?v=1"],
-      [6, "unadopt-attack-aura", "アタック（オーラ案）", "card-attack-aura.jpg?v=1"],
+      [6, "unadopt-attack-f", "アタック（洞窟・f批）", "card-attack-f.jpg?v=2"],
     ];
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
@@ -16210,8 +16210,10 @@
             <p class="album-meta">画像を押すと右半分に拡大</p>
             <h3>敵</h3>
             <div class="ref-grid">
-              ${sheetFig("enemy-slime.png?v=7", "スライム", "enemy-ref")}
+              ${sheetFig("enemy-slime.png?v=8", "スライム", "enemy-ref")}
               ${sheetFig("enemy-goblin.png?v=4", "ゴブリン", "enemy-ref")}
+              ${sheetSlot("コボルド", "戦闘に出る。絵は未作成")}
+              ${sheetSlot("トロール", "戦闘に出る。絵は未作成")}
               ${sheetFig("enemy-minotaur.png?v=8", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
@@ -16220,6 +16222,16 @@
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
+            </div>
+            <h3>カード（画像待ち）</h3>
+            <p class="album-meta">絵柄データが空のカード。枠だけ残す。あとから絵をはめる。</p>
+            <div class="ref-grid">
+              ${sheetSlot("無心")}
+              ${sheetSlot("餌だ")}
+              ${sheetSlot("さぼる")}
+              ${sheetSlot("弱者の意地")}
+              ${sheetSlot("死者の軍団")}
+              ${sheetSlot("超集中")}
             </div>
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
@@ -16712,10 +16724,10 @@
       ["style-star1", "★", "frame-spike-copper.png?v=5"],
       ["style-star2", "★★", "frame-spike-silver.png?v=5"],
       ["style-star3", "★★★", "frame-spike-gold.png?v=5"],
-      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=7"],
-      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=7"],
-      ["style-over-gold", "金", "frame-blue-over-gold.png?v=7"],
-      ["style-over-black", "黒", "frame-blue-over-black.png?v=7"],
+      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=8"],
+      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=8"],
+      ["style-over-gold", "金", "frame-blue-over-gold.png?v=8"],
+      ["style-over-black", "黒", "frame-blue-over-black.png?v=8"],
     ];
     function styleLabel(id, name) {
       return name;
