@@ -7213,6 +7213,17 @@
       max-height: none;
       pointer-events: none;
     }
+    .gift-btn .gear-effect.bless-gear,
+    .gift-pick .gear-effect.bless-gear,
+    .gift-show .gear-effect.bless-gear {
+      width: 100%;
+      max-width: 100%;
+    }
+    .gift-btn .gear-effect.bless-gear .gear-effect-inner,
+    .gift-pick .gear-effect.bless-gear .gear-effect-inner,
+    .gift-show .gear-effect.bless-gear .gear-effect-inner {
+      width: 100%;
+    }
     .bless-boon {
       width: 220px;
       min-height: 168px;
@@ -11270,21 +11281,30 @@
         .trim();
     }
 
+    function gearPunctLines(text) {
+      const parts = String(text || "")
+        .replace(/[（(]/g, "\n")
+        .replace(/[）)]/g, "")
+        .split(/\n+|。/)
+        .map((part) => part.replace(/[ \u3000]+/g, "").replace(/[.．]+/g, "").trim())
+        .filter(Boolean);
+      return parts.map((part) => (/^(?:ATK|DEF)[+＋\-－]\d+$/.test(part) ? part : `${part}。`)).join("\n");
+    }
+
     function gearSpecialText(item) {
       if (!item) return "";
-      if (item.statusImmune) return "状態異常にならない";
-      if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
-      if (item.thornsDef) return "自分のDEFだけトゲを得る。";
-      if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
-      if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
-      if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
-      if (item.halfMana) return "自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える";
+      if (item.statusImmune) return gearPunctLines("状態異常にならない");
+      if (item.ignoreTrait) return gearPunctLines("相手の特性を無視してダメージを与える");
+      if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
+      if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
+      if (item.carryMana) return gearPunctLines("使わなかったマナを次のターンへ持ち越す（持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える）");
+      if (item.halfAtk) return gearPunctLines("自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える");
+      if (item.halfMana) return gearPunctLines("自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える");
       let text = String(item.effect || "");
       text = text.replace(/★+/g, "").replace(/ボス/g, "");
       text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
-      text = text.replace(/アクセサリー枠[。.]?/g, "").replace(/アクセサリー[。.]?/g, "");
-      text = text.replace(/[。.\s　]+/g, " ").trim();
-      return gearTraitOneLine(text);
+      text = text.replace(/アクセサリー枠/g, "").replace(/アクセサリー/g, "");
+      return gearPunctLines(text);
     }
 
     function gearAtkInTrait(item) {
@@ -11319,6 +11339,10 @@
 
     function gearPopBodyLine(item, o, boon) {
       if (o.empty) return { show: true, text: gearTraitOneLine(o.body ?? ""), extra: "empty" };
+      if (o.likeGear && !item) {
+        const t = gearPunctLines(o.body || "");
+        return { show: true, text: t, extra: t ? "" : "empty-trait" };
+      }
       if (boon) {
         const t = gearTraitOneLine(o.body ?? "");
         return { show: !!t, text: t, extra: "" };
@@ -11331,7 +11355,6 @@
         const lines = [];
         if (stats.length) lines.push(stats.join("　"));
         if (special) lines.push(special);
-        if (isStarterGear(item)) lines.push("初期装備");
         if (!lines.length) return { show: true, text: "", extra: "empty-trait" };
         return { show: true, text: lines.join("\n"), extra: "" };
       }
@@ -11366,7 +11389,7 @@
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
-      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant";
+      const boon = !o.likeGear && (slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant");
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
@@ -11378,7 +11401,7 @@
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const kindLabel = (o.item && o.item.boss) ? "戦利品" : gearSlotLabel(slotKey);
+      const kindLabel = o.kind || ((o.item && o.item.boss) ? "戦利品" : gearSlotLabel(slotKey));
       const kindChip = boon ? "" : `<span class="kind">${esc(kindLabel)}</span>`;
       const stats = boon && o.item ? gearStatChips(o.item) : "";
       const chipRow = boon ? stats : (kindChip ? `<div class="gear-effect-chiprow">${kindChip}</div>` : "");
@@ -11400,7 +11423,8 @@
       }
       const rest = `${body}${hint}${button}`;
       const side = `${name}${stars}${chipRow}`;
-      return `<div class="gear-effect${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${side}</div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
+      const like = o.likeGear ? " bless-gear" : "";
+      return `<div class="gear-effect${like}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${side}</div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -14424,23 +14448,15 @@
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
-      if (gift.kind === "enchant") {
-        const face = enchantFace(gift.elem);
-        return `<div class="${cls}">${gearPopShell("enchant", {
+      if (gift.kind === "enchant" || gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
+        const face = blessGearOpts(gift.kind, gift.elem);
+        return `<div class="${cls}">${gearPopShell(face.slot, {
+          name: face.name,
           image: face.image,
-          boonSub: face.sub,
-        })}</div>`;
-      }
-      if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
-        const boon = gift.kind === "maxhp"
-          ? { slot: "hp", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }
-          : gift.kind === "mana"
-            ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
-            : { slot: "spd", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
-        return `<div class="${cls}">${gearPopShell(boon.slot, {
-          name: boon.name,
-          image: boon.image,
-          boonSub: boon.boonSub || "",
+          body: face.body,
+          kind: "祝福",
+          likeGear: true,
+          embedded: true,
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
@@ -16161,12 +16177,24 @@
       })}</div>`;
     }
 
+    function blessGearOpts(kind, elem) {
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。" };
+      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。" };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。" };
+      const face = enchantFace(elem);
+      let body = "キーワードが一つ付く。";
+      if (face.sub === "ATK+2" || face.sub === "DEF+2") body = face.sub;
+      else if (face.sub === "マナ-1") body = "マナが1減る。";
+      return { slot: "enchant", name: face.name, image: face.image, body };
+    }
+
     function sheetGearBoonCard(slot, o) {
       return `<div class="sheet-gear-card">${gearPopShell(slot, {
         name: o.name,
         image: o.image,
-        boonSub: o.boonSub || "",
-        rarity: o.rarity || "",
+        body: o.body || "",
+        kind: "祝福",
+        likeGear: true,
         embedded: true,
         sheetPop: true,
       })}</div>`;
@@ -16186,18 +16214,13 @@
       const swords = GEAR_ITEMS.filter((item) => item.slot === "sword");
       const shields = GEAR_ITEMS.filter((item) => item.slot === "shield");
       const arms = GEAR_ITEMS.filter((item) => item.slot === "braceletAny" || item.slot === "braceletL" || item.slot === "braceletR");
-      const boons = [
-        sheetGearBoonCard("hp", { name: "最大HP", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }),
-        sheetGearBoonCard("spd", { name: "SPD", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" }),
-        sheetGearBoonCard("mana", { name: "マナ+1", image: "reward-mana.jpg?v=1" }),
-      ];
+      const boons = ["maxhp", "spd", "mana"].map((kind) => {
+        const face = blessGearOpts(kind);
+        return sheetGearBoonCard(face.slot, face);
+      });
       const enchants = ENCHANT_ELEMS.map((elem) => {
-        const face = enchantFace(elem);
-        return sheetGearBoonCard("enchant", {
-          name: `エンチャント・${face.name}`,
-          image: face.image,
-          boonSub: face.sub,
-        });
+        const face = blessGearOpts("enchant", elem);
+        return sheetGearBoonCard(face.slot, face);
       });
       return `<div class="sheet-gear-inline"><p class="album-meta">カードリストと同様、戦闘と同じ装備ポップを並べる。製品写真は枠内。</p>${sheetGearGroup("剣", swords)}${sheetGearGroup("盾", shields)}${sheetGearGroup("アクセサリー", arms)}${sheetGearGroup("ボス", BOSS_GEAR)}${sheetGearBoonGroup("祝福の報酬", boons)}${sheetGearBoonGroup("エンチャント", enchants)}</div>`;
     }
