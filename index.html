@@ -4274,6 +4274,7 @@
     .gear-effect:not(.center-boon) .gear-effect-meta .gear-effect-chiprow {
       width: 100%;
       justify-content: flex-end;
+      margin-top: 5px;
     }
     .gear-effect:not(.center-boon) .gear-effect-name {
       text-align: left;
@@ -4284,6 +4285,16 @@
     .gear-effect:not(.center-boon) .gear-effect-stars {
       width: 100%;
       text-align: right;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-stars.boss {
+      width: fit-content;
+      max-width: 100%;
+      margin-left: auto;
+      padding: 0;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      line-height: 1.15;
+      box-sizing: border-box;
     }
     .gear-effect:not(.center-boon) .gear-effect-body {
       min-height: calc(1.42em * 3 + 16px);
@@ -10779,7 +10790,7 @@
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
       { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=7" },
     ];
-    // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「ボス」。
+    // ボスの報酬だけで手に入る。ランダムな装備には入れない。レアリティ欄は「戦利品」。
     const BOSS_GEAR = [
       { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
       { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
@@ -10787,7 +10798,7 @@
 
     function gearRarityText(item) {
       if (!item) return "";
-      if (item.boss) return "ボス";
+      if (item.boss) return "戦利品";
       const n = Number(item.stars) || 0;
       return n > 0 ? "★".repeat(n) : "";
     }
@@ -11205,7 +11216,7 @@
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
-      const starsClass = rarity === "ボス" ? "gear-effect-stars boss" : "gear-effect-stars";
+      const starsClass = rarity === "戦利品" ? "gear-effect-stars boss" : "gear-effect-stars";
       const art = o.image
         ? `<img src="${esc(o.image)}" alt="">`
         : `<span class="gear-mark">${o.icon || gearSlotIcon(slotKey)}</span>`;
