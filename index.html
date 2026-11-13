@@ -124,6 +124,7 @@
       flex-direction: column;
     }
     .road-map {
+      position: relative;
       grid-area: road;
       min-width: 0;
       min-height: 0;
@@ -187,7 +188,7 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      flex: 0 0 calc((100% - 24px) / 5 - 10px);
+      flex: 0 0 calc((100% - 42px) / 8 - 6px);
       min-height: 0;
       padding: 5px;
       overflow: hidden;
@@ -270,11 +271,11 @@
     .road-back {
       position: absolute;
       z-index: 6;
-      left: 10px;
-      right: 10px;
-      bottom: 8px;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
       margin: 0;
-      padding: 8px 8px 9px;
+      padding: 7px 8px 8px;
       border: 0;
       border-radius: 999px;
       background: #ffe14a;
@@ -9411,7 +9412,7 @@
       if (isBlessingFloor0()) return Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
       const prev = roadDoneBelow(now);
       if (prev) return Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
-      const row = ol.clientHeight / 5;
+      const row = now.offsetHeight || ol.clientHeight / 8;
       return Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
     }
 
@@ -9420,50 +9421,17 @@
       const btn = map && map.querySelector(".road-back");
       const now = ol.querySelector(".road-node.now");
       if (!btn || !now) return;
-      const home = roadHomeTop(ol, now);
-      const away = ol.scrollTop < home - 28;
-      btn.hidden = !away;
+      const leftView = now.offsetTop >= ol.scrollTop + ol.clientHeight - 1;
+      btn.hidden = !leftView;
     }
 
     function bindRoadScroll(ol) {
       if (ol.dataset.roadBound) return;
       ol.dataset.roadBound = "1";
       ol.addEventListener("scroll", () => {
-        if (ol.dataset.roadMoving === "1") {
-          roadHold.top = ol.scrollTop;
-        } else {
-          roadHold = { index: battleIndex, top: ol.scrollTop, home: roadHold ? roadHold.home : ol.scrollTop, moving: false };
-        }
+        roadHold = { index: battleIndex, top: ol.scrollTop };
         syncRoadHomeButton(ol);
       }, { passive: true });
-    }
-
-    function smoothScrollOl(ol, to) {
-      const from = ol.scrollTop;
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce || Math.abs(to - from) < 2) {
-        ol.scrollTop = to;
-        roadHold = { index: battleIndex, top: to, home: to, moving: false };
-        syncRoadHomeButton(ol);
-        return;
-      }
-      const start = performance.now();
-      const ms = 680;
-      ol.dataset.roadMoving = "1";
-      roadHold = { index: battleIndex, top: from, home: to, moving: true };
-      const tick = (now) => {
-        if (!ol.isConnected) return;
-        const k = Math.min(1, (now - start) / ms);
-        const e = 1 - Math.pow(1 - k, 3);
-        ol.scrollTop = from + (to - from) * e;
-        if (k < 1) requestAnimationFrame(tick);
-        else {
-          ol.dataset.roadMoving = "";
-          roadHold = { index: battleIndex, top: to, home: to, moving: false };
-          syncRoadHomeButton(ol);
-        }
-      };
-      requestAnimationFrame(tick);
     }
 
     function placeRoad(mode) {
@@ -9473,23 +9441,10 @@
         bindRoadScroll(ol);
         const home = roadHomeTop(ol, now);
         const same = roadHold && roadHold.index === battleIndex;
-        if (mode !== "home" && mode !== "instant" && same) {
-          if (ol.dataset.roadMoving === "1") return;
-          ol.scrollTop = roadHold.top;
-          roadHold.home = home;
-          syncRoadHomeButton(ol);
-          return;
-        }
-        if (mode !== "instant" && roadHold && Math.abs((same ? roadHold.top : roadHold.home) - home) > 2) {
-          ol.scrollTop = same ? roadHold.top : roadHold.home;
-        }
-        if (mode === "instant" || !roadHold) {
-          ol.scrollTop = home;
-          roadHold = { index: battleIndex, top: home, home, moving: false };
-          syncRoadHomeButton(ol);
-          return;
-        }
-        smoothScrollOl(ol, home);
+        const top = mode || !same ? home : roadHold.top;
+        ol.scrollTop = top;
+        roadHold = { index: battleIndex, top };
+        syncRoadHomeButton(ol);
       });
     }
 
