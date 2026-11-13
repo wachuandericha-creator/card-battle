@@ -5082,6 +5082,11 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
+    .card .card-fit.k-attack.r0 { --frame-img: url("frame-basic-attack.png?v=1"); }
+    .card .card-fit.k-block.r0 { --frame-img: url("frame-basic-block.png?v=1"); }
+    .card .card-fit.k-skill.r0 { --frame-img: url("frame-basic-skill.png?v=1"); }
+    .card .card-fit.k-power.r0 { --frame-img: url("frame-basic-item.png?v=1"); }
+    .card .card-fit.k-foe.r0 { --frame-img: url("frame-basic-foe.png?v=1"); }
     .card .card-fit.k-attack.r1 { --frame-img: url("frame-red-over-copper.png?v=1"); }
     .card .card-fit.k-attack.r2 { --frame-img: url("frame-red-over-silver.png?v=1"); }
     .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=4"); }
@@ -10459,7 +10464,7 @@
       const basic = enemyBasic(foe, card && card.name);
       if (basic) return basic;
       const known = cardDef(card && card.name);
-      if (known) return { name: card.name, ...known, stars: known.stars || 1 };
+      if (known) return { name: card.name, ...known, stars: basicCardName(card.name) ? 0 : (known.stars || 1) };
       return { ...card };
     }
 
@@ -16144,7 +16149,7 @@
     }
 
     function foeStarterDeckMarkup(cards) {
-      return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`).join("");
+      return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview foe">${cardFace(card, false, true)}</div></button>`).join("");
     }
 
     function showFoeStarterCard(button) {
@@ -17314,9 +17319,9 @@
       const iconHtml = icons ? `<span class="fx-row">${icons}</span>` : "";
       const noteHtml = noteText ? `<span class="fx note">${noteText}</span>` : "";
       const effects = `${kwHtml}${iconHtml}${noteHtml}`;
-      const stars = card.stars || 1;
+      const stars = basicCardName(card.name) ? 0 : (Number(card.stars) || 0);
       const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
-      const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
+      const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : stars === 1 ? "r1" : "r0";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
@@ -17903,7 +17908,7 @@
     // 敵の行動パターン（山札）。順番は見せず、中身だけ。
     function foeDeckCards() {
       const cards = sortedCards(sourcePattern());
-      const faces = cards.map((card) => `<div class="card preview foe" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`).join("");
+      const faces = cards.map((card) => `<div class="card preview foe" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, false, true)}</div>`).join("");
       return `<div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div>`;
     }
 
@@ -17949,6 +17954,10 @@
     }
 
     // 初期デッキは CARDS、報酬は WARRIOR／COMMON。名前だけで引くときはここを通す。
+    function basicCardName(name) {
+      return name === "アタック" || name === "アタック+" || name === "ブロック" || name === "ブロック+" || name === "チャージアタック";
+    }
+
     function cardDef(name) {
       return CARDS[name] || WARRIOR[name] || COMMON[name] || null;
     }
@@ -18001,7 +18010,7 @@
       if (card.halfOnly) next.halfOnly = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
-      next.stars = card.unrated ? 0 : (card.stars || 1);
+      next.stars = card.unrated || basicCardName(card.name) ? 0 : (card.stars || 1);
       return next;
     }
 
