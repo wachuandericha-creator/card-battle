@@ -1097,6 +1097,28 @@
       animation: parry-badge-ring 0.62s ease-out forwards;
       pointer-events: none;
     }
+    .shield-badge.crack::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      z-index: 4;
+      width: 124%;
+      height: 9px;
+      pointer-events: none;
+      border-radius: 999px;
+      transform: translate(-50%, -50%) rotate(-38deg);
+      background: linear-gradient(90deg, transparent 0%, #fff 12%, #fff 46%, #ffd4c4 74%, transparent 100%);
+      filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 8px rgba(255, 70, 40, 0.8));
+      animation: crack-hint 1.05s ease-in-out infinite;
+    }
+    @keyframes crack-hint {
+      0%, 100% { opacity: 0.78; }
+      50% { opacity: 1; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 14px rgba(255, 90, 40, 0.95)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .shield-badge.crack::before { animation: none; }
+    }
     .battle-plate .shield-badge b {
       position: relative;
       z-index: 1;
@@ -14615,8 +14637,9 @@
       const parryStacks = parryN >= 2;
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
       const fresh = Boolean(extra && extra.shieldFlash && block > 0);
+      const crack = Boolean(extra && extra.crack && block > 0);
       const parryFresh = Boolean(extra && extra.parryFlash);
-      const shieldBadge = block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
+      const shieldBadge = block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}${crack ? " crack" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
       const parryBadge = parried
         ? `<div class="shield-badge parry-badge${parryFresh ? " fresh" : ""}${extra && extra.parryFromShield ? " from-shield" : ""}" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryStacks ? `<b>${parryN}</b>` : ""}</div>`
         : "";
@@ -16684,6 +16707,7 @@
         maxHp: enemy.maxHp,
         block: Math.max(0, Number(enemy.block) || 0),
       };
+      const foeHadBlock = foe.block > 0;
       const poison = Math.max(0, Number(player.poison) || 0);
       if (poison) {
         let amount = poison;
@@ -16701,7 +16725,8 @@
         scratchPlayerCard(card, mine, foe, queue, give);
         if (foe.hp <= 0) break;
       }
-      if (foe.hp <= 0) return { give: give.show ? give : null, take: null };
+      const breakShield = foeHadBlock && foe.block <= 0;
+      if (foe.hp <= 0) return { give: give.show ? give : null, take: null, breakShield };
       foe.block = 0;
       let take = null;
       let angerAhead = false;
@@ -16727,7 +16752,7 @@
           if (blow.parry && take.raw === blow.raw) take.parry = true;
         }
       }
-      return { give: give.show ? give : null, take };
+      return { give: give.show ? give : null, take, breakShield };
     }
 
     function scratchPlayerCard(card, mine, foe, queue, give) {
@@ -18404,6 +18429,7 @@
       const playerShown = Math.round(shownPlayer());
       const cast = forecastTurn();
       const foeThreat = cast.give && cast.give.hp > 0 ? cast.give.hp : 0;
+      const breakFoeShield = Boolean(cast.breakShield);
       const mineThreat = cast.take && cast.take.hp > 0 ? cast.take.hp : 0;
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}${pathPick ? " path-pick" : ""}">
@@ -18429,7 +18455,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, threat: foeThreat, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
