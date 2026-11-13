@@ -4156,46 +4156,21 @@
       color: #f6e8c8;
       font-size: 14px;
       line-height: 1.55;
-      overflow: visible;
+      overflow: hidden;
       pointer-events: none;
       background:
-        linear-gradient(#ffe7a8, #ffe7a8) right 6px top 6px / 14px 2px no-repeat,
-        linear-gradient(#ffe7a8, #ffe7a8) right 6px top 6px / 2px 14px no-repeat,
-        linear-gradient(#ffe7a8, #ffe7a8) left 6px bottom 6px / 14px 2px no-repeat,
-        linear-gradient(#ffe7a8, #ffe7a8) left 6px bottom 6px / 2px 14px no-repeat,
-        radial-gradient(90% 60% at 50% 0%, rgba(255, 226, 160, 0.28), transparent 46%),
-        linear-gradient(165deg, #3a2a18 0%, #16110c 46%, #090705 100%);
+        radial-gradient(120% 70% at 50% -10%, rgba(255, 214, 140, 0.18), transparent 55%),
+        linear-gradient(165deg, #2a2018 0%, #14100c 48%, #0a0806 100%);
       box-shadow:
-        0 0 0 1px #fff1c4,
-        0 0 0 3px #e4b15a,
-        0 0 0 5px #6e4514,
-        0 0 0 7px #24180c,
-        0 0 22px rgba(255, 196, 90, 0.38),
-        inset 0 0 0 1px rgba(255, 236, 190, 0.28),
-        inset 0 0 18px rgba(0, 0, 0, 0.35);
+        0 0 0 1px rgba(8, 6, 5, 0.98),
+        0 0 0 2px rgba(228, 177, 90, 0.78),
+        0 0 0 5px rgba(8, 6, 5, 0.92),
+        0 18px 36px rgba(0, 0, 0, 0.62),
+        inset 0 1px 0 rgba(255, 236, 200, 0.22),
+        inset 0 -18px 40px rgba(0, 0, 0, 0.28);
     }
     .gear-effect::before,
-    .gear-effect::after {
-      content: "";
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border: 2px solid #ffe7a8;
-      pointer-events: none;
-      z-index: 2;
-    }
-    .gear-effect::before {
-      top: 6px;
-      left: 6px;
-      border-right: 0;
-      border-bottom: 0;
-    }
-    .gear-effect::after {
-      right: 6px;
-      bottom: 6px;
-      border-left: 0;
-      border-top: 0;
-    }
+    .gear-effect::after { content: none; }
     .gear-effect-inner {
       position: relative;
       padding: 8px;
@@ -4265,29 +4240,10 @@
       width: 100%;
       text-align: right;
     }
-    .gear-effect:not(.center-boon) .gear-effect-stars.boss {
-      width: fit-content;
-      max-width: 100%;
-      margin-left: auto;
-      padding: 1px 0.35em;
-      letter-spacing: 0.02em;
-      box-sizing: border-box;
-    }
     .gear-effect:not(.center-boon) .gear-effect-body {
       min-height: calc(1.42em * 3 + 16px);
-      height: auto;
-      max-height: none;
       width: 100%;
       box-sizing: border-box;
-      overflow: visible;
-    }
-    .gear-effect:not(.center-boon) .gear-effect-body .nobr { white-space: normal; }
-    .gear-effect:not(.center-boon) .gear-effect-art {
-      border-radius: 2px;
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
-        0 0 0 1px #c5ced8,
-        0 0 0 3px #4e5966;
     }
     .gear-effect:not(.center-boon) .gear-effect-rest {
       width: 0;
@@ -4309,15 +4265,14 @@
       display: inline-flex;
       align-items: center;
       flex: 0 0 auto;
-      padding: 1px 7px;
-      border-radius: 2px;
+      padding: 3px 8px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 900;
       letter-spacing: 0.08em;
-      color: #f3e7c4;
-      background: transparent;
-      border: 1px solid rgba(196, 168, 112, 0.9);
-      box-shadow: none;
+      color: #ffe7a8;
+      background: linear-gradient(180deg, rgba(255, 230, 170, 0.14), rgba(0, 0, 0, 0.35));
+      border: 1px solid rgba(228, 177, 90, 0.55);
       white-space: nowrap;
     }
     .gear-effect-chiprow {
@@ -4474,20 +4429,17 @@
     .gear-effect-body {
       margin: 8px 0 0;
       padding: 8px 10px;
-      border-radius: 2px;
-      background: rgba(8, 6, 4, 0.55);
-      border: none;
-      box-shadow: inset 0 0 0 1px rgba(214, 186, 130, 0.28);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(228, 177, 90, 0.38);
       color: #f3e2bf;
       font-size: 12px;
       line-height: 1.42;
       white-space: normal;
       text-align: left;
-      overflow-wrap: break-word;
+      overflow-wrap: normal;
       word-break: keep-all;
       line-break: strict;
-      height: auto;
-      max-height: none;
     }
     .gear-effect-body .nobr { white-space: nowrap; }
     .gear-effect.gear-effect-embedded .gear-effect-body:not(.starter),
