@@ -1976,7 +1976,42 @@
       display: flex;
       flex-direction: column;
     }
-    .foe-starter-deck .deck-scroll { flex: 1 1 auto; min-height: 0; }
+    .foe-starter-deck .cast-deck {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 132px);
+      justify-content: start;
+      align-content: start;
+      gap: 8px;
+      width: 100%;
+      margin: 0;
+      overflow: auto;
+    }
+    .foe-starter-deck .cast-deck .deck-card,
+    .foe-starter-deck .cast-deck .deck-card:hover {
+      width: 132px;
+      height: auto;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      z-index: 1;
+    }
+    .foe-starter-deck .cast-deck .card,
+    .foe-starter-deck .cast-deck .card:hover,
+    .foe-starter-deck .cast-deck .card.preview,
+    .foe-starter-deck .cast-deck .card.preview:hover {
+      width: 132px;
+      height: auto;
+      aspect-ratio: var(--card-ratio);
+      margin: 0;
+      transform: none;
+      filter: none;
+      cursor: default;
+      pointer-events: none;
+    }
     .overlay.foe-starter .panel > button { flex: 0 0 auto; }
     .overlay.enchant-pick { z-index: 80; }
     .enchant-pick .deck-lead {
@@ -15774,7 +15809,52 @@
       return `<div class="foe-starter-stats" aria-label="ステータス">${rows.map(([label, icon, value]) => `<p class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></p>`).join("")}</div>`;
     }
 
+    function foeStarterDeckMarkup(cards) {
+      return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`).join("");
+    }
+
+    function showFoeStarterCard(button) {
+      const key = button.dataset.deckI || "";
+      const old = root.querySelector(".cast-card-pop");
+      if (old && old.dataset.deckI === key) {
+        hideCastCardPop();
+        return;
+      }
+      if (old) old.remove();
+      const face = button.querySelector(".card");
+      if (!face) return;
+      const pop = document.createElement("div");
+      pop.className = "cast-card-pop cast-card-pop--enlarge";
+      pop.dataset.deckI = key;
+      pop.dataset.card = button.dataset.card || "";
+      pop.appendChild(face.cloneNode(true));
+      root.appendChild(pop);
+    }
+
+    function bindFoeStarterDeck(deck) {
+      if (!deck || deck.dataset.deckBound === "1") return;
+      deck.dataset.deckBound = "1";
+      deck.addEventListener("click", (event) => {
+        const button = event.target instanceof Element ? event.target.closest(".deck-card") : null;
+        if (!button || !deck.contains(button)) return;
+        event.stopPropagation();
+        showFoeStarterCard(button);
+      });
+      if (!root.dataset.foeDeckDismissBound) {
+        root.dataset.foeDeckDismissBound = "1";
+        root.addEventListener("click", (event) => {
+          if (!root.querySelector(".foe-starter")) return;
+          const pop = root.querySelector(".cast-card-pop");
+          if (!pop) return;
+          const el = event.target;
+          if (el instanceof Element && (el.closest(".cast-card-pop") || el.closest(".foe-starter .deck-card"))) return;
+          hideCastCardPop();
+        });
+      }
+    }
+
     function closeFoeStarter() {
+      hideCastCardPop();
       const pop = root.querySelector(".foe-starter");
       if (pop) pop.remove();
     }
@@ -15791,7 +15871,8 @@
         : `<div class="foe-starter-blurb"><p>なし</p></div>`;
       const cards = foeStarterCards(foe);
       const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="deck-scroll">${deckGroup("", cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
     }
 
     function dungeonEnemyFaces() {
