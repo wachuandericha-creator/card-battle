@@ -4927,7 +4927,7 @@
     .card .fx.kw { display: block; width: 100%; }
     .card .fx.note .kw-line + .kw-line,
     .card .fx.kw .kw-line + .kw-line { margin-top: 0.12em; }
-    .card .fx-row { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    .card .fx-row { display: flex; align-items: center; justify-content: center; gap: clamp(2px, 0.7cqw, 5px); width: 100%; }
     .card .text.has-kw { justify-content: flex-start; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
     .card:has(.card-fit.r2),
@@ -4977,7 +4977,7 @@
       gap: 4cqw;
       padding: 3cqw;
     }
-    .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
+    .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: clamp(2px, 0.55cqw, 4px); font-weight: 800; line-height: 1; color: #1a120e; }
     .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; word-break: keep-all; line-break: strict; overflow-wrap: normal; }
     .card .fx.note .nobr { display: inline-block; white-space: nowrap; vertical-align: baseline; }
     .card .fx b { font-size: 5.2cqw; font-weight: 700; color: #1a120e; }
@@ -5041,7 +5041,7 @@
     .kw-tip p { margin: 0; }
     .kw-tip p + p { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(228, 177, 90, 0.3); }
     .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
-    .card .fx .ico { width: 16cqw; height: 16cqw; flex: none; overflow: hidden; color: #1a120e; }
+    .card .fx .ico { width: 8cqw; height: 8cqw; flex: none; overflow: hidden; color: #1a120e; }
     .card .fx .ico.sword { transform: rotate(28deg) scale(0.8); }
     .card .fx .ico.heart { transform: scale(1.08); }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
@@ -16542,7 +16542,7 @@
         const apply = (scale) => {
           const font = `${(5.2 * scale).toFixed(2)}cqw`;
           texts.forEach((el) => { el.style.fontSize = font; });
-          const icon = `${(11.5 * scale).toFixed(2)}cqw`;
+          const icon = `${(8 * scale).toFixed(2)}cqw`;
           icons.forEach((el) => {
             el.style.width = icon;
             el.style.height = icon;
