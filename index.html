@@ -7288,181 +7288,6 @@
     }
     .cast-screen.character-focus .stat-chips .chip b { font-size: 22px; }
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 13px; letter-spacing: 0.04em; }
-    /* ジョブ選択はタイトルと同じ割り。左は絵と大きなボタン。右は情報の板 */
-    .cast-screen.character-focus {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(520px, 0.92fr);
-      grid-template-rows: minmax(0, 1fr);
-      align-items: stretch;
-      justify-items: stretch;
-      gap: 16px;
-      width: 100%;
-      height: 100%;
-      padding: 16px 16px 18px;
-      box-sizing: border-box;
-    }
-    html.stage-fit:not(.iphone-play) .cast-screen.character-focus {
-      padding: 56px 64px 48px;
-    }
-    .cast-screen.character-focus .cast-play {
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 14px;
-    }
-    .cast-screen.character-focus .cast-stage {
-      position: relative;
-      flex: 1 1 auto;
-      min-height: 0;
-      border-radius: 22px;
-      overflow: hidden;
-    }
-    .cast-screen.character-focus .cast-hero-slot {
-      position: absolute;
-      inset: 0;
-    }
-    .cast-screen.character-focus button.cast-hero-frame {
-      display: block;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      border-radius: 22px;
-      cursor: pointer;
-      appearance: none;
-      font: inherit;
-      color: inherit;
-      text-align: inherit;
-    }
-    .cast-screen.character-focus button.cast-hero-frame.locked {
-      box-shadow:
-        0 0 0 3px #ffe08a,
-        0 0 28px rgba(255, 196, 110, 0.55),
-        0 14px 28px rgba(0, 0, 0, 0.45);
-    }
-    .cast-screen.character-focus .cast-title {
-      position: absolute;
-      z-index: 3;
-      left: 0;
-      right: 0;
-      top: 0;
-      width: 100%;
-      margin: 0;
-      padding: 16px 18px 52px;
-      pointer-events: none;
-      justify-content: center;
-      gap: 14px;
-      font-size: clamp(22px, 2.1cqw, 36px);
-      letter-spacing: 0.08em;
-      background: linear-gradient(180deg, rgba(6, 4, 3, 0.84) 0%, rgba(6, 4, 3, 0.42) 62%, transparent 100%);
-      filter: drop-shadow(0 2px 0 #6a4a16);
-    }
-    .cast-screen.character-focus .cast-title.fade-sandwich > .cast-title-name {
-      flex: 0 1 auto;
-      min-width: 0;
-    }
-    .cast-screen.character-focus .cast-title.fade-sandwich > .fade-line {
-      flex: 1 1 auto;
-      width: auto;
-      max-width: none;
-      min-width: 20px;
-      height: 2px;
-    }
-    .cast-screen.character-focus .cast-roster {
-      position: static;
-      width: 100%;
-      margin: 0;
-      justify-content: stretch;
-    }
-    .cast-screen.character-focus .cast-token.mini {
-      flex: 1 1 auto;
-      min-height: 128px;
-      padding: 10px 18px;
-      flex-direction: row;
-      justify-content: center;
-      gap: 18px;
-      cursor: pointer;
-    }
-    .cast-screen.character-focus .cast-token.mini img {
-      width: 112px;
-      height: 112px;
-    }
-    .cast-screen.character-focus .cast-token.mini span {
-      font-size: clamp(26px, 2.2cqw, 34px);
-      letter-spacing: 0.16em;
-    }
-    .cast-screen.character-focus .cast-actions {
-      position: static;
-      left: auto;
-      right: auto;
-      bottom: auto;
-      transform: none;
-      width: 100%;
-      height: auto;
-      z-index: 2;
-    }
-    .cast-screen.character-focus .cast-actions > button.cast-start {
-      width: 100%;
-      height: auto;
-      min-height: 96px;
-      padding: 16px 28px;
-      font-size: clamp(28px, 2.4cqw, 36px);
-      letter-spacing: 0.18em;
-    }
-    .cast-screen.character-focus .cast-board {
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 14px 16px 12px;
-      overflow: auto;
-      border-radius: 18px;
-      border: 1px solid rgba(228, 177, 90, 0.9);
-      background:
-        radial-gradient(120% 55% at 50% 0%, rgba(228, 177, 90, 0.2), transparent 58%),
-        linear-gradient(180deg, #2c2118 0%, #1a1310 42%, #100c0a 100%);
-      box-shadow:
-        0 0 0 3px #15100d,
-        0 0 0 4px rgba(228, 177, 90, 0.55),
-        0 22px 44px rgba(0, 0, 0, 0.58),
-        inset 0 1px 0 rgba(255, 236, 190, 0.22);
-      color: #fff6e4;
-    }
-    .cast-screen.character-focus .cast-board .cast-side,
-    .cast-screen.character-focus .cast-board .cast-keys {
-      position: relative;
-      width: 100%;
-      max-width: none;
-      height: auto;
-      min-height: 0;
-      overflow: visible;
-    }
-    .cast-screen.character-focus .cast-board .cast-side .cast-plaque,
-    .cast-screen.character-focus .cast-board .cast-keys {
-      height: auto;
-      max-height: none;
-      overflow: visible;
-      background: transparent;
-      backdrop-filter: none;
-      border: 0;
-      box-shadow: none;
-    }
-    .cast-screen.character-focus .cast-board .cast-deck {
-      width: 100%;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-    .cast-screen.character-focus .cast-board .cast-deck .deck-card,
-    .cast-screen.character-focus .cast-board .cast-deck .deck-card:hover,
-    .cast-screen.character-focus .cast-board .cast-deck .card,
-    .cast-screen.character-focus .cast-board .cast-deck .card.preview {
-      width: 100%;
-      max-width: none;
-    }
     .cast-screen.dungeon-screen {
       position: relative;
       width: 100%;
@@ -7837,13 +7662,7 @@
         gap: 8px;
       }
       html:not(.stage-fit) .dungeon-col { min-height: 0; height: 100%; }
-      html:not(.stage-fit) .cast-screen.character-focus {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(280px, 46cqh) auto;
-        overflow: auto;
-        padding: 12px;
-      }
-      html:not(.stage-fit) .cast-screen.character-focus .cast-play { min-height: 280px; }
+      html:not(.stage-fit) .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
       html:not(.stage-fit) .cast-screen.character-focus .cast-main {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -14094,6 +13913,9 @@
         ? `<div class="cast-blurb-wrap">${castBlurbParagraphs(item.blurb)}</div>`
         : "";
       return `
+        <div class="cast-hero-frame">
+          <img class="cast-hero-art" src="${item.action}" alt="${esc(item.name)}の一枚絵">
+        </div>
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
@@ -14147,10 +13969,8 @@
       if (name !== castShown) {
         castShown = name;
         const item = castByName(name);
-        const hero = root.querySelector(".cast-hero-slot");
-        const board = root.querySelector(".cast-board");
-        if (hero) hero.innerHTML = `<button type="button" class="cast-hero-frame" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}"><img class="cast-hero-art" src="${item.action}" alt="${esc(item.name)}の一枚絵"></button>`;
-        if (board) board.innerHTML = castMainMarkup(item);
+        const main = root.querySelector(".cast-main");
+        if (main) main.innerHTML = castMainMarkup(item);
       }
       const jobPick = root.querySelector(".cast-screen.character-focus");
       root.querySelectorAll("[data-cast]").forEach((token) => {
@@ -14336,17 +14156,14 @@
         </button>`).join("");
       castShown = "";
       castLit = false;
-      const jobTitle = fadeSandwichMarkup(`<span class="cast-title-name">挑戦するキャラを選んでください</span>`, { tag: "h1", className: "cast-title" });
       root.innerHTML = `
         <div class="cast-screen character-focus">
-          <div class="cast-play">
-            <div class="cast-stage">${jobTitle}<div class="cast-hero-slot"></div></div>
-            <div class="cast-roster many">${tokens}</div>
-            <div class="cast-actions">
-              <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
-            </div>
+          <h1 class="cast-title">挑戦するキャラを選んでください</h1>
+          <div class="cast-main"></div>
+          <div class="cast-roster many">${tokens}</div>
+          <div class="cast-actions">
+            <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
           </div>
-          <div class="cast-board"></div>
         </div>`;
       paintCast();
       bindCastHover();
@@ -16663,15 +16480,14 @@
         finish();
         return;
       }
-      dest.classList.add("path-inbound");
       const face = dest.querySelector("img, i") || dest;
       const to = stageFrameOf(face);
       const from = shot.frame;
       if (!from.w || !from.h || !to.w || !to.h) {
-        dest.classList.remove("path-inbound");
         finish();
         return;
       }
+      dest.classList.add("path-inbound");
       const ghost = document.createElement("div");
       ghost.className = "path-flyer";
       ghost.setAttribute("aria-hidden", "true");
