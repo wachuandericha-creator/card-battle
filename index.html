@@ -1595,6 +1595,43 @@
     }
     .sheet-gear .gear-effect-inner { max-height: none; }
     .sheet-gear-open { margin: 0 0 12px; }
+    .sheet-gear-inline {
+      width: 100%;
+      margin: 0 0 8px;
+      text-align: left;
+    }
+    .sheet-screen .sheet-gear-inline .gear-effect {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      max-width: none;
+      max-height: none;
+      pointer-events: none;
+    }
+    .sheet-screen .sheet-gear-inline .gear-effect-inner { max-height: none; }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop {
+      font-size: 15px;
+    }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-name {
+      font-size: 17px;
+      letter-spacing: 0.06em;
+    }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-stars {
+      font-size: 13px;
+    }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-body {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-art {
+      width: 96px;
+      height: 96px;
+    }
+    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-head {
+      grid-template-columns: 96px 1fr;
+    }
+    .sheet-screen .sheet-gear-inline .album-meta { margin: 0 0 14px; }
     .deck-group { width: 100%; margin: 0 0 18px; }
     .deck-group h3 {
       margin: 0 0 8px;
@@ -4499,6 +4536,7 @@
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
     .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
+    .album-screen .card .card-fit.k-attack { --frame-img: url("frame-spike-gold.png?v=3"); }
     .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
     .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
     .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
@@ -9415,7 +9453,6 @@
     let albumZoom = "";
     let albumScrollTop = 0;
     let sheetZoom = null;
-    let sheetGear = false;
     let openingDeck = [];
     let gear = emptyGear();
     let gearOpen = null;
@@ -10722,7 +10759,7 @@
         const bodyClass = `gear-effect-body${extra}`;
         body = `<p class="${bodyClass}">${bodyLine.text ? cardNoteHtml(bodyLine.text) : ""}</p>`;
       }
-      const emb = embedded ? " gear-effect-embedded" : "";
+      const emb = embedded ? ` gear-effect-embedded${o.sheetPop ? " sheet-pop" : ""}${o.castPop ? " cast-pop" : ""}` : "";
       const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
       return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
     }
@@ -14232,7 +14269,6 @@
       askLeave = false;
       clearLive();
       clearArtZoom();
-      sheetGear = false;
       screen = "title";
       saveNote = "";
       render();
@@ -15382,6 +15418,18 @@
         image: item.image || "",
         rarity: gearRarityText(item),
         embedded: true,
+        sheetPop: true,
+      })}</div>`;
+    }
+
+    function sheetGearBoonCard(slot, o) {
+      return `<div class="sheet-gear-card">${gearPopShell(slot, {
+        name: o.name,
+        image: o.image,
+        boonSub: o.boonSub || "",
+        rarity: o.rarity || "",
+        embedded: true,
+        sheetPop: true,
       })}</div>`;
     }
 
@@ -15390,12 +15438,29 @@
       return `<section class="sheet-gear-group"><h3>${esc(title)}</h3><div class="sheet-gear-grid">${items.map(sheetGearCard).join("")}</div></section>`;
     }
 
-    function sheetGearOverlay() {
-      if (!sheetGear) return "";
+    function sheetGearBoonGroup(title, cards) {
+      if (!cards.length) return "";
+      return `<section class="sheet-gear-group"><h3>${esc(title)}</h3><div class="sheet-gear-grid">${cards.join("")}</div></section>`;
+    }
+
+    function sheetGearInline() {
       const swords = GEAR_ITEMS.filter((item) => item.slot === "sword");
       const shields = GEAR_ITEMS.filter((item) => item.slot === "shield");
       const arms = GEAR_ITEMS.filter((item) => item.slot === "braceletAny" || item.slot === "braceletL" || item.slot === "braceletR");
-      return `<div class="overlay deck-view sheet-gear"><div class="panel"><h2>装備</h2><div class="sheet-gear-scroll">${sheetGearGroup("剣", swords)}${sheetGearGroup("盾", shields)}${sheetGearGroup("アクセサリー", arms)}${sheetGearGroup("ボス", BOSS_GEAR)}</div>${menuButton("閉じる", "sheet-gear-close")}</div></div>`;
+      const boons = [
+        sheetGearBoonCard("hp", { name: "最大HP", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }),
+        sheetGearBoonCard("spd", { name: "SPD", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" }),
+        sheetGearBoonCard("mana", { name: "マナ+1", image: "reward-mana.jpg?v=1" }),
+      ];
+      const enchants = ENCHANT_ELEMS.map((elem) => {
+        const face = enchantFace(elem);
+        return sheetGearBoonCard("enchant", {
+          name: `エンチャント・${face.name}`,
+          image: face.image,
+          boonSub: face.sub,
+        });
+      });
+      return `<div class="sheet-gear-inline"><p class="album-meta">カードリストと同様、戦闘と同じ装備ポップを並べる。製品写真は枠内。</p>${sheetGearGroup("剣", swords)}${sheetGearGroup("盾", shields)}${sheetGearGroup("アクセサリー", arms)}${sheetGearGroup("ボス", BOSS_GEAR)}${sheetGearBoonGroup("祝福の報酬", boons)}${sheetGearBoonGroup("エンチャント", enchants)}</div>`;
     }
 
     function renderSheet() {
@@ -15436,33 +15501,7 @@
               ${sheetFig("job-girl-v2.png?v=1", "戦士の選択コマ（かわいい）", "cut-ref")}
             </div>
             <h3>装備</h3>
-            ${menuButton("装備の一覧", "sheet-gear", false, false, "sheet-gear-open")}
-            <div class="ref-grid">
-              ${sheetFig("gear-short-sword.jpg?v=4", "ショートソード")}
-              ${sheetFig("gear-long-sword.jpg?v=4", "ロングソード")}
-              ${sheetFig("gear-poison-sword.jpg?v=6", "ポイズンソード")}
-              ${sheetFig("gear-excalibur.jpg?v=6", "大天使の剣")}
-              ${sheetFig("gear-buckler.jpg?v=3", "バックラー")}
-              ${sheetFig("gear-leather-shield.jpg?v=3", "皮の盾")}
-              ${sheetFig("gear-iron-shield.jpg?v=3", "鉄の盾")}
-              ${sheetFig("gear-battle-counter.jpg?v=6", "バトルカウンター")}
-              ${sheetFig("gear-eagle-shield.jpg?v=6", "大天使の盾")}
-              ${sheetFig("gear-lion-shield.jpg?v=5", "獅子の盾")}
-              ${sheetFig("gear-chain-attack.jpg?v=7", "連撃の腕輪")}
-              ${sheetFig("gear-chain-guard.jpg?v=7", "連守の腕輪")}
-              ${sheetFig("gear-power-bracelet.jpg?v=6", "力の腕輪")}
-              ${sheetFig("gear-guard-bracelet.jpg?v=8", "守りの腕輪")}
-              ${sheetFig("gear-reuse-bracelet.jpg?v=7", "再利用の腕輪")}
-              ${sheetFig("gear-bracelet.jpg?v=4", "ミノタウロスの腕輪")}
-              ${sheetFig("gear-medal.jpg?v=3", "メダル")}
-              ${sheetFig("reward-mana.jpg?v=1", "報酬のマナ")}
-              ${sheetFig("reward-hp.jpg?v=1", "報酬の最大HP")}
-              ${sheetFig("reward-spd.jpg?v=1", "報酬のSPD")}
-              ${sheetFig("enchant-fire.jpg?v=1", "火のエンチャント")}
-              ${sheetFig("enchant-water.svg?v=1", "水のエンチャント（空）")}
-              ${sheetFig("enchant-light.svg?v=1", "光のエンチャント（空）")}
-              ${sheetFig("enchant-dark.svg?v=1", "闇のエンチャント（空）")}
-            </div>
+            ${sheetGearInline()}
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩は青、そのほかは黄。同じ名前は並べない。鍛冶屋は空の枠</p>
             <div class="ref-grid">
@@ -15504,8 +15543,7 @@
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
           </div>
           ${sheetZoomSide()}
-        </div>
-        ${sheetGearOverlay()}`;
+        </div>`;
       restoreAlbumScroll();
     }
 
@@ -15934,12 +15972,7 @@
     }
 
     const CARD_STYLE = [
-      ["style-mana-red", "マナ赤", "frame-spike-red.png?v=1"],
-      ["style-mana-copper", "マナ銅", "frame-spike-copper.png?v=2"],
-      ["style-mana-silver", "マナ銀", "frame-spike-silver.png?v=1"],
-      ["style-mana-gold", "マナ金", "frame-spike-gold.png?v=2"],
-      ["style-mana-black", "マナ黒", "frame-spike-black.png?v=2"],
-      ["style-red", "アタック", "frame-metal-red.png?v=7"],
+      ["style-red", "アタック", "frame-spike-gold.png?v=3"],
       ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
       ["style-green", "アイテム", "frame-metal-green.png?v=5"],
@@ -18462,9 +18495,7 @@
           render();
           return;
         }
-        if (name === "sheet") { clearArtZoom(); sheetGear = false; albumScrollTop = 0; screen = "sheet"; render(); }
-        if (name === "sheet-gear") { sheetGear = true; render(); return; }
-        if (name === "sheet-gear-close") { sheetGear = false; render(); return; }
+        if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
         if (name === "odds") { screen = "odds"; render(); }
         if (name === "character") {
           castHover = "";
@@ -18685,11 +18716,6 @@
     document.addEventListener("webkitfullscreenchange", paintFullscreenLabels);
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && fullscreenActive()) return;
-      if (event.key === "Escape" && screen === "sheet" && sheetGear) {
-        sheetGear = false;
-        render();
-        return;
-      }
       if (event.key === "Escape" && ((screen === "album" && albumZoom) || (screen === "sheet" && sheetZoom))) {
         captureAlbumScroll();
         clearArtZoom();
