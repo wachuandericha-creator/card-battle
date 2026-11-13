@@ -30,6 +30,7 @@
       --attack: #c88858;
       --guard: #8aa0b8;
       --muted: #a89880;
+      --log-serif: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; overflow: hidden; }
@@ -140,19 +141,26 @@
         inset 0 0 0 2px rgba(255, 241, 196, 0.35),
         0 10px 22px rgba(0, 0, 0, 0.55);
       color: var(--cream);
+      font-family: var(--log-serif);
     }
     .road-map h2 {
       flex: 0 0 auto;
-      margin: 0 0 6px;
-      padding: 4px 0 6px;
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
-      font-size: 30px;
+      margin: 0 0 8px;
+      padding: 8px 8px 10px;
+      border: 1px solid rgba(255, 214, 120, 0.75);
+      border-radius: 12px;
+      background:
+        radial-gradient(120% 90% at 50% 0%, rgba(255, 226, 150, 0.28), transparent 62%),
+        linear-gradient(180deg, rgba(146, 96, 28, 0.55), rgba(48, 28, 10, 0.4));
+      box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.45), 0 6px 14px rgba(0, 0, 0, 0.28);
+      font-family: var(--log-serif);
+      font-size: 24px;
       font-weight: 900;
-      letter-spacing: 0.22em;
-      text-indent: 0.28em;
+      letter-spacing: 0.42em;
+      text-indent: 0.42em;
       text-align: center;
       color: #fff3c4;
-      border-bottom: 1px solid rgba(228, 177, 90, 0.45);
+      text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.45);
     }
     .road-map ol {
       list-style: none;
@@ -177,9 +185,8 @@
       padding: 5px;
       overflow: hidden;
       border-radius: 10px;
-      color: rgba(240, 228, 204, 0.72);
-      font-size: 13px;
-      font-weight: 800;
+      color: #ead8b0;
+      font-family: inherit;
       isolation: isolate;
     }
     .road-node > img, .road-node > i {
@@ -199,11 +206,12 @@
       display: grid;
       place-items: center;
       border: 1px solid rgba(228, 177, 90, 0.35);
+      font-family: inherit;
       font-size: 54px;
       font-weight: 900;
       font-style: normal;
       color: #ffe7a4;
-      text-shadow: 0 3px 0 #000;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
     }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
@@ -246,10 +254,11 @@
       border-radius: 999px;
       background: #ffe14a;
       color: #3a2208;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: 0.16em;
-      line-height: 1;
+      font-family: var(--log-serif);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1.65;
       box-shadow: 0 2px 0 #6a4512;
     }
     @keyframes here-pulse {
@@ -272,37 +281,38 @@
       bottom: 5px;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       justify-content: flex-end;
       gap: 2px;
       padding: 14px 8px 6px;
       pointer-events: none;
+      text-align: center;
       background: linear-gradient(180deg, rgba(8, 6, 4, 0) 0%, rgba(8, 6, 4, 0.65) 32%, rgba(8, 6, 4, 0.94) 100%);
     }
     .road-floor {
       flex: 0 0 auto;
-      color: #ffe7a4;
-      font-size: 26px;
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: 0.04em;
-      text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.85);
+      width: 100%;
+      color: var(--gold);
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.65;
+      letter-spacing: 0.08em;
+      text-shadow: none;
     }
-    .road-node.now .road-floor { font-size: 30px; }
     .road-name {
       width: 100%;
       min-width: 0;
       overflow: hidden;
-      color: #fff6e4;
-      font-size: 19px;
-      font-weight: 900;
-      line-height: 1.15;
+      color: #ead8b0;
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.65;
+      letter-spacing: 0.04em;
       white-space: nowrap;
       text-overflow: ellipsis;
-      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.8);
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
     }
-    .road-node.now .road-name { font-size: 22px; }
-    .road-node.done .road-name { color: rgba(255, 246, 228, 0.88); }
+    .road-node.done .road-name { color: #e8d4a0; }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       position: relative;
@@ -1105,7 +1115,38 @@
       animation: hero-flash 0.7s ease-out forwards;
     }
     .hero-body .hero-hit.blunt { overflow: visible; }
-    /* 自分が殴られる。刃は出さない。衝撃の輪と星。血しぶきは出さない */
+    .hero-hit.blunt .flash {
+      left: 16%;
+      top: 18%;
+      width: 68%;
+      height: 64%;
+      inset: auto;
+      background:
+        radial-gradient(circle at 38% 62%, rgba(255, 78, 52, 0.82), transparent 44%),
+        radial-gradient(circle at 66% 36%, rgba(190, 22, 16, 0.72), transparent 48%),
+        radial-gradient(circle at 46% 28%, rgba(255, 150, 110, 0.42), transparent 40%);
+      filter: blur(3px);
+      mix-blend-mode: screen;
+      animation: poison-mist 1.25s ease-out forwards;
+    }
+    .hero-hit.blunt .ember {
+      position: absolute;
+      left: 46%;
+      top: 58%;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 32%, #ffe8df, #ff5a3c 46%, #8a100c 78%);
+      box-shadow: 0 0 10px rgba(255, 70, 40, 0.85), inset 0 0 0 2px rgba(90, 8, 6, 0.4);
+      opacity: 0;
+      animation: poison-bubble 1.25s ease-out forwards;
+    }
+    .hero-hit.blunt .e1 { --px: -36px; --py: -90px; width: 22px; height: 22px; }
+    .hero-hit.blunt .e2 { --px: 28px; --py: -110px; animation-delay: 0.12s; }
+    .hero-hit.blunt .e3 { --px: -8px; --py: -70px; width: 12px; height: 12px; animation-delay: 0.22s; }
+    .hero-hit.blunt .e4 { --px: 48px; --py: -64px; width: 14px; height: 14px; animation-delay: 0.08s; }
+    .hero-hit.blunt .e5 { --px: -52px; --py: -48px; animation-delay: 0.28s; }
+    /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
     .hero-hit .ring {
       position: absolute;
       left: 50%;
@@ -1154,21 +1195,20 @@
       animation: blunt-dust 0.7s ease-out forwards;
     }
     .hero-shoulder.blunt:not(.poison) .hero-fig { animation: hero-recoil 0.55s ease-out, hurt-cling 1.25s ease-out; }
+    .hero-hit.fatal .flash { animation-duration: 2.2s; }
     .hero-hit.fatal .ring { animation-duration: 1.6s; }
     .hero-hit.fatal .star { animation-duration: 1.8s; }
-    .battle-screen.fatal .stage { z-index: 6; }
-    .battle-screen.fatal .stage-fx { z-index: 12; }
+    .dmg-pop.me.fatal { animation-duration: 2.8s; font-size: calc(148px + var(--pow, 0.35) * 110px); }
     .fatal-call {
       position: absolute;
       left: 50%;
       top: 42%;
-      z-index: 12;
+      z-index: 9;
       transform: translate(-50%, -50%);
       margin: 0;
       font-size: clamp(52px, 8cqw, 92px);
       font-weight: 800;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
+      letter-spacing: 0.42em;
       color: #ffd8c8;
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
       animation: fatal-call 2.6s ease-out both;
@@ -2676,38 +2716,6 @@
       pointer-events: none;
     }
     .hero-shoulder.held .hero-fig { animation: guard-rim 1.45s ease-out both; }
-    .hero-guard.parry .guard-word {
-      color: #fff4c8;
-      text-shadow:
-        0 3px 0 #5c3d08,
-        0 0 12px rgba(255, 210, 90, 0.95),
-        0 0 18px rgba(232, 160, 32, 0.92);
-    }
-    .hero-shoulder.held.gold .hero-fig { animation: parry-rim 1.45s ease-out both; }
-    .hurt-word {
-      position: absolute;
-      left: 50%;
-      top: -6%;
-      z-index: 7;
-      margin: 0;
-      font-size: 42px;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      line-height: 1;
-      white-space: nowrap;
-      color: #fff4f0;
-      text-shadow:
-        0 3px 0 #5a100c,
-        0 0 12px rgba(255, 90, 70, 0.95),
-        0 0 18px rgba(255, 40, 30, 0.85);
-      animation: guard-word 1.45s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
-      pointer-events: none;
-    }
-    .hurt-word.big { font-size: 68px; }
-    .hurt-word.poison {
-      color: #e8ffb0;
-      text-shadow: 0 3px 0 #3a1460, 0 0 14px rgba(90, 220, 70, 0.9), 0 0 22px rgba(160, 70, 230, 0.75);
-    }
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
@@ -2781,7 +2789,8 @@
     .poison-hit .d3 { --px: 4px; height: 24px; animation-delay: 0.1s; }
     .hero-body .hero-hit.poison { overflow: visible; z-index: 4; }
     .sprite.poison { overflow: visible; }
-    .sprite.poison:not(.slash):not(.give) { animation: poison-shudder 1.15s linear; }
+    .sprite.poison:not(.slash) { animation: poison-shudder 1.15s linear; }
+    .hero-shoulder.poison:not(.hurt):not(.held) { animation: poison-shudder 1.15s linear; }
     .sprite.poison img,
     .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
     .poison-stamp {
@@ -2866,72 +2875,10 @@
     .hero-hit.ward .m4 { left: 38%; font-size: 20px; animation-delay: 0.3s; }
     .hero-hit.ward .m5 { left: 68%; font-size: 30px; animation-delay: 0.06s; }
     .sprite.ward { overflow: visible; }
-    .hurt-word.foe { left: calc(50% + var(--shift, 0px)); }
     @keyframes heal-glow {
       0% { filter: none; }
       22% { filter: drop-shadow(0 0 14px rgba(150, 255, 130, 0.95)) drop-shadow(0 -10px 24px rgba(40, 180, 60, 0.8)); }
       100% { filter: none; }
-    }
-    .sprite.anger { overflow: visible; }
-    .sprite.anger img {
-      transform-origin: center bottom;
-      animation: anger-swell 1.45s ease-in-out both;
-    }
-    @keyframes anger-swell {
-      0%, 100% {
-        filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
-        transform: scale(1);
-      }
-      32%, 58% {
-        filter:
-          drop-shadow(0 0 8px rgba(255, 48, 28, 0.95))
-          drop-shadow(0 0 14px rgba(160, 0, 0, 0.55))
-          drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
-        transform: scale(1.1);
-      }
-    }
-    .shield-badge.breaking {
-      overflow: visible;
-      z-index: 5;
-    }
-    .shield-badge.breaking .half {
-      position: absolute;
-      inset: 0;
-      animation: shield-split-left 1.05s ease-in forwards;
-    }
-    .shield-badge.breaking .plate-shield { filter: drop-shadow(0 0 10px rgba(220, 230, 245, 0.85)); }
-    .shield-badge.breaking .half.left { clip-path: inset(0 50% 0 0); animation-name: shield-split-left; }
-    .shield-badge.breaking .half.right { clip-path: inset(0 0 0 50%); animation-name: shield-split-right; }
-    .shield-badge.breaking .crack {
-      position: absolute;
-      left: 48%;
-      top: 8%;
-      width: 4px;
-      height: 84%;
-      background: linear-gradient(#fff, rgba(255, 255, 255, 0));
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-      opacity: 0;
-      animation: shield-crack 0.7s ease-out 0.16s forwards;
-    }
-    @keyframes shield-split-left {
-      0% { opacity: 0; transform: scale(0.7); }
-      14% { opacity: 1; transform: scale(1); }
-      34% { opacity: 1; transform: scale(1); }
-      70% { opacity: 1; transform: translateX(-16px) rotate(-6deg); }
-      100% { opacity: 0; transform: translateX(-28px) rotate(-10deg); }
-    }
-    @keyframes shield-split-right {
-      0% { opacity: 0; transform: scale(0.7); }
-      14% { opacity: 1; transform: scale(1); }
-      34% { opacity: 1; transform: scale(1); }
-      70% { opacity: 1; transform: translateX(16px) rotate(6deg); }
-      100% { opacity: 0; transform: translateX(28px) rotate(10deg); }
-    }
-    @keyframes shield-crack {
-      0% { opacity: 0; }
-      20% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { opacity: 0; }
     }
     .enemy { text-align: center; }
     .enemy.vitals { align-self: center; width: 82%; padding: 0; }
@@ -3404,7 +3351,7 @@
       border: 0;
       background: var(--panel-sheen), var(--panel-face);
       box-shadow: var(--panel-frame);
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-family: var(--log-serif);
     }
     .battle-log h2 {
       margin: 0 0 14px;
@@ -4307,8 +4254,13 @@
         1px -1px 0 #0a0806,
         -1px -1px 0 #0a0806;
     }
-    .card .fx.note .kw-line { display: block; text-align: center; }
-    .card .fx.note .kw-line + .kw-line { margin-top: 0.12em; }
+    .card .fx.note .kw-line,
+    .card .fx.kw .kw-line { display: block; text-align: center; }
+    .card .fx.kw { display: block; width: 100%; }
+    .card .fx.note .kw-line + .kw-line,
+    .card .fx.kw .kw-line + .kw-line { margin-top: 0.12em; }
+    .card .fx-row { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+    .card .text.has-kw { justify-content: flex-start; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
     .card:has(.card-fit.r2),
     .card:has(.card-fit.r3) {
@@ -4359,7 +4311,7 @@
     }
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
     .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; word-break: keep-all; line-break: strict; overflow-wrap: normal; }
-    .card .fx.note .nobr { white-space: nowrap; }
+    .card .fx.note .nobr { display: inline-block; white-space: nowrap; vertical-align: baseline; }
     .card .fx b { font-size: 14cqw; color: #1a120e; }
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
@@ -4539,19 +4491,23 @@
     .card .card-fit .text {
       position: absolute;
       left: 9cqw;
-      top: 85.8cqw;
+      top: 82cqw;
       width: 82cqw;
-      height: 39.8cqw;
+      height: 46cqw;
       margin: 0;
       z-index: 3;
-      padding: 2cqw;
+      padding: 1.4cqw 2cqw;
       box-sizing: border-box;
       border-radius: 0;
       background: none;
       color: #1c1816;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
+      align-items: stretch;
+      overflow: hidden;
+      gap: 1cqw;
     }
-    .card .card-fit .fx.note { font-size: 6.6cqw; font-weight: 700; }
+    .card .card-fit .fx.note,
+    .card .card-fit .fx.kw { width: 100%; min-width: 0; font-size: 5.2cqw; font-weight: 700; line-height: 1.15; }
     .card .card-fit .genre { z-index: 6; }
     .card .card-fit .nameplate,
     .card .card-fit .text { z-index: 5; }
@@ -5732,13 +5688,14 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* イベント画面：上に大きな挿絵、下に物語と押しやすい選択肢。お店だけ左に挿絵、右に品 */
+    /* イベント画面：左は横を切った縦長の挿絵。右は説明、その下にカードと同じ大きさの報酬 */
     .menu.event {
       width: 100%;
       height: 100%;
       padding: 6px 8px 10px;
-      --event-art: 1.28fr;
-      --event-side: 0.9fr;
+      --choice-w: 216px;
+      --event-art: 1fr;
+      --event-side: 1fr;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
@@ -5762,27 +5719,29 @@
     }
     .menu.event.shop .shop-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      justify-content: stretch;
-      align-items: stretch;
+      grid-template-columns: repeat(2, calc(var(--choice-w) + 28px));
+      justify-content: center;
+      align-items: start;
+      align-content: start;
       width: 100%;
-      height: 100%;
+      height: auto;
       min-height: 0;
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       margin: 0;
-      gap: 12px;
+      gap: 16px;
     }
     .menu.event.shop .shop-slot {
-      width: auto;
-      min-width: 0;
+      width: calc(var(--choice-w) + 28px);
+      min-width: calc(var(--choice-w) + 28px);
+      max-width: calc(var(--choice-w) + 28px);
       min-height: 0;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: minmax(0, 1fr) auto auto;
+      height: auto;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-items: center;
-      gap: 6px;
+      justify-content: flex-start;
+      gap: 8px;
       padding: 10px 10px 12px;
       border: 2px solid #e4c27a;
       border-radius: 18px;
@@ -5924,11 +5883,11 @@
     .menu.event .event-lead {
       grid-area: lead;
       display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: minmax(0, var(--event-art)) minmax(220px, var(--event-side));
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
       align-items: stretch;
       align-self: stretch;
-      gap: 10px 16px;
+      gap: 12px 18px;
       width: 100%;
       max-width: 100%;
       max-height: 100%;
@@ -5939,7 +5898,7 @@
       box-sizing: border-box;
     }
     .menu.event.shop .event-lead {
-      grid-template-columns: minmax(240px, 0.96fr) minmax(0, 1.04fr);
+      grid-template-columns: auto minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr);
     }
     .menu.event .event-art {
@@ -5956,49 +5915,42 @@
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr);
     }
-    .menu.event .event-side {
+    .menu.event .event-side,
+    .menu.event.shop .event-side,
+    .menu.event.beggar .event-side {
       min-width: 0;
       min-height: 0;
       max-width: none;
       justify-self: stretch;
-      display: grid;
-      grid-template-columns: minmax(0, 0.86fr) minmax(260px, 1.2fr);
-      align-items: stretch;
-      justify-content: stretch;
-      gap: 12px 18px;
-      overflow: hidden;
-      padding: 2px 6px 4px 2px;
-      box-sizing: border-box;
-    }
-    .menu.event.shop .event-side {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 2px 4px 4px 8px;
-    }
-    .menu.event.beggar .event-side {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto minmax(0, 1fr);
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 14px;
+      overflow: auto;
+      padding: 4px 8px 8px 4px;
+      box-sizing: border-box;
     }
     .menu.event .event-copy {
       min-width: 0;
       min-height: 0;
-      flex: 0 1 auto;
-      overflow: auto;
+      flex: 0 0 auto;
+      overflow: visible;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
     }
     .menu.event .event-copy .event-split { width: 100%; }
     .menu.event .event-side .event-choice {
       grid-area: auto;
-      height: 100%;
+      height: auto;
       max-height: none;
-      overflow: auto;
-      padding: 2px 2px 2px 0;
+      overflow: visible;
+      padding: 0;
       width: 100%;
       min-height: 0;
-      align-items: stretch;
-      justify-content: center;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: flex-start;
     }
     .menu.event .event-side .gift-btn {
       min-width: 180px;
@@ -6034,11 +5986,11 @@
       inset: auto;
       display: block;
       width: auto;
-      height: auto;
-      max-width: 100%;
+      height: 100%;
+      max-width: none;
       max-height: 100%;
-      aspect-ratio: auto;
-      object-fit: contain;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
       object-position: center center;
       margin: 0;
       box-sizing: border-box;
@@ -6213,15 +6165,15 @@
     .menu.event .event-actions { display: flex; flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 12px; }
     .menu.event .event-actions button { min-width: 0; }
     .menu.event .event-choice:has(.gift-show) {
-      flex-direction: row;
-      flex-wrap: wrap;
+      flex-direction: column;
+      flex-wrap: nowrap;
       align-items: center;
-      justify-content: center;
-      gap: 16px 20px;
+      justify-content: flex-start;
+      gap: 14px;
     }
     .menu.event .event-choice:has(.gift-show) .gift-show {
-      width: min(260px, 48%);
-      max-width: 270px;
+      width: calc(var(--choice-w) + 16px);
+      max-width: calc(var(--choice-w) + 16px);
       align-self: center;
     }
     .menu.event .event-choice:has(.gift-show) .gift-show .card.preview,
@@ -6266,16 +6218,18 @@
       html:not(.stage-fit) .menu.event .event-lead,
       html:not(.stage-fit) .menu.event.shop .event-lead {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(160px, 32cqh) minmax(0, 1fr);
-        overflow: hidden;
+        grid-template-rows: minmax(220px, 52cqh) auto;
+        overflow: auto;
         padding: 0;
       }
-      html:not(.stage-fit) .menu.event .event-art { min-height: 0; }
+      html:not(.stage-fit) .menu.event .event-art { min-height: 0; height: 100%; }
       html:not(.stage-fit) .menu.event .event-art .event-picture {
         width: auto;
-        height: auto;
-        max-width: 100%;
+        height: 100%;
+        max-width: 72%;
         max-height: 100%;
+        aspect-ratio: 3 / 4;
+        object-fit: cover;
         object-position: center;
       }
       html:not(.stage-fit) .menu.event .event-side,
@@ -6399,6 +6353,112 @@
     }
     .gift-pick, .gift-show { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--cream); }
     .gift-pick .card.preview { width: 230px; height: auto; }
+    .menu.event .gift-btn,
+    .menu.event .event-side .gift-btn,
+    .menu.event.bless .gift-btn {
+      width: calc(var(--choice-w) + 20px);
+      min-width: calc(var(--choice-w) + 20px);
+      max-width: calc(var(--choice-w) + 20px);
+      flex: 0 0 auto;
+      height: auto;
+      align-self: center;
+    }
+    .menu.event .gift-pick .card.preview,
+    .menu.event .gift-show .card.preview,
+    .menu.event.bless .gift-pick .card.preview,
+    .menu.event.shop .shop-slot .card.preview,
+    .menu.event.beggar .beggar-card .card.preview {
+      width: var(--choice-w);
+      min-width: var(--choice-w);
+      max-width: var(--choice-w);
+      height: calc(var(--choice-w) * 4 / 3);
+      min-height: calc(var(--choice-w) * 4 / 3);
+      aspect-ratio: 3 / 4;
+    }
+    .menu.event .gift-btn .gear-effect,
+    .menu.event .gift-show .gear-effect,
+    .menu.event.bless .gift-btn .gear-effect,
+    .menu.event.shop .shop-slot .gear-effect {
+      width: var(--choice-w) !important;
+      min-width: var(--choice-w) !important;
+      max-width: var(--choice-w) !important;
+      height: calc(var(--choice-w) * 4 / 3);
+      max-height: calc(var(--choice-w) * 4 / 3);
+      overflow: hidden;
+    }
+    .menu.event .gear-effect-inner,
+    .menu.event.shop .shop-slot .gear-effect-inner {
+      height: 100%;
+      max-height: 100%;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+    .menu.event .gear-effect-head,
+    .menu.event.shop .shop-slot .gear-effect-head,
+    .menu.event.bless .gift-btn .gear-effect-head,
+    .menu.event.bless .gift-pick .gear-effect-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      grid-template-columns: none;
+      text-align: center;
+    }
+    .menu.event .gear-effect-art,
+    .menu.event .gift-btn .gear-effect-art,
+    .menu.event.shop .shop-slot .gear-effect-art,
+    .menu.event .gift-btn .gear-effect.center-boon .gear-effect-art {
+      width: 132px;
+      height: 132px;
+    }
+    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-art,
+    .menu.event.shop .shop-slot .gear-effect-art {
+      width: 92px;
+      height: 92px;
+    }
+    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-inner,
+    .menu.event.shop .shop-slot .gear-effect-inner {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 8px 8px 6px;
+      gap: 4px;
+    }
+    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-head {
+      margin: 0;
+      gap: 2px;
+    }
+    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-name {
+      font-size: 16px;
+      white-space: normal;
+    }
+    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-body {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.35;
+      padding: 6px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .menu.event .gear-effect-meta,
+    .menu.event .gear-effect-titles,
+    .menu.event .gear-effect-name,
+    .menu.event .gear-effect-body,
+    .menu.event.shop .shop-slot .gear-effect-body {
+      width: 100%;
+      text-align: center;
+    }
+    .menu.event .gear-effect-chiprow {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .menu.event .gift-row {
+      width: 100%;
+      height: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+    }
     .gift-pick .gift-img { width: 230px; height: 230px; object-fit: cover; border-radius: 14px; border: 2px solid rgba(228, 177, 90, 0.7); }
     .gift-pick b { font-size: 26px; letter-spacing: 0.04em; }
     .gift-pick small { font-size: 16px; line-height: 1.45; font-weight: 700; max-width: 260px; text-align: center; color: #fff6e4; }
@@ -7605,9 +7665,10 @@
       100% { transform: scale(1.08); }
     }
     @keyframes fatal-call {
-      0% { opacity: 0; transform: translate(-50%, -40%) scale(0.7); }
-      18% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
-      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      0% { opacity: 0; transform: translate(-50%, -40%) scale(0.7); letter-spacing: 0.08em; }
+      22% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+      70% { opacity: 1; }
+      100% { opacity: 0.2; transform: translate(-50%, -58%) scale(1); }
     }
     @keyframes pose-slam {
       0% { opacity: 0; transform: translateY(36px) scale(1.22); filter: brightness(2.2); }
@@ -7780,7 +7841,9 @@
       .hero-guard, .hero-guard * { animation: none; }
       .hero-guard .guard-word { opacity: 1; }
       .hero-shoulder.held .hero-fig,
-      .hero-shoulder.held.gold .hero-fig { animation: none; }
+      .hero-shoulder.ward .hero-fig,
+      .sprite.ward img,
+      .hero-hit.ward .mark { animation: none; }
     }
     @property --hot-x {
       syntax: "<percentage>";
@@ -8144,11 +8207,11 @@
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
       余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
+      致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ\nパリィは消費しない\n出したターンの攻撃は防げない", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, stars: 3, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
-      諸刃の剣: { cost: 2, stars: 2, text: "25ダメージ\n次に受ける攻撃を2倍", damage: 25, kind: "attack", doubleNext: true },
+      諸刃の剣: { cost: 2, stars: 2, text: "次に受ける攻撃を2倍\nその1発をパリィで無効にすると、2倍は消える", damage: 25, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
@@ -8503,7 +8566,6 @@
     let lastFoeBlow = null;
     let defeatSnap = null;
     let fxGuard = "";
-    let fxShieldBreak = { player: 0, enemy: 0 };
     let fxHeal = false;
     let fxHit = null;
     let fxPoisonApply = { player: false, enemy: false };
@@ -9751,28 +9813,8 @@
       return `<svg class="plate-shield" viewBox="0 0 80 96" aria-hidden="true"><path d="M40 8 68 20v26c0 20-11 34-28 42C23 80 12 66 12 46V20Z" fill="${fill}" stroke="${edge}" stroke-width="5"/><path d="M40 16 60 26v18c0 15-8 26-20 32C28 70 20 59 20 44V26Z" fill="none" stroke="${rim}" stroke-width="2.5"/></svg>`;
     }
 
-    function holdGuard(kind) {
-      const gold = kind === "parry";
-      const word = gold ? "パリィ" : "ガード";
-      return `<div class="hero-guard hold${gold ? " parry" : ""}" aria-label="${word}"><b class="guard-word">${word}</b></div>`;
-    }
-
-    function shieldBreakBadge() {
-      const plate = plateShieldSvg(false);
-      return `<div class="shield-badge breaking" aria-label="シールドが割れた"><span class="half left">${plate}</span><span class="half right">${plate}</span><i class="crack"></i></div>`;
-    }
-
-    function hitIsBig(n, maxHp) {
-      const cap = Math.max(1, Number(maxHp) || 1);
-      return Number(n) >= cap * 0.3;
-    }
-
-    function hurtWord(n, poison, maxHp, foe) {
-      const big = hitIsBig(n, maxHp) ? " big" : "";
-      const kind = poison ? " poison" : "";
-      const side = foe ? " foe" : "";
-      const shift = foe ? ` style="--shift:${foe.shift}px;animation-delay:${foe.delay}"` : "";
-      return `<b class="hurt-word${kind}${big}${side}"${shift}>${n}ダメージ！</b>`;
+    function holdGuard() {
+      return `<div class="hero-guard hold" aria-label="ガード"><b class="guard-word">ガード</b></div>`;
     }
 
     function heartIcon() {
@@ -10220,10 +10262,6 @@
 
     // 敵への斬撃エフェクト。1ターンの中で 右上→左下、左上→右下、上→下 の順に回す。
     // 2回攻撃のカードは、この順を2つ進める。
-    function markShieldBreak(side, result) {
-      if (result && result.blocked > 0 && result.hpLoss > 0) fxShieldBreak[side] = result.blocked;
-    }
-
     function slashFoe() {
       fxSlash = true;
       fxSlashes.push(slashSeq % 3);
@@ -10274,7 +10312,6 @@
       }
       const hadShield = who === "player" && Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(target, amount);
-      markShieldBreak(who, result);
       markPoisonApply(target);
       if (who === "player" && result.hpLoss > 0) player.hurtThis = true;
       if (who === "player") {
@@ -10301,7 +10338,6 @@
       player.parryHitThis = true;
       if (player.knifeReflect && negated > 0 && enemy && enemy.hp > 0) {
         const hit = applyDamage(enemy, negated);
-        markShieldBreak("enemy", hit);
         if (hit.hpLoss || hit.blocked) {
           slashFoe();
           noteHit("enemy", hit.hpLoss, negated);
@@ -10330,7 +10366,6 @@
       const stacks = parryCount(player);
       if (stacks > 0) {
         player.parry = stacks - 1;
-        fxGuard = "parry";
         onParrySuccess(amount);
         noteHit("player", 0, amount);
         log(`${enemy.name}は${name}。パリィで無効。`, card, true);
@@ -10341,7 +10376,6 @@
       const dealt = Math.max(0, amount + extra);
       const hadShield = Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(player, dealt);
-      markShieldBreak("player", result);
       if (result.hpLoss > 0) {
         player.hurtThis = true;
         fxHurt = true;
@@ -10362,7 +10396,6 @@
       const reflect = Math.max(0, Number(player.def) || 0);
       if (reflect <= 0) return;
       const hit = applyDamage(enemy, reflect);
-      markShieldBreak("enemy", hit);
       if (hit.hpLoss || hit.blocked) {
         slashFoe();
         noteHit("enemy", hit.hpLoss, reflect);
@@ -10470,7 +10503,6 @@
     function strike(card, amount) {
       const dealt = Math.max(0, amount);
       const result = applyDamage(enemy, dealt);
-      markShieldBreak("enemy", result);
       if (dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
         noteHit("enemy", result.hpLoss, dealt);
@@ -11421,7 +11453,7 @@
         const slashCount = fxSlashes.length;
         const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
         timer = setTimeout(leaveFoeCard, wait);
         return;
       }
@@ -11430,7 +11462,7 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, poisonWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" ? 1750 : 0, poisonWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -11562,7 +11594,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, (guardKind === "hold" || guardKind === "parry") ? 1750 : 0, fatalWait, poisonWait);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -12170,7 +12202,6 @@
         log(`${heroName()}は${item.name}を使った。HPが${gain}回復。`);
       } else if (item.damage) {
         const result = applyDamage(enemy, item.damage);
-        markShieldBreak("enemy", result);
         if (result.hpLoss || result.blocked) {
           slashFoe();
           noteHit("enemy", result.hpLoss, item.damage);
@@ -12686,11 +12717,8 @@
       const parryStacks = parryN >= 2;
       // シールドは板の右上の銀盾。パリィは同じ位置の金盾（得ると銀から金に変わる。臆病者の構え時だけ横並び）
       const fresh = Boolean(extra && extra.shieldFlash && block > 0);
-      const breaking = extra && Number(extra.shieldBreak) > 0;
       const parryFresh = Boolean(extra && extra.parryFlash);
-      const shieldBadge = breaking
-        ? shieldBreakBadge()
-        : (block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "");
+      const shieldBadge = block > 0 ? `<div class="shield-badge${fresh ? " fresh" : ""}" aria-label="シールド ${block}">${plateShieldSvg(false)}<b>${block}</b></div>` : "";
       const parryBadge = parried
         ? `<div class="shield-badge parry-badge${parryFresh ? " fresh" : ""}${extra && extra.parryFromShield ? " from-shield" : ""}" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryStacks ? `<b>${parryN}</b>` : ""}</div>`
         : "";
@@ -12792,7 +12820,6 @@
       return [
         ["自分", [
           ["guard", "ガード"],
-          ["parry-block", "パリィで防ぐ"],
           ["break", "盾が割れる"],
           ["hurt", "被ダメージ"],
           ["poison-tick", "毒ダメージ"],
@@ -12837,13 +12864,11 @@
       return dirs.map((dir, i) => `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * 0.34).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></span>`).join("");
     }
 
-    function fxPops(hits, poison, maxHp) {
-      const cap = maxHp || (enemy && enemy.maxHp) || 40;
+    function fxPops(hits, poison) {
       return hits.map((n, i) => {
         const shift = (i - (hits.length - 1) / 2) * 64;
-        const delay = (i * 0.34 + 0.08).toFixed(2) + "s";
-        if (poison) return hurtWord(n, true, cap, { shift, delay });
-        return `<b class="dmg-pop foe-hit" style="--delay:${delay};--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+        const text = poison ? `${n}ダメージ！` : n;
+        return `<b class="dmg-pop foe-hit${poison ? " poison" : ""}${poison && n >= 10 ? " big" : ""}" style="--delay:${(i * 0.34 + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
       }).join("");
     }
 
@@ -12855,17 +12880,11 @@
       const anger = Boolean(opt.anger);
       const give = Boolean(opt.stamp);
       const broke = Boolean(opt.break);
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="medium"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="enemy-slime.png?v=7" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${broke ? shieldBreakHtml() : ""}${hits.length ? fxPops(hits, poison && !slash) : ""}</div></div></div>`;
     }
 
     function fxPlate(id) {
       const name = esc(heroName());
-      if (id === "break") {
-        return `<div class="hero-stack"><section class="battle-plate hero-plate">${shieldBreakBadge()}<h2><span class="who">${name}</span></h2></section></div>`;
-      }
-      if (id === "foe-break") {
-        return `<section class="battle-plate foe-plate" data-rank="普通">${shieldBreakBadge()}<h2><span class="who">スライム</span></h2></section>`;
-      }
       if (id === "shield") {
         return `<div class="hero-stack"><section class="battle-plate hero-plate shielded"><div class="shield-badge fresh" aria-label="シールド 8">${plateShieldSvg(false)}<b>8</b></div><h2><span class="who">${name}</span></h2></section></div>`;
       }
@@ -12896,8 +12915,7 @@
       let foe = {};
       let call = "";
       let cls = "";
-      if (id === "guard") hero = { guard: "hold" };
-      else if (id === "parry-block") hero = { guard: "parry" };
+      if (id === "guard") hero = { guard: true };
       else if (id === "break") hero = { hurt: true, n: 6, pow: hitPower(6), break: true };
       else if (id === "hurt") hero = { hurt: true, n: 6, pow: hitPower(6) };
       else if (id === "poison-tick") hero = { hurt: true, kind: "poison", n: 3, pow: hitPower(3) };
@@ -12905,9 +12923,9 @@
       else if (id === "fatal") {
         hero = { hurt: true, fatal: true, n: 12, pow: hitPower(12) };
         foe = { fatal: true };
-        call = `<div class="fatal-call">You are Dead</div>`;
+        call = `<div class="fatal-call" aria-hidden="true">You are Dead</div>`;
         cls = " fatal";
-      } else if (id === "heal") hero = { heal: true };
+      }       else if (id === "heal") hero = { heal: true };
       else if (id === "shield") hero = { ward: true };
       else if (id === "parry") hero = { sparkGold: true };
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
@@ -12941,7 +12959,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard || "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), hero.n || 0, Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -14276,6 +14294,18 @@
       return text;
     }
 
+    // 剣・盾・ハートで出している数字は、本文に重ねない。
+    function withoutIconEcho(text, opts) {
+      return String(text || "").split("\n").map((line) => line.trim()).filter((line) => {
+        if (!line) return false;
+        if (opts.attack && /^\d+ダメージ$/u.test(line)) return false;
+        if (opts.attack && opts.hits && opts.live && /^\d+ダメージを\d+回$/u.test(line)) return false;
+        if (opts.block && /^ブロック\d+$/u.test(line)) return false;
+        if (opts.heal && /^体力を\d+回復$/u.test(line)) return false;
+        return true;
+      }).join("\n");
+    }
+
     function cardFace(card, live, foe) {
       const fromHand = !!(live && !foe && (!inPlay || !inPlay.includes(card)));
       const dmgLabel = live ? expectedDamageLabel(card, fromHand, foe) : "";
@@ -14298,7 +14328,14 @@
           shownBlock = Number(card.block) || 0;
         }
       }
-      let noteText = cardNoteHtml(live ? liveCardText(card, fromHand, foe) : (card.text || ""));
+      const rawNote = withoutIconEcho(live ? liveCardText(card, fromHand, foe) : (card.text || ""), {
+        attack: showAttack,
+        block: showBlock,
+        heal: !!card.heal,
+        hits: !!card.hits,
+        live: !!live,
+      });
+      let noteText = cardNoteHtml(rawNote);
       const hintWord = (text, word, note) => {
         if (!word || !note || !text.includes(word)) return text;
         return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
@@ -14312,7 +14349,6 @@
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
-      noteText = keywords.join("") + noteText;
       noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
@@ -14321,14 +14357,17 @@
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
         card.heal ? `<span class="fx heal">${heartIcon()}<b>${card.heal}</b></span>` : "",
       ].join("");
-      const extra = card.expose || card.fullBonus || card.safeBonus || card.kick || card.headbutt || card.finisher || card.poise || card.guardBreak || card.hits || card.flash || card.burst || isFlashCard(card) || card.quick || card.keep || isItemCard(card) || card.burn || card.press || card.redTimes || card.counter || (card.parry && card.damage) || (live && dmgLabel && !card.damage);
-      const effects = icons && extra ? `${icons}<span class="fx note">${noteText}</span>` : icons || `<span class="fx note">${noteText}</span>`;
+      const kwHtml = keywords.length ? `<span class="fx kw">${keywords.join("")}</span>` : "";
+      const iconHtml = icons ? `<span class="fx-row">${icons}</span>` : "";
+      const noteHtml = noteText ? `<span class="fx note">${noteText}</span>` : "";
+      const effects = `${kwHtml}${iconHtml}${noteHtml}`;
       const stars = card.stars || 1;
       const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : "r1";
       const kind = foe ? "foe" : cardKind(card);
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
-      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="text">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      const textClass = keywords.length ? "text has-kw" : "text";
+      return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
@@ -14602,7 +14641,8 @@
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "resolve") calls.push(`<div class="turn-call resolve" aria-hidden="true"><b>解決フェイズ</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
-      if (fatalNow) calls.push(`<div class="fatal-call">You are Dead</div>`);
+      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
+      if (hurtNow && hitNow && hitNow.side === "player") calls.push(`<b class="dmg-pop me${hitNow.kind === "poison" ? " poison" : ""}${fatalNow ? " fatal" : ""}" style="--pow:${hitPow}">${hitNow.n}</b>`);
       if (!calls.length) return "";
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
@@ -14644,13 +14684,8 @@
     }
 
     function poisonFxHtml(stamp) {
-      const word = stamp ? `<b class="hurt-word poison">毒になった！</b>` : "";
-      const liquid = stamp ? "" : `<i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i>`;
-      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i>${liquid}</div>`;
-    }
-
-    function angerFxHtml() {
-      return "";
+      const word = stamp ? `<b class="poison-stamp">毒</b>` : "";
+      return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
     function healFxHtml() {
@@ -14661,7 +14696,7 @@
       return `<div class="hero-hit ward${gold ? " spark-gold" : ""}" aria-hidden="true"><b class="mark m1">✨</b><b class="mark m2">✨</b><b class="mark m3">✨</b><b class="mark m4">✨</b><b class="mark m5">✨</b></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, hurtN, ward, sparkGold) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, ward, sparkGold) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -14669,17 +14704,15 @@
         ? `<div class="hero-hit poison${fatal && poisonTick ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml(!poisonTick)}</div>`
         : "";
       const bluntHtml = blunt
-        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
+        ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true"><span class="flash"></span><i class="ember e1"></i><i class="ember e2"></i><i class="ember e3"></i><i class="ember e4"></i><i class="ember e5"></i><span class="ring a"></span><span class="ring b"></span><span class="star s1"></span><span class="star s2"></span><span class="star s3"></span><span class="star s4"></span><span class="star s5"></span><span class="dust"></span></div>`
         : "";
       const hit = poisonHtml + bluntHtml;
-      const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick, (player && player.maxHp) || 30) : "";
       const healHtml = heal ? healFxHtml() : "";
       const goldSpark = Boolean(sparkGold);
       const wardHtml = ward || goldSpark ? wardFxHtml(goldSpark) : "";
-      const guarding = guard === "hold" || guard === "parry";
-      const guardHtml = guarding ? holdGuard(guard) : "";
+      const guardHtml = guard === "hold" ? holdGuard() : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guarding ? " held" : ""}${guard === "parry" ? " gold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${wardHtml}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guard === "hold" ? " held" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${wardHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15876,8 +15909,6 @@
       fxParryFromShield = false;
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
-      const breakNow = { player: fxShieldBreak.player, enemy: fxShieldBreak.enemy };
-      fxShieldBreak = { player: 0, enemy: 0 };
       const healNow = fxHeal;
       const hitNow = fxHit;
       const poisonPlayerNow = fxPoisonApply.player;
@@ -15888,12 +15919,11 @@
       const HIT_GAP = 0.34;
       const cutsHtml = slashesNow.map((dir, i) => {
         const pow = foeHitsNow[i] != null ? hitPower(foeHitsNow[i]) : (hitNow && hitNow.side === "enemy" ? hitPow : "0.35");
-        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></span>`;
+        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`;
       }).join("");
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
-        if (foeKind === "poison") return hurtWord(n, true, enemy && enemy.maxHp, { shift, delay: (i * HIT_GAP + 0.08).toFixed(2) + "s" });
-        return `<b class="dmg-pop foe-hit" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
+        return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${n}</b>`;
       }).join("");
       fxSlash = false;
       fxSlashes = [];
@@ -15936,16 +15966,16 @@
             <div class="enemy-field">
             ${traitNote()}
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, shieldBreak: breakNow.player, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, shieldBreak: breakNow.enemy, threat: foeThreat, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, threat: foeThreat, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, shieldPlayerNow, parryPlayerNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, shieldPlayerNow, parryPlayerNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -15959,7 +15989,7 @@
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
-                ${shieldEnemyNow ? wardFxHtml() : ""}
+                ${shieldEnemyNow ? wardFxHtml(false) : ""}
               </div>
               </div>
               </div>
