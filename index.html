@@ -5082,9 +5082,9 @@
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
-    .card .card-fit.k-foe.r1,
-    .card .card-fit.k-foe.r2,
-    .card .card-fit.k-foe.r3 { --frame-img: url("frame-metal-navy.png?v=4"); }
+    .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=1"); }
+    .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=1"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=1"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
@@ -16496,7 +16496,7 @@
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
             <h3>カードスタイル</h3>
-            <p class="album-meta">同じ形の棘。銅・銀・金・黒と、赤・青・緑・黄・白・紫・紺。位置は一致</p>
+            <p class="album-meta">同じ形の棘。銅・銀・金・黒と、赤・青・緑・黄・白・紺。位置は一致</p>
             <div class="ref-grid blank-grid">${CARD_STYLE.map((item) => sheetFig(item[2], item[1], "style-master")).join("")}</div>
           </div>
           ${sheetZoomSide()}
@@ -16936,7 +16936,10 @@
     }
 
     const CARD_STYLE = [
-      ["style-navy", "敵", "frame-metal-navy.png?v=4"],
+      ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=1"],
+      ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=1"],
+      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=1"],
+      ["style-navy-black", "敵 ボス", "frame-navy-over-black.png?v=1"],
       ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=1"],
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=1"],
       ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=1"],
@@ -16966,11 +16969,6 @@
       ["style-mana-green", "棘 緑", "frame-blue-mana-green.png?v=1"],
       ["style-mana-yellow", "棘 黄", "frame-blue-mana-yellow.png?v=1"],
       ["style-mana-white", "棘 白", "frame-blue-mana-white.png?v=1"],
-      ["style-mana-purple", "棘 紫", "frame-blue-mana-purple.png?v=1"],
-      ["style-purple-over-copper", "紫 ★", "frame-purple-over-copper.png?v=1"],
-      ["style-purple-over-silver", "紫 ★★", "frame-purple-over-silver.png?v=1"],
-      ["style-purple-over-gold", "紫 ★★★", "frame-purple-over-gold.png?v=3"],
-      ["style-purple-over-black", "紫 ボス", "frame-purple-over-black.png?v=1"],
       ["style-mana-navy", "棘 紺", "frame-blue-mana-navy.png?v=1"],
     ];
     function styleLabel(id, name) {
