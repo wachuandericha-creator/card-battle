@@ -1474,7 +1474,18 @@
     .gear-offer-info { width: 100%; text-align: center; }
     .gear-offer-art { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #1a1410; }
     .gear-offer-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .gear-offer .gear-effect { position: relative; left: auto; top: auto; width: 100%; max-width: none; max-height: none; pointer-events: none; }
+    .gear-offer .gear-effect,
+    .reward-pick .gear-effect {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: min(var(--gear-pop-w, 220px), 100%);
+      min-width: 168px;
+      max-width: min(352px, 100%);
+      height: auto;
+      max-height: none;
+      pointer-events: none;
+    }
     .gear-delta { width: 100%; margin-top: 8px; text-align: left; color: #fff6e4; }
     .gear-delta .delta-names { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 6px; font-weight: 800; }
     .gear-delta .delta { display: grid; grid-template-columns: 46px 42px 16px 42px 46px; justify-content: start; align-items: center; gap: 4px; margin: 2px 0; font-weight: 800; }
@@ -1604,33 +1615,14 @@
       position: relative;
       left: auto;
       top: auto;
-      width: 100%;
-      max-width: none;
+      width: min(var(--gear-pop-w, 220px), 100%);
+      min-width: 168px;
+      max-width: min(352px, 100%);
+      height: auto;
       max-height: none;
       pointer-events: none;
     }
     .sheet-screen .sheet-gear-inline .gear-effect-inner { max-height: none; }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop {
-      font-size: 15px;
-    }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-name {
-      font-size: 17px;
-      letter-spacing: 0.06em;
-    }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-stars {
-      font-size: 13px;
-    }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-body {
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-art {
-      width: 96px;
-      height: 96px;
-    }
-    .sheet-screen .sheet-gear-card .gear-effect.sheet-pop .gear-effect-head {
-      grid-template-columns: 96px 1fr;
-    }
     .sheet-screen .sheet-gear-inline .album-meta { margin: 0 0 14px; }
     .deck-group { width: 100%; margin: 0 0 18px; }
     .deck-group h3 {
@@ -6375,35 +6367,6 @@
       min-height: 0;
       overflow: visible;
     }
-    .menu.event.bless .gift-btn .gear-effect-art {
-      width: 120px;
-      height: 120px;
-    }
-    .menu.event.bless .gift-btn .gear-effect-head {
-      grid-template-columns: 120px 1fr;
-    }
-    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) {
-      --gear-pop-w: min(250px, 100%) !important;
-      font-size: 14px;
-    }
-    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-name {
-      font-size: 18px;
-    }
-    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-stars {
-      font-size: 13px;
-    }
-    .menu.event.bless .gift-btn .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-body {
-      font-size: 14px;
-      padding: 8px 8px;
-      text-align: left;
-    }
-    .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-art {
-      width: 120px;
-      height: 120px;
-    }
-    .menu.event.bless .gift-pick .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-head {
-      grid-template-columns: 120px 1fr;
-    }
     .menu.event .event-choice {
       grid-area: choice;
       min-width: 0;
@@ -6673,8 +6636,10 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(260px, 100%);
-      max-width: 260px;
+      width: min(var(--gear-pop-w, 220px), 100%);
+      min-width: 168px;
+      max-width: min(352px, 100%);
+      height: auto;
       max-height: none;
       pointer-events: none;
     }
@@ -6725,94 +6690,19 @@
     }
     .menu.event .gift-btn .gear-effect,
     .menu.event .gift-show .gear-effect,
-    .menu.event.bless .gift-btn .gear-effect {
-      background: transparent;
-      box-shadow: none;
-    }
-    .menu.event .gift-btn .gear-effect-inner::before,
-    .menu.event .gift-show .gear-effect-inner::before { content: none; }
-    .menu.event .gift-btn .gear-effect.center-boon .gear-effect-inner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .menu.event .gift-btn .gear-effect,
-    .menu.event .gift-show .gear-effect,
+    .menu.event .gift-pick .gear-effect,
     .menu.event.bless .gift-btn .gear-effect,
     .menu.event.shop .shop-slot .gear-effect {
-      width: var(--choice-w) !important;
-      min-width: var(--choice-w) !important;
-      max-width: var(--choice-w) !important;
-      height: calc(var(--choice-w) * 4 / 3);
-      max-height: calc(var(--choice-w) * 4 / 3);
-      overflow: hidden;
-    }
-    .menu.event .gear-effect-inner,
-    .menu.event.shop .shop-slot .gear-effect-inner {
-      height: 100%;
-      max-height: 100%;
-      overflow: auto;
-      box-sizing: border-box;
-    }
-    .menu.event .gear-effect-head,
-    .menu.event.shop .shop-slot .gear-effect-head,
-    .menu.event.bless .gift-btn .gear-effect-head,
-    .menu.event.bless .gift-pick .gear-effect-head {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      grid-template-columns: none;
-      text-align: center;
-    }
-    .menu.event .gear-effect-art,
-    .menu.event .gift-btn .gear-effect-art,
-    .menu.event.shop .shop-slot .gear-effect-art,
-    .menu.event .gift-btn .gear-effect.center-boon .gear-effect-art {
-      width: 132px;
-      height: 132px;
-    }
-    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-art,
-    .menu.event.shop .shop-slot .gear-effect-art {
-      width: 92px;
-      height: 92px;
-    }
-    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-inner,
-    .menu.event.shop .shop-slot .gear-effect-inner {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 8px 8px 6px;
-      gap: 4px;
-    }
-    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-head {
-      margin: 0;
-      gap: 2px;
-    }
-    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-name {
-      font-size: 16px;
-      white-space: normal;
-    }
-    .menu.event .gear-effect.gear-effect-embedded:not(.center-boon) .gear-effect-body {
-      margin: 0;
-      font-size: 13px;
-      line-height: 1.35;
-      padding: 6px;
-      overflow: hidden;
-      text-align: center;
-    }
-    .menu.event .gear-effect-meta,
-    .menu.event .gear-effect-titles,
-    .menu.event .gear-effect-name,
-    .menu.event .gear-effect-body,
-    .menu.event.shop .shop-slot .gear-effect-body {
-      width: 100%;
-      text-align: center;
-    }
-    .menu.event .gear-effect-chiprow {
-      justify-content: center;
-      flex-wrap: wrap;
+      position: relative;
+      left: auto;
+      top: auto;
+      width: min(var(--gear-pop-w, 220px), 100%);
+      min-width: 168px;
+      max-width: min(352px, 100%);
+      height: auto;
+      max-height: none;
+      overflow: visible;
+      pointer-events: none;
     }
     .menu.event .gift-row {
       width: 100%;
@@ -10792,7 +10682,7 @@
         body = `<p class="${bodyClass}">${bodyLine.text ? cardNoteHtml(bodyLine.text) : ""}</p>`;
       }
       const emb = embedded ? ` gear-effect-embedded${o.sheetPop ? " sheet-pop" : ""}${o.castPop ? " cast-pop" : ""}` : "";
-      const popStyle = embedded ? "" : ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
+      const popStyle = ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
       return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
     }
 
@@ -17787,6 +17677,7 @@
         image: item.image || "",
         rarity: gearRarityText(item),
         body: esc(gearSpecialText(item)),
+        embedded: true,
       });
     }
 
