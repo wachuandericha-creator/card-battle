@@ -1609,8 +1609,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(var(--gear-pop-w, 220px), 100%);
-      min-width: 168px;
+      width: max-content;
+      min-width: 0;
       max-width: min(352px, 100%);
       height: auto;
       max-height: none;
@@ -1729,8 +1729,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: 100%;
-      max-width: none;
+      width: max-content;
+      max-width: min(352px, 100%);
       max-height: none;
       pointer-events: none;
     }
@@ -1745,8 +1745,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(var(--gear-pop-w, 220px), 100%);
-      min-width: 168px;
+      width: max-content;
+      min-width: 0;
       max-width: min(352px, 100%);
       height: auto;
       max-height: none;
@@ -6392,14 +6392,12 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(100%, 320px);
-      max-width: 100%;
-      max-height: 100%;
-      overflow: auto;
+      width: max-content;
+      max-width: min(352px, 100%);
+      max-height: none;
+      overflow: hidden;
       pointer-events: none;
     }
-    .menu.event.shop .shop-slot .gear-effect-art { width: 96px; height: 96px; }
-    .menu.event.shop .shop-slot .gear-effect-head { grid-template-columns: 96px 1fr; }
     .menu.event.shop .shop-slot .shop-ribbon { display: none; }
     .menu.event.shop .shop-slot > span {
       margin: 0;
@@ -6974,8 +6972,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(var(--gear-pop-w, 220px), 100%);
-      min-width: 168px;
+      width: max-content;
+      min-width: 0;
       max-width: min(352px, 100%);
       height: auto;
       max-height: none;
@@ -7034,8 +7032,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: min(var(--gear-pop-w, 220px), 100%);
-      min-width: 168px;
+      width: max-content;
+      min-width: 0;
       max-width: min(352px, 100%);
       height: auto;
       max-height: none;
@@ -11060,7 +11058,11 @@
       }
       const emb = embedded ? ` gear-effect-embedded${o.sheetPop ? " sheet-pop" : ""}${o.castPop ? " cast-pop" : ""}` : "";
       const popStyle = ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
-      return `<div class="gear-effect${boon ? " center-boon" : ""}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
+      if (boon) {
+        return `<div class="gear-effect center-boon${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
+      }
+      const rest = `${stars}${chipRow}${body}${hint}${button}`;
+      return `<div class="gear-effect${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}</div></div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
