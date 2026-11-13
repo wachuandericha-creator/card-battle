@@ -2874,8 +2874,9 @@
       100% { opacity: 0; bottom: 92%; transform: translate(-50%, 0) scale(0.95); }
     }
     .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
-    .hero-shoulder.ward:not(.blunt):not(.held):not(.healed) .hero-fig,
+    .hero-shoulder.ward:not(.spark-gold):not(.blunt):not(.held):not(.healed) .hero-fig,
     .sprite.ward img { animation: guard-rim 1.45s ease-out both; }
+    .hero-shoulder.ward.spark-gold:not(.blunt):not(.held):not(.healed) .hero-fig { animation: parry-rim 1.45s ease-out both; }
     .hero-hit.ward {
       position: absolute;
       inset: 0;
@@ -2892,6 +2893,9 @@
       opacity: 0;
       filter: drop-shadow(0 0 8px rgba(186, 214, 255, 0.95));
       animation: heal-plus 1.25s ease-out forwards;
+    }
+    .hero-hit.ward.spark-gold .mark {
+      filter: sepia(0.55) saturate(3.4) brightness(1.18) drop-shadow(0 0 10px rgba(255, 186, 40, 0.98));
     }
     .hero-hit.ward .m1 { left: 32%; font-size: 22px; }
     .hero-hit.ward .m2 { left: 46%; font-size: 36px; animation-delay: 0.1s; }
@@ -12805,6 +12809,7 @@
         cls = " fatal";
       } else if (id === "heal") hero = { heal: true };
       else if (id === "shield") hero = { ward: true };
+      else if (id === "parry") hero = { sparkGold: true };
       else if (id === "slash") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6) };
       else if (id === "foe-break") foe = { slash: true, dirs: [0], hits: [6], pow: hitPower(6), break: true };
       else if (id === "slash-multi") foe = { slash: true, dirs: [0, 1, 2], hits: [4, 5, 8] };
@@ -12836,7 +12841,7 @@
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const mid = id === "anger" ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>` : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard || "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), hero.n || 0, Boolean(hero.ward))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard || "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), hero.n || 0, Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -14553,11 +14558,11 @@
       return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><b class="plus p1">+</b><b class="plus p2">+</b><b class="plus p3">+</b><b class="plus p4">+</b><b class="plus p5">+</b></div>`;
     }
 
-    function wardFxHtml() {
-      return `<div class="hero-hit ward" aria-hidden="true"><b class="mark m1">✨</b><b class="mark m2">✨</b><b class="mark m3">✨</b><b class="mark m4">✨</b><b class="mark m5">✨</b></div>`;
+    function wardFxHtml(gold) {
+      return `<div class="hero-hit ward${gold ? " spark-gold" : ""}" aria-hidden="true"><b class="mark m1">✨</b><b class="mark m2">✨</b><b class="mark m3">✨</b><b class="mark m4">✨</b><b class="mark m5">✨</b></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, hurtN, ward) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, hurtN, ward, sparkGold) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -14570,11 +14575,12 @@
       const hit = poisonHtml + bluntHtml;
       const hurtHtml = hurt && Number(hurtN) > 0 ? hurtWord(hurtN, poisonTick, (player && player.maxHp) || 30) : "";
       const healHtml = heal ? healFxHtml() : "";
-      const wardHtml = ward ? wardFxHtml() : "";
+      const goldSpark = Boolean(sparkGold);
+      const wardHtml = ward || goldSpark ? wardFxHtml(goldSpark) : "";
       const guarding = guard === "hold" || guard === "parry";
       const guardHtml = guarding ? holdGuard(guard) : "";
       const who = heroItem();
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward ? " ward" : ""}${guarding ? " held" : ""}${guard === "parry" ? " gold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${wardHtml}${hurtHtml}${guardHtml}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guarding ? " held" : ""}${guard === "parry" ? " gold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${hit}${healHtml}${wardHtml}${hurtHtml}${guardHtml}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -15840,7 +15846,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, shieldPlayerNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, hurtNow && hitNow && hitNow.side === "player" ? hitNow.n : 0, shieldPlayerNow, parryPlayerNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
