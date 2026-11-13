@@ -10954,12 +10954,12 @@
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=6" },
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　使わなかったマナを次のターンへ持ち越す。持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える", image: "gear-reuse-bracelet.jpg?v=7" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=7" },
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　アクセサリー枠。自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
     ];
 
     function gearRarityText(item) {
@@ -11303,9 +11303,9 @@
       if (item.ignoreTrait) return gearPunctLines("相手の特性を無視してダメージを与える");
       if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
       if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
-      if (item.carryMana) return gearPunctLines("使わなかったマナを次のターンへ持ち越す（持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える）");
-      if (item.halfAtk) return gearPunctLines("自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える");
-      if (item.halfMana) return gearPunctLines("自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える");
+      if (item.carryMana) return gearPunctLines("未使用マナを次のターンに持ち越す。");
+      if (item.halfAtk) return gearPunctLines("体力が半分以下の時、ATK+2。");
+      if (item.halfMana) return gearPunctLines("ターン開始時に体力が半分以下ならマナ+1。");
       let text = String(item.effect || "");
       text = text.replace(/★+/g, "").replace(/ボス/g, "");
       text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
