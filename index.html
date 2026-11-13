@@ -13438,8 +13438,8 @@
       if (id === "flash") return "フラッシュ";
       if (id === "burst") return "バースト";
       if (id === "parry") return "パリィ";
-      if (id === "poison") return "毒";
-      if (id === "burn") return "炎上";
+      if (id === "poison") return "毒+3";
+      if (id === "burn") return "炎上+3";
       if (id === "crit") return "クリティカル50%";
       return "クイック";
     }
@@ -13467,11 +13467,11 @@
         card.parry = true;
         if (!String(card.text || "").includes("パリィ")) card.text = `${card.text || ""}\nパリィ`.trim();
       } else if (id === "poison") {
-        if (!card.poison) card.poison = 1;
-        if (!String(card.text || "").includes("毒")) card.text = `${card.text || ""}\n毒+1`.trim();
+        if (!card.poison) card.poison = 3;
+        if (!String(card.text || "").includes("毒")) card.text = `${card.text || ""}\n毒+3`.trim();
       } else if (id === "burn") {
-        if (!card.burn) card.burn = 1;
-        if (!String(card.text || "").includes("炎上")) card.text = `${card.text || ""}\n炎上+1`.trim();
+        if (!card.burn) card.burn = 3;
+        if (!String(card.text || "").includes("炎上")) card.text = `${card.text || ""}\n炎上+3`.trim();
       } else if (id === "crit") {
         if (!card.critChance) card.critChance = 50;
         if (!/クリティカル\d+%/u.test(String(card.text || ""))) card.text = `${card.text || ""}\nクリティカル50%`.trim();
@@ -14690,7 +14690,7 @@
             ${oddsTable(["属性", "重み", "割合"], enchantRows)}
             <ul>
               <li>付けるカード名は、まだ付いていないものから同じ確率です。どのカード名にも付きます。</li>
-              <li>闇は、そのカードにまだ無いキーワードを一つ足します。クリティカルは50%です。</li>
+              <li>闇は、そのカードにまだ無いキーワードを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -14703,7 +14703,7 @@
             <ul>
               <li>エンチャントは、上の属性の重みで一つ出ます。光が少し出にくいです。</li>
               <li>選ぶと、デッキ確認と同じポップが出ます。どのカードにも付けられます。一つ決めて決定します。</li>
-              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+1、炎上は+1、クリティカルは50%です。</li>
+              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
             <h3>装備（★2以上）</h3>
