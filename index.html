@@ -1584,6 +1584,29 @@
       font-size: 22px;
       padding: 12px 40px;
     }
+    .overlay.enchant-pick { z-index: 80; }
+    .enchant-pick .deck-lead {
+      margin: 0 0 12px;
+      text-align: center;
+      font-size: 22px;
+      color: #ffe7a8;
+    }
+    .enchant-pick .enchant-card {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .enchant-pick .enchant-card.picked .card.preview {
+      outline: 4px solid #ffe08a;
+      outline-offset: 2px;
+    }
+    .enchant-pick .enchant-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
     .album-screen {
       height: 100%;
       min-height: 0;
@@ -9195,6 +9218,7 @@
     let blessPicks = [];
     let blessEnchantAt = -1;
     let blessCardName = "";
+    let enchantPop = "";
     let floorHp = 30;
     let runBonus = { hp: 0, spd: 0, mana: 0 };
     let runEntrance = false;
@@ -9217,6 +9241,7 @@
     let pathBag = null;
     let fixedRestAt = [];
     let runEnchants = {};
+    let runEnchantWords = {};
     let cardAlters = [];
     let cardMastery = [];
     let masteryOffer = null;
@@ -11139,6 +11164,7 @@
         if (kind === "fire" && next.damage) next.damage = Number(next.damage) + 2;
         if (kind === "water" && next.block) next.block = Number(next.block) + 2;
         if (kind === "light") next.cost = Math.max(0, (Number(next.cost) || 0) - 1);
+        if (kind === "dark") applyDarkWord(next, runEnchantWords[card.name]);
         if (kind) next.enchant = kind;
         return next;
       });
@@ -11316,7 +11342,7 @@
         log(`${heroName()}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
         return;
       }
-      if (card.parry && !card.damage) {
+      if (card.parry && !card.damage && !card.block) {
         gainParry(card);
         return;
       }
@@ -11324,7 +11350,7 @@
         strike(card, player.block || 0);
         return;
       }
-      if (card.poison) {
+      if (card.poison && !card.damage && !card.block && !card.heal && !card.draw) {
         addPoison(enemy, card.poison);
         log(`${heroName()}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
         return;
@@ -11395,6 +11421,11 @@
       }
       if (card.parry && card.damage) gainParry(card);
       if (card.block) gainBlock(card.block + added, card);
+      if (card.parry && card.block && !card.damage) gainParry(card);
+      if (card.poison && (card.damage || card.block)) {
+        addPoison(enemy, card.poison);
+        log(`${heroName()}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
+      }
       if (card.nextDraw) {
         player.extraDraw = (Number(player.extraDraw) || 0) + card.nextDraw;
         log(`${heroName()}は次のターンに${card.nextDraw}枚多く引く。`, card);
@@ -12674,6 +12705,7 @@
         pathBag,
         fixedRestAt,
         runEnchants,
+        runEnchantWords,
         cardAlters,
         cardMastery,
         runLevel,
@@ -12873,6 +12905,7 @@
       pathBag = Array.isArray(data.pathBag) ? data.pathBag.slice() : null;
       fixedRestAt = Array.isArray(data.fixedRestAt) ? data.fixedRestAt.map((n) => Number(n) || 0) : [];
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
+      runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
       cardMastery = Array.isArray(data.cardMastery) ? data.cardMastery : [];
       masteryOffer = null;
@@ -13102,17 +13135,76 @@
       growthLine = bits.join("　");
     }
 
+    const ENCHANT_ELEMS = ["fire", "water", "light", "dark"];
+
     function enchantFace(elem) {
       if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.svg?v=1" };
       if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.svg?v=1" };
+      if (elem === "dark") return { name: "闇", sub: "キーワード", image: "enchant-dark.svg?v=1" };
       return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=1" };
     }
 
-    function enchantTargets() {
+    function darkWordLabel(id) {
+      if (id === "keep") return "キープ";
+      if (id === "flash") return "フラッシュ";
+      if (id === "burst") return "バースト";
+      if (id === "parry") return "パリィ";
+      if (id === "poison") return "毒";
+      if (id === "burn") return "炎上";
+      return "クイック";
+    }
+
+    function darkKeywordChoices(card) {
+      const list = [];
+      if (!card.quick && !isItemCard(card)) list.push("quick");
+      if (!card.keep) list.push("keep");
+      if (!isFlashCard(card)) list.push("flash");
+      if (!card.burst && !isItemCard(card)) list.push("burst");
+      if (!card.parry) list.push("parry");
+      if (!card.poison) list.push("poison");
+      if (!card.burn) list.push("burn");
+      return list;
+    }
+
+    function applyDarkWord(card, id) {
+      if (!card || !id) return;
+      if (id === "quick") card.quick = true;
+      else if (id === "keep") card.keep = true;
+      else if (id === "flash") card.flash = true;
+      else if (id === "burst") card.burst = true;
+      else if (id === "parry") {
+        card.parry = true;
+        if (!String(card.text || "").includes("パリィ")) card.text = `${card.text || ""}\nパリィ`.trim();
+      } else if (id === "poison") {
+        if (!card.poison) card.poison = 1;
+        if (!String(card.text || "").includes("毒")) card.text = `${card.text || ""}\n毒+1`.trim();
+      } else if (id === "burn") {
+        if (!card.burn) card.burn = 1;
+        if (!String(card.text || "").includes("炎上")) card.text = `${card.text || ""}\n炎上+1`.trim();
+      }
+    }
+
+    function grantEnchant(name, kind) {
+      if (!name || runEnchants[name]) return "";
+      if (kind !== "fire" && kind !== "water" && kind !== "light" && kind !== "dark") return "";
+      let word = "";
+      if (kind === "dark") {
+        const raw = deckCore().find((card) => card && card.name === name) || {};
+        const choices = darkKeywordChoices(raw);
+        if (!choices.length) return "";
+        const id = shuffle(choices)[0];
+        runEnchantWords[name] = id;
+        word = darkWordLabel(id);
+      }
+      runEnchants[name] = kind;
+      return word;
+    }
+
+    function enchantTargets(allowBasic) {
       const names = [];
       for (const card of runDeck()) {
         if (!card || !card.name || names.indexOf(card.name) >= 0) continue;
-        if (card.name === "アタック" || card.name === "ブロック") continue;
+        if (!allowBasic && (card.name === "アタック" || card.name === "ブロック")) continue;
         if (runEnchants[card.name]) continue;
         names.push(card.name);
       }
@@ -13128,8 +13220,8 @@
         else if (kind === "mana") picks.push({ kind, label: "マナ" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
-        else if (kind === "enchant" && enchantTargets().length) {
-          const elem = shuffle(["fire", "water", "light"])[0];
+        else if (kind === "enchant" && enchantTargets(true).length) {
+          const elem = shuffle(ENCHANT_ELEMS)[0];
           picks.push({ kind, elem, label: enchantFace(elem).name });
         }
       }
@@ -13164,10 +13256,10 @@
       playPickCenter(`[data-action="bless-pick"][data-bless="${index}"]`, () => {
         if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
         if (pick.kind === "enchant") {
-          if (!enchantTargets().length) return;
+          if (!enchantTargets(true).length) return;
           blessEnchantAt = index;
           blessCardName = "";
-          floorPhase = "bless-card";
+          enchantPop = "bless";
           render();
           return;
         }
@@ -13187,40 +13279,55 @@
     }
 
     function confirmBlessEnchant() {
-      if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless-card") return;
+      if (enchantPop !== "bless" || floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
       const pick = blessPicks[blessEnchantAt];
       const name = blessCardName;
       if (!pick || pick.kind !== "enchant" || !name) return;
-      if (name === "アタック" || name === "ブロック" || runEnchants[name]) return;
-      if (enchantTargets().indexOf(name) < 0) return;
-      runEnchants[name] = pick.elem;
+      if (runEnchants[name] || enchantTargets(true).indexOf(name) < 0) return;
+      const word = grantEnchant(name, pick.elem);
+      if (pick.elem === "dark" && !word) return;
       const face = enchantFace(pick.elem);
-      log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}。`);
+      const added = word ? `　${word}` : "";
+      log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}${added}。`);
       blessPicks = [];
       blessEnchantAt = -1;
       blessCardName = "";
+      enchantPop = "";
       floorPhase = "show";
       persistSave(true);
       finishEvent();
     }
 
-    function blessEnchantHtml() {
-      const pick = blessPicks[blessEnchantAt];
+    function enchantPickOverlay() {
+      if (enchantPop !== "bless" && enchantPop !== "smith" && enchantPop !== "smith-elem") return "";
+      if (enchantPop === "smith-elem") {
+        const wired = ENCHANT_ELEMS.map((id) => {
+          const face = enchantFace(id);
+          return `<button type="button" class="primary" data-action="smith-elem" data-elem="${id}">${esc(face.name)}　${esc(face.sub)}</button>`;
+        }).join("");
+        return `<div class="overlay deck-view enchant-pick"><div class="panel"><h2>${esc(smithName)}</h2><p class="deck-lead">どれを付けますか。</p><div class="enchant-actions">${wired}</div>${menuButton("もどる", "enchant-back")}</div></div>`;
+      }
+      const allowBasic = enchantPop === "bless";
+      const pick = enchantPop === "bless" ? blessPicks[blessEnchantAt] : null;
       const face = pick && pick.kind === "enchant" ? enchantFace(pick.elem) : null;
+      const pickedName = enchantPop === "bless" ? blessCardName : smithName;
       const seen = {};
       const cards = [];
       for (const card of runDeck()) {
         if (!card || !card.name || seen[card.name]) continue;
-        if (enchantTargets().indexOf(card.name) < 0) continue;
+        if (enchantTargets(allowBasic).indexOf(card.name) < 0) continue;
         seen[card.name] = true;
         cards.push(card);
       }
       const rows = cards.map((card) => {
-        const picked = blessCardName === card.name ? " picked" : "";
-        return `<button type="button" class="beggar-card${picked}" data-action="bless-enchant-pick" data-name="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
+        const picked = pickedName === card.name ? " picked" : "";
+        const action = enchantPop === "bless" ? "bless-enchant-pick" : "smith-name";
+        return `<button type="button" class="enchant-card${picked}" data-action="${action}" data-name="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
       }).join("");
-      const lead = face ? `${face.name}　${face.sub}` : "";
-      return `<p>どれにしますか。${esc(lead)}。アタックとブロックには付けられない。</p><div class="deck-cards beggar-cards">${rows || "<p>付けられるカードは無い。</p>"}</div><div class="event-actions">${menuButton("決定", "bless-enchant-ok", true, !blessCardName)}${menuButton("もどる", "bless-enchant-back")}</div>`;
+      const title = enchantPop === "bless" ? "どれにしますか" : "エンチャント";
+      const lead = face ? `${face.name}　${face.sub}` : "アタックとブロックには付けられない。";
+      const ok = enchantPop === "bless" ? "bless-enchant-ok" : "smith-enchant-ok";
+      return `<div class="overlay deck-view enchant-pick"><div class="panel"><h2>${esc(title)}</h2><p class="deck-lead">${esc(lead)}</p><div class="deck-scroll"><div class="deck-cards">${rows || `<p class="deck-empty">付けられるカードは無い。</p>`}</div></div><div class="enchant-actions">${menuButton("決定", ok, true, !pickedName)}${menuButton("もどる", "enchant-back")}</div></div></div>`;
     }
 
     function cardBuildName(name) {
@@ -13346,6 +13453,7 @@
       blessPicks = [];
       blessEnchantAt = -1;
       blessCardName = "";
+      enchantPop = "";
       beggarCut = false;
       beggarPick = -1;
       ultimatePicks = [];
@@ -13465,15 +13573,19 @@
     }
 
     function enchantSmith(kind) {
+      if (enchantPop !== "smith-elem") return;
       if ((Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
       if (smithName === "アタック" || smithName === "ブロック") return;
-      if (kind !== "fire" && kind !== "water" && kind !== "light") return;
-      runEnchants[smithName] = kind;
+      const word = grantEnchant(smithName, kind);
+      if (!word && kind === "dark") return;
+      if (!runEnchants[smithName]) return;
       meta.stars -= 2;
       persistMeta();
-      const label = kind === "fire" ? "火" : kind === "water" ? "水" : "光";
+      const face = enchantFace(kind);
+      const added = word ? `　${word}` : "";
+      enchantPop = "";
       floorPhase = "show";
-      floorPrompt = `${smithName}に、${label}のエンチャントを付けた。`;
+      floorPrompt = `${smithName}に、${face.name}のエンチャントを付けた。${face.sub}${added}。`;
       persistSave(true);
       render();
     }
@@ -13498,19 +13610,6 @@
           return `<button type="button" data-action="smith-mat" data-index="${index}" ${ok ? "" : "disabled"}>${esc(card.name)}　${cost}マナ</button>`;
         }).join("");
         return `<p>${esc(base ? base.name : "")}に足すカード。素材は消える。★3。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
-      }
-      if (floorPhase === "smith-name") {
-        const names = enchantTargets();
-        const rows = names.map((name) => `<button type="button" data-action="smith-name" data-name="${esc(name)}">${esc(name)}</button>`).join("");
-        return `<p>エンチャントするカード名。アタックとブロックには付けられない。★2。所持 ★${have}</p><div class="event-actions">${rows || "<p>付けられるカードは無い。</p>"}${menuButton("もどる", "smith-back")}</div>`;
-      }
-      if (floorPhase === "smith-elem") {
-        const rows = [
-          ["fire", "火　ATKの数字+2"],
-          ["water", "水　DEF+2"],
-          ["light", "光　マナ-1"],
-        ].map(([id, label]) => `<button type="button" data-action="smith-elem" data-elem="${id}" ${have < 2 ? "disabled" : ""}>${label}</button>`).join("");
-        return `<p>${esc(smithName)}に付ける。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
       }
       return `<div class="event-actions">${menuButton("合成する　★3", "smith-fuse", true, have < 3)}${menuButton("エンチャント　★2", "smith-enchant", true, have < 2)}${menuButton("出ていく", "smith-leave")}</div>`;
     }
@@ -13635,6 +13734,7 @@
       cleared = false;
       runLevel = 0;
       runEnchants = {};
+      runEnchantWords = {};
       cardAlters = [];
       cardMastery = [];
       masteryOffer = null;
@@ -14190,7 +14290,7 @@
             <ul>
               <li>装備は、装備一覧から同じ確率です。</li>
               <li>アイテムは、${EXTRA_ITEM_NAMES.join("、")}から同じ確率です。</li>
-              <li>エンチャントは、火・水・光が同じ確率です。アタックとブロック以外で、まだ付いていないカード名から選びます。</li>
+              <li>エンチャントは、火・水・光・闇が同じ確率です。アタックとブロック以外で、まだ付いていないカード名から選びます。闇は、そのカードにまだ無いキーワードを一つ足します。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -14201,8 +14301,9 @@
             </ul>
             ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
             <ul>
-              <li>エンチャントは、火・水・光から同じ確率で一つ出ます。</li>
-              <li>選ぶとデッキが出ます。アタックとブロック以外で、まだ付いていないカード名を一つ決めて決定します。</li>
+              <li>エンチャントは、火・水・光・闇から同じ確率で一つ出ます。</li>
+              <li>選ぶと、デッキ確認と同じポップが出ます。アタックとブロックにも付けられます。一つ決めて決定します。</li>
+              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上のうち、そのカードにまだ無いものを一つ足します。毒は+1、炎上は+1です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
             <h3>装備（★2以上）</h3>
@@ -14812,6 +14913,7 @@
               ${sheetFig("enchant-fire.jpg?v=1", "火のエンチャント")}
               ${sheetFig("enchant-water.svg?v=1", "水のエンチャント（空）")}
               ${sheetFig("enchant-light.svg?v=1", "光のエンチャント（空）")}
+              ${sheetFig("enchant-dark.svg?v=1", "闇のエンチャント（空）")}
             </div>
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩は青、そのほかは黄。同じ名前は並べない。鍛冶屋は空の枠</p>
@@ -15028,7 +15130,7 @@
     function eventShell(body) {
       const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${deckOverlay()}${enchantPickOverlay()}`;
     }
 
     function renderFloor() {
@@ -15083,9 +15185,7 @@
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
         })
         : [];
-      const bless = floorPhase === "bless-card"
-        ? blessEnchantHtml()
-        : blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
+      const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
@@ -15691,7 +15791,7 @@
         mine.focus += card.focus;
         return;
       }
-      if (card.parry && !card.damage) {
+      if (card.parry && !card.damage && !card.block) {
         scratchGainParry(mine, 1);
         return;
       }
@@ -15699,7 +15799,7 @@
         scratchStrike(foe, give, mine.block || 0);
         return;
       }
-      if (card.poison || card.heal || card.draw) {
+      if ((card.poison && !card.damage && !card.block) || card.heal || card.draw) {
         if (card.heal) scratchHeal(mine, card.heal);
         return;
       }
@@ -15735,6 +15835,7 @@
       if (card.expose) mine.expose = (Number(mine.expose) || 0) + card.expose;
       if (card.parry && card.damage) scratchGainParry(mine, 1);
       if (card.block) scratchGainBlock(mine, (Number(card.block) || 0) + added);
+      if (card.parry && card.block && !card.damage) scratchGainParry(mine, 1);
     }
 
     function planCardFace(index) {
@@ -16442,14 +16543,15 @@
         stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
         return `${name}を手に入れた。`;
       }
-      const names = enchantTargets();
+      const names = enchantTargets(false);
       if (!names.length) return "";
       const name = shuffle(names)[0];
-      const kinds = ["fire", "water", "light"];
-      const kind = kinds[Math.floor(Math.random() * kinds.length)];
-      runEnchants[name] = kind;
-      const label = kind === "fire" ? "火" : kind === "water" ? "水" : "光";
-      return `${name}に、${label}のエンチャント。`;
+      const kind = shuffle(ENCHANT_ELEMS)[0];
+      const word = grantEnchant(name, kind);
+      if (!runEnchants[name]) return "";
+      const face = enchantFace(kind);
+      const added = word ? `　${word}` : "";
+      return `${name}に、${face.name}のエンチャント。${face.sub}${added}。`;
     }
 
     function prepareReward() {
@@ -17063,9 +17165,8 @@
     }
 
     function eventNoteHtml() {
-      if (floorKind === "挑戦者に祝福を" && (floorPhase === "bless" || floorPhase === "bless-card")) {
-        const play = floorPhase === "bless-card" ? "どれにしますか。" : "報酬を一つ選べ。";
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>${play}</p></div></div>`;
+      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const story = floorNote ? eventStoryHtml(floorNote) : "";
@@ -17773,7 +17874,9 @@
         }
         if (name === "smith-enchant") {
           if ((Number(meta.stars) || 0) < 2) return;
-          floorPhase = "smith-name";
+          if (!enchantTargets(false).length) return;
+          smithName = "";
+          enchantPop = "smith";
           render();
         }
         if (name === "smith-base") {
@@ -17784,7 +17887,20 @@
         if (name === "smith-mat") fuseSmith(Number(action.dataset.index));
         if (name === "smith-name") {
           smithName = action.dataset.name || "";
-          floorPhase = "smith-elem";
+          render();
+        }
+        if (name === "smith-enchant-ok") {
+          if (!smithName || enchantTargets(false).indexOf(smithName) < 0) return;
+          enchantPop = "smith-elem";
+          render();
+        }
+        if (name === "enchant-back") {
+          if (enchantPop === "smith-elem") enchantPop = "smith";
+          else {
+            enchantPop = "";
+            blessCardName = "";
+            smithName = "";
+          }
           render();
         }
         if (name === "smith-elem") enchantSmith(action.dataset.elem || "");
@@ -17799,7 +17915,7 @@
         if (name === "bless-enchant-back") {
           blessCardName = "";
           blessEnchantAt = -1;
-          floorPhase = "bless";
+          enchantPop = "";
           render();
         }
         if (name === "bless-skip") advance(1);
