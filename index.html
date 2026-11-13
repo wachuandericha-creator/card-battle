@@ -6484,7 +6484,7 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* イベント画面：左の挿絵は9割弱。右は見出しから報酬までを一塊にして高さの中央 */
+    /* イベント画面：見出しは横幅いっぱい。左の挿絵は9割弱。右は本文から報酬までを一塊にして高さの中央 */
     .menu.event {
       width: 100%;
       height: 100%;
@@ -6634,24 +6634,31 @@
     }
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
     .menu.event.shop .shop-have { margin: 0; width: 100%; text-align: center; font-size: clamp(22px, 2cqw, 30px); font-weight: 900; color: #ffe08a; }
-    .menu.event .event-side > h1 {
+    .menu.event .event-title {
+      grid-column: 1 / -1;
+      width: 100%;
+      flex: 0 0 auto;
+      padding: 4px 12px 0;
+      box-sizing: border-box;
+    }
+    .menu.event .event-title > h1 {
       flex: 0 0 auto;
       width: 100%;
       text-align: center;
       margin: 0;
       justify-content: center;
     }
-    .menu.event .event-side > h1.fade-sandwich > .event-title-name {
+    .menu.event .event-title > h1.fade-sandwich > .event-title-name {
       flex: 0 0 auto;
     }
-    .menu.event .event-side > h1.fade-sandwich > .fade-line {
+    .menu.event .event-title > h1.fade-sandwich > .fade-line {
       flex: 1 1 auto;
       width: auto;
       max-width: none;
       min-width: 28px;
       height: 2px;
     }
-    .menu.event .event-side > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3cqw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
+    .menu.event .event-title > h1 small { display: block; margin-top: 4px; font-size: clamp(32px, 3cqw, 48px); font-weight: 900; letter-spacing: 0.18em; color: #ffe08a; }
     .overlay.paths .path-now,
     .overlay.paths .path-now .event-floor-num {
       font-size: clamp(32px, 3cqw, 48px);
@@ -6692,7 +6699,7 @@
       grid-area: lead;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
       align-items: stretch;
       align-self: stretch;
       gap: 12px 18px;
@@ -6707,7 +6714,7 @@
     }
     .menu.event.shop .event-lead {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
     }
     .menu.event .event-art {
       position: relative;
@@ -6728,7 +6735,7 @@
     }
     .menu.event .event-lead.no-art {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
     }
     .menu.event .event-side,
     .menu.event.shop .event-side,
@@ -7024,7 +7031,7 @@
       html:not(.stage-fit) .menu.event .event-lead,
       html:not(.stage-fit) .menu.event.shop .event-lead {
         grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: minmax(220px, 52cqh) auto;
+        grid-template-rows: auto minmax(220px, 52cqh) auto;
         overflow: auto;
         padding: 0;
       }
@@ -16237,7 +16244,7 @@
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art">${art}</div>` : "";
       const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${next}${bless}${train}`;
-      const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-side">${title}<div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
+      const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
       runEntrance = false;
