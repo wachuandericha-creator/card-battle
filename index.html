@@ -18687,7 +18687,11 @@
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
       syncPiles();
     }
+    let handPopCard = null;
+
     function clearHandPop() {
+      if (handPopCard) handPopCard.style.opacity = "";
+      handPopCard = null;
       const pop = document.getElementById("hand-pop");
       if (pop) pop.remove();
     }
@@ -18716,6 +18720,9 @@
         clearHandPop();
         return;
       }
+      if (handPopCard && handPopCard !== card) handPopCard.style.opacity = "";
+      handPopCard = card;
+      card.style.opacity = "0";
       const key = `${card.dataset.card}|${card.className}|${card.innerHTML.length}`;
       let pop = document.getElementById("hand-pop");
       if (!pop || pop.dataset.key !== key) {
