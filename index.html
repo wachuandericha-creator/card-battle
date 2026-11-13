@@ -4156,7 +4156,7 @@
     .gear-effect:not(.center-boon) .gear-effect-head {
       display: flex;
       flex-direction: row;
-      align-items: center;
+      align-items: flex-start;
       gap: 0;
       margin: 0;
       width: max-content;
@@ -4166,13 +4166,20 @@
       width: 84px;
       flex: 0 0 84px;
     }
-    .gear-effect:not(.center-boon) .gear-effect-meta,
-    .gear-effect:not(.center-boon) .gear-effect-titles {
+    .gear-effect:not(.center-boon) .gear-effect-meta {
+      display: flex;
+      flex-direction: column;
       align-items: flex-start;
-      text-align: left;
+      justify-content: flex-start;
+      gap: 3px;
       width: auto;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
       min-width: 0;
+      text-align: left;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-meta .gear-effect-chiprow {
+      width: auto;
+      justify-content: flex-start;
     }
     .gear-effect:not(.center-boon) .gear-effect-name { text-align: left; }
     .gear-effect:not(.center-boon) .gear-effect-rest {
@@ -10994,14 +11001,16 @@
         return { show: !!t, text: t, extra: "" };
       }
       if (item) {
+        const stats = [];
+        if (Number(item.atk) > 0) stats.push(`ATK+${item.atk}`);
+        if (Number(item.def) > 0) stats.push(`DEF+${item.def}`);
         const special = gearSpecialText(item);
-        const traitAtk = gearTraitAtkLine(item);
-        if (special) {
-          const text = gearTraitOneLine(traitAtk ? `${traitAtk}　${special}` : special);
-          return { show: true, text, extra: "" };
-        }
-        if (traitAtk) return { show: true, text: gearTraitOneLine(traitAtk), extra: "" };
-        return { show: true, text: "", extra: "empty-trait" };
+        const lines = [];
+        if (stats.length) lines.push(stats.join("　"));
+        if (special) lines.push(special);
+        if (isStarterGear(item)) lines.push("初期装備");
+        if (!lines.length) return { show: true, text: "", extra: "empty-trait" };
+        return { show: true, text: lines.join("\n"), extra: "" };
       }
       const t = gearTraitOneLine(o.body ?? "");
       return { show: !!t, text: t, extra: "" };
@@ -11047,8 +11056,8 @@
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
       const kindChip = boon ? "" : `<span class="kind">${esc(gearSlotLabel(slotKey))}</span>`;
-      const stats = o.item ? gearStatChips(o.item) : "";
-      const chipRow = (kindChip || stats) ? `<div class="gear-effect-chiprow">${kindChip}${stats}</div>` : "";
+      const stats = boon && o.item ? gearStatChips(o.item) : "";
+      const chipRow = boon ? stats : (kindChip ? `<div class="gear-effect-chiprow">${kindChip}</div>` : "");
       const hint = o.hint ? `<p class="gear-effect-hint">${esc(o.hint)}</p>` : "";
       const button = o.button || "";
       const action = o.action ? " has-action" : "";
@@ -11064,8 +11073,9 @@
       if (boon) {
         return `<div class="gear-effect center-boon${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div>${boonSub}</div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}${stars}${chipRow}</div></div></div>${body}${hint}${button}</div></div>`;
       }
-      const rest = `${stars}${chipRow}${body}${hint}${button}`;
-      return `<div class="gear-effect${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta"><div class="gear-effect-titles">${name}</div></div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
+      const rest = `${body}${hint}${button}`;
+      const side = `${name}${stars}${chipRow}`;
+      return `<div class="gear-effect${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${side}</div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
