@@ -7521,10 +7521,10 @@
     .cast-screen.character-focus .cast-on-blurb .cast-blurb-wrap {
       margin: 0;
       max-width: 100%;
-      padding: 10px 12px;
+      padding: 14px 16px;
       border-radius: 10px;
-      border: 1px solid rgba(228, 177, 90, 0.35);
-      background: rgba(8, 6, 4, 0.72);
+      border: 1px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
     }
     .cast-screen.character-focus .cast-on-blurb .cast-blurb {
       margin: 0;
@@ -7533,13 +7533,14 @@
       background: none;
       border-radius: 0;
       text-align: left;
-      color: #fff1d8;
-      font-size: clamp(17px, 1.55cqw, 21px);
-      font-weight: 700;
-      line-height: 1.58;
-      letter-spacing: 0.05em;
+      color: #fff8e8;
+      font-size: clamp(20px, 1.85cqw, 26px);
+      font-weight: 800;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
     }
-    .cast-screen.character-focus .cast-on-blurb .cast-blurb + .cast-blurb { margin-top: 4px; }
+    .cast-screen.character-focus .cast-on-blurb .cast-blurb + .cast-blurb { margin-top: 8px; }
     .cast-screen.character-focus .cast-title::after { content: none; }
     .cast-screen.character-focus .cast-title.fade-sandwich > .cast-title-name {
       flex: 0 1 auto;
@@ -7637,7 +7638,7 @@
     .cast-screen.character-focus .cast-board .cast-keys {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
+      align-items: flex-start;
       justify-content: flex-start;
       gap: 18px;
       text-align: left;
@@ -7645,15 +7646,16 @@
     .cast-screen.character-focus .cast-board .cast-key {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      width: 100%;
+      align-items: stretch;
+      width: max-content;
+      max-width: 100%;
       gap: 4px;
       text-align: left;
     }
     .cast-screen.character-focus .cast-board .cast-key {
       border: 1px solid rgba(228, 177, 90, 0.9);
       border-radius: 12px;
-      padding: 8px 12px 10px;
+      padding: 0.45em 0.7em 0.55em;
       background:
         radial-gradient(120% 60% at 50% 0%, rgba(228, 177, 90, 0.16), transparent 60%),
         linear-gradient(180deg, #2a2019 0%, #1a1310 42%, #120d0b 100%);
@@ -7664,7 +7666,7 @@
     .cast-screen.character-focus .cast-board .cast-keys h2,
     .cast-screen.character-focus .cast-board .cast-keys h3 {
       margin: 0 0 4px;
-      width: 100%;
+      width: auto;
       text-align: center;
       align-self: center;
       font-size: clamp(32px, 2.4cqw, 40px);
@@ -7673,7 +7675,8 @@
     }
     .cast-screen.character-focus .cast-board .cast-keys p {
       margin: 0;
-      width: 100%;
+      width: max-content;
+      max-width: 100%;
       text-align: left;
       font-size: clamp(16px, 1.35cqw, 20px);
       line-height: 1.45;
@@ -9018,11 +9021,11 @@
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
       余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
-      致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ\nパリィは消費しない\n出したターンの攻撃は防げない", kind: "attack", finisher: true },
+      致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, stars: 3, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
-      諸刃の剣: { cost: 2, stars: 2, text: "次に受ける攻撃を2倍\nその1発をパリィで無効にすると、2倍は消える", damage: 25, kind: "attack", doubleNext: true },
+      諸刃の剣: { cost: 2, stars: 2, text: "次に受けるダメージが２倍になる。", damage: 25, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
@@ -9050,7 +9053,7 @@
     const COMMON = {
       怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
       キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら+5", damage: 3, kind: "attack", kick: 5 },
-      ツインアタック: { cost: 1, text: "3ダメージを2回", damage: 3, hits: 2, stars: 3, kind: "attack" },
+      ツインアタック: { cost: 1, text: "", damage: 3, hits: 2, stars: 3, kind: "attack" },
       ビッグアタック: { cost: 3, text: "30ダメージ", damage: 30, stars: 3, kind: "attack" },
       ハードブロック: { cost: 2, text: "ブロック12", block: 12, kind: "block" },
       ビッグブロック: { cost: 3, stars: 2, text: "ブロック25", block: 25, kind: "block" },
@@ -16021,7 +16024,7 @@
       return String(text || "").split("\n").map((line) => line.trim()).filter((line) => {
         if (!line) return false;
         if (opts.attack && /^\d+ダメージ$/u.test(line)) return false;
-        if (opts.attack && opts.hits && opts.live && /^\d+ダメージを\d+回$/u.test(line)) return false;
+        if (opts.attack && opts.hits && /^\d+ダメージを\d+回$/u.test(line)) return false;
         if (opts.block && /^ブロック\d+$/u.test(line)) return false;
         if (opts.heal && /^体力を\d+回復$/u.test(line)) return false;
         return true;
@@ -16050,6 +16053,7 @@
           shownBlock = Number(card.block) || 0;
         }
       }
+      if (showAttack && card.hits > 1 && !/[×+]/.test(String(shown))) shown = `${shown}×${card.hits}`;
       const rawNote = withoutIconEcho(live ? liveCardText(card, fromHand, foe) : (card.text || ""), {
         attack: showAttack,
         block: showBlock,
@@ -16057,24 +16061,46 @@
         hits: !!card.hits,
         live: !!live,
       });
-      let noteText = cardNoteHtml(rawNote);
-      const hintWord = (text, word, note) => {
-        if (!word || !note || !text.includes(word)) return text;
-        return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
-      };
-      const kwLine = (word, note) => `<span class="kw-line hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`;
+      const kwLine = (word, note, key) => `<span class="kw-line hint" data-word="${esc(key || word)}">${word}<i>${esc(note)}</i></span>`;
       const keywords = [];
       const item = isItemCard(card);
+      const grantsParry = !!(card.parry || card.parryAdd || card.knife || card.masterOnce);
+      const kept = [];
+      let critPct = card.critChance ? String(card.critChance) : "";
+      String(rawNote || "").split("\n").forEach((line) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const critHit = trimmed.match(/クリティカル(\d+)%/u);
+        if (critHit) {
+          critPct = critHit[1];
+          const rest = trimmed.replace(/クリティカル\d+%/u, "").trim();
+          if (rest) kept.push(rest);
+          return;
+        }
+        if (grantsParry && /^パリィを(?:\d+)?得る$/u.test(trimmed)) return;
+        if (card.poison && /^相手に毒\+\d+を与える$/u.test(trimmed)) return;
+        if (card.burn && /炎上\+\d+/u.test(trimmed)) {
+          const rest = trimmed.replace(/炎上\+\d+/u, "").replace(/にを/gu, "に").trim();
+          if (rest === "先に相手に与える") kept.push(rest);
+          else if (rest && rest !== "相手に与える") kept.push(rest);
+          return;
+        }
+        kept.push(trimmed);
+      });
+      let noteText = cardNoteHtml(kept.join("\n"));
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
-      noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
-      noteText = hintWord(noteText, "毒", POISON_NOTE);
-      noteText = hintWord(noteText, "炎上", BURN_NOTE);
-      noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
+      if (grantsParry) {
+        const n = Number(card.parryAdd) || 1;
+        keywords.push(kwLine(n > 1 ? `パリィ×${n}` : "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE, "パリィ"));
+      }
+      if (card.poison) keywords.push(kwLine(`毒+${card.poison}`, POISON_NOTE, "毒"));
+      if (card.burn) keywords.push(kwLine(`炎上+${card.burn}`, BURN_NOTE, "炎上"));
+      if (critPct) keywords.push(kwLine(`クリティカル${critPct}%`, CRIT_NOTE, "クリティカル"));
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
