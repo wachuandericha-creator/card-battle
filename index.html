@@ -4331,6 +4331,7 @@
     }
     .card .text .hint[data-word="毒"] { color: #7b3fb0; }
     .card .text .hint[data-word="炎上"] { color: #c0392b; }
+    .card .text .hint[data-word="クリティカル"] { color: #d35400; }
     .card .text .hint[data-word="パリィ"] { color: #2f6fbe; }
     .card .text .hint[data-word="クイック"],
     .card .text .hint[data-word="キープ"],
@@ -5927,6 +5928,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 3px solid #e4c27a;
+      box-shadow: 0 0 0 1px #5c3d12, 0 16px 28px rgba(0, 0, 0, 0.4);
+      background: #120e0c;
     }
     .menu.event .event-lead.no-art {
       grid-template-columns: minmax(0, 1fr);
@@ -6013,7 +6019,12 @@
       object-position: center center;
       align-self: stretch;
       margin: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
       box-sizing: border-box;
+      transform-origin: 50% 40%;
+      animation: title-drift 26s ease-in-out infinite alternate;
     }
     .menu.event.bless .event-lead {
       gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.6cqw, 10px);
@@ -6846,6 +6857,8 @@
       object-fit: cover;
       object-position: center top;
       filter: none;
+      transform-origin: 50% 40%;
+      animation: title-drift 26s ease-in-out infinite alternate;
     }
     .cast-screen.character-focus .cast-side {
       position: relative;
@@ -8173,7 +8186,6 @@
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
-      クイックステップ: "card-attack-f-b.jpg",
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
       自信過剰: "card-pride.jpg?v=1",
       達人の間合い: "card-deep-focus.jpg?v=1",
@@ -8331,7 +8343,7 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\n20%で45ダメージ", damage: 30, kind: "attack", crit: 45, critChance: 0.2 },
+          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 },
           { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true },
         ],
       },
@@ -8955,6 +8967,7 @@
     }
 
     const BURN_NOTE = "炎上は、受けた側のDEFを重なった数だけ下げる。この戦闘中だけ。終わると戻る。";
+    const CRIT_NOTE = "書いた％の確率で、その1回のダメージが1.5倍になる。端数は切り上げ。％はカードごとに違う。";
 
     function burnBadge(stacks) {
       if (!stacks) return "";
@@ -10249,13 +10262,15 @@
       requestAnimationFrame(frame);
     }
 
-    function finalDamageLine(actor, card, result) {
+    function finalDamageLine(actor, card, result, crit) {
+      if (crit && result.blocked && !result.hpLoss) return `${actor}は${card}。クリティカル。ブロックで防いだ。`;
       if (result.blocked && !result.hpLoss) return `${actor}は${card}。ブロックで防いだ。`;
+      if (crit) return `${actor}は${card}。クリティカルで${result.hpLoss}ダメージ。`;
       return `${actor}は${card}で${result.hpLoss}ダメージ。`;
     }
 
-    function damageSentence(actor, card, raw, result) {
-      return finalDamageLine(actor, card, result);
+    function damageSentence(actor, card, raw, result, crit) {
+      return finalDamageLine(actor, card, result, crit);
     }
 
     function mitigate(amount, defense) {
@@ -10324,8 +10339,8 @@
       log(`${heroName()}は${card.name}でブロック${gain}。`, card);
     }
 
-    function hurtSentence(actor, card, raw, reduced, result) {
-      return finalDamageLine(actor, card, result);
+    function hurtSentence(actor, card, raw, reduced, result, crit) {
+      return finalDamageLine(actor, card, result, crit);
     }
 
     function strikeSentence(actor, card, base, focusAdd, atk, result) {
@@ -10439,7 +10454,7 @@
       }
     }
 
-    function takeEnemyHit(raw, card) {
+    function takeEnemyHit(raw, card, crit) {
       const name = card && card.name ? card.name : "攻撃";
       let amount = Math.max(0, Number(raw) || 0);
       if (player.doubleNext) {
@@ -10451,7 +10466,7 @@
         player.parry = stacks - 1;
         onParrySuccess(amount);
         noteHit("player", 0, amount);
-        log(`${enemy.name}は${name}。パリィで無効。`, card, true);
+        log(`${enemy.name}は${name}。${crit ? "クリティカル。" : ""}パリィで無効。`, card, true);
         return;
       }
       const extra = Math.max(0, Number(player.expose) || 0);
@@ -10470,7 +10485,7 @@
         }
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
-      log(hurtSentence(enemy.name, name, raw + extra, 0, result), card, true);
+      log(hurtSentence(enemy.name, name, raw + extra, 0, result, crit), card, true);
       if (hadShield) reflectBattleCounter(dealt, card);
     }
 
@@ -10629,14 +10644,14 @@
       }
     }
 
-    function strike(card, amount) {
+    function strike(card, amount, crit) {
       const dealt = Math.max(0, amount);
       const result = applyDamage(enemy, dealt);
       if (dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
         noteHit("enemy", result.hpLoss, dealt);
       }
-      log(damageSentence(heroName(), card.name, dealt, result), card);
+      log(damageSentence(heroName(), card.name, dealt, result, crit), card);
       // ポイズンソード：アタックカードなら、シールドで防がれても毒
       const poisonHit = gear && gear.sword && Number(gear.sword.poisonHit) || 0;
       if (poisonHit > 0 && amount > 0 && cardKind(card) === "attack" && enemy.hp > 0) {
@@ -10651,9 +10666,13 @@
       }
     }
 
-    function rollCrit(card, base) {
-      if (!card.crit) return base;
-      return Math.random() < (Number(card.critChance) || 0) ? card.crit : base;
+    // クリティカル。critChance は百分率。当たると、その1回のダメージを1.5倍し、端数は切り上げ。
+    function rollCrit(card, amount) {
+      const n = Math.max(0, Number(amount) || 0);
+      const chance = Number(card && card.critChance) || 0;
+      if (chance <= 0 || n <= 0) return { amount: n, crit: false };
+      if (Math.random() * 100 >= chance) return { amount: n, crit: false };
+      return { amount: Math.ceil(n * 1.5), crit: true };
     }
 
     function resolveCard(card) {
@@ -10779,7 +10798,10 @@
         const added = player.focus ? player.focus : 0;
         if (added) player.focus = 0;
         const atk = player.atk || 0;
-        for (let hit = 0; hit < card.hits; hit++) strike(card, card.damage + atk + (hit === 0 ? added : 0));
+        for (let hit = 0; hit < card.hits; hit++) {
+          const rolled = rollCrit(card, card.damage + atk + (hit === 0 ? added : 0));
+          strike(card, rolled.amount, rolled.crit);
+        }
         return;
       }
       const added = player.focus && (card.damage || card.block) ? player.focus : 0;
@@ -10794,7 +10816,8 @@
         if (card.safeBonus && !player.hurtLast) bonus += card.safeBonus;
         if (card.kick && enemy.block > 0) bonus += card.kick;
         const atk = player.atk || 0;
-        strike(card, rollCrit(card, card.damage) + added + atk + bonus);
+        const rolled = rollCrit(card, card.damage + added + atk + bonus);
+        strike(card, rolled.amount, rolled.crit);
         if (card.doubleNext) {
           player.doubleNext = true;
           log(`${heroName()}は次に受ける攻撃が2倍。`, card);
@@ -11447,14 +11470,16 @@
         const times = Math.max(1, Number(card.hits) || 1);
         for (let n = 0; n < times; n += 1) {
           if (player.hp <= 0) break;
-          takeEnemyHit(card.damage, card);
+          const rolled = rollCrit(card, card.damage);
+          takeEnemyHit(rolled.amount, card, rolled.crit);
         }
         return;
       }
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
-        takeEnemyHit(rollCrit(card, card.damage) + kick + full, card);
+        const rolled = rollCrit(card, card.damage + kick + full);
+        takeEnemyHit(rolled.amount, card, rolled.crit);
       } else if (card.block) {
         const gain = Math.max(0, card.block + (Number(enemy.def) || 0));
         if (gain) {
@@ -11497,7 +11522,7 @@
             ? { ...FOE_ONLY["無心"], name: "無心" }
             : who === "ちびドラゴン"
               ? { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" }
-              : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\n20%で45ダメージ", damage: 30, kind: "attack", crit: 45, critChance: 0.2 };
+              : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
       log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
       enemyUseCard(trait);
     }
@@ -13900,7 +13925,7 @@
       [5, "unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
       [6, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
       [7, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
-      [8, "unadopt-quick-step", "クイックステップ（旧）", "card-quick-step.jpg?v=1"],
+      [8, "unadopt-quick-step", "クイックステップ", "card-attack-f-b.jpg?v=1"],
     ];
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
@@ -14591,9 +14616,10 @@
       if ("（「『【〈《".includes(prev)) return false;
       if (next === "×" || prev === "×") return false;
       if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
+      if (/[0-9０-９%％]/.test(next) && i >= 6 && text.slice(i - 6, i) === "クリティカル") return false;
       if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
       if (/[0-9０-９]/.test(prev) && (text.startsWith("ダメージ", i) || text.startsWith("回復", i) || text.startsWith("枚", i) || text.startsWith("回", i))) return false;
-      const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック", "フラッシュ", "バースト", "キープ"];
+      const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック", "フラッシュ", "バースト", "キープ", "クリティカル"];
       for (const word of glued) {
         for (let k = 1; k < word.length; k++) {
           if (i >= k && text.startsWith(word, i - k)) return false;
@@ -14716,6 +14742,7 @@
       noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
+      noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
@@ -15423,7 +15450,7 @@
       if (card.permanent) next.permanent = true;
       if (card.keep) next.keep = true;
       if (card.draw) next.draw = card.draw;
-      if (card.crit) { next.crit = card.crit; next.critChance = card.critChance; }
+      if (card.critChance) next.critChance = Number(card.critChance) || 0;
       if (card.halfOnly) next.halfOnly = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
