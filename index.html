@@ -1646,6 +1646,156 @@
       font-size: 22px;
       padding: 12px 40px;
     }
+    .overlay.foe-starter {
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(120, 64, 18, 0.38), transparent 52%),
+        rgba(6, 4, 3, 0.8);
+    }
+    .overlay.foe-starter .panel {
+      width: min(1500px, calc(100cqw - 20px));
+      height: min(1000px, calc(100cqh - 12px));
+      align-items: stretch;
+      text-align: left;
+      padding: 18px 22px 16px;
+      border: 2px solid rgba(228, 177, 90, 0.92);
+      background:
+        radial-gradient(90% 46% at 18% 0%, rgba(228, 177, 90, 0.22), transparent 58%),
+        linear-gradient(180deg, #3a2818 0%, #1a120e 46%, #100c0a 100%);
+      box-shadow:
+        0 0 0 4px #15100d,
+        0 0 0 6px rgba(228, 177, 90, 0.45),
+        0 28px 56px rgba(0, 0, 0, 0.62);
+    }
+    .foe-starter-sheet {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 14px 20px;
+    }
+    .foe-starter-portrait {
+      grid-column: 1;
+      grid-row: 1;
+      min-height: 280px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      background:
+        radial-gradient(80% 60% at 50% 80%, rgba(228, 177, 90, 0.16), transparent 70%),
+        #120e0c;
+      box-shadow: inset 0 0 0 1px #15100d;
+    }
+    .foe-starter-portrait img {
+      width: 100%;
+      height: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.55));
+    }
+    .foe-starter-info {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .foe-starter-id { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+    .overlay.foe-starter .foe-starter-rank {
+      margin: 0;
+      color: #ffe9ae;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+    }
+    .overlay.foe-starter .foe-starter-rank.boss { color: #ffb0a4; }
+    .overlay.foe-starter .foe-starter-name {
+      margin: 0;
+      text-align: left;
+      font-size: clamp(36px, 3.2cqw, 52px);
+      letter-spacing: 0.14em;
+      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 40%, #e2ad4a 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 3px 0 #6a4a16);
+    }
+    .foe-starter-block h3 {
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: #f0c36a;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+    }
+    .foe-starter-block h3::before,
+    .foe-starter-block h3::after {
+      content: "";
+      flex: 0 0 auto;
+      width: 36px;
+      height: 2px;
+    }
+    .foe-starter-block h3::before { background: linear-gradient(90deg, transparent, rgba(228, 177, 90, 0.9)); }
+    .foe-starter-block h3::after { background: linear-gradient(90deg, rgba(228, 177, 90, 0.9), transparent); }
+    .foe-starter-blurb {
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
+      text-align: left;
+    }
+    .foe-starter-blurb p {
+      margin: 0;
+      color: #fff8e8;
+      font-size: clamp(16px, 1.45cqw, 20px);
+      font-weight: 800;
+      line-height: 1.65;
+      letter-spacing: 0.03em;
+    }
+    .foe-starter-blurb p + p { margin-top: 6px; }
+    .foe-starter-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid rgba(228, 177, 90, 0.7);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(28, 20, 14, 0.92), rgba(10, 8, 6, 0.9));
+    }
+    .foe-starter-stats .hp-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(228, 177, 90, 0.28);
+      border-right: 1px solid rgba(228, 177, 90, 0.28);
+    }
+    .foe-starter-stats .hp-line:nth-child(2n) { border-right: 0; }
+    .foe-starter-stats .hp-line:nth-last-child(-n + 2) { border-bottom: 0; }
+    .foe-starter-stats .lbl { display: inline-flex; align-items: center; gap: 6px; color: #f0c36a; font-weight: 800; letter-spacing: 0.08em; }
+    .foe-starter-stats .lbl .ico { width: 22px; height: 22px; }
+    .foe-starter-stats .num { text-align: right; }
+    .foe-starter-stats .num b { color: #fff6e0; font-size: 26px; }
+    .foe-starter-deck {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .foe-starter-deck .deck-scroll { flex: 1 1 auto; min-height: 0; }
+    .overlay.foe-starter .panel > button { flex: 0 0 auto; }
     .overlay.enchant-pick { z-index: 80; }
     .enchant-pick .deck-lead {
       margin: 0 0 12px;
@@ -15189,6 +15339,42 @@
       return (foe.pattern || []).map((card) => applyEnemyHidden(card, foe)).filter((card) => card && card.name);
     }
 
+    function foeBaseAtk(foe) {
+      if (foe && foe.atkHidden != null) return Number(foe.atkHidden) || 0;
+      return HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
+    }
+
+    function foeBaseDef(foe) {
+      if (foe && foe.defHidden != null) return Number(foe.defHidden) || 0;
+      return HIDDEN_DEF[(foe && foe.rank) || "雑魚"] || 0;
+    }
+
+    function foeFeatureLines(foe) {
+      if (foe.trait) {
+        return String(foe.trait).split("。").map((part) => part.trim()).filter(Boolean).map((part) => `${part}。`);
+      }
+      const seen = new Set();
+      const lines = [];
+      (foe.pattern || []).forEach((raw) => {
+        if (!raw || raw.name === "アタック" || raw.name === "ブロック" || seen.has(raw.name)) return;
+        seen.add(raw.name);
+        const card = applyEnemyHidden(raw, foe);
+        const text = String(card.text || "").replace(/\n/g, " ").trim();
+        lines.push(text ? `${card.name}。${text}${/[。！？]$/u.test(text) ? "" : "。"}` : `${card.name}。`);
+      });
+      return lines;
+    }
+
+    function foeStarterStats(foe) {
+      const rows = [
+        ["HP", heartIcon(), foe.hp || 0],
+        ["ATK", swordIcon(), foeBaseAtk(foe)],
+        ["DEF", shieldIcon(), foeBaseDef(foe)],
+        ["SPD", bootIcon(), Number(foe.spd) || 1],
+      ];
+      return `<div class="foe-starter-stats" aria-label="ステータス">${rows.map(([label, icon, value]) => `<p class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></p>`).join("")}</div>`;
+    }
+
     function closeFoeStarter() {
       const pop = root.querySelector(".foe-starter");
       if (pop) pop.remove();
@@ -15198,8 +15384,14 @@
       const foe = ENEMIES.find((enemy) => enemy.name === name);
       if (!foe) return;
       closeFoeStarter();
+      const boss = foe.name === DUNGEON.boss;
+      const mark = boss ? "ボス" : "★".repeat(enemyStar(foe));
+      const lines = foeFeatureLines(foe);
+      const feature = lines.length
+        ? `<div class="foe-starter-blurb">${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</div>`
+        : `<div class="foe-starter-blurb"><p>なし</p></div>`;
       const cards = foeStarterCards(foe);
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><h2>${esc(foe.name)}の初期デッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait"><img src="${esc(foe.image)}" alt=""></div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="deck-scroll">${deckGroup("", cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
     }
 
     function dungeonEnemyFaces() {
