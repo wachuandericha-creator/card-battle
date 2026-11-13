@@ -19330,8 +19330,9 @@
       const minX = Math.min(...rel.map((p) => p.x));
       const minY = Math.min(...rel.map((p) => p.y));
       const rect = el.getBoundingClientRect();
-      const vx = rect.left - minX - ox;
-      const vy = rect.top - minY - oy;
+      const scale = stageScale();
+      const vx = rect.left - (minX + ox) * scale;
+      const vy = rect.top - (minY + oy) * scale;
       if (!stageOn()) return { left: vx, top: vy, w, h };
       const p = viewportToStage(vx, vy);
       return { left: p.x, top: p.y, w, h };
@@ -19345,6 +19346,7 @@
       }
       if (handPopCard && handPopCard !== card) handPopCard.style.opacity = "";
       handPopCard = card;
+      const face = card.getAttribute("style") || "";
       card.style.opacity = "0";
       const key = `${card.dataset.card}|${card.className}|${card.innerHTML.length}`;
       let pop = document.getElementById("hand-pop");
@@ -19354,11 +19356,12 @@
         next.className = `${card.className} hand-pop`;
         next.dataset.key = key;
         next.innerHTML = card.innerHTML;
-        next.style.cssText = card.getAttribute("style") || "";
+        next.style.cssText = face;
         if (pop) pop.remove();
         mountFloat(next);
         pop = next;
       }
+      pop.style.opacity = "1";
       const box = handLayoutBox(card);
       pop.style.left = `${box.left}px`;
       pop.style.top = `${box.top}px`;
