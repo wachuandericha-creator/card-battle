@@ -9707,7 +9707,7 @@
     };
     const COMMON = {
       怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
-      キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら+5", damage: 3, kind: "attack", kick: 5 },
+      キック: { cost: 1, text: "3ダメージ\n敵にシールドがあるなら、追加で5ダメージ", damage: 3, kind: "attack", kick: 5 },
       ツインアタック: { cost: 1, text: "", damage: 3, hits: 2, stars: 3, kind: "attack" },
       ビッグアタック: { cost: 3, text: "30ダメージ", damage: 30, stars: 3, kind: "attack" },
       ハードブロック: { cost: 2, text: "ブロック12", block: 12, kind: "block" },
@@ -16768,7 +16768,19 @@
             el.style.height = icon;
           });
         };
-        const overflows = () => box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1;
+        const overflows = () => {
+          if (box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1) return true;
+          const cs = getComputedStyle(box);
+          const padTop = parseFloat(cs.paddingTop) || 0;
+          const padBot = parseFloat(cs.paddingBottom) || 0;
+          const rect = box.getBoundingClientRect();
+          const limitTop = rect.top + padTop - 1;
+          const limitBot = rect.bottom - padBot + 1;
+          return [...box.querySelectorAll(".fx, .fx-row, .ico, b, .nobr")].some((el) => {
+            const r = el.getBoundingClientRect();
+            return r.height >= 1 && (r.top < limitTop || r.bottom > limitBot);
+          });
+        };
         let lo = 0.68;
         let hi = 1.65;
         apply(lo);
@@ -16967,7 +16979,8 @@
       if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
       if (/[0-9０-９%％]/.test(next) && i >= 6 && text.slice(i - 6, i) === "クリティカル") return false;
       if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
-      if (/[0-9０-９]/.test(prev) && (text.startsWith("ダメージ", i) || text.startsWith("回復", i) || text.startsWith("枚", i) || text.startsWith("回", i) || text.startsWith("倍", i))) return false;
+      if (text.startsWith("ダメージ", i) || text.startsWith("回復", i) || text.startsWith("枚", i) || text.startsWith("回", i) || text.startsWith("倍", i)) return false;
+      if (/[0-9０-９]/.test(next) && /^[0-9０-９]+(?:ダメージ|回復|枚|回|倍)/u.test(text.slice(i))) return false;
       const glued = ["ダメージ", "ブロック", "シールド", "パリィ", "アタック", "インスタント", "プレイエリア", "クイック", "フラッシュ", "バースト", "キープ", "クリティカル", "トゲ", "炎上"];
       for (const word of glued) {
         for (let k = 1; k < word.length; k++) {
