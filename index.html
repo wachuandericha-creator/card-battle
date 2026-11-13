@@ -1627,12 +1627,13 @@
       height: 72px;
       display: grid;
       place-items: center;
-      border-radius: 50%;
-      background: radial-gradient(circle at 38% 32%, #fffef4 0%, #ffe566 34%, #f0a010 68%, #8a5200 100%);
-      color: #140800;
-      font-size: 40px;
-      text-shadow: none;
-      box-shadow: 0 0 16px rgba(255, 190, 60, 0.75);
+      border-radius: 0;
+      background: url("mana-hex-yellow.png?v=1") center / contain no-repeat;
+      color: #fff8e8;
+      -webkit-text-stroke: 1.5px #1a0806;
+      font-size: 34px;
+      text-shadow: 0 1px 0 #1a0806;
+      box-shadow: none;
     }
     .reward-pick {
       display: flex;
@@ -3730,31 +3731,19 @@
       height: 84px;
       display: grid;
       place-items: center;
-      border-radius: 50%;
-      font-size: 52px;
+      border-radius: 0;
+      font-size: 44px;
       line-height: 1;
       font-weight: 900;
-      color: #fff;
+      color: #fff8e8;
       -webkit-text-stroke: 2px #1a0806;
-      text-shadow: 0 2px 0 #1a0806, 0 0 8px #1a0806;
-      background:
-        radial-gradient(circle at 50% 38%, #fff1c4 0%, #ffb15a 16%, #e23a18 46%, #7a140c 74%, #2a0a08 100%);
-      box-shadow:
-        inset 0 0 0 3px rgba(255, 220, 160, 0.35),
-        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
-        0 0 0 7px #24180f,
-        0 0 0 10px #d7b56a,
-        0 0 0 13px #140e0a,
-        0 0 22px rgba(255, 70, 24, 0.72);
+      text-shadow: 0 2px 0 #1a0806, 0 0 6px #1a0806;
+      background: url("mana-hex-yellow.png?v=1") center / contain no-repeat;
+      box-shadow: none;
     }
     .mana-read.has-temp b {
-      box-shadow:
-        inset 0 0 0 3px rgba(210, 230, 255, 0.7),
-        inset 0 -12px 16px rgba(0, 0, 0, 0.45),
-        0 0 0 7px #1a2430,
-        0 0 0 10px #8eb4e0,
-        0 0 0 13px #140e0a,
-        0 0 22px rgba(120, 180, 255, 0.7);
+      filter: drop-shadow(0 0 6px rgba(140, 190, 255, 0.95));
+      box-shadow: none;
     }
     .mana-read .mana-temp {
       position: absolute;
@@ -4250,9 +4239,20 @@
     }
     .gear-effect:not(.center-boon) .gear-effect-body {
       border-radius: 14px;
-      color: #ffe7a8;
+      color: #fff6c4;
       background: rgba(28, 18, 8, 0.42);
       border: 1px solid rgba(228, 177, 90, 0.9);
+      padding: 12px 14px;
+      line-height: 1.75;
+      overflow: hidden;
+      overflow-wrap: break-word;
+      max-width: 100%;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-body .nobr { white-space: normal; }
+    .gear-effect:not(.center-boon) .gear-effect-body .gear-stat-chip {
+      display: inline-block;
+      margin: 0 0.4em 0.45em 0;
+      vertical-align: middle;
     }
     .gear-effect-body .gear-stat-chip {
       display: inline-flex;
@@ -6925,7 +6925,10 @@
       width: min(180px, 100%);
       height: auto;
       aspect-ratio: 1;
+      object-fit: contain;
+      background: #2a2622;
     }
+    .menu.event .gear-effect.bless-pop { z-index: 80; }
     .menu.event .gift-btn .gear-effect.center-boon .gear-effect-art {
       width: 156px;
       height: 156px;
@@ -7212,6 +7215,17 @@
       height: auto;
       max-height: none;
       pointer-events: none;
+    }
+    .gift-btn .gear-effect.bless-gear,
+    .gift-pick .gear-effect.bless-gear,
+    .gift-show .gear-effect.bless-gear {
+      width: 100%;
+      max-width: 100%;
+    }
+    .gift-btn .gear-effect.bless-gear .gear-effect-inner,
+    .gift-pick .gear-effect.bless-gear .gear-effect-inner,
+    .gift-show .gear-effect.bless-gear .gear-effect-inner {
+      width: 100%;
     }
     .bless-boon {
       width: 220px;
@@ -9585,7 +9599,7 @@
       ["パリィ", 1],
     ];
     const CARD_ART = {
-      アタック: "card-attack-aura.jpg?v=1",
+      アタック: "card-attack-aura.jpg?v=2",
       チャージアタック: "card-charge-f.jpg?v=7",
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
@@ -9606,6 +9620,10 @@
       集中: "card-focus.jpg?v=1",
       頭突き: "card-headbutt.jpg?v=1",
       キック: "card-kick-leg.jpg?v=2",
+      ビッグアタック: "card-big-attack-smash.jpg?v=1",
+      クイックステップ: "card-quick-step.jpg?v=2",
+      魔法のパリィ: "card-magic-parry.jpg?v=1",
+      盾削ぎ: "card-shield-shave.jpg?v=1",
       ツインアタック: "card-twin.jpg?v=1",
       瞑想: "card-meditate.jpg?v=1",
       ハードブロック: "card-hard-block-f.jpg?v=3",
@@ -9686,7 +9704,6 @@
       クイックステップ: "パリィ",
       自信過剰: "パリィ",
       盾削ぎ: "パリィ",
-      ライフフルネスアタック: "ライフフル",
     };
     const COMMON = {
       怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
@@ -9711,13 +9728,13 @@
       瞑想: { cost: 1, text: "ブロック3\n次のターンに1枚引く", block: 3, nextDraw: 1, kind: "block", stars: 1 },
     };
     void UNBUILT;
-    // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会はATK+1。体力は初回のおよそ4分の1を5刻みで足す。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
+    // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会1回につきATK+2・体力+2。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
     const HIDDEN_DEF = { 雑魚: 0, 普通: 0, 強敵: 0 };
     const ENEMIES = [
       {
         name: "スライム",
-        image: "enemy-slime.png?v=7",
+        image: "enemy-slime.png?v=8",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9748,10 +9765,9 @@
         tier: 1,
         rank: "雑魚",
         stature: "small",
-        hp: 30,
+        hp: 25,
         atkHidden: 0,
         spd: 2,
-        home: "洞窟",
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -9801,7 +9817,6 @@
         stature: "huge",
         hp: 90,
         atkHidden: 0,
-        home: "洞窟",
         pattern: [
           { name: "アタック" },
           { name: "チャージアタック" },
@@ -9835,7 +9850,7 @@
           { name: "ブロック" },
           { name: "ブロック" },
           { name: "餌だ", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
-          { name: "死者の軍団", cost: 2, text: "このダンジョンで倒した、同じ★の敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
+          { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
         ],
       },
     ];
@@ -10344,15 +10359,13 @@
       const base = foe && foe.atkHidden != null
         ? Number(foe.atkHidden) || 0
         : HIDDEN_ATK[(foe && foe.rank) || "雑魚"] || 0;
-      return base + plus;
+      return base + plus * 2;
     }
 
-    // 再会1回につき、初回体力のおよそ4分の1。5刻み。
+    // 再会1回につき体力+2。
     function reunionHpBonus(foe) {
       const plus = foe && foe.plus != null ? Number(foe.plus) || 0 : foeRepeat();
-      const base = Number(foe && foe.hp) || 0;
-      const step = Math.round(base / 4 / 5) * 5;
-      return plus * step;
+      return plus * 2;
     }
 
     function foeBattleHp(foe) {
@@ -10479,10 +10492,36 @@
       return parts.join("");
     }
 
+    function combatsFinished() {
+      let n = 0;
+      for (let i = 0; i < battleIndex; i++) {
+        if (route[i] && !isEventNode(route[i])) n += 1;
+      }
+      return n;
+    }
+
+    function maxEnemyTierForFloor(floorNum) {
+      if (combatsFinished() === 0) return 1;
+      const floors = dungeonFloors || 30;
+      const p = Math.max(1, Number(floorNum) || 1) / floors;
+      if (p <= 1 / 3) return 1;
+      if (p <= 2 / 3) return 2;
+      return 3;
+    }
+
     function rollRank() {
-      const names = combatNames(dungeonName, eventBattleSeen);
+      const tierCap = maxEnemyTierForFloor(floorForNextCombat());
+      const names = combatNames(dungeonName, eventBattleSeen, tierCap);
       if (!names.length) return "スライム";
       return names[Math.floor(Math.random() * names.length)];
+    }
+
+    function floorForNextCombat() {
+      try {
+        return nextFloorNumber();
+      } catch (_) {
+        return Number(floorAt[battleIndex]) || 1;
+      }
     }
 
     function enemyStar(foe) {
@@ -10494,13 +10533,16 @@
       return String((item && item.rank) || "★").split("★").length - 1;
     }
 
-    function combatNames(name, withBeggar) {
+    function combatNames(name, withBeggar, tierCap) {
       const star = dungeonStarCount(name);
+      const cap = tierCap == null ? 99 : Number(tierCap) || 1;
       return ENEMIES.filter((foe) => {
         if (foe.name === "ハデス") return false;
+        if (foe.name === "物乞い" && !withBeggar) return false;
+        if (enemyStar(foe) > cap) return false;
+        if (name === "洞窟") return true;
         if (foe.home) return foe.home === name;
         if (enemyStar(foe) !== star) return false;
-        if (foe.name === "物乞い" && !withBeggar) return false;
         return true;
       }).map((foe) => foe.name);
     }
@@ -10846,19 +10888,22 @@
 
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
-      "enemy-slime.png": { w: 864, h: 1152, top: 133, bottom: 136 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72 },
-      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0 },
-      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98 },
-      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25 },
+      "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 30, right: 858 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72, left: 154, right: 780 },
+      "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0, left: 36, right: 862 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98, left: 18, right: 862 },
+      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25, left: 94, right: 718 },
+      "enemy-hades.png": { w: 864, h: 1152, top: 86, bottom: 133, left: 44, right: 856 },
     };
 
     function foeInkVars(image) {
       const src = String(image != null ? image : (enemy && enemy.image) || "").split("?")[0];
-      const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0 };
+      const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0, left: 0, right: 864 };
       const inkH = Math.max(1, ink.h - ink.top - ink.bottom);
       const mid = (ink.top + inkH / 2) / ink.h;
-      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)}`;
+      const inkLeft = ink.left || 0;
+      const inkRight = ink.right || ink.w;
+      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)};--ink-left:${inkLeft};--ink-right:${inkRight}`;
     }
 
     // 絵の大きさは強さではなくキャラ。small は腰、same は自分と同じ、huge は画面いっぱい。
@@ -11242,21 +11287,30 @@
         .trim();
     }
 
+    function gearPunctLines(text) {
+      const parts = String(text || "")
+        .replace(/[（(]/g, "\n")
+        .replace(/[）)]/g, "")
+        .split(/\n+|。/)
+        .map((part) => part.replace(/[ \u3000]+/g, "").replace(/[.．]+/g, "").trim())
+        .filter(Boolean);
+      return parts.map((part) => (/^(?:ATK|DEF)[+＋\-－]\d+$/.test(part) ? part : `${part}。`)).join("\n");
+    }
+
     function gearSpecialText(item) {
       if (!item) return "";
-      if (item.statusImmune) return "状態異常にならない";
-      if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
-      if (item.thornsDef) return "自分のDEFだけトゲを得る。";
-      if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
-      if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
-      if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
-      if (item.halfMana) return "自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える";
+      if (item.statusImmune) return gearPunctLines("状態異常にならない");
+      if (item.ignoreTrait) return gearPunctLines("相手の特性を無視してダメージを与える");
+      if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
+      if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
+      if (item.carryMana) return gearPunctLines("使わなかったマナを次のターンへ持ち越す（持ち越し分はオレンジの一時マナで、使うと空枠を残さず消える）");
+      if (item.halfAtk) return gearPunctLines("自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える");
+      if (item.halfMana) return gearPunctLines("自分のターン開始時に体力が最大の半分以下なら、そのターンのマナが1増える");
       let text = String(item.effect || "");
       text = text.replace(/★+/g, "").replace(/ボス/g, "");
       text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
-      text = text.replace(/アクセサリー枠[。.]?/g, "").replace(/アクセサリー[。.]?/g, "");
-      text = text.replace(/[。.\s　]+/g, " ").trim();
-      return gearTraitOneLine(text);
+      text = text.replace(/アクセサリー枠/g, "").replace(/アクセサリー/g, "");
+      return gearPunctLines(text);
     }
 
     function gearAtkInTrait(item) {
@@ -11291,6 +11345,10 @@
 
     function gearPopBodyLine(item, o, boon) {
       if (o.empty) return { show: true, text: gearTraitOneLine(o.body ?? ""), extra: "empty" };
+      if (o.likeGear && !item) {
+        const t = gearPunctLines(o.body || "");
+        return { show: true, text: t, extra: t ? "" : "empty-trait" };
+      }
       if (boon) {
         const t = gearTraitOneLine(o.body ?? "");
         return { show: !!t, text: t, extra: "" };
@@ -11303,7 +11361,6 @@
         const lines = [];
         if (stats.length) lines.push(stats.join("　"));
         if (special) lines.push(special);
-        if (isStarterGear(item)) lines.push("初期装備");
         if (!lines.length) return { show: true, text: "", extra: "empty-trait" };
         return { show: true, text: lines.join("\n"), extra: "" };
       }
@@ -11338,7 +11395,7 @@
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
-      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant";
+      const boon = !o.likeGear && (slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant");
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
@@ -11350,7 +11407,7 @@
       const displayName = o.name || (o.item && o.item.name) || "";
       const name = displayName ? `<p class="gear-effect-name">${esc(displayName)}</p>` : "";
       const stars = rarity ? `<p class="${starsClass}">${esc(rarity)}</p>` : "";
-      const kindLabel = (o.item && o.item.boss) ? "戦利品" : gearSlotLabel(slotKey);
+      const kindLabel = o.kind || ((o.item && o.item.boss) ? "戦利品" : gearSlotLabel(slotKey));
       const kindChip = boon ? "" : `<span class="kind">${esc(kindLabel)}</span>`;
       const stats = boon && o.item ? gearStatChips(o.item) : "";
       const chipRow = boon ? stats : (kindChip ? `<div class="gear-effect-chiprow">${kindChip}</div>` : "");
@@ -11372,7 +11429,8 @@
       }
       const rest = `${body}${hint}${button}`;
       const side = `${name}${stars}${chipRow}`;
-      return `<div class="gear-effect${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${side}</div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
+      const like = o.likeGear ? " bless-gear" : "";
+      return `<div class="gear-effect${like}${action}${emb}"${popStyle} role="tooltip"><div class="gear-effect-inner"><div class="gear-effect-head"><div class="gear-effect-artcol"><div class="gear-effect-art">${art}</div></div><div class="gear-effect-meta">${side}</div></div>${rest ? `<div class="gear-effect-rest">${rest}</div>` : ""}</div></div>`;
     }
 
     function gearEffectHtml(slotId) {
@@ -13142,32 +13200,29 @@
       }
     }
 
-    function dungeonStar() {
-      if (dungeonName === "深淵") return 3;
-      if (dungeonName === "古城") return 2;
-      return 1;
+    function legionTraitFor(who) {
+      if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 };
+      if (who === "ゴブリン") return applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow());
+      if (who === "物乞い") return { ...FOE_ONLY["無心"], name: "無心" };
+      if (who === "ちびドラゴン") return { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" };
+      if (who === "コボルド") return { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true };
+      if (who === "ミノタウロス") {
+        return { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+      }
+      if (who === "トロール") {
+        return { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 1, slack: true };
+      }
+      return null;
     }
 
     function playLegion(card) {
-      const star = dungeonStar();
-      const rankOf = { スライム: 1, ゴブリン: 1, コボルド: 1, 物乞い: 1, ちびドラゴン: 2, ミノタウロス: 3 };
-      const pool = runSlain.filter((name) => rankOf[name] === star);
+      const pool = runSlain.filter((name) => name !== "ハデス" && legionTraitFor(name));
       if (!pool.length) {
-        log(`${enemy.name}は死者の軍団。同じ★で倒した敵がいない。`, card, true);
+        log(`${enemy.name}は死者の軍団。この攻略で使える特徴がない。`, card, true);
         return;
       }
       const who = pool[Math.floor(Math.random() * pool.length)];
-      const trait = who === "スライム"
-        ? { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 }
-        : who === "ゴブリン"
-          ? applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow())
-          : who === "物乞い"
-            ? { ...FOE_ONLY["無心"], name: "無心" }
-            : who === "ちびドラゴン"
-              ? { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" }
-              : who === "コボルド"
-                ? { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true }
-                : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+      const trait = legionTraitFor(who);
       log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
       enemyUseCard(trait);
     }
@@ -14399,23 +14454,15 @@
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
-      if (gift.kind === "enchant") {
-        const face = enchantFace(gift.elem);
-        return `<div class="${cls}">${gearPopShell("enchant", {
+      if (gift.kind === "enchant" || gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
+        const face = blessGearOpts(gift.kind, gift.elem);
+        return `<div class="${cls}">${gearPopShell(face.slot, {
+          name: face.name,
           image: face.image,
-          boonSub: face.sub,
-        })}</div>`;
-      }
-      if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
-        const boon = gift.kind === "maxhp"
-          ? { slot: "hp", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }
-          : gift.kind === "mana"
-            ? { slot: "mana", name: "マナ+1", image: "reward-mana.jpg?v=1" }
-            : { slot: "spd", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" };
-        return `<div class="${cls}">${gearPopShell(boon.slot, {
-          name: boon.name,
-          image: boon.image,
-          boonSub: boon.boonSub || "",
+          body: face.body,
+          kind: "祝福",
+          likeGear: true,
+          embedded: true,
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
@@ -14432,6 +14479,90 @@
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
       const detail = `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
+    }
+
+    function blessPickFace(pick) {
+      if (!pick) return "";
+      if (pick.kind === "card" && pick.card) {
+        return `<div class="gift-pick"><div class="card preview ${cardKind(pick.card)}">${cardFace(pick.card)}</div></div>`;
+      }
+      let image = "";
+      if (pick.kind === "gear" && pick.gear) image = pick.gear.image || "";
+      else if (pick.kind === "enchant" || pick.kind === "maxhp" || pick.kind === "spd" || pick.kind === "mana") {
+        image = blessGearOpts(pick.kind, pick.elem).image;
+      }
+      const picture = image ? `<img class="gift-img" src="${esc(image)}" alt="">` : "";
+      return `<div class="gift-pick">${picture}</div>`;
+    }
+
+    function blessPickPopupHtml(pick) {
+      if (!pick) return "";
+      if (pick.kind === "gear" && pick.gear) {
+        const item = pick.gear;
+        return gearPopShell(item.slot || "sword", {
+          item,
+          name: item.name,
+          image: item.image || "",
+          rarity: gearRarityText(item),
+        });
+      }
+      if (pick.kind === "enchant" || pick.kind === "spd" || pick.kind === "maxhp" || pick.kind === "mana") {
+        const face = blessGearOpts(pick.kind, pick.elem);
+        return gearPopShell(face.slot, {
+          name: face.name,
+          image: face.image,
+          body: face.body,
+          kind: "祝福",
+          likeGear: true,
+        });
+      }
+      return "";
+    }
+
+    function hideBlessPop() {
+      const box = root.querySelector(".gear-effect.bless-pop");
+      if (box) box.remove();
+    }
+
+    function showBlessPop(button) {
+      const pick = blessPicks[Number(button.dataset.bless)];
+      const html = blessPickPopupHtml(pick);
+      hideBlessPop();
+      if (!html || !button) return;
+      const host = root.querySelector(".menu.event") || root;
+      host.insertAdjacentHTML("beforeend", html.replace('class="gear-effect', 'class="gear-effect bless-pop'));
+      const box = host.querySelector(".gear-effect.bless-pop");
+      if (!box) return;
+      box.style.position = "absolute";
+      const hostRect = host.getBoundingClientRect();
+      const btn = button.getBoundingClientRect();
+      const scale = host.offsetWidth ? hostRect.width / host.offsetWidth : 1;
+      const w = box.offsetWidth;
+      const h = box.offsetHeight;
+      const btnLeft = (btn.left - hostRect.left) / scale;
+      const btnTop = (btn.top - hostRect.top) / scale;
+      const btnW = btn.width / scale;
+      const btnH = btn.height / scale;
+      const hostW = hostRect.width / scale;
+      const hostH = hostRect.height / scale;
+      let left = btnLeft + (btnW - w) / 2;
+      let top = btnTop - h - 10;
+      if (top < 8) top = btnTop + btnH + 10;
+      left = Math.max(8, Math.min(left, hostW - w - 8));
+      top = Math.max(8, Math.min(top, hostH - h - 8));
+      box.style.left = `${Math.round(left)}px`;
+      box.style.top = `${Math.round(top)}px`;
+    }
+
+    function bindBlessPop() {
+      root.querySelectorAll('[data-action="bless-pick"]').forEach((button) => {
+        if (button.dataset.popBound) return;
+        button.dataset.popBound = "1";
+        button.addEventListener("pointerenter", () => showBlessPop(button));
+        button.addEventListener("focus", () => showBlessPop(button));
+        button.addEventListener("pointerleave", () => hideBlessPop());
+        button.addEventListener("blur", () => hideBlessPop());
+      });
     }
 
     function enterFloorScreen() {
@@ -15406,7 +15537,7 @@
           <section class="odds-block">
             <h2>戦闘の相手</h2>
             <ul>
-              <li>道中は、そのダンジョンの★と同じ敵が同じ確率で出ます。階では分けません。</li>
+              <li>洞窟：1Fの初戦は★だけ。階がボス階の1/3を超えると★★が混ざり、2/3を超えると★★★も。プールは全員（物乞いはイベント後）。古城・深淵は未決定。</li>
               <li>物乞いだけは、そのランでイベント戦闘をしたあとの道中に入ります。</li>
               <li>ボス戦の相手は固定です。ハデスは出しません。</li>
             </ul>
@@ -16063,7 +16194,8 @@
       [2, "unadopt-attack-slash", "アタック", "card-attack-slash.jpg?v=1"],
       [3, "unadopt-sacrifice", "捨て身の一撃（旧）", "card-sacrifice.jpg?v=1"],
       [4, "unadopt-danger-strike", "危険な一撃", "card-danger-strike.jpg?v=1"],
-      [5, "unadopt-quick-step", "クイックステップ", "card-attack-f-b.jpg?v=1"],
+      [5, "unadopt-attack-f-b", "クイックステップ候補", "card-attack-f-b.jpg?v=1"],
+      [6, "unadopt-attack-f", "アタック（洞窟・f批）", "card-attack-f.jpg?v=2"],
     ];
     function unadoptedCardSheet() {
       return UNADOPTED_CARD_ARTS.map((item) => {
@@ -16135,12 +16267,24 @@
       })}</div>`;
     }
 
+    function blessGearOpts(kind, elem) {
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HPが20増える。" };
+      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。" };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。" };
+      const face = enchantFace(elem);
+      let body = "キーワードが一つ付く。";
+      if (face.sub === "ATK+2" || face.sub === "DEF+2") body = face.sub;
+      else if (face.sub === "マナ-1") body = "マナが1減る。";
+      return { slot: "enchant", name: face.name, image: face.image, body };
+    }
+
     function sheetGearBoonCard(slot, o) {
       return `<div class="sheet-gear-card">${gearPopShell(slot, {
         name: o.name,
         image: o.image,
-        boonSub: o.boonSub || "",
-        rarity: o.rarity || "",
+        body: o.body || "",
+        kind: "祝福",
+        likeGear: true,
         embedded: true,
         sheetPop: true,
       })}</div>`;
@@ -16160,18 +16304,13 @@
       const swords = GEAR_ITEMS.filter((item) => item.slot === "sword");
       const shields = GEAR_ITEMS.filter((item) => item.slot === "shield");
       const arms = GEAR_ITEMS.filter((item) => item.slot === "braceletAny" || item.slot === "braceletL" || item.slot === "braceletR");
-      const boons = [
-        sheetGearBoonCard("hp", { name: "最大HP", image: "reward-hp.jpg?v=1", boonSub: "HP+20" }),
-        sheetGearBoonCard("spd", { name: "SPD", image: "reward-spd.jpg?v=1", boonSub: "SPD+1" }),
-        sheetGearBoonCard("mana", { name: "マナ+1", image: "reward-mana.jpg?v=1" }),
-      ];
+      const boons = ["maxhp", "spd", "mana"].map((kind) => {
+        const face = blessGearOpts(kind);
+        return sheetGearBoonCard(face.slot, face);
+      });
       const enchants = ENCHANT_ELEMS.map((elem) => {
-        const face = enchantFace(elem);
-        return sheetGearBoonCard("enchant", {
-          name: `エンチャント・${face.name}`,
-          image: face.image,
-          boonSub: face.sub,
-        });
+        const face = blessGearOpts("enchant", elem);
+        return sheetGearBoonCard(face.slot, face);
       });
       return `<div class="sheet-gear-inline"><p class="album-meta">カードリストと同様、戦闘と同じ装備ポップを並べる。製品写真は枠内。</p>${sheetGearGroup("剣", swords)}${sheetGearGroup("盾", shields)}${sheetGearGroup("アクセサリー", arms)}${sheetGearGroup("ボス", BOSS_GEAR)}${sheetGearBoonGroup("祝福の報酬", boons)}${sheetGearBoonGroup("エンチャント", enchants)}</div>`;
     }
@@ -16184,8 +16323,10 @@
             <p class="album-meta">画像を押すと右半分に拡大</p>
             <h3>敵</h3>
             <div class="ref-grid">
-              ${sheetFig("enemy-slime.png?v=7", "スライム", "enemy-ref")}
+              ${sheetFig("enemy-slime.png?v=8", "スライム", "enemy-ref")}
               ${sheetFig("enemy-goblin.png?v=4", "ゴブリン", "enemy-ref")}
+              ${sheetSlot("コボルド", "戦闘に出る。絵は未作成")}
+              ${sheetSlot("トロール", "戦闘に出る。絵は未作成")}
               ${sheetFig("enemy-minotaur.png?v=8", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
@@ -16194,6 +16335,16 @@
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
+            </div>
+            <h3>カード（画像待ち）</h3>
+            <p class="album-meta">絵柄データが空のカード。枠だけ残す。あとから絵をはめる。</p>
+            <div class="ref-grid">
+              ${sheetSlot("無心")}
+              ${sheetSlot("餌だ")}
+              ${sheetSlot("さぼる")}
+              ${sheetSlot("弱者の意地")}
+              ${sheetSlot("死者の軍団")}
+              ${sheetSlot("超集中")}
             </div>
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
@@ -16471,7 +16622,7 @@
         ? blessPicks.map((pick, i) => {
           const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
           if (lv) blessLevels.push(lv);
-          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
@@ -16493,6 +16644,7 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
+      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") bindBlessPop();
       runEntrance = false;
     }
 
@@ -16686,10 +16838,10 @@
       ["style-star1", "★", "frame-spike-copper.png?v=5"],
       ["style-star2", "★★", "frame-spike-silver.png?v=5"],
       ["style-star3", "★★★", "frame-spike-gold.png?v=5"],
-      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=4"],
-      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=4"],
-      ["style-over-gold", "金", "frame-blue-over-gold.png?v=4"],
-      ["style-over-black", "黒", "frame-blue-over-black.png?v=4"],
+      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=11"],
+      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=11"],
+      ["style-over-gold", "金", "frame-blue-over-gold.png?v=11"],
+      ["style-over-black", "黒", "frame-blue-over-black.png?v=11"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -18936,6 +19088,23 @@
       main.style.setProperty("--foot-gap", `${footGap}px`);
       hero.style.setProperty("--hero-w", `${heroW}px`);
       main.style.setProperty("--foe-w", `${foeW}px`);
+      main.style.marginLeft = "0px";
+      const field = ally.parentElement;
+      if (!field) return;
+      const fieldRect = field.getBoundingClientRect();
+      const scale = fieldRect.width / field.clientWidth || 1;
+      const heroFig = hero.querySelector(".hero-fig") || hero;
+      const foeFig = main.querySelector("img") || main;
+      const heroRect = heroFig.getBoundingClientRect();
+      const foeRect = foeFig.getBoundingClientRect();
+      if (heroRect.width < 8 || foeRect.width < 8) return;
+      const heroInkLeft = 64;
+      const inkRight = parseFloat(getComputedStyle(main).getPropertyValue("--ink-right")) || imgW;
+      const heroVisLeft = (heroRect.left - fieldRect.left) / scale + (heroRect.width / scale) * (heroInkLeft / heroImg);
+      const foeVisRight = (foeRect.left - fieldRect.left) / scale + (foeRect.width / scale) * (inkRight / imgW);
+      const leftGap = heroVisLeft;
+      const rightGap = field.clientWidth - foeVisRight;
+      main.style.marginLeft = `${Math.round(rightGap - leftGap)}px`;
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
