@@ -1439,7 +1439,7 @@
       text-shadow: 0 4px 0 #5a0a08, 0 0 22px rgba(255, 60, 30, 0.85);
       animation: fatal-call 4.6s ease-out both;
     }
-    /* 横に並べ、足元をそろえる。雑魚0.8、普通1.2、強敵とボスは2。大きいほうが枠の高さ。 */
+    /* 足元をそろえる。自分の大きさは変えない。敵だけ、小さい・同じ・画面いっぱい。 */
     .enemy-main {
       --foe-scale: 1;
       --cut-x: 50%;
@@ -1478,11 +1478,10 @@
       height: calc(100% * var(--foe-scale));
       max-height: 100%;
     }
-    .enemy-main[data-size="small"] { --rank: 0.8; --foe-scale: 0.86; max-width: min(72%, 340px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
-    .enemy-main[data-size="medium"] { --rank: 1.2; --foe-scale: 0.94; max-width: min(82%, 380px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
-    .enemy-main[data-size="large"] { --rank: 2; --foe-scale: 1; max-width: min(88%, 420px); --cut-x: 48%; --cut-y: 42%; --pop-y: 26%; }
-    .enemy-main[data-size="boss"] { --rank: 2; --foe-scale: 1.08; max-width: min(96%, 480px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
-    /* 見える高さは自分×ランク。大きいほうが戦闘枠の高さいっぱい。足元は下端でそろえる。 */
+    .enemy-main[data-size="small"] { --foe-scale: 0.5; max-width: min(56%, 260px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
+    .enemy-main[data-size="same"] { --foe-scale: 0.9; max-width: min(78%, 360px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
+    .enemy-main[data-size="huge"] { --foe-scale: 1; max-width: min(100%, 640px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
+    /* 自分は一定。敵の見える高さだけ、腰・同じ・枠いっぱい。足元は下端でそろえる。 */
     html.stage-fit .duel-side.ally,
     html.stage-fit .duel-side.foe,
     .fx-lab-preview .duel-side.ally,
@@ -1516,6 +1515,8 @@
       --cut-y: calc(var(--ink-mid, 0.5) * 100%);
       --pop-y: calc(var(--ink-mid, 0.5) * 100%);
     }
+    html.stage-fit .enemy-main[data-size="huge"],
+    .fx-lab-preview .enemy-main[data-size="huge"] { max-width: none; }
     html.stage-fit .foe-body,
     .fx-lab-preview .foe-body {
       flex: 0 0 auto;
@@ -9719,6 +9720,7 @@
         image: "enemy-slime.png?v=7",
         tier: 1,
         rank: "雑魚",
+        stature: "small",
         hp: 40,
         atkHidden: 0,
         pattern: [
@@ -9732,6 +9734,7 @@
         image: "enemy-goblin.png?v=4",
         tier: 1,
         rank: "雑魚",
+        stature: "small",
         hp: 25,
         atkHidden: 0,
         pattern: [
@@ -9741,10 +9744,27 @@
         ],
       },
       {
+        name: "コボルド",
+        tier: 1,
+        rank: "雑魚",
+        stature: "small",
+        hp: 30,
+        atkHidden: 0,
+        spd: 2,
+        home: "洞窟",
+        pattern: [
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", stars: 1, flash: true, spite: true },
+        ],
+      },
+      {
         name: "ミノタウロス",
         image: "enemy-minotaur.png?v=8",
         tier: 3,
         rank: "強敵",
+        stature: "huge",
         hp: 120,
         atkHidden: 7,
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
@@ -9763,6 +9783,7 @@
         image: "enemy-dragon.png?v=4",
         tier: 2,
         rank: "普通",
+        stature: "small",
         hp: 55,
         atkHidden: 3,
         pattern: [
@@ -9776,6 +9797,7 @@
         name: "トロール",
         tier: 2,
         rank: "普通",
+        stature: "huge",
         hp: 90,
         atkHidden: 0,
         home: "洞窟",
@@ -9790,6 +9812,7 @@
         name: "物乞い",
         image: "enemy-beggar.png?v=2",
         rank: "雑魚",
+        stature: "same",
         hp: 25,
         pattern: [
           { name: "アタック" },
@@ -9800,6 +9823,7 @@
         image: "enemy-hades.png?v=8",
         tier: 4,
         rank: "★★★★",
+        stature: "huge",
         hp: 160,
         atkHidden: 8,
         defHidden: 6,
@@ -10334,6 +10358,14 @@
       return (Number(foe && foe.hp) || 0) + reunionHpBonus(foe);
     }
 
+    function syncEnemyAtk() {
+      if (!enemy) return;
+      const foe = enemyNow();
+      const anger = enemy.anger ? 2 : 0;
+      const spite = enemy.spiteOn ? Math.max(0, Number(enemy.spite) || 0) : 0;
+      enemy.atk = hiddenAtk(foe) + anger + spite;
+    }
+
     function hiddenDef(foe) {
       if (foe && foe.defHidden != null) return Number(foe.defHidden) || 0;
       return HIDDEN_DEF[(foe && foe.rank) || "雑魚"] || 0;
@@ -10819,30 +10851,27 @@
       "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25 },
     };
 
-    function foeInkVars() {
-      const src = String((enemy && enemy.image) || "").split("?")[0];
+    function foeInkVars(image) {
+      const src = String(image != null ? image : (enemy && enemy.image) || "").split("?")[0];
       const ink = FOE_INK[src] || { w: 864, h: 1152, top: 0, bottom: 0 };
       const inkH = Math.max(1, ink.h - ink.top - ink.bottom);
       const mid = (ink.top + inkH / 2) / ink.h;
       return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)}`;
     }
 
-    // 見える大きさは自分基準。雑魚0.8、普通1.2、強敵とボスは2。大きいほうが枠に収まる。
+    // 絵の大きさは強さではなくキャラ。small は腰、same は自分と同じ、huge は画面いっぱい。
+    function foeStature(foe) {
+      const key = foe && foe.stature;
+      if (key === "small" || key === "same" || key === "huge") return key;
+      return "same";
+    }
+
     function foeSize() {
-      if (bossNow()) return "boss";
-      const rank = (enemyNow() && enemyNow().rank) || "普通";
-      if (rank === "雑魚") return "small";
-      if (rank === "強敵") return "large";
-      return "medium";
+      return foeStature(enemyNow());
     }
 
     function fxLabFoeSize(name) {
-      const foe = enemyByName(name || fxLabFoeName);
-      const rank = String(foe.rank || "普通");
-      if (rank === "★★★★" || foe.name === DUNGEON.boss) return "boss";
-      if (rank === "雑魚") return "small";
-      if (rank === "強敵") return "large";
-      return "medium";
+      return foeStature(enemyByName(name || fxLabFoeName));
     }
 
     function fxLabFoeImage(name) {
@@ -11610,14 +11639,13 @@
 
     function gainEnemyAnger() {
       if (!enemy) return;
-      const foe = enemyNow();
       const had = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
       if (had >= 1) {
         log(`${enemy.name}はすでに怒っている。`);
         return;
       }
       enemy.anger = 1;
-      enemy.atk = hiddenAtk(foe) + 2;
+      syncEnemyAtk();
       syncEnemyDef();
       log(`${enemy.name}は怒り。ATK+2、DEF-2。`);
     }
@@ -11677,12 +11705,27 @@
       const hpLoss = amount - blocked;
       target.hp = Math.max(0, target.hp - hpLoss);
       target.hit = true;
+      if (hpLoss > 0) noteSpite(target);
       if (blocked > 0 && hpLoss > 0) {
         if (target === player) fxBreakPlayer = true;
         else fxBreakEnemy = true;
       }
       if (!fromThorns && hadHp && amount > 0) retaliateThorns(target);
       return { blocked, hpLoss };
+    }
+
+    function noteSpite(target) {
+      if (target === enemy && enemy.spiteOn) {
+        enemy.spite = Math.max(0, Number(enemy.spite) || 0) + 1;
+        syncEnemyAtk();
+        log(`${enemy.name}の弱者の意地。ATK${signed(enemy.atk)}。`);
+        return;
+      }
+      if (target === player && player.spite) {
+        player.atkMod = (Number(player.atkMod) || 0) + 1;
+        syncGearStats();
+        log(`弱者の意地。ATK${signed(player.atk)}。`);
+      }
     }
 
     function gainThorns(who, add) {
@@ -12310,6 +12353,11 @@
       if (card.pride) {
         player.pride = true;
         log(`${heroName()}は${card.name}。この戦闘中、パリィに成功するたびATK+1。`, card);
+        return;
+      }
+      if (card.spite) {
+        player.spite = true;
+        log(`${heroName()}は${card.name}。この戦闘中、体力を失うたびATK+1。`, card);
         return;
       }
       if (card.shave) {
@@ -13045,6 +13093,11 @@
         if (addBurn(player, card.burn)) log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
         else log(`${enemy.name}は${card.name}。`, card, true);
       }
+      if (card.spite) {
+        enemy.spiteOn = true;
+        log(`${enemy.name}は${card.name}。体力を失うたびATK+1。`, card, true);
+        return;
+      }
       if (card.legion) {
         playLegion(card);
         return;
@@ -13095,7 +13148,7 @@
 
     function playLegion(card) {
       const star = dungeonStar();
-      const rankOf = { スライム: 1, ゴブリン: 1, 物乞い: 1, ちびドラゴン: 2, ミノタウロス: 3 };
+      const rankOf = { スライム: 1, ゴブリン: 1, コボルド: 1, 物乞い: 1, ちびドラゴン: 2, ミノタウロス: 3 };
       const pool = runSlain.filter((name) => rankOf[name] === star);
       if (!pool.length) {
         log(`${enemy.name}は死者の軍団。同じ★で倒した敵がいない。`, card, true);
@@ -13110,7 +13163,9 @@
             ? { ...FOE_ONLY["無心"], name: "無心" }
             : who === "ちびドラゴン"
               ? { name: "ファイアパラダイス", cost: 3, text: "相手に炎上+3を与える", burn: 3, kind: "skill" }
-              : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+              : who === "コボルド"
+                ? { name: "弱者の意地", cost: 2, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true }
+                : { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
       log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
       enemyUseCard(trait);
     }
@@ -13235,7 +13290,7 @@
           else {
             const live = applyEnemyHidden(step.card, enemyNow());
             enemyUseCard(live);
-            foeDiscard.push({ ...live });
+            if (!isFlashCard(live)) foeDiscard.push({ ...live });
           }
         }
         if (player.hp > 0 && enemyNow().rally && !enemy.rallied && hpHalf(enemy) && !swordIgnoresTrait()) {
@@ -13803,6 +13858,7 @@
         player.doubleNext = !!player.doubleNext;
         player.magicParry = !!player.magicParry;
         player.pride = !!player.pride;
+        player.spite = !!player.spite;
         player.shave = Math.max(0, Number(player.shave) || 0);
         player.masterOnce = !!player.masterOnce;
       }
@@ -13813,10 +13869,12 @@
         enemy.thorns = Math.max(0, Number(enemy.thorns) || 0);
         enemy.rallied = !!enemy.rallied;
         enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+        enemy.spiteOn = !!enemy.spiteOn;
+        enemy.spite = Math.max(0, Number(enemy.spite) || 0);
         enemy.name = enemyKey(enemy.name);
         const foe = enemyByName(enemy.name);
         const maxFoe = foeBattleHp(foe);
-        enemy.atk = hiddenAtk(foe) + enemy.anger * 2;
+        syncEnemyAtk();
         enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
         syncEnemyDef();
         if (enemy.maxHp !== maxFoe) {
@@ -13865,11 +13923,12 @@
         rememberFloors(Number(data.dungeonFloors) || floorsOf(dungeonName));
       }
       if (enemy && route[battleIndex] && !isEventNode(route[battleIndex])) {
-        const foe = enemyNow();
         enemy.name = foeLabel();
-        enemy.image = foe.image;
+        enemy.image = enemyNow().image;
         enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
-        enemy.atk = hiddenAtk(foe) + enemy.anger * 2;
+        enemy.spiteOn = !!enemy.spiteOn;
+        enemy.spite = Math.max(0, Number(enemy.spite) || 0);
+        syncEnemyAtk();
         enemy.defCut = Math.max(0, Number(enemy.defCut) || 0);
         syncEnemyDef();
       }
@@ -13921,12 +13980,12 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, spite: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
       const foeHp = foeBattleHp(foe);
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, thorns: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, defCut: 0, rallied: false, hit: false };
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, thorns: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, rallied: false, hit: false };
       bindShown();
       turn = 0;
       startEnemyLoop(true);
@@ -14578,7 +14637,7 @@
         cardMastery = Array.isArray(cardMastery) ? cardMastery : [];
       }
       const maxHp = runMaxHp();
-      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
+      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, spite: false, shave: 0, masterOnce: false };
       syncGearStats();
       floorHp = maxHp;
     }
@@ -14999,7 +15058,7 @@
       const size = fxLabFoeSize(fxLabFoeName);
       const img = fxLabFoeImage(fxLabFoeName);
       const face = img ? `<img src="${esc(img)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}">${face}${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}" style="${foeInkVars(img)}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}">${face}${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
     }
 
     function fxLabFoeDef() {
@@ -15030,7 +15089,7 @@
         stars: "★".repeat(starsForRank(foe.rank || "普通")),
         atk: hiddenAtk(foe),
         def: hiddenDef(foe),
-        spd: 1,
+        spd: Number(foe.spd) > 0 ? Number(foe.spd) : 1,
       });
       return `<div class="hero-stack">${hero}<div class="plate-gear">${gearMarkup()}</div></div>${foePlate}`;
     }
@@ -15879,7 +15938,7 @@
     }
 
     function dungeonEnemyFaces() {
-      return ["スライム", "ゴブリン", "トロール", "ちびドラゴン", "ミノタウロス", "ハデス"].map((name) => {
+      return ["スライム", "ゴブリン", "コボルド", "トロール", "ちびドラゴン", "ミノタウロス", "ハデス"].map((name) => {
         const foe = ENEMIES.find((enemy) => enemy.name === name);
         if (!foe) return "";
         const boss = name === DUNGEON.boss;
@@ -16915,6 +16974,7 @@
       target.block -= blocked;
       const hpLoss = n - blocked;
       target.hp = Math.max(0, target.hp - hpLoss);
+      if (hpLoss > 0 && target.spiteOn) target.atk = (Number(target.atk) || 0) + 1;
       if (!fromThorns && hadHp && n > 0 && target.thorns > 0 && target.opp) scratchApply(target.opp, target.thorns, true);
       return { raw: n, hpLoss };
     }
@@ -16967,7 +17027,10 @@
         maxHp: enemy.maxHp,
         block: Math.max(0, Number(enemy.block) || 0),
         thorns: Math.max(0, Number(enemy.thorns) || 0),
+        atk: Number(enemy.atk) || 0,
+        spiteOn: !!enemy.spiteOn,
       };
+      mine.spiteOn = !!player.spite;
       mine.opp = foe;
       foe.opp = mine;
       const foeHadBlock = foe.block > 0;
@@ -16989,7 +17052,7 @@
         if (foe.hp <= 0) break;
       }
       const breakShield = foeHadBlock && foe.block <= 0;
-      if (foe.hp <= 0) return { give: give.show ? give : null, take: null, breakShield };
+      if (foe.hp <= 0) return { give: give.show ? give : null, take: null, breakShield, foeAtk: foe.atk };
       foe.block = 0;
       let take = null;
       let angerAhead = false;
@@ -16999,9 +17062,9 @@
           continue;
         }
         let card = step.card;
-        if (angerAhead && card && card.name === "アタック") {
-          const dmg = (Number(card.damage) || 0) + 2;
-          card = { ...card, damage: dmg };
+        if (card && card.name === "アタック") {
+          const dmg = (CARDS.アタック.damage || 5) + (Number(foe.atk) || 0) + (angerAhead ? 2 : 0);
+          card = { ...card, damage: dmg, text: `${dmg}ダメージ` };
         }
         const times = Math.max(1, Number(card.hits) || 1);
         for (let n = 0; n < times; n += 1) {
@@ -17015,7 +17078,7 @@
           if (blow.parry && take.raw === blow.raw) take.parry = true;
         }
       }
-      return { give: give.show ? give : null, take, breakShield };
+      return { give: give.show ? give : null, take, breakShield, foeAtk: foe.atk };
     }
 
     function scratchPlayerCard(card, mine, foe, queue, give) {
@@ -17110,6 +17173,13 @@
       if (card.parry && card.block && !card.damage) scratchGainParry(mine, 1);
     }
 
+    function previewFoeAtk() {
+      const now = Number(enemy && enemy.atk) || 0;
+      if (phase !== "player" || !enemy || !enemy.spiteOn) return now;
+      const cast = forecastTurn();
+      return cast && cast.foeAtk != null ? cast.foeAtk : now;
+    }
+
     function planCardFace(index) {
       let angerAhead = false;
       for (let i = 0; i < index; i += 1) {
@@ -17118,8 +17188,8 @@
       const step = foePlan[index];
       if (!step) return null;
       if (step.anger) return step.card;
-      if (angerAhead && step.card && step.card.name === "アタック") {
-        const dmg = (Number(step.card.damage) || 0) + 2;
+      if (step.card && step.card.name === "アタック") {
+        const dmg = (CARDS.アタック.damage || 5) + previewFoeAtk() + (angerAhead ? 2 : 0);
         return { ...step.card, damage: dmg, text: `${dmg}ダメージ` };
       }
       return step.card;
@@ -17524,6 +17594,7 @@
       if (card.rage) next.rage = true;
       if (card.during) next.during = true;
       if (card.flash) next.flash = true;
+      if (card.spite) next.spite = true;
       if (card.burst) next.burst = true;
       if (card.expose) next.expose = card.expose;
       if (card.fullBonus) next.fullBonus = card.fullBonus;
@@ -18796,7 +18867,7 @@
       requestAnimationFrame(tick);
     }
 
-    // 自分と敵の見える高さをランク比にし、大きいほうが戦闘の縦いっぱいに収まるようにする。
+    // 自分の見える高さは一定。敵だけ、腰・同じ・枠いっぱい。
     function fitFighters() {
       const fxPreview = root.querySelector(".fx-lab-preview");
       if (!document.documentElement.classList.contains("stage-fit") && !fxPreview) return;
@@ -18805,10 +18876,10 @@
       const hero = root.querySelector(".hero-shoulder");
       const main = root.querySelector(".enemy-main");
       if (!ally || !foeSide || !hero || !main) return;
-      const laneW = Math.min(ally.clientWidth, foeSide.clientWidth);
+      const laneW = ally.clientWidth;
+      const foeLaneW = foeSide.clientWidth;
       const laneH = Math.min(ally.clientHeight, foeSide.clientHeight);
-      if (laneW < 40 || laneH < 40) return;
-      const rank = parseFloat(getComputedStyle(main).getPropertyValue("--rank")) || 1;
+      if (laneW < 40 || foeLaneW < 40 || laneH < 40) return;
       const imgW = parseFloat(getComputedStyle(main).getPropertyValue("--img-w")) || 864;
       const inkH = parseFloat(getComputedStyle(main).getPropertyValue("--ink-h")) || 1152;
       const heroInk = 1068;
@@ -18816,16 +18887,21 @@
       const headGap = 120;
       const footGap = 12;
       const roomH = Math.max(1, laneH - headGap - footGap);
-      const bigger = Math.max(1, rank);
-      const v0 = Math.max(1, Math.min(
-        roomH / bigger,
-        laneW * heroInk / heroImg,
-        laneW * inkH / (rank * imgW)
-      ));
+      const heroVis = roomH * 0.9;
+      let heroW = heroVis * heroImg / heroInk;
+      if (heroW > laneW) heroW = laneW;
+      const heroShown = heroW * heroInk / heroImg;
+      const stature = main.dataset.size || "same";
+      let foeVis = heroShown;
+      if (stature === "small") foeVis = heroShown * 0.5;
+      if (stature === "huge") foeVis = Math.max(heroShown, laneH - footGap);
+      let foeW = foeVis * imgW / inkH;
+      const foeCap = stature === "huge" ? Math.max(foeLaneW * 1.45, laneW) : foeLaneW;
+      if (foeW > foeCap) foeW = foeCap;
       hero.style.setProperty("--foot-gap", `${footGap}px`);
       main.style.setProperty("--foot-gap", `${footGap}px`);
-      hero.style.setProperty("--hero-w", `${v0 * heroImg / heroInk}px`);
-      main.style.setProperty("--foe-w", `${v0 * rank * imgW / inkH}px`);
+      hero.style.setProperty("--hero-w", `${heroW}px`);
+      main.style.setProperty("--foe-w", `${foeW}px`);
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
