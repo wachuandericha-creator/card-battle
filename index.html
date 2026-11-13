@@ -624,50 +624,47 @@
       font-size: clamp(56px, 7.4cqw, 104px);
       letter-spacing: 0.08em;
       line-height: 0.8;
-      color: transparent;
-      background-image: linear-gradient(185deg, #fff8e4 0%, #f3d48a 38%, #c4842a 72%, #7a4a16 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      filter: drop-shadow(0 4px 0 #2a1608) drop-shadow(0 0 10px rgba(255, 214, 130, 0.45));
+      color: #f6e2a4;
+      -webkit-text-stroke: 0.045em #050403;
+      paint-order: stroke fill;
+      text-shadow:
+        0.055em 0 0 #050403,
+        -0.055em 0 0 #050403,
+        0 0.055em 0 #050403,
+        0 -0.055em 0 #050403,
+        0.04em 0.04em 0 #050403,
+        -0.04em 0.04em 0 #050403,
+        0.04em -0.04em 0 #050403,
+        -0.04em -0.04em 0 #050403;
     }
     .vs-mark:disabled {
       cursor: default;
       opacity: 0.55;
-      filter: drop-shadow(0 3px 0 #1a1008);
     }
-    .vs-mark:not(:disabled):hover {
-      filter: drop-shadow(0 4px 0 #2a1608) drop-shadow(0 0 16px rgba(255, 230, 160, 0.85));
+    .vs-mark:not(:disabled):hover { filter: brightness(1.08); }
+    .vs-mark.spent {
+      filter:
+        drop-shadow(0 0 3px #fff6d4)
+        drop-shadow(0 0 8px #f0c36a)
+        drop-shadow(0 0 16px rgba(228, 177, 90, 0.95));
+      animation: vs-gold 1.15s ease-in-out infinite;
     }
-    .vs-mark.burn {
-      background-image: linear-gradient(185deg, #fffef6 0%, #ffe08a 22%, #ff7a22 58%, #ff2a00 100%);
-      animation: vs-burn 0.48s ease-in-out infinite alternate;
-    }
-    .vs-mark.burn::after {
-      content: "";
-      position: absolute;
-      left: -18%;
-      right: -18%;
-      top: 8%;
-      bottom: -30%;
-      z-index: -1;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse at 50% 80%, rgba(255, 236, 180, 0.95), transparent 46%),
-        radial-gradient(ellipse at 28% 70%, rgba(255, 120, 20, 0.75), transparent 52%),
-        radial-gradient(ellipse at 74% 62%, rgba(255, 40, 0, 0.7), transparent 50%);
-      filter: blur(5px);
-      animation: vs-flame 0.36s ease-in-out infinite alternate;
-    }
-    @keyframes vs-burn {
-      from { filter: drop-shadow(0 0 8px #ff6a14) drop-shadow(0 0 18px rgba(255, 70, 0, 0.85)) drop-shadow(0 4px 0 #3a1208); }
-      to { filter: drop-shadow(0 0 14px #fff4d0) drop-shadow(0 0 28px #ff8a20) drop-shadow(0 0 42px #ff2400) drop-shadow(0 4px 0 #3a1208); }
-    }
-    @keyframes vs-flame {
-      from { transform: scale(0.92, 1); opacity: 0.72; }
-      to { transform: scale(1.08, 1.16); opacity: 1; }
+    @keyframes vs-gold {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 2px #fff6d4)
+          drop-shadow(0 0 6px #e4b15a)
+          drop-shadow(0 0 12px rgba(228, 177, 90, 0.7));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 4px #fffdf4)
+          drop-shadow(0 0 12px #ffe7a4)
+          drop-shadow(0 0 22px rgba(255, 214, 120, 0.95));
+      }
     }
     @media (prefers-reduced-motion: reduce) {
-      .vs-mark.burn, .vs-mark.burn::after { animation: none; }
+      .vs-mark.spent { animation: none; }
     }
     .use-split {
       min-width: 0;
@@ -14803,7 +14800,7 @@
       const mid = id === "anger"
         ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"><div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div></div></div></div>`
         : id === "end-ready"
-          ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"></div></div><button type="button" class="vs-mark burn" aria-label="ターン終了">VS</button></div>`
+          ? `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half"></div></div><button type="button" class="vs-mark spent" aria-label="ターン終了">VS</button></div>`
           : "";
       const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally">${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
@@ -16836,7 +16833,7 @@
     function vsMarkup() {
       const live = phase === "player" && !foeRageBusy && !outcome;
       const spent = live && (Number(player.energy) || 0) <= 0 && (Number(player.maxEnergy) || 0) > 0;
-      return `<button type="button" class="vs-mark${spent ? " burn" : ""}" data-end aria-label="ターン終了"${live ? "" : " disabled"}>VS</button>`;
+      return `<button type="button" class="vs-mark${spent ? " spent" : ""}" data-end aria-label="ターン終了"${live ? "" : " disabled"}>VS</button>`;
     }
 
     let heroImage = null;
