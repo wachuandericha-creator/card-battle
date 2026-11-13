@@ -9769,6 +9769,7 @@
         atkHidden: 7,
         trait: "体力が最大の半分以下になった直後、この戦闘で一度だけ、デッキから2枚引いて、いつもの1枚とは別に使う。",
         rally: true,
+        loot: { low: "minotaur-medal", high: "minotaur-bracelet" },
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -10580,6 +10581,7 @@
       road: { none: 0.7, gear: 0.1, item: 0.1, enchant: 0.1 },
       boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
+    const LOOT_LOW_RATE = 0.7;
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
     const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
@@ -15419,6 +15421,13 @@
               <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
             </ul>
             ${oddsTable(["追加", "道中", "ボス"], extraRows)}
+            <h3>戦利品</h3>
+            <ul>
+              <li>その敵の品だけ出します。品が無い敵は出ません。</li>
+              <li>出すかどうかは運です。雑魚は30%。強敵以上は必ずです。普通の品はまだありません。</li>
+              <li>出るときは品を1つ。低レア70%、高レア30%です。</li>
+              <li>ミノタウロスは低レアがメダル★★★、高レアが腕輪★★★★です。</li>
+            </ul>
             <h3>報酬カードのレアリティ</h3>
             ${oddsTable(["★", "重み", "この表での割合", "カード"], rarityRows(rewardCards))}
             <ul>
@@ -17895,12 +17904,37 @@
       return `${name}に、${face.name}のエンチャント。${face.sub}${added}。`;
     }
 
+    function lootDropRate(rank) {
+      if (rank === "雑魚") return 0.3;
+      if (rank === "強敵" || rank === "ボス") return 1;
+      return 0;
+    }
+
+    function rollFoeLoot(foe) {
+      const loot = foe && foe.loot;
+      if (!loot || !loot.low) return null;
+      if (Math.random() >= lootDropRate(foe.rank)) return null;
+      const high = loot.high && Math.random() >= LOOT_LOW_RATE;
+      return gearItem(high ? loot.high : loot.low);
+    }
+
+    function grantFoeLoot(foe) {
+      const item = rollFoeLoot(foe);
+      if (!item) return "";
+      if (!gear) gear = emptyGear();
+      giveGear(item);
+      victoryGear = item;
+      return `${item.name}を手に入れた。`;
+    }
+
     function prepareReward() {
       if (rewardReady) return;
       rewardReady = true;
       gainLevel();
       dropLine = rollVictoryExtra();
       const foe = enemyNow();
+      const lootLine = grantFoeLoot(foe);
+      if (lootLine) dropLine = [dropLine, lootLine].filter(Boolean).join("　");
       const medal = bossNow() && foe.medal ? gearItem(foe.medal) : null;
       // ボスも道中と同じく★をもらう。戦利品は、その敵に枠があるときだけ追加
       rewardStars = foe.tier || starsForRank(foe.rank);
