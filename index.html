@@ -6925,7 +6925,10 @@
       width: min(180px, 100%);
       height: auto;
       aspect-ratio: 1;
+      object-fit: contain;
+      background: #2a2622;
     }
+    .menu.event .gear-effect.bless-pop { z-index: 80; }
     .menu.event .gift-btn .gear-effect.center-boon .gear-effect-art {
       width: 156px;
       height: 156px;
@@ -14478,6 +14481,90 @@
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
     }
 
+    function blessPickFace(pick) {
+      if (!pick) return "";
+      if (pick.kind === "card" && pick.card) {
+        return `<div class="gift-pick"><div class="card preview ${cardKind(pick.card)}">${cardFace(pick.card)}</div></div>`;
+      }
+      let image = "";
+      if (pick.kind === "gear" && pick.gear) image = pick.gear.image || "";
+      else if (pick.kind === "enchant" || pick.kind === "maxhp" || pick.kind === "spd" || pick.kind === "mana") {
+        image = blessGearOpts(pick.kind, pick.elem).image;
+      }
+      const picture = image ? `<img class="gift-img" src="${esc(image)}" alt="">` : "";
+      return `<div class="gift-pick">${picture}</div>`;
+    }
+
+    function blessPickPopupHtml(pick) {
+      if (!pick) return "";
+      if (pick.kind === "gear" && pick.gear) {
+        const item = pick.gear;
+        return gearPopShell(item.slot || "sword", {
+          item,
+          name: item.name,
+          image: item.image || "",
+          rarity: gearRarityText(item),
+        });
+      }
+      if (pick.kind === "enchant" || pick.kind === "spd" || pick.kind === "maxhp" || pick.kind === "mana") {
+        const face = blessGearOpts(pick.kind, pick.elem);
+        return gearPopShell(face.slot, {
+          name: face.name,
+          image: face.image,
+          body: face.body,
+          kind: "祝福",
+          likeGear: true,
+        });
+      }
+      return "";
+    }
+
+    function hideBlessPop() {
+      const box = root.querySelector(".gear-effect.bless-pop");
+      if (box) box.remove();
+    }
+
+    function showBlessPop(button) {
+      const pick = blessPicks[Number(button.dataset.bless)];
+      const html = blessPickPopupHtml(pick);
+      hideBlessPop();
+      if (!html || !button) return;
+      const host = root.querySelector(".menu.event") || root;
+      host.insertAdjacentHTML("beforeend", html.replace('class="gear-effect', 'class="gear-effect bless-pop'));
+      const box = host.querySelector(".gear-effect.bless-pop");
+      if (!box) return;
+      box.style.position = "absolute";
+      const hostRect = host.getBoundingClientRect();
+      const btn = button.getBoundingClientRect();
+      const scale = host.offsetWidth ? hostRect.width / host.offsetWidth : 1;
+      const w = box.offsetWidth;
+      const h = box.offsetHeight;
+      const btnLeft = (btn.left - hostRect.left) / scale;
+      const btnTop = (btn.top - hostRect.top) / scale;
+      const btnW = btn.width / scale;
+      const btnH = btn.height / scale;
+      const hostW = hostRect.width / scale;
+      const hostH = hostRect.height / scale;
+      let left = btnLeft + (btnW - w) / 2;
+      let top = btnTop - h - 10;
+      if (top < 8) top = btnTop + btnH + 10;
+      left = Math.max(8, Math.min(left, hostW - w - 8));
+      top = Math.max(8, Math.min(top, hostH - h - 8));
+      box.style.left = `${Math.round(left)}px`;
+      box.style.top = `${Math.round(top)}px`;
+    }
+
+    function bindBlessPop() {
+      root.querySelectorAll('[data-action="bless-pick"]').forEach((button) => {
+        if (button.dataset.popBound) return;
+        button.dataset.popBound = "1";
+        button.addEventListener("pointerenter", () => showBlessPop(button));
+        button.addEventListener("focus", () => showBlessPop(button));
+        button.addEventListener("pointerleave", () => hideBlessPop());
+        button.addEventListener("blur", () => hideBlessPop());
+      });
+    }
+
     function enterFloorScreen() {
       screen = "floor";
       render();
@@ -16535,7 +16622,7 @@
         ? blessPicks.map((pick, i) => {
           const lv = blessLive ? rareLevel(pick.kind === "card" ? pick.card : (pick.gear || pick.item)) : 0;
           if (lv) blessLevels.push(lv);
-          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
@@ -16557,6 +16644,7 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
+      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") bindBlessPop();
       runEntrance = false;
     }
 
