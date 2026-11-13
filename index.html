@@ -2975,6 +2975,24 @@
       object-position: center bottom;
       filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5));
     }
+    .sprite .foe-blank {
+      display: block;
+      width: 42%;
+      height: 72%;
+      margin: 8% auto 0;
+      border: 4px solid #111;
+      background: transparent;
+    }
+    .dungeon-foe .foe-blank,
+    .foe-starter-portrait .foe-blank {
+      display: block;
+      width: 108px;
+      height: 108px;
+      margin: 0;
+      border: 4px solid #111;
+      background: transparent;
+      box-sizing: border-box;
+    }
     .sprite .eye {
       position: absolute;
       top: 36px;
@@ -5714,6 +5732,13 @@
     .end-screen .end-portraits figure.foe img {
       height: min(48cqh, 560px);
       filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(255, 70, 40, 0.35));
+    }
+    .end-screen .end-portraits figure.foe .foe-blank {
+      display: block;
+      width: min(28cqh, 220px);
+      height: min(40cqh, 320px);
+      border: 4px solid #111;
+      background: transparent;
     }
     .end-screen .end-portraits figcaption {
       margin-top: 8px;
@@ -9707,6 +9732,20 @@
         ],
       },
       {
+        name: "トロール",
+        tier: 2,
+        rank: "普通",
+        hp: 90,
+        atkHidden: 0,
+        home: "洞窟",
+        pattern: [
+          { name: "アタック" },
+          { name: "チャージアタック" },
+          { name: "ビッグアタック" },
+          { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 1, slack: true },
+        ],
+      },
+      {
         name: "物乞い",
         image: "enemy-beggar.png?v=2",
         rank: "雑魚",
@@ -10384,8 +10423,9 @@
     function combatNames(name, withBeggar) {
       const star = dungeonStarCount(name);
       return ENEMIES.filter((foe) => {
-        if (enemyStar(foe) !== star) return false;
         if (foe.name === "ハデス") return false;
+        if (foe.home) return foe.home === name;
+        if (enemyStar(foe) !== star) return false;
         if (foe.name === "物乞い" && !withBeggar) return false;
         return true;
       }).map((foe) => foe.name);
@@ -10765,7 +10805,7 @@
     }
 
     function fxLabFoeImage(name) {
-      return (enemyByName(name || fxLabFoeName).image) || "enemy-slime.png?v=7";
+      return (enemyByName(name || fxLabFoeName).image) || "";
     }
 
     function addDetourFight() {
@@ -14916,8 +14956,9 @@
       const give = Boolean(opt.stamp);
       const broke = Boolean(opt.break);
       const size = fxLabFoeSize(fxLabFoeName);
-      const img = esc(fxLabFoeImage(fxLabFoeName));
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}"><img src="${img}" alt="">${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
+      const img = fxLabFoeImage(fxLabFoeName);
+      const face = img ? `<img src="${esc(img)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}">${face}${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
     }
 
     function fxLabFoeDef() {
@@ -14984,8 +15025,9 @@
       const pose = heroItem().victory;
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
       const stars = Array.from({ length: 3 }, (_, i) => `<span class="fly-star" style="--i:${i};--n:3">★</span>`).join("");
-      const winFoe = esc(fxLabFoeImage(fxLabFoeName));
-      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt=""><img class="win-foe" src="${winFoe}" alt=""></div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
+      const winFoe = fxLabFoeImage(fxLabFoeName);
+      const foeImg = winFoe ? `<img class="win-foe" src="${esc(winFoe)}" alt="">` : "";
+      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foeImg}</div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
     }
 
     function fxStage(id) {
@@ -15745,16 +15787,18 @@
         ? `<div class="foe-starter-blurb">${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</div>`
         : `<div class="foe-starter-blurb"><p>なし</p></div>`;
       const cards = foeStarterCards(foe);
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait"><img src="${esc(foe.image)}" alt=""></div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="deck-scroll">${deckGroup("", cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="deck-scroll">${deckGroup("", cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
     }
 
     function dungeonEnemyFaces() {
-      return ["スライム", "ゴブリン", "ちびドラゴン", "ミノタウロス", "ハデス"].map((name) => {
+      return ["スライム", "ゴブリン", "トロール", "ちびドラゴン", "ミノタウロス", "ハデス"].map((name) => {
         const foe = ENEMIES.find((enemy) => enemy.name === name);
         if (!foe) return "";
         const boss = name === DUNGEON.boss;
         const mark = boss ? "ボス" : "★".repeat(enemyStar(foe));
-        return `<button type="button" class="dungeon-foe" data-action="foe-starter" data-foe="${esc(name)}" aria-label="${esc(name)}の初期デッキ"><img src="${esc(foe.image)}" alt=""><span class="dungeon-foe-name">${esc(name)}</span><span class="dungeon-foe-rank${boss ? " boss" : ""}">${mark}</span></button>`;
+        const face = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
+        return `<button type="button" class="dungeon-foe" data-action="foe-starter" data-foe="${esc(name)}" aria-label="${esc(name)}の初期デッキ">${face}<span class="dungeon-foe-name">${esc(name)}</span><span class="dungeon-foe-rank${boss ? " boss" : ""}">${mark}</span></button>`;
       }).join("");
     }
 
@@ -16145,7 +16189,7 @@
               <figcaption>${esc(snap.hero || heroName())}</figcaption>
             </figure>
             <figure class="foe">
-              <img src="${esc(snap.foeImage || "")}" alt="">
+              ${snap.foeImage ? `<img src="${esc(snap.foeImage)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
               <figcaption>${esc(snap.foeName || "敵")}${snap.foeHp ? `　HP ${esc(snap.foeHp)}` : ""}</figcaption>
             </figure>
           </div>
@@ -16484,6 +16528,10 @@
       ["style-star1", "★", "frame-spike-copper.png?v=5"],
       ["style-star2", "★★", "frame-spike-silver.png?v=5"],
       ["style-star3", "★★★", "frame-spike-gold.png?v=5"],
+      ["style-over-copper", "銅", "frame-blue-over-copper.png?v=1"],
+      ["style-over-silver", "銀", "frame-blue-over-silver.png?v=1"],
+      ["style-over-gold", "金", "frame-blue-over-gold.png?v=1"],
+      ["style-over-black", "黒", "frame-blue-over-black.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -17444,6 +17492,7 @@
       list.push(...classCards());
       const seen = new Set();
       for (const card of enemyNow().pattern) {
+        if (!card || card.slack || card.name === "チャージアタック") continue;
         const reward = playerCopy(card);
         if (seen.has(reward.name)) continue;
         seen.add(reward.name);
@@ -18575,7 +18624,7 @@
               <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
-                <img src="${esc(enemy.image || "enemy-slime.png?v=7")}" alt="">
+                ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
