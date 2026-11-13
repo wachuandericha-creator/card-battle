@@ -5067,7 +5067,6 @@
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
     .card .card-fit.k-attack { --frame-img: url("frame-metal-red.png?v=7"); }
-    .album-screen .card .card-fit.k-attack { --frame-img: url("frame-spike-gold.png?v=5"); }
     .card .card-fit.k-block { --frame-img: url("frame-metal-blue.png?v=7"); }
     .card .card-fit.k-skill { --frame-img: url("frame-metal-yellow.png?v=7"); }
     .card .card-fit.k-power { --frame-img: url("frame-metal-green.png?v=5"); }
@@ -9605,7 +9604,7 @@
       パリィ: "card-parry.jpg?v=16",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=1",
-      パリィスラッシュ: "card-parry-slash.jpg?v=1",
+      パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ライフフルネスアタック: "card-lifefull.jpg?v=2",
       ジャストミート: "card-justmeat.jpg?v=1",
@@ -9614,7 +9613,7 @@
       致命の一撃: "card-finisher.jpg?v=2",
       ナイフパリィ: "card-knife-chainsaw-pov.jpg?v=1",
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
-      自信過剰: "card-pride.jpg?v=1",
+      自信過剰: "card-pride-v4.jpg?v=2",
       達人の間合い: "card-deep-focus.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       集中: "card-focus.jpg?v=1",
@@ -9673,14 +9672,14 @@
       パリィ: { cost: 2, stars: 1, text: "パリィ+1を得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィ+1を得る", damage: 10, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
+      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "skill", flash: true, coward: true },
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
       余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィ+1を得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "skill", parryAdd: 3 },
+      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "block", parryAdd: 3 },
       諸刃の剣: { cost: 2, stars: 2, text: "次に受けるダメージが２倍になる。", damage: 25, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
@@ -9748,7 +9747,7 @@
       },
       {
         name: "ゴブリン",
-        image: "enemy-goblin.png?v=4",
+        image: "enemy-goblin.png?v=8",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9762,6 +9761,7 @@
       },
       {
         name: "コボルド",
+        image: "enemy-kobold.png?v=4",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -9797,7 +9797,7 @@
       },
       {
         name: "ちびドラゴン",
-        image: "enemy-dragon.png?v=4",
+        image: "enemy-dragon.png?v=5",
         tier: 2,
         rank: "普通",
         stature: "small",
@@ -9812,6 +9812,7 @@
       },
       {
         name: "トロール",
+        image: "enemy-troll.png?v=2",
         tier: 2,
         rank: "普通",
         stature: "huge",
@@ -9826,7 +9827,7 @@
       },
       {
         name: "物乞い",
-        image: "enemy-beggar.png?v=2",
+        image: "enemy-beggar.png?v=3",
         rank: "雑魚",
         stature: "same",
         hp: 25,
@@ -10624,7 +10625,7 @@
       boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
     const LOOT_LOW_RATE = 0.7;
-    const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
+    const EXTRA_ITEM_NAMES = ["ベッド", "ホテル"];
     const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
 
@@ -10889,10 +10890,12 @@
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
       "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 30, right: 858 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 86, bottom: 72, left: 154, right: 780 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 25, bottom: 45, left: 12, right: 821 },
+      "enemy-kobold.png": { w: 864, h: 1152, top: 30, bottom: 20, left: 147, right: 699 },
       "enemy-minotaur.png": { w: 864, h: 1152, top: 1, bottom: 0, left: 36, right: 862 },
-      "enemy-dragon.png": { w: 864, h: 1152, top: 132, bottom: 98, left: 18, right: 862 },
-      "enemy-beggar.png": { w: 1024, h: 1024, top: 24, bottom: 25, left: 94, right: 718 },
+      "enemy-dragon.png": { w: 864, h: 1152, top: 124, bottom: 154, left: 48, right: 863 },
+      "enemy-troll.png": { w: 864, h: 1152, top: 70, bottom: 102, left: 22, right: 863 },
+      "enemy-beggar.png": { w: 864, h: 1152, top: 30, bottom: 30, left: 94, right: 718 },
       "enemy-hades.png": { w: 864, h: 1152, top: 86, bottom: 133, left: 44, right: 856 },
     };
 
@@ -12358,9 +12361,9 @@
         const now = gainThorns(player, card.thorns);
         log(`${heroName()}は${card.name}。トゲ${now}。`, card);
       }
-      if (card.power && card.coward) {
+      if (card.coward) {
         player.guardThrough = true;
-        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。`, card);
+        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。戦闘が終わると戻る。`, card);
         return;
       }
       if (card.rage) {
@@ -14459,11 +14462,11 @@
         return `<div class="${cls}">${gearPopShell(face.slot, {
           name: face.name,
           image: face.image,
-        body: face.body,
-        kind: "祝福",
-        rarity: gearRarityText(face),
-        likeGear: true,
-        embedded: true,
+          body: face.body,
+          kind: "祝福",
+          rarity: gearRarityText(face),
+          likeGear: true,
+          embedded: true,
         })}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
@@ -16327,13 +16330,13 @@
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=8", "スライム", "enemy-ref")}
-              ${sheetFig("enemy-goblin.png?v=4", "ゴブリン", "enemy-ref")}
-              ${sheetSlot("コボルド", "戦闘に出る。絵は未作成")}
-              ${sheetSlot("トロール", "戦闘に出る。絵は未作成")}
+              ${sheetFig("enemy-goblin.png?v=8", "ゴブリン", "enemy-ref")}
+              ${sheetFig("enemy-kobold.png?v=4", "コボルド", "enemy-ref")}
+              ${sheetFig("enemy-troll.png?v=2", "トロール", "enemy-ref")}
               ${sheetFig("enemy-minotaur.png?v=8", "ミノタウロス", "enemy-ref")}
-              ${sheetFig("enemy-dragon.png?v=4", "ちびドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-dragon.png?v=5", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
-              ${sheetFig("enemy-beggar.png?v=2", "物乞い", "enemy-ref")}
+              ${sheetFig("enemy-beggar.png?v=3", "物乞い", "enemy-ref")}
               ${sheetFig("enemy-hades.png?v=8", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
@@ -16834,7 +16837,7 @@
     }
 
     const CARD_STYLE = [
-      ["style-red", "アタック", "frame-spike-gold.png?v=5"],
+      ["style-red", "アタック", "frame-metal-red.png?v=7"],
       ["style-blue", "ブロック", "frame-metal-blue.png?v=7"],
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
       ["style-green", "アイテム", "frame-metal-green.png?v=5"],
