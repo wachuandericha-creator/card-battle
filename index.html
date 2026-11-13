@@ -4171,6 +4171,51 @@
     }
     .gear-effect::before,
     .gear-effect::after { content: none; }
+    .gear-effect:not(.center-boon) {
+      border-radius: 3px;
+      background: linear-gradient(180deg, #1b1f25 0%, #0d0f13 100%);
+      box-shadow:
+        0 0 0 1px rgba(244, 247, 251, 0.92),
+        0 0 0 2px #6e7886,
+        0 16px 32px rgba(0, 0, 0, 0.55);
+    }
+    .gear-effect:not(.center-boon) .gear-effect-inner::before {
+      background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.55), transparent);
+    }
+    .gear-effect:not(.center-boon) .gear-effect-art {
+      border-radius: 2px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+        0 0 0 1px #d5dde6,
+        0 0 0 2px #5c6672;
+    }
+    .gear-effect:not(.center-boon) .gear-effect-chiprow > span.kind {
+      color: #e7edf4;
+      background: linear-gradient(180deg, rgba(220, 228, 238, 0.14), rgba(0, 0, 0, 0.32));
+      border: 1px solid rgba(198, 208, 220, 0.8);
+    }
+    .gear-effect:not(.center-boon) .gear-effect-body {
+      background: rgba(6, 8, 12, 0.38);
+      border: 1px solid rgba(188, 198, 210, 0.62);
+    }
+    .gear-effect-body .gear-stat-chip {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0.2em;
+      padding: 0 0.45em;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.55;
+      vertical-align: 0;
+      white-space: nowrap;
+      color: #eef3f8;
+      background: linear-gradient(180deg, rgba(226, 232, 240, 0.18), rgba(0, 0, 0, 0.4));
+      border: 1px solid rgba(198, 208, 220, 0.75);
+    }
+    .gear-effect-body .gear-stat-chip.atk { color: #ffc9a2; }
+    .gear-effect-body .gear-stat-chip.def { color: #d7dee8; }
     .gear-effect-inner {
       position: relative;
       padding: 8px;
@@ -11095,6 +11140,14 @@
       return `<div class="gear-effect-stats">${chips.join("")}</div>`;
     }
 
+    function gearBodyHtml(raw) {
+      return cardNoteHtml(raw).replace(/ATK\s*[+＋\-－]\s*\d+|DEF\s*[+＋\-－]\s*\d+/g, (m) => {
+        const kind = /^DEF/i.test(m) ? "def" : "atk";
+        const label = m.replace(/\s+/g, "").replace(/＋/g, "+").replace(/－/g, "-");
+        return `</span><span class="gear-stat-chip ${kind}">${label}</span><span class="nobr">`;
+      });
+    }
+
     function isStarterGear(item) {
       return !!item && (item.starterGear || item.id === "short-sword" || item.id === "buckler");
     }
@@ -11171,7 +11224,8 @@
       if (bodyLine.show) {
         const extra = bodyLine.extra ? ` ${bodyLine.extra}` : "";
         const bodyClass = `gear-effect-body${extra}`;
-        body = `<p class="${bodyClass}">${bodyLine.text ? cardNoteHtml(bodyLine.text) : ""}</p>`;
+        const bodyHtml = bodyLine.text ? (boon ? cardNoteHtml(bodyLine.text) : gearBodyHtml(bodyLine.text)) : "";
+        body = `<p class="${bodyClass}">${bodyHtml}</p>`;
       }
       const emb = embedded ? ` gear-effect-embedded${o.sheetPop ? " sheet-pop" : ""}${o.castPop ? " cast-pop" : ""}` : "";
       const popStyle = ` style="--gear-pop-w: ${gearPopWidthPx(displayName, o.item, boon)}px"`;
