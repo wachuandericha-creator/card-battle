@@ -8520,6 +8520,8 @@
     let intentArrive = false;
     let foeLeaveGhost = null;
     let foeDrawPending = false;
+    let foeArriveHide = false;
+    let foeArriveGen = 0;
     let foeDeckEmpty = false;
     let foeRageBusy = false;
     let foeAngerShow = false;
@@ -9955,6 +9957,8 @@
       foeAngerShow = false;
       foeRageBusy = false;
       foeDrawPending = false;
+      foeArriveHide = false;
+      foeArriveGen += 1;
       foeDeckEmpty = false;
       if (foeLeaveGhost && foeLeaveGhost.ghost) foeLeaveGhost.ghost.remove();
       foeLeaveGhost = null;
@@ -10939,23 +10943,32 @@
       foeLeaveGhost = makeFlyGhost(el);
     }
 
-    function showFoePlay(play) {
-      if (!play) return;
-      const wrap = play.closest(".play-card");
-      if (wrap) wrap.classList.remove("await-draw");
+    function showFoePlay(play, gen) {
+      if (gen != null && gen !== foeArriveGen) return;
+      foeArriveHide = false;
+      const wraps = document.querySelectorAll(".play-side.foe .play-card.await-draw");
+      if (wraps.length) wraps.forEach((wrap) => wrap.classList.remove("await-draw"));
+      else if (play) {
+        const wrap = play.closest(".play-card");
+        if (wrap) wrap.classList.remove("await-draw");
+      }
     }
 
     function flyFoeFromDeck(play) {
-      if (!play || !play.isConnected) return;
+      const gen = foeArriveGen;
+      if (!play || !play.isConnected) {
+        showFoePlay(play, gen);
+        return;
+      }
       const deck = document.querySelector(".foe-pile .pile-card");
       if (!deck) {
-        showFoePlay(play);
+        showFoePlay(play, gen);
         return;
       }
       const from = stageFrameOf(deck);
       const to = stageFrameOf(play);
       if (!from.w || !to.w) {
-        showFoePlay(play);
+        showFoePlay(play, gen);
         return;
       }
       const ghost = play.cloneNode(true);
@@ -10978,7 +10991,7 @@
         if (ghost.dataset.landed) return;
         ghost.dataset.landed = "1";
         ghost.remove();
-        showFoePlay(play);
+        showFoePlay(play, gen);
       };
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -11344,6 +11357,8 @@
       foePlan = [];
       intentShown = false;
       foeDrawPending = false;
+      foeArriveHide = false;
+      foeArriveGen += 1;
       foeAngerShow = false;
       render();
       timer = setTimeout(finishResolve, 720);
@@ -11353,6 +11368,8 @@
       if (phase !== "player" || outcome) return;
       foeAngerShow = false;
       intentShown = true;
+      foeArriveGen += 1;
+      foeArriveHide = true;
       foeDrawPending = true;
       render();
     }
@@ -11394,15 +11411,11 @@
       if (!foePlan.length) buildFoePlan();
       foeAngerShow = foePlan.some((step) => step.anger);
       intentShown = foePlan.length > 0;
-      foeDrawPending = true;
+      foeArriveGen += 1;
+      foeArriveHide = foePlan.length > 0;
+      foeDrawPending = foeArriveHide;
       foeRageBusy = false;
       render();
-      const gen = foeActGen;
-      timer = setTimeout(() => {
-        if (!foeActLive(gen)) return;
-        foeDrawPending = false;
-        render();
-      }, 700);
     }
 
     function finishResolve() {
@@ -14645,7 +14658,7 @@
       const foeCards = phase === "intro" ? "" : foePlan.map((step, i) => {
         const face = planCardFace(i);
         const hot = resolving && active === inPlay.length && i === 0;
-        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeDrawPending && !hot }) : "";
+        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !hot }) : "";
       }).join("");
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
