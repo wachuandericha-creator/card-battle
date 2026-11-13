@@ -1729,8 +1729,8 @@
       position: relative;
       left: auto;
       top: auto;
-      width: max-content;
-      max-width: min(352px, 100%);
+      width: 100%;
+      max-width: none;
       max-height: none;
       pointer-events: none;
     }
@@ -6393,7 +6393,7 @@
       left: auto;
       top: auto;
       width: max-content;
-      max-width: min(352px, 100%);
+      max-width: 100%;
       max-height: none;
       overflow: hidden;
       pointer-events: none;
@@ -16090,10 +16090,6 @@
     }
 
     function renderFloor() {
-      if (floorPhase === "paths" && route[0] === "出来事:祝福" && floorNo() === 0) {
-        beginOpeningFight();
-        return;
-      }
       if (floorPhase === "paths") {
         if (player && enemy) renderBattle();
         else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`);
@@ -17480,6 +17476,43 @@
       }[id] || "";
     }
 
+    function pathIdForNode(node) {
+      const name = String(node || "");
+      if (!name) return "";
+      if (name === DUNGEON.boss || !isEventNode(name)) return "straight";
+      return {
+        "出来事:祝福": "bless",
+        "出来事:キャンプ": "camp",
+        "出来事:探索": "search",
+        "出来事:お店": "shop",
+        "出来事:物乞い": "beggar",
+        "出来事:ジョブ": "job",
+        "出来事:修行": "train",
+        "出来事:鍛冶屋": "smith",
+      }[name] || "";
+    }
+
+    function pathAlreadyAtNext(id) {
+      const at = battleIndex + 1;
+      const node = route[at];
+      if (!node) return false;
+      if (id === "straight") return !isEventNode(node);
+      return pathNode(id) === node;
+    }
+
+    function offerPathChoice(paths) {
+      rewardPaths = (paths || []).filter((id) => PATHS[id]);
+      if (!rewardPaths.length) return false;
+      rewardStep = "paths";
+      if (screen !== "battle") {
+        floorPhase = "paths";
+        screen = "floor";
+      }
+      persistSave(true);
+      render();
+      return true;
+    }
+
     function isBossFight() {
       return bossNow();
     }
@@ -17808,21 +17841,12 @@
       });
     }
 
-    function beginOpeningFight() {
-      rewardStep = "done";
-      floorPhase = "show";
-      if (Array.isArray(pathBag)) removeBagOne("straight");
-      const next = route[battleIndex + 1];
-      if (!next || isEventNode(next)) placeNext(dungeonEnemy());
-      advance(1);
-    }
-
     function skipToNextPlaced() {
       let next = battleIndex + 1;
       while (next < route.length && !route[next]) next += 1;
-      rewardPaths = [];
-      rewardStep = "done";
       if (next >= route.length) {
+        rewardPaths = [];
+        rewardStep = "done";
         clearReward();
         cleared = true;
         endRun(true);
@@ -17830,6 +17854,10 @@
         render();
         return;
       }
+      const pid = pathIdForNode(route[next]);
+      if (pid && offerPathChoice([pid])) return;
+      rewardPaths = [];
+      rewardStep = "done";
       const hp = player ? player.hp : floorHp;
       outcome = null;
       beggarBattle = false;
@@ -17840,6 +17868,8 @@
     function offerPathsOrAdvance() {
       const next = battleIndex + 1;
       if (next < route.length && route[next]) {
+        const pid = pathIdForNode(route[next]);
+        if (pid && offerPathChoice([pid])) return;
         rewardStep = "done";
         advance(1);
         return;
@@ -17864,7 +17894,7 @@
 
     function finishEvent() {
       if (route[0] === "出来事:祝福" && floorNo() === 0) {
-        beginOpeningFight();
+        offerPathChoice(["straight"]);
         return;
       }
       offerPathsOrAdvance();
@@ -18090,11 +18120,13 @@
         return;
       }
       if (id === "straight") {
-        beginPathFlight(id, () => placeNext(dungeonEnemy()), 1);
+        const place = pathAlreadyAtNext(id) ? null : () => placeNext(dungeonEnemy());
+        beginPathFlight(id, place, 1);
         return;
       }
       const node = pathNode(id);
-      beginPathFlight(id, () => placeNext(node || dungeonEnemy()), 1);
+      const place = pathAlreadyAtNext(id) ? null : () => placeNext(node || dungeonEnemy());
+      beginPathFlight(id, place, 1);
     }
 
     function offerTone(card) {
