@@ -15768,7 +15768,7 @@
     }
 
     function renderFloor() {
-      if (floorPhase === "paths" && !Array.isArray(pathBag) && route[0] === "出来事:祝福" && floorNo() === 0) {
+      if (floorPhase === "paths" && route[0] === "出来事:祝福" && floorNo() === 0) {
         beginOpeningFight();
         return;
       }
@@ -16024,6 +16024,9 @@
       ["style-yellow", "スキル", "frame-metal-yellow.png?v=7"],
       ["style-green", "アイテム", "frame-metal-green.png?v=5"],
       ["style-navy", "紺", "frame-metal-navy.png?v=4"],
+      ["style-star1", "★", "frame-spike-copper.png?v=3"],
+      ["style-star2", "★★", "frame-spike-silver.png?v=3"],
+      ["style-star3", "★★★", "frame-spike-gold.png?v=3"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -17491,6 +17494,7 @@
     function beginOpeningFight() {
       rewardStep = "done";
       floorPhase = "show";
+      if (Array.isArray(pathBag)) removeBagOne("straight");
       const next = route[battleIndex + 1];
       if (!next || isEventNode(next)) placeNext(dungeonEnemy());
       advance(1);
@@ -17542,7 +17546,7 @@
     }
 
     function finishEvent() {
-      if (!Array.isArray(pathBag) && route[0] === "出来事:祝福" && floorNo() === 0) {
+      if (route[0] === "出来事:祝福" && floorNo() === 0) {
         beginOpeningFight();
         return;
       }
