@@ -5867,6 +5867,18 @@
       width: 100%;
       pointer-events: auto;
     }
+    .title-actions button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .title-actions .btn-ico {
+      width: 1.05em;
+      height: 1.05em;
+      flex: none;
+      display: block;
+    }
     .title-actions > button.primary {
       width: 100%;
       min-width: 0;
@@ -5874,8 +5886,8 @@
       padding: 20px 28px;
       font-size: 36px;
       font-weight: 800;
-      letter-spacing: 0.28em;
-      text-indent: 0.28em;
+      letter-spacing: 0;
+      text-indent: 0;
       border-radius: 999px;
       border: 1px solid #ffe6a8;
       background: linear-gradient(180deg, #ffe9ae 0%, #e4b15a 48%, #b9842a 100%);
@@ -5884,6 +5896,8 @@
       box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.22), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.75);
       transition: transform 0.16s ease, box-shadow 0.16s ease;
     }
+    .title-actions > button.primary .btn-label { letter-spacing: 0.28em; text-indent: 0.28em; }
+    .title-actions > button.primary .btn-ico { transform: rotate(28deg); }
     .title-actions > button.primary:hover { transform: translateY(-2px); box-shadow: 0 0 0 3px rgba(255, 230, 170, 0.45), 0 0 32px rgba(255, 200, 110, 0.55), 0 14px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.8); }
     .title-sub-actions {
       display: flex;
@@ -5918,7 +5932,7 @@
       font-weight: 700;
       box-shadow: 0 0 14px rgba(120, 220, 120, 0.45), inset 0 0 10px rgba(160, 255, 160, 0.18);
     }
-    .title-sub-actions button.logged-in::before { content: "● "; color: #9bff94; }
+    .title-sub-actions button.logged-in .btn-ico { color: #9bff94; }
     .title-sub-actions button.logged-in:hover:not(:disabled) { border-color: #c6ffc0; background: linear-gradient(180deg, rgba(48, 110, 52, 0.92), rgba(22, 62, 28, 0.92)); }
     /* 演出確認（タイトルの「演出」から。戦闘中は開かない） */
     .fx-lab {
@@ -14541,9 +14555,24 @@
       return `<div class="mana-read${temp ? " has-temp" : ""}" aria-label="マナ残り ${total}${temp ? `。持ち越し ${temp}` : ""}"><b>${total}</b>${temp ? `<i class="mana-temp">+${temp}</i>` : ""}</div>`;
     }
 
-    function menuButton(label, action, primary, disabled, extraClass) {
+    function titleIcon(kind) {
+      const svg = (body) => `<svg class="btn-ico" viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
+      if (kind === "sword") return svg(`<path fill="currentColor" d="M11.1.6h1.8l.6 6.4h3.4v2H13.6l-.4 8.2h3.6v2h-3.6V23h-1.8v-3.8H7.8v-2h3.6l-.4-8.2H7.6v-2h3.1z"/>`);
+      if (kind === "phone") return svg(`<rect x="7" y="2" width="10" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="18.2" r="1.1" fill="currentColor"/>`);
+      if (kind === "monitor") return svg(`<rect x="3" y="4" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 20h8M12 16v4"/>`);
+      if (kind === "expand") return svg(`<path fill="currentColor" d="M3 3h7v2.6H5.6V10H3V3zm11 0h7v7h-2.6V5.6H14V3zM3 14h2.6v4.4H10V21H3v-7zm16 0h2v7h-7v-2.6h4.4V14z"/>`);
+      if (kind === "key") return svg(`<circle cx="8" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 12h9.2M16.2 12v3.2M19.2 12v2.2"/>`);
+      if (kind === "cards") return svg(`<rect x="8" y="3" width="12" height="16" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="6" width="12" height="16" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/>`);
+      if (kind === "frame") return svg(`<rect x="3" y="4" width="18" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="9" r="1.3" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 15.5 8 11l3 2.6 3.5-4.2L21 16"/>`);
+      if (kind === "dice") return svg(`<rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.35" fill="currentColor"/><circle cx="12" cy="12" r="1.35" fill="currentColor"/><circle cx="16" cy="16" r="1.35" fill="currentColor"/>`);
+      if (kind === "spark") return svg(`<path fill="currentColor" d="M12 1.4 13.7 8.2 20.6 10 13.7 11.8 12 18.6 10.3 11.8 3.4 10 10.3 8.2z"/><path fill="currentColor" d="M18.5 15.2 19.2 17.6 21.6 18.3 19.2 19 18.5 21.4 17.8 19 15.4 18.3 17.8 17.6z"/>`);
+      return svg(`<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2.1" fill="currentColor"/><circle cx="15" cy="12" r="2.1" fill="currentColor"/><circle cx="8" cy="17" r="2.1" fill="currentColor"/>`);
+    }
+
+    function menuButton(label, action, primary, disabled, extraClass, icon) {
       const cls = [primary ? "primary" : "", extraClass || ""].filter(Boolean).join(" ");
-      return `<button type="button" class="${cls}" data-action="${action}" ${disabled ? "disabled" : ""}>${esc(label)}</button>`;
+      const body = icon ? `${icon}<span class="btn-label">${esc(label)}</span>` : esc(label);
+      return `<button type="button" class="${cls}" data-action="${action}" ${disabled ? "disabled" : ""}>${body}</button>`;
     }
 
     function fullscreenActive() {
@@ -14570,7 +14599,9 @@
       root.querySelectorAll('[data-action="fullscreen"]').forEach((btn) => {
         btn.hidden = on;
         if (!on) {
-          btn.textContent = "全画面";
+          const label = btn.querySelector(".btn-label");
+          if (label) label.textContent = "全画面";
+          else btn.textContent = "全画面";
           btn.setAttribute("aria-pressed", "false");
         }
       });
@@ -14843,16 +14874,16 @@
               </div>
             </div>
             <div class="title-actions">
-            ${menuButton("攻略する", "new", true)}
+            ${menuButton("攻略する", "new", true, false, "", titleIcon("sword"))}
             <div class="title-sub-actions">
-              ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play")}
-              ${menuButton(fullscreenLabel(), "fullscreen", false, false, "pc-only")}
-              ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
-              ${menuButton("カードリスト", "album")}
-              ${menuButton("設定資料", "sheet")}
-              ${menuButton("確率", "odds")}
-              ${menuButton("演出", "fx-lab")}
-              ${menuButton("オプション", "settings")}
+              ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play", false, false, "", titleIcon(iphonePlay ? "monitor" : "phone"))}
+              ${menuButton(fullscreenLabel(), "fullscreen", false, false, "pc-only", titleIcon("expand"))}
+              ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord, "", titleIcon("key"))}
+              ${menuButton("カードリスト", "album", false, false, "", titleIcon("cards"))}
+              ${menuButton("設定資料", "sheet", false, false, "", titleIcon("frame"))}
+              ${menuButton("確率", "odds", false, false, "", titleIcon("dice"))}
+              ${menuButton("演出", "fx-lab", false, false, "", titleIcon("spark"))}
+              ${menuButton("オプション", "settings", false, false, "", titleIcon("sliders"))}
               </div>
             </div>
           </div>
