@@ -5143,13 +5143,27 @@
       padding-top: max(20px, env(safe-area-inset-top));
       padding-bottom: max(28px, env(safe-area-inset-bottom));
     }
-    .odds-screen { align-items: stretch; text-align: left; }
+    .odds-screen { align-items: stretch; text-align: left; gap: 16px; width: min(980px, 100%); }
     .odds-screen h1 { text-align: center; }
-    .odds-screen h2 { margin: 22px 0 8px; font-size: 22px; letter-spacing: 0.08em; }
-    .odds-screen p { margin: 0 0 8px; line-height: 1.55; }
-    .odds-screen table { width: min(920px, 100%); border-collapse: collapse; margin: 0 0 8px; }
-    .odds-screen th, .odds-screen td { border-bottom: 1px solid rgba(212, 168, 74, 0.35); padding: 6px 10px; text-align: left; vertical-align: top; }
+    .menu.odds-screen p,
+    .menu.odds-screen li { margin: 0; color: #fff6e4; font-size: 18px; font-weight: 500; line-height: 1.55; text-align: left; }
+    .odds-block {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 16px 16px;
+      border: 1px solid rgba(212, 168, 74, 0.35);
+      border-radius: 14px;
+      background: rgba(12, 8, 6, 0.45);
+    }
+    .odds-screen h2 { margin: 0 0 10px; font-size: 22px; letter-spacing: 0.08em; text-align: left; }
+    .odds-screen h3 { margin: 12px 0 6px; font-size: 16px; letter-spacing: 0.06em; color: #ffe6a8; font-weight: 700; }
+    .odds-screen ul { margin: 0 0 10px; padding-left: 1.2em; }
+    .odds-screen li + li { margin-top: 4px; }
+    .odds-screen table { width: 100%; border-collapse: collapse; margin: 0 0 10px; }
+    .odds-screen th, .odds-screen td { border-bottom: 1px solid rgba(212, 168, 74, 0.35); padding: 8px 10px; text-align: left; vertical-align: top; font-size: 17px; font-weight: 500; }
     .odds-screen th { color: #ffe6a8; font-weight: 700; }
+    .odds-names { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+    .odds-names span { padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(212, 168, 74, 0.4); background: rgba(0, 0, 0, 0.25); font-size: 16px; }
     /* タイトル：絵とボタンで画面を使い、ボタンは大きく離して押しやすく */
     .title-screen {
       position: relative;
@@ -7274,6 +7288,181 @@
     }
     .cast-screen.character-focus .stat-chips .chip b { font-size: 22px; }
     .cast-screen.character-focus .stat-chips .chip .k { font-size: 13px; letter-spacing: 0.04em; }
+    /* ジョブ選択はタイトルと同じ割り。左は絵と大きなボタン。右は情報の板 */
+    .cast-screen.character-focus {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(520px, 0.92fr);
+      grid-template-rows: minmax(0, 1fr);
+      align-items: stretch;
+      justify-items: stretch;
+      gap: 16px;
+      width: 100%;
+      height: 100%;
+      padding: 16px 16px 18px;
+      box-sizing: border-box;
+    }
+    html.stage-fit:not(.iphone-play) .cast-screen.character-focus {
+      padding: 56px 64px 48px;
+    }
+    .cast-screen.character-focus .cast-play {
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 14px;
+    }
+    .cast-screen.character-focus .cast-stage {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+    .cast-screen.character-focus .cast-hero-slot {
+      position: absolute;
+      inset: 0;
+    }
+    .cast-screen.character-focus button.cast-hero-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border-radius: 22px;
+      cursor: pointer;
+      appearance: none;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+    }
+    .cast-screen.character-focus button.cast-hero-frame.locked {
+      box-shadow:
+        0 0 0 3px #ffe08a,
+        0 0 28px rgba(255, 196, 110, 0.55),
+        0 14px 28px rgba(0, 0, 0, 0.45);
+    }
+    .cast-screen.character-focus .cast-title {
+      position: absolute;
+      z-index: 3;
+      left: 0;
+      right: 0;
+      top: 0;
+      width: 100%;
+      margin: 0;
+      padding: 16px 18px 52px;
+      pointer-events: none;
+      justify-content: center;
+      gap: 14px;
+      font-size: clamp(22px, 2.1cqw, 36px);
+      letter-spacing: 0.08em;
+      background: linear-gradient(180deg, rgba(6, 4, 3, 0.84) 0%, rgba(6, 4, 3, 0.42) 62%, transparent 100%);
+      filter: drop-shadow(0 2px 0 #6a4a16);
+    }
+    .cast-screen.character-focus .cast-title.fade-sandwich > .cast-title-name {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    .cast-screen.character-focus .cast-title.fade-sandwich > .fade-line {
+      flex: 1 1 auto;
+      width: auto;
+      max-width: none;
+      min-width: 20px;
+      height: 2px;
+    }
+    .cast-screen.character-focus .cast-roster {
+      position: static;
+      width: 100%;
+      margin: 0;
+      justify-content: stretch;
+    }
+    .cast-screen.character-focus .cast-token.mini {
+      flex: 1 1 auto;
+      min-height: 128px;
+      padding: 10px 18px;
+      flex-direction: row;
+      justify-content: center;
+      gap: 18px;
+      cursor: pointer;
+    }
+    .cast-screen.character-focus .cast-token.mini img {
+      width: 112px;
+      height: 112px;
+    }
+    .cast-screen.character-focus .cast-token.mini span {
+      font-size: clamp(26px, 2.2cqw, 34px);
+      letter-spacing: 0.16em;
+    }
+    .cast-screen.character-focus .cast-actions {
+      position: static;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      transform: none;
+      width: 100%;
+      height: auto;
+      z-index: 2;
+    }
+    .cast-screen.character-focus .cast-actions > button.cast-start {
+      width: 100%;
+      height: auto;
+      min-height: 96px;
+      padding: 16px 28px;
+      font-size: clamp(28px, 2.4cqw, 36px);
+      letter-spacing: 0.18em;
+    }
+    .cast-screen.character-focus .cast-board {
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(228, 177, 90, 0.9);
+      background:
+        radial-gradient(120% 55% at 50% 0%, rgba(228, 177, 90, 0.2), transparent 58%),
+        linear-gradient(180deg, #2c2118 0%, #1a1310 42%, #100c0a 100%);
+      box-shadow:
+        0 0 0 3px #15100d,
+        0 0 0 4px rgba(228, 177, 90, 0.55),
+        0 22px 44px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 236, 190, 0.22);
+      color: #fff6e4;
+    }
+    .cast-screen.character-focus .cast-board .cast-side,
+    .cast-screen.character-focus .cast-board .cast-keys {
+      position: relative;
+      width: 100%;
+      max-width: none;
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+    .cast-screen.character-focus .cast-board .cast-side .cast-plaque,
+    .cast-screen.character-focus .cast-board .cast-keys {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+      background: transparent;
+      backdrop-filter: none;
+      border: 0;
+      box-shadow: none;
+    }
+    .cast-screen.character-focus .cast-board .cast-deck {
+      width: 100%;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .cast-screen.character-focus .cast-board .cast-deck .deck-card,
+    .cast-screen.character-focus .cast-board .cast-deck .deck-card:hover,
+    .cast-screen.character-focus .cast-board .cast-deck .card,
+    .cast-screen.character-focus .cast-board .cast-deck .card.preview {
+      width: 100%;
+      max-width: none;
+    }
     .cast-screen.dungeon-screen {
       position: relative;
       width: 100%;
@@ -7648,7 +7837,13 @@
         gap: 8px;
       }
       html:not(.stage-fit) .dungeon-col { min-height: 0; height: 100%; }
-      html:not(.stage-fit) .cast-screen.character-focus { padding-left: 16px; padding-right: 16px; }
+      html:not(.stage-fit) .cast-screen.character-focus {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(280px, 46cqh) auto;
+        overflow: auto;
+        padding: 12px;
+      }
+      html:not(.stage-fit) .cast-screen.character-focus .cast-play { min-height: 280px; }
       html:not(.stage-fit) .cast-screen.character-focus .cast-main {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -13700,19 +13895,28 @@
       return (PATHS[id] && PATHS[id].name) || id;
     }
 
+    function oddsChips(names) {
+      return `<div class="odds-names">${names.map((name) => `<span>${esc(name)}</span>`).join("")}</div>`;
+    }
+
     function renderOdds() {
-      const spanRows = DUNGEON_LIST.map((dungeon) => {
-        const spans = bagSpans(dungeon.name, dungeon.floors);
+      const spanRows = [];
+      for (const dungeon of DUNGEON_LIST) {
         const bosses = bossStops(dungeon.name, dungeon.floors);
-        const rests = bosses.filter((n) => n > 1).map((n) => n - 1);
-        const bags = spans.map((span) => {
+        const rests = bosses.filter((n) => n > 1).map((n) => `${n - 1}階`).join("、");
+        const bossLabel = bosses.map((n) => `${n}階`).join("、");
+        bagSpans(dungeon.name, dungeon.floors).forEach((span) => {
           const size = Math.max(0, span.to - span.from + 1);
-          return `${span.from}〜${span.to}階 ${size}枠　戦闘${span.combat[0]}〜${span.combat[1]}`;
-        }).join("／");
-        return [dungeon.name, bags, `休憩 ${rests.join("・")}`, `ボス ${bosses.join("・")}`];
-      });
+          spanRows.push([
+            dungeon.name,
+            `${span.from}〜${span.to}階（${size}枠）`,
+            `${span.combat[0]}〜${span.combat[1]}枚`,
+            rests,
+            bossLabel,
+          ]);
+        });
+      }
       const otherShare = pct(1 / PATH_FILL.length);
-      const otherNames = PATH_FILL.map(pathFillLabel).join("、");
       const extraRows = ["なし", "装備", "アイテム", "エンチャント"].map((name) => {
         const key = name === "なし" ? "none" : name === "装備" ? "gear" : name === "アイテム" ? "item" : "enchant";
         const road = key === "enchant" ? 1 - VICTORY_EXTRA.road.none - VICTORY_EXTRA.road.gear - VICTORY_EXTRA.road.item : VICTORY_EXTRA.road[key];
@@ -13729,25 +13933,69 @@
           return (Number(def.stars) || 1) >= 2;
         });
       const pools = [1, 2].map((tier) => [tier === 1 ? "前半" : "後半", (DUNGEON.pools[tier] || []).join("、") || "なし"]);
+      const halfCave = 14;
       root.innerHTML = `
         <div class="menu odds-screen">
           <h1>確率</h1>
-          <p>攻略中の抽選と同じ数字。残りの枚数は、プレイ中の画面には出さない。</p>
-          <h2>道の袋</h2>
-          <p>0階は祝福で固定。ボスとその直前の休憩も固定で、袋には入れない。袋の戦闘枚数は、書いた範囲から一様に決める。残りの枠は、次の${PATH_FILL.length}種がそれぞれ${otherShare}。同じ種類が袋に複数入ることがある。出すときは残りから、名前が重ならないように最大3つ。直前の階と同じ名前は出さない。</p>
-          ${oddsTable(["ダンジョン", "袋", "固定の休憩", "固定のボス"], spanRows)}
-          <p>戦闘以外：${otherNames}</p>
-          <h2>戦闘の相手</h2>
-          <p>1階はスライム。洞窟は14階まで前半、15階から後半。古城と深淵は、最大階の半分まで前半。各枠の中は等確率。ボスは出ない。</p>
-          ${oddsTable(["区分", "候補"], pools)}
-          <h2>勝利の追加</h2>
-          <p>★と、カード3枚（共通・戦士・その敵のカードから1枚ずつ。足りないときは全体から）に加えて、追加を1回だけ振る。装備とアイテムとエンチャントは同時に出さない。</p>
-          ${oddsTable(["追加", "道中", "ボス"], extraRows)}
-          <p>装備は装備一覧から等確率。アイテムは${EXTRA_ITEM_NAMES.join("、")}から等確率。エンチャントは火・水・光が等確率で、まだ付いていないカード名から等確率。</p>
-          <h2>祝福</h2>
-          <p>${BLESS_KINDS.map((kind) => blessNames[kind]).join("、")}の${BLESS_KINDS.length}種から、重複なしで3つ。各種が候補に入る割合は${pct(3 / BLESS_KINDS.length)}。装備は★2以上（${blessGear.join("、")}）。カードは★2以上（${blessCards.join("、")}）。</p>
-          <h2>遭遇・探索・修行・お店</h2>
-          <p>遭遇は物乞い${pct(ENCOUNTER_BEGGAR)}、祝福${pct(1 - ENCOUNTER_BEGGAR)}。探索の装備は装備一覧から等確率。修行は、デッキで一番多いビルドの戦士カードから等確率。無ければ戦士カード全部から等確率。お店はカード2枚と装備2つ。カードは戦士の報酬から、装備は装備一覧から、それぞれ等確率。</p>
+          <p>プレイ中の抽選と同じです。袋の残り枚数は、道を選ぶ画面には出ません。</p>
+          <section class="odds-block">
+            <h2>道</h2>
+            <ul>
+              <li>0階は祝福。袋には入りません。</li>
+              <li>休憩とボスは下の表で固定です。袋には入りません。</li>
+              <li>戦闘の枚数は、表の範囲のどれも同じ確率です。</li>
+              <li>残りの枠は、下の${PATH_FILL.length}種がそれぞれ${otherShare}です。同じ種類が何枠も入ることがあります。</li>
+              <li>選ぶときは、違う名前を最大3つ出します。直前と同じ名前は出ません。</li>
+            </ul>
+            ${oddsTable(["ダンジョン", "ランダムな階", "戦闘の枚数", "休憩", "ボス"], spanRows)}
+            <h3>戦闘以外（各${otherShare}）</h3>
+            ${oddsChips(PATH_FILL.map(pathFillLabel))}
+          </section>
+          <section class="odds-block">
+            <h2>戦闘の相手</h2>
+            <ul>
+              <li>1階は必ずスライムです。</li>
+              <li>洞窟は2〜${halfCave}階が前半、${halfCave + 1}階から後半です。</li>
+              <li>古城と深淵は、最大階の半分まで前半、そのあと後半です。</li>
+              <li>前半・後半の中では、どれも同じ確率です。ボスは出ません。</li>
+            </ul>
+            ${oddsTable(["時期", "出る敵"], pools)}
+          </section>
+          <section class="odds-block">
+            <h2>勝利</h2>
+            <ul>
+              <li>★と、カード3枚をもらいます。</li>
+              <li>カードは共通・戦士・その敵から1枚ずつです。足りない分は全体から補います。</li>
+              <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
+            </ul>
+            ${oddsTable(["追加", "道中", "ボス"], extraRows)}
+            <ul>
+              <li>装備は、装備一覧から同じ確率です。</li>
+              <li>アイテムは、${EXTRA_ITEM_NAMES.join("、")}から同じ確率です。</li>
+              <li>エンチャントは、火・水・光が同じ確率です。まだ付いていないカード名から選びます。</li>
+            </ul>
+          </section>
+          <section class="odds-block">
+            <h2>祝福</h2>
+            <ul>
+              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。</li>
+              <li>それぞれの種類が出る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
+            </ul>
+            ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
+            <h3>装備（★2以上）</h3>
+            ${oddsChips(blessGear)}
+            <h3>カード（★2以上）</h3>
+            ${oddsChips(blessCards)}
+          </section>
+          <section class="odds-block">
+            <h2>そのほか</h2>
+            ${oddsTable(["出来事", "出るもの"], [
+              ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
+              ["探索", "装備を1つ。装備一覧から同じ確率"],
+              ["修行", "いちばん多いビルドのカードを1枚。同じ確率。無ければ戦士のカード全部"],
+              ["お店", "カード2枚と装備2つ。カードは戦士の報酬、装備は装備一覧。どれも同じ確率"],
+            ])}
+          </section>
           ${menuButton("タイトルへ", "title")}
         </div>`;
     }
@@ -13846,9 +14094,6 @@
         ? `<div class="cast-blurb-wrap">${castBlurbParagraphs(item.blurb)}</div>`
         : "";
       return `
-        <div class="cast-hero-frame">
-          <img class="cast-hero-art" src="${item.action}" alt="${esc(item.name)}の一枚絵">
-        </div>
         <div class="cast-side">
           <div class="cast-plaque">
             <h1><span>${esc(item.name)}</span></h1>
@@ -13902,8 +14147,10 @@
       if (name !== castShown) {
         castShown = name;
         const item = castByName(name);
-        const main = root.querySelector(".cast-main");
-        if (main) main.innerHTML = castMainMarkup(item);
+        const hero = root.querySelector(".cast-hero-slot");
+        const board = root.querySelector(".cast-board");
+        if (hero) hero.innerHTML = `<button type="button" class="cast-hero-frame" data-action="cast-token" data-cast="${esc(item.name)}" aria-label="${esc(item.name)}"><img class="cast-hero-art" src="${item.action}" alt="${esc(item.name)}の一枚絵"></button>`;
+        if (board) board.innerHTML = castMainMarkup(item);
       }
       const jobPick = root.querySelector(".cast-screen.character-focus");
       root.querySelectorAll("[data-cast]").forEach((token) => {
@@ -14089,14 +14336,17 @@
         </button>`).join("");
       castShown = "";
       castLit = false;
+      const jobTitle = fadeSandwichMarkup(`<span class="cast-title-name">挑戦するキャラを選んでください</span>`, { tag: "h1", className: "cast-title" });
       root.innerHTML = `
         <div class="cast-screen character-focus">
-          <h1 class="cast-title">挑戦するキャラを選んでください</h1>
-          <div class="cast-main"></div>
-          <div class="cast-roster many">${tokens}</div>
-          <div class="cast-actions">
-            <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
+          <div class="cast-play">
+            <div class="cast-stage">${jobTitle}<div class="cast-hero-slot"></div></div>
+            <div class="cast-roster many">${tokens}</div>
+            <div class="cast-actions">
+              <button type="button" class="cast-start" data-action="open-dungeon">このキャラに決めた！</button>
+            </div>
           </div>
+          <div class="cast-board"></div>
         </div>`;
       paintCast();
       bindCastHover();
@@ -16413,14 +16663,15 @@
         finish();
         return;
       }
+      dest.classList.add("path-inbound");
       const face = dest.querySelector("img, i") || dest;
       const to = stageFrameOf(face);
       const from = shot.frame;
       if (!from.w || !from.h || !to.w || !to.h) {
+        dest.classList.remove("path-inbound");
         finish();
         return;
       }
-      dest.classList.add("path-inbound");
       const ghost = document.createElement("div");
       ghost.className = "path-flyer";
       ghost.setAttribute("aria-hidden", "true");
