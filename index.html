@@ -311,6 +311,7 @@
     .road-name {
       width: 100%;
       min-width: 0;
+      min-height: 1.15em;
       overflow: hidden;
       color: #fff6e4;
       font-size: 19px;
@@ -9240,19 +9241,19 @@
       const blessing = route[0] === "出来事:祝福";
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const known = !!node && (state !== "ahead" || roadFixed(node, i) || roadPlacedAhead(i));
-        const face = !node
-          ? { mark: state === "ahead" ? "？" : "—", label: "" }
-          : (known ? roadFace(node) : { mark: "？", label: "" });
+        const visited = state !== "ahead";
+        const known = !!node && (visited || roadFixed(node, i) || roadPlacedAhead(i));
+        const face = known ? roadFace(node) : { label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
-          : `<i aria-label="${esc(floor)} 未定">${esc(face.mark || "？")}</i>`;
+          : `<i aria-hidden="true"></i>`;
         const capFloor = `<span class="road-floor">${floor}</span>`;
-        const fixed = roadFixed(node, i);
+        const fixed = !!node && roadFixed(node, i);
         const tone = known ? (fixed ? "fight" : roadTone(node)) : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}<span class="road-name">${esc(face.label || "")}</span></span></li>`;
+        const name = visited ? esc(face.label || "") : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}<span class="road-name">${name}</span></span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
