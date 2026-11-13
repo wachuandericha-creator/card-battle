@@ -2056,30 +2056,14 @@
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
     .album-top {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
       gap: 14px;
       margin: 0 0 12px;
     }
     .album-top h3 { margin: 0 0 8px; text-align: center; font-size: 18px; letter-spacing: 0.12em; }
-    .album-top .album-backs { max-width: 420px; }
-    .album-top .album-backs .ref-grid { margin: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .style-genres {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px 10px;
-      margin: 0;
-    }
-    .style-genres h4 {
-      margin: 0 0 6px;
-      text-align: center;
-      font-size: 14px;
-      letter-spacing: 0.08em;
-    }
-    .style-genres .style-col { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-    .style-genres figure { margin: 0; max-width: none; }
-    .style-genres figcaption { text-align: center; font-size: 12px; }
-    .style-genres img.style-master { width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: fill; display: block; }
+    .album-top .ref-grid,
+    .album-top .blank-grid { margin: 0; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); }
     .album-top .card.preview { width: 100%; }
     .album-screen .panel {
       margin-left: 0;
@@ -9779,7 +9763,7 @@
       },
       {
         name: "ゴブリン",
-        image: "enemy-goblin.png?v=13",
+        image: "enemy-goblin.png?v=14",
         tier: 1,
         rank: "雑魚",
         stature: "small",
@@ -10961,7 +10945,7 @@
     // 絵の余白。見える体の高さを自分に合わせるときに使う。
     const FOE_INK = {
       "enemy-slime.png": { w: 864, h: 1152, top: 88, bottom: 64, left: 29, right: 857 },
-      "enemy-goblin.png": { w: 864, h: 1152, top: 50, bottom: 41, left: 87, right: 735 },
+      "enemy-goblin.png": { w: 864, h: 1152, top: 50, bottom: 41, left: 128, right: 776 },
       "enemy-kobold.png": { w: 864, h: 1152, top: 27, bottom: 15, left: 144, right: 704 },
       "enemy-minotaur.png": { w: 864, h: 1152, top: 50, bottom: 75, left: 67, right: 853 },
       "enemy-dragon.png": { w: 864, h: 1152, top: 120, bottom: 150, left: 27, right: 863 },
@@ -16430,7 +16414,7 @@
             <h3>敵</h3>
             <div class="ref-grid">
               ${sheetFig("enemy-slime.png?v=9", "スライム", "enemy-ref")}
-              ${sheetFig("enemy-goblin.png?v=13", "ゴブリン", "enemy-ref")}
+              ${sheetFig("enemy-goblin.png?v=14", "ゴブリン", "enemy-ref")}
               ${sheetFig("enemy-kobold.png?v=6", "コボルド", "enemy-ref")}
               ${sheetFig("enemy-troll.png?v=7", "トロール", "enemy-ref")}
               ${sheetFig("enemy-minotaur.png?v=11", "ミノタウロス", "enemy-ref")}
@@ -16512,8 +16496,8 @@
             <h3>タイトル</h3>
             ${sheetBanner("title-key.jpg?v=2", "タイトル", "左が戦士、右がモンスター軍団。")}
             <h3>カードスタイル</h3>
-            <p class="album-meta">ジャンルごとに5列。同じ形の棘</p>
-            ${cardStyleColumns("sheet")}
+            <p class="album-meta">同じ形の棘。銅・銀・金・黒と、赤・青・緑・黄・白・紺。位置は一致</p>
+            <div class="ref-grid blank-grid">${CARD_STYLE.map((item) => sheetFig(item[2], item[1], "style-master")).join("")}</div>
           </div>
           ${sheetZoomSide()}
         </div>`;
@@ -16566,9 +16550,9 @@
       const albumTop = albumTab === "未採用" ? "" : `<div class="album-top">
               <section>
                 <h3>カードスタイル</h3>
-                ${cardStyleColumns("album")}
+                <div class="ref-grid blank-grid">${cardStyleSheet()}</div>
               </section>
-              <section class="album-backs">
+              <section>
                 <h3>裏面</h3>
                 <div class="ref-grid">${albumFaceSheet()}</div>
               </section>
@@ -17006,24 +16990,6 @@
         const aria = styleLabel(item[0], item[1]);
         return `<figure class="${on ? "on" : ""}"><button type="button" class="sheet-zoom-btn" data-art-zoom="${item[0]}" aria-label="${esc(aria)}を拡大" aria-pressed="${on ? "true" : "false"}"><img class="style-master" src="${item[2]}" alt="${esc(aria)}"></button><figcaption>${esc(item[1])}</figcaption></figure>`;
       }).join("");
-    }
-    const STYLE_GENRES = [
-      ["アタック", ["style-basic-attack", "style-red-over-copper", "style-red-over-silver", "style-red-over-gold", "style-red-over-black", "style-attack-color-copper", "style-attack-color-silver", "style-attack-color-gold", "style-attack-color-black", "style-mana-red", "style-mana-white"]],
-      ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black", "style-mana-blue"]],
-      ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black", "style-mana-yellow"]],
-      ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black", "style-mana-green"]],
-      ["敵", ["style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black", "style-mana-navy"]],
-    ];
-    function cardStyleColumns(mode) {
-      const byId = {};
-      CARD_STYLE.forEach((item) => { byId[item[0]] = item; });
-      return `<div class="style-genres">${STYLE_GENRES.map((group) => {
-        const items = group[1].map((id) => byId[id]).filter(Boolean);
-        const body = mode === "sheet"
-          ? items.map((item) => sheetFig(item[2], item[1], "style-master")).join("")
-          : cardStyleSheet(items);
-        return `<section class="style-col"><h4>${esc(group[0])}</h4>${body}</section>`;
-      }).join("")}</div>`;
     }
 
     function costOrbs(cost) {
