@@ -5084,23 +5084,23 @@
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
     .card .card-fit.k-attack.r1 { --frame-img: url("frame-red-over-copper.png?v=1"); }
     .card .card-fit.k-attack.r2 { --frame-img: url("frame-red-over-silver.png?v=1"); }
-    .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=3"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=4"); }
     .card .card-fit.k-block.r1 { --frame-img: url("frame-blue-over-copper.png?v=14"); }
     .card .card-fit.k-block.r2 { --frame-img: url("frame-blue-over-silver.png?v=14"); }
-    .card .card-fit.k-block.r3 { --frame-img: url("frame-blue-over-gold.png?v=16"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-blue-over-gold.png?v=17"); }
     .card .card-fit.k-skill.r1 { --frame-img: url("frame-yellow-over-copper.png?v=1"); }
     .card .card-fit.k-skill.r2 { --frame-img: url("frame-yellow-over-silver.png?v=1"); }
-    .card .card-fit.k-skill.r3 { --frame-img: url("frame-yellow-over-gold.png?v=3"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-yellow-over-gold.png?v=4"); }
     .card .card-fit.k-power.r1 { --frame-img: url("frame-green-over-copper.png?v=1"); }
     .card .card-fit.k-power.r2 { --frame-img: url("frame-green-over-silver.png?v=1"); }
-    .card .card-fit.k-power.r3 { --frame-img: url("frame-green-over-gold.png?v=3"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-green-over-gold.png?v=4"); }
     .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=3"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=3"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
     .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=1"); }
     .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=1"); }
-    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=1"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=2"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
@@ -7284,6 +7284,21 @@
       flex: 0 0 auto;
       height: auto;
       align-self: center;
+    }
+    .menu.event.bless .gift-btn:has(.gear-effect) {
+      width: max-content;
+      min-width: 0;
+      max-width: min(300px, 100%);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .menu.event.bless .gift-btn .gear-effect,
+    .menu.event.bless .gift-btn .gear-effect.bless-gear,
+    .menu.event.bless .gift-btn .gear-effect.bless-gear .gear-effect-inner {
+      width: max-content;
+      max-width: min(300px, 100%);
     }
     .menu.event .gift-pick .card.preview,
     .menu.event .gift-show .card.preview,
@@ -10194,6 +10209,7 @@
     let growthLine = "";
     let dropLine = "";
     let victoryGear = null;
+    let victoryEnchant = null;
     let smithBase = -1;
     let smithName = "";
     let hurtRestUsed = false;
@@ -13876,6 +13892,7 @@
         growthLine,
         dropLine,
         victoryGear,
+        victoryEnchant,
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
@@ -14081,6 +14098,7 @@
       growthLine = data.growthLine || "";
       dropLine = data.dropLine || "";
       victoryGear = data.victoryGear && data.victoryGear.name ? data.victoryGear : null;
+      victoryEnchant = data.victoryEnchant && data.victoryEnchant.elem ? data.victoryEnchant : null;
       hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
@@ -14968,6 +14986,7 @@
       growthLine = "";
       dropLine = "";
       victoryGear = null;
+      victoryEnchant = null;
       runBonus = emptyRunBonus();
       runEntrance = true;
       gear = starterGear();
@@ -16729,7 +16748,10 @@
           const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
           const lv = blessLive ? rareLevel(entity) : 0;
           if (lv) blessLevels.push(lv);
-          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}</button>`;
+          const inner = pick.kind === "card"
+            ? `<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}`
+            : giftMarkup(pick, false);
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}${inner}</button>`;
         })
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
@@ -16751,7 +16773,6 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
-      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") bindBlessPop();
       runEntrance = false;
     }
 
@@ -16979,7 +17000,7 @@
       ["style-basic-foe", "敵 基本", "frame-basic-foe.png?v=1"],
       ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=1"],
       ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=1"],
-      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=1"],
+      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=2"],
       ["style-navy-black", "敵 ボス", "frame-navy-over-black.png?v=1"],
       ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=1"],
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=1"],
@@ -16987,19 +17008,19 @@
       ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=1"],
       ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=14"],
       ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=14"],
-      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=16"],
+      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=17"],
       ["style-over-black", "ブロック ボス", "frame-blue-over-black.png?v=15"],
       ["style-red-over-copper", "アタック ★", "frame-red-over-copper.png?v=1"],
       ["style-red-over-silver", "アタック ★★", "frame-red-over-silver.png?v=1"],
-      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=3"],
+      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=4"],
       ["style-red-over-black", "アタック ボス", "frame-red-over-black.png?v=1"],
       ["style-yellow-over-copper", "スキル ★", "frame-yellow-over-copper.png?v=1"],
       ["style-yellow-over-silver", "スキル ★★", "frame-yellow-over-silver.png?v=1"],
-      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=3"],
+      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=4"],
       ["style-yellow-over-black", "スキル ボス", "frame-yellow-over-black.png?v=1"],
       ["style-green-over-copper", "アイテム ★", "frame-green-over-copper.png?v=1"],
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
-      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=3"],
+      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
     ];
     function styleLabel(id, name) {
@@ -18203,6 +18224,7 @@
 
     function rollVictoryExtra() {
       victoryGear = null;
+      victoryEnchant = null;
       const boss = typeof bossNow === "function" && bossNow();
       const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
       const kind = pickWeighted(Object.keys(table), (key) => table[key]);
@@ -18231,6 +18253,7 @@
       if (!runEnchants[name]) return "";
       const face = enchantFace(elem);
       const added = word ? `　${word}` : "";
+      victoryEnchant = { kind: "enchant", elem };
       return `${name}に、${face.name}のエンチャント。${face.sub}${added}。`;
     }
 
@@ -18897,8 +18920,10 @@
     }
 
     function victoryGearHtml() {
-      if (!victoryGear) return "";
-      return `<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`;
+      const bits = [];
+      if (victoryGear) bits.push(`<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`);
+      if (victoryEnchant && victoryEnchant.elem) bits.push(`<div class="reward-gear">${giftMarkup(victoryEnchant, true)}</div>`);
+      return bits.join("");
     }
 
     function victoryGrowthHtml() {
