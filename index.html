@@ -188,7 +188,7 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      flex: 0 0 calc((100% - 42px) / 8 - 6px);
+      flex: 0 0 calc((100% - 24px) / 5 - 10px);
       min-height: 0;
       padding: 5px;
       overflow: hidden;
@@ -257,17 +257,17 @@
     .road-key {
       position: absolute;
       z-index: 5;
-      top: 7px;
-      right: 7px;
-      width: 26px;
-      height: 26px;
+      top: 8px;
+      right: 8px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
       color: #ffe7a4;
       filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
       pointer-events: none;
     }
-    .road-key svg { width: 22px; height: 22px; display: block; }
+    .road-key svg { width: 42px; height: 42px; display: block; transform: rotate(90deg); }
     .road-back {
       position: absolute;
       z-index: 6;
@@ -4984,40 +4984,91 @@
       color: #ffe7a8;
     }
     .overlay.paths p { font-size: 22px; margin-bottom: 12px; }
-    .overlay.paths .path-list { flex-wrap: nowrap; }
+    .overlay.paths .path-list { flex-wrap: nowrap; align-items: stretch; }
     .overlay.paths .path-list button {
+      container-type: inline-size;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      flex: 1 1 0;
-      width: 0;
-      max-width: none;
-      min-height: min(62cqh, 560px);
-      padding: 14px 14px 18px;
-      border-radius: 18px;
+      gap: 0;
+      flex: 0 1 auto;
+      width: min(22cqw, 280px);
+      aspect-ratio: 3 / 4;
+      height: auto;
+      max-height: min(72cqh, 640px);
+      min-height: 0;
+      padding: 0;
+      border: 6px solid #0c0a08;
+      border-radius: 0;
       font-size: 20px;
-      background: linear-gradient(180deg, #ffe7a0 0%, #e2b03a 48%, #8a5a08 100%);
-      color: #fff8ee;
+      background: #14110e;
+      color: #f4efe6;
+      box-shadow:
+        inset 0 0 0 2px var(--path-line, #e4b15a),
+        0 10px 24px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+      cursor: pointer;
     }
-    .overlay.paths .path-list button.path-camp {
-      background: linear-gradient(180deg, #d7ecff 0%, #6aa4e0 55%, #24588f 100%);
-      color: #fff8ee;
-    }
-    .overlay.paths .path-list button.path-straight {
-      background: linear-gradient(180deg, #ffd0c4 0%, #e24a38 55%, #8d1c16 100%);
-      color: #fff8ee;
-    }
+    .overlay.paths .path-list button.path-camp { --path-line: #3a6ea6; }
+    .overlay.paths .path-list button.path-straight { --path-line: #9d3a32; }
     .overlay.paths .path-list button + button { margin-top: 0; }
+    .overlay.paths .path-list button .path-name {
+      flex: 0 0 auto;
+      margin: 2.6cqw 2.6cqw 0;
+      padding: 2.2cqw 3cqw;
+      border-radius: 8px;
+      border: 1px solid rgba(24, 14, 8, 0.62);
+      background: linear-gradient(180deg, #2a2622 0%, #12100e 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.62), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
+      color: #fff;
+      font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
+      font-size: clamp(16px, 11cqw, 32px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      text-align: center;
+      -webkit-text-stroke: 0.7px #0a0806;
+      paint-order: stroke fill;
+    }
+    .overlay.paths .path-list button .path-art {
+      flex: 1 1 auto;
+      min-height: 0;
+      margin: 2cqw 2.6cqw 0;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #1a1410;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
     .overlay.paths .path-list button img {
       width: 100%;
-      flex: 1 1 auto;
-      min-height: 240px;
-      aspect-ratio: 1 / 1;
+      height: 100%;
+      min-height: 0;
+      aspect-ratio: auto;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 0;
+      display: block;
     }
-    .overlay.paths .path-list button b { font-size: 34px; letter-spacing: 0.06em; color: #fff8ee; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65); }
-    .overlay.paths .path-list button span { font-weight: 700; font-size: 20px; line-height: 1.45; color: #fff8ee; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65); }
+    .overlay.paths .path-list button .path-text {
+      flex: 0 0 auto;
+      min-height: 24%;
+      margin: 2cqw;
+      padding: 2.4cqw 3cqw;
+      border-radius: 6px;
+      background: #fff;
+      color: #241910;
+      font-weight: 800;
+      font-size: clamp(12px, 7.4cqw, 18px);
+      line-height: 1.35;
+      text-align: center;
+      text-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    html.phone .overlay.paths .path-list button,
+    html.iphone-play .overlay.paths .path-list button {
+      width: min(31%, 168px);
+      border-width: 4px;
+    }
     .overlay button.ghost {
       background: transparent;
       color: var(--cream);
@@ -9022,6 +9073,8 @@
     let floorPhase = "show";
     let floorGift = null;
     let blessPicks = [];
+    let blessEnchantAt = -1;
+    let blessCardName = "";
     let floorHp = 30;
     let runBonus = { hp: 0, spd: 0, mana: 0 };
     let runEntrance = false;
@@ -9410,7 +9463,7 @@
       boss: { none: 0.3, gear: 0.4, item: 0.2 },
     };
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
-    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card"];
+    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card", "enchant"];
     const ENCOUNTER_BEGGAR = 0.5;
 
     function fillSpan(span) {
@@ -9611,7 +9664,7 @@
       if (isBlessingFloor0()) return Math.max(0, now.offsetTop + now.offsetHeight - ol.clientHeight);
       const prev = roadDoneBelow(now);
       if (prev) return Math.max(0, prev.offsetTop + prev.offsetHeight - ol.clientHeight);
-      const row = now.offsetHeight || ol.clientHeight / 8;
+      const row = now.offsetHeight || ol.clientHeight / 5;
       return Math.max(0, now.offsetTop + now.offsetHeight + row - ol.clientHeight);
     }
 
@@ -10134,7 +10187,7 @@
 
     function gearPopShell(slotId, opts) {
       const o = opts || {};
-      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd";
+      const boon = slotId === "hp" || slotId === "mana" || slotId === "spd" || slotId === "enchant";
       const embedded = !!o.embedded;
       const slotKey = gearPopSlotKey(slotId, o.item);
       const rarity = o.rarity || "";
@@ -12929,15 +12982,38 @@
       growthLine = bits.join("　");
     }
 
+    function enchantFace(elem) {
+      if (elem === "water") return { name: "水", sub: "DEF+2", image: "enchant-water.svg?v=1" };
+      if (elem === "light") return { name: "光", sub: "マナ-1", image: "enchant-light.svg?v=1" };
+      return { name: "火", sub: "ATK+2", image: "enchant-fire.jpg?v=1" };
+    }
+
+    function enchantTargets() {
+      const names = [];
+      for (const card of runDeck()) {
+        if (!card || !card.name || names.indexOf(card.name) >= 0) continue;
+        if (card.name === "アタック" || card.name === "ブロック") continue;
+        if (runEnchants[card.name]) continue;
+        names.push(card.name);
+      }
+      return names;
+    }
+
     function rollBlessPicks() {
-      const kinds = shuffle(BLESS_KINDS).slice(0, 3);
-      return kinds.map((kind) => {
-        if (kind === "maxhp") return { kind, label: "最大HP" };
-        if (kind === "spd") return { kind, label: "SPD" };
-        if (kind === "mana") return { kind, label: "マナ" };
-        if (kind === "gear") return { kind, gear: rollBlessGear(), label: "装備" };
-        return { kind: "card", card: rollBlessCard(), label: "カード" };
-      });
+      const picks = [];
+      for (const kind of shuffle(BLESS_KINDS)) {
+        if (picks.length >= 3) break;
+        if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
+        else if (kind === "spd") picks.push({ kind, label: "SPD" });
+        else if (kind === "mana") picks.push({ kind, label: "マナ" });
+        else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
+        else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
+        else if (kind === "enchant" && enchantTargets().length) {
+          const elem = shuffle(["fire", "water", "light"])[0];
+          picks.push({ kind, elem, label: enchantFace(elem).name });
+        }
+      }
+      return picks;
     }
 
     function takeGift(pick) {
@@ -12967,6 +13043,14 @@
       if (!pick) return;
       playPickCenter(`[data-action="bless-pick"][data-bless="${index}"]`, () => {
         if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless") return;
+        if (pick.kind === "enchant") {
+          if (!enchantTargets().length) return;
+          blessEnchantAt = index;
+          blessCardName = "";
+          floorPhase = "bless-card";
+          render();
+          return;
+        }
         if (pick.kind === "maxhp") {
           runBonus.hp = (Number(runBonus.hp) || 0) + 20;
           floorHp = runMaxHp();
@@ -12980,6 +13064,43 @@
         blessPicks = [];
         finishEvent();
       });
+    }
+
+    function confirmBlessEnchant() {
+      if (floorKind !== "挑戦者に祝福を" || floorPhase !== "bless-card") return;
+      const pick = blessPicks[blessEnchantAt];
+      const name = blessCardName;
+      if (!pick || pick.kind !== "enchant" || !name) return;
+      if (name === "アタック" || name === "ブロック" || runEnchants[name]) return;
+      if (enchantTargets().indexOf(name) < 0) return;
+      runEnchants[name] = pick.elem;
+      const face = enchantFace(pick.elem);
+      log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}。`);
+      blessPicks = [];
+      blessEnchantAt = -1;
+      blessCardName = "";
+      floorPhase = "show";
+      persistSave(true);
+      finishEvent();
+    }
+
+    function blessEnchantHtml() {
+      const pick = blessPicks[blessEnchantAt];
+      const face = pick && pick.kind === "enchant" ? enchantFace(pick.elem) : null;
+      const seen = {};
+      const cards = [];
+      for (const card of runDeck()) {
+        if (!card || !card.name || seen[card.name]) continue;
+        if (enchantTargets().indexOf(card.name) < 0) continue;
+        seen[card.name] = true;
+        cards.push(card);
+      }
+      const rows = cards.map((card) => {
+        const picked = blessCardName === card.name ? " picked" : "";
+        return `<button type="button" class="beggar-card${picked}" data-action="bless-enchant-pick" data-name="${esc(card.name)}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
+      }).join("");
+      const lead = face ? `${face.name}　${face.sub}` : "";
+      return `<p>どれにしますか。${esc(lead)}。アタックとブロックには付けられない。</p><div class="deck-cards beggar-cards">${rows || "<p>付けられるカードは無い。</p>"}</div><div class="event-actions">${menuButton("決定", "bless-enchant-ok", true, !blessCardName)}${menuButton("もどる", "bless-enchant-back")}</div>`;
     }
 
     function cardBuildName(name) {
@@ -13030,6 +13151,13 @@
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
+      }
+      if (gift.kind === "enchant") {
+        const face = enchantFace(gift.elem);
+        return `<div class="${cls}">${gearPopShell("enchant", {
+          image: face.image,
+          boonSub: face.sub,
+        })}</div>`;
       }
       if (gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
         const boon = gift.kind === "maxhp"
@@ -13096,6 +13224,8 @@
       eventFloorCall = false;
       floorGift = null;
       blessPicks = [];
+      blessEnchantAt = -1;
+      blessCardName = "";
       beggarCut = false;
       beggarPick = -1;
       ultimatePicks = [];
@@ -13216,6 +13346,7 @@
 
     function enchantSmith(kind) {
       if ((Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
+      if (smithName === "アタック" || smithName === "ブロック") return;
       if (kind !== "fire" && kind !== "water" && kind !== "light") return;
       runEnchants[smithName] = kind;
       meta.stars -= 2;
@@ -13249,15 +13380,9 @@
         return `<p>${esc(base ? base.name : "")}に足すカード。素材は消える。★3。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
       }
       if (floorPhase === "smith-name") {
-        const names = [];
-        for (const card of cards) {
-          if (names.indexOf(card.name) < 0) names.push(card.name);
-        }
-        const rows = names.map((name) => {
-          const haveEnchant = runEnchants[name] ? "　付与済み" : "";
-          return `<button type="button" data-action="smith-name" data-name="${esc(name)}" ${runEnchants[name] ? "disabled" : ""}>${esc(name)}${haveEnchant}</button>`;
-        }).join("");
-        return `<p>エンチャントするカード名。★2。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
+        const names = enchantTargets();
+        const rows = names.map((name) => `<button type="button" data-action="smith-name" data-name="${esc(name)}">${esc(name)}</button>`).join("");
+        return `<p>エンチャントするカード名。アタックとブロックには付けられない。★2。所持 ★${have}</p><div class="event-actions">${rows || "<p>付けられるカードは無い。</p>"}${menuButton("もどる", "smith-back")}</div>`;
       }
       if (floorPhase === "smith-elem") {
         const rows = [
@@ -13896,7 +14021,7 @@
         const boss = key === "enchant" ? 1 - VICTORY_EXTRA.boss.none - VICTORY_EXTRA.boss.gear - VICTORY_EXTRA.boss.item : VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード" };
+      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード", enchant: "エンチャント" };
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2).map((item) => item.name);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -13945,7 +14070,7 @@
             <ul>
               <li>装備は、装備一覧から同じ確率です。</li>
               <li>アイテムは、${EXTRA_ITEM_NAMES.join("、")}から同じ確率です。</li>
-              <li>エンチャントは、火・水・光が同じ確率です。まだ付いていないカード名から選びます。</li>
+              <li>エンチャントは、火・水・光が同じ確率です。アタックとブロック以外で、まだ付いていないカード名から選びます。</li>
             </ul>
           </section>
           <section class="odds-block">
@@ -13955,6 +14080,11 @@
               <li>それぞれの種類が出る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
             </ul>
             ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
+            <ul>
+              <li>エンチャントは、火・水・光から同じ確率で一つ出ます。</li>
+              <li>選ぶとデッキが出ます。アタックとブロック以外で、まだ付いていないカード名を一つ決めて決定します。</li>
+              <li>付けられるカードが無いときは、エンチャントは出ません。</li>
+            </ul>
             <h3>装備（★2以上）</h3>
             ${oddsChips(blessGear)}
             <h3>カード（★2以上）</h3>
@@ -14553,6 +14683,9 @@
               ${sheetFig("reward-mana.jpg?v=1", "報酬のマナ")}
               ${sheetFig("reward-hp.jpg?v=1", "報酬の最大HP")}
               ${sheetFig("reward-spd.jpg?v=1", "報酬のSPD")}
+              ${sheetFig("enchant-fire.jpg?v=1", "火のエンチャント")}
+              ${sheetFig("enchant-water.svg?v=1", "水のエンチャント（空）")}
+              ${sheetFig("enchant-light.svg?v=1", "光のエンチャント（空）")}
             </div>
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。戦闘は赤、休憩は青、そのほかは黄。同じ名前は並べない。鍛冶屋は空の枠</p>
@@ -14762,7 +14895,7 @@
         const path = PATHS[id];
         if (!path) return "";
         const picture = path.image ? `<img src="${path.image}" alt="">` : "";
-        return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}">${picture}<b>${esc(path.name)}</b><span>${esc(path.text)}</span></button>`;
+        return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}"><b class="path-name">${esc(path.name)}</b><span class="path-art">${picture}</span><span class="path-text">${esc(path.text)}</span></button>`;
       }).join("");
     }
 
@@ -14824,7 +14957,9 @@
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}<span class="gift-label">${esc(pick.label)}</span>${giftMarkup(pick, false)}</button>`;
         })
         : [];
-      const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
+      const bless = floorPhase === "bless-card"
+        ? blessEnchantHtml()
+        : blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
@@ -16181,11 +16316,7 @@
         stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
         return `${name}を手に入れた。`;
       }
-      const names = [];
-      for (const card of runDeck()) {
-        if (!card || !card.name || names.indexOf(card.name) >= 0 || runEnchants[card.name]) continue;
-        names.push(card.name);
-      }
+      const names = enchantTargets();
       if (!names.length) return "";
       const name = shuffle(names)[0];
       const kinds = ["fire", "water", "light"];
@@ -16806,8 +16937,9 @@
     }
 
     function eventNoteHtml() {
-      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") {
-        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>報酬を一つ選べ。</p></div></div>`;
+      if (floorKind === "挑戦者に祝福を" && (floorPhase === "bless" || floorPhase === "bless-card")) {
+        const play = floorPhase === "bless-card" ? "どれにしますか。" : "報酬を一つ選べ。";
+        return `<div class="event-split both"><div class="event-story"><p>石の祭壇にひざまずくと、光の翼を持つ女神が降りてきた。</p><p>女神は祝福を三つ差し出した。受け取れるのは一つだけ。</p><p>強欲な者は、きっと嫌われる。</p></div><div class="event-play"><p>${play}</p></div></div>`;
       }
       if (!floorNote && !floorPrompt) return "";
       const story = floorNote ? eventStoryHtml(floorNote) : "";
@@ -17533,6 +17665,17 @@
         if (name === "mastery-power") takeMastery("power");
         if (name === "mastery-light") takeMastery("light");
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
+        if (name === "bless-enchant-pick") {
+          blessCardName = action.dataset.name || "";
+          render();
+        }
+        if (name === "bless-enchant-ok") confirmBlessEnchant();
+        if (name === "bless-enchant-back") {
+          blessCardName = "";
+          blessEnchantAt = -1;
+          floorPhase = "bless";
+          render();
+        }
         if (name === "bless-skip") advance(1);
         if (name === "beggar-pick") pickBeggar(Number(action.dataset.index));
         if (name === "beggar-confirm") confirmBeggar();
