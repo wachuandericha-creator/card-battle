@@ -10360,7 +10360,7 @@
       if (burn) parts.push(statusChip("burn", "炎上", burn, BURN_NOTE));
       const parry = parryCount(target);
       if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
-      const thorns = Math.max(0, Number(target.thorns) || 0);
+      const thorns = thornCount(target);
       if (thorns) parts.push(statusChip("thorns", "トゲ", thorns > 1 ? thorns : 0, THORN_NOTE));
       if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
       return parts.join("");
@@ -10790,7 +10790,7 @@
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, reflectDef: true, effect: "★★★　DEF+2。自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える。", image: "gear-battle-counter.jpg?v=6" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=6" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
@@ -10878,8 +10878,14 @@
       return !!(player && player.magicParry && parryCount(player) > 0);
     }
 
-    function hasReflectDef() {
-      return !!(gear && gear.shield && gear.shield.reflectDef);
+    function hasThornsDef() {
+      return !!(gear && gear.shield && gear.shield.thornsDef);
+    }
+
+    function thornCount(target) {
+      const base = Math.max(0, Number(target && target.thorns) || 0);
+      if (target && player && target === player && hasThornsDef()) return base + Math.max(0, Number(player.def) || 0);
+      return base;
     }
 
     function syncEnergyTotal() {
@@ -11128,7 +11134,7 @@
       if (!item) return "";
       if (item.statusImmune) return "状態異常にならない";
       if (item.ignoreTrait) return "相手の特性を無視してダメージを与える";
-      if (item.reflectDef) return "自分にシールドがある状態で、ダメージを受ける度に相手にDEFの値だけ反撃ダメージを与える。";
+      if (item.thornsDef) return "自分のDEFだけトゲを得る。";
       if (Number(item.poisonHit) > 0) return "アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）";
       if (item.carryMana) return "使わなかったマナを次のターンへ持ち越す";
       if (item.halfAtk) return "自分の体力が最大の半分以下のあいだ、ATK+2。上に戻ると消える";
@@ -11606,7 +11612,7 @@
     }
 
     function retaliateThorns(target) {
-      const stacks = Math.max(0, Number(target && target.thorns) || 0);
+      const stacks = thornCount(target);
       if (!stacks) return;
       const other = target === player ? enemy : target === enemy ? player : null;
       if (!other || other.hp <= 0) return;
@@ -11910,7 +11916,6 @@
           amount += extra;
         }
       }
-      const hadShield = who === "player" && Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(target, amount);
       markPoisonApply(target);
       if (who === "player" && result.hpLoss > 0) player.hurtThis = true;
@@ -11929,7 +11934,6 @@
         noteHit("enemy", result.hpLoss, stacks, "poison");
       }
       log(poisonSentence(name, stacks, 0, result));
-      if (hadShield) reflectBattleCounter(amount);
       return target.hp <= 0;
     }
 
@@ -11974,7 +11978,6 @@
       const extra = Math.max(0, Number(player.expose) || 0);
       if (extra) player.expose = 0;
       const dealt = Math.max(0, amount + extra);
-      const hadShield = Math.max(0, Number(player.block) || 0) > 0;
       const result = applyDamage(player, dealt);
       if (result.hpLoss > 0) {
         player.hurtThis = true;
@@ -11988,19 +11991,6 @@
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
       log(hurtSentence(enemy.name, name, raw + extra, 0, result, crit), card, true);
-      if (hadShield) reflectBattleCounter(dealt, card);
-    }
-
-    function reflectBattleCounter(incoming, card) {
-      if (!(incoming > 0) || !hasReflectDef() || !enemy || enemy.hp <= 0 || !player || player.hp <= 0) return;
-      const reflect = Math.max(0, Number(player.def) || 0);
-      if (reflect <= 0) return;
-      const hit = applyDamage(enemy, reflect);
-      if (hit.hpLoss || hit.blocked) {
-        slashFoe();
-        noteHit("enemy", hit.hpLoss, reflect);
-      }
-      log(`${gear.shield.name}。${enemy.name}に${reflect}ダメージ。`, card);
     }
 
     function restoreHp(amount) {
@@ -16830,7 +16820,7 @@
         guardThrough: !!player.guardThrough,
         parryHitsLast: Math.max(0, Number(player.parryHitsLast) || 0),
         masterOnce: !!player.masterOnce,
-        thorns: Math.max(0, Number(player.thorns) || 0),
+        thorns: thornCount(player),
       };
       const foe = {
         hp: enemy.hp,
