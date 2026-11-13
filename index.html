@@ -9797,7 +9797,6 @@
       ["お店", "お店"],
       ["物乞い", "物乞い"],
       ["修行", "修行"],
-      ["ジョブ", "ジョブ"],
       ["未知", "未知"],
     ];
     const META_KEY = "card-battle-meta-v1";
@@ -9831,8 +9830,6 @@
     let heroCast = "戦士";
     function heroItem() { return castByName(heroCast); }
     function heroName() { return heroItem().name; }
-    let jobsHad = ["戦士"];
-    let ultimate = "";
     let floorKind = "";
     let floorNote = "";
     let floorPrompt = "";
@@ -9847,8 +9844,6 @@
     let floorHp = 30;
     let runBonus = { hp: 0, spd: 0, mana: 0 };
     let runEntrance = false;
-    let battleStartHp = 30; // この戦闘を始めたときのHP（天使のペンダントのやり直し用）
-    let ultimatePicks = [];
     let rewardReady = false;
     let rewardStars = 0;
     let starBurst = 0;
@@ -9880,7 +9875,6 @@
     let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
     let rareArmed = "";
-    let bonusCard = null;
     let bossPicks = [];
     let shopStock = [];
     let gearOffer = null; // 武器を付け替える確認 { item, keep, source, shopIndex, price }
@@ -10309,8 +10303,6 @@
       return String(name || "").startsWith("出来事:");
     }
 
-    const JOB_CHANGE_FLOORS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 99];
-
     // 0層目は祝福。1Fは戦闘固定。ボスとその直前の休憩も固定。ほかの階は空欄で、選ぶときに袋から入れる。
     function buildRoute(floors, name) {
       const route = new Array(floors + 1).fill(null);
@@ -10415,7 +10407,6 @@
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=12", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
-      if (name === "出来事:ジョブ") return { src: "path-job.jpg?v=8", label: "ジョブ" };
       if (name === "出来事:修行") return { src: "path-train.jpg?v=5", label: "修行" };
       if (name === "出来事:鍛冶屋") return { src: "path-smith.svg?v=2", label: "鍛冶屋" };
       if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=2", label: "ボス戦", boss: true };
@@ -10437,7 +10428,6 @@
       if (index === 1 && route[0] === "出来事:祝福" && (!node || !isEventNode(name))) return true;
       if (!Array.isArray(pathBag)) {
         const num = floorAt[index] != null ? floorAt[index] : index;
-        if (name === "出来事:ジョブ") return true;
         if (num === 10 && name === "出来事:お店") return true;
       }
       return false;
@@ -10647,7 +10637,7 @@
     }
 
     function emptyGear() {
-      return { sword: null, shield: null, braceletR: null, braceletL: null, medal: null, itemL: null, itemR: null, medals: 0 };
+      return { sword: null, shield: null, braceletR: null, braceletL: null, medal: null, medals: 0 };
     }
 
     function hpHalf(target) {
@@ -10930,7 +10920,6 @@
       if (slotId === "hp") return "体力";
       if (slotId === "mana") return "マナ";
       if (slotId === "spd") return "SPD";
-      if (slotId === "itemL" || slotId === "itemR") return "アイテム";
       return "装備";
     }
 
@@ -11089,25 +11078,6 @@
           rarity: gearRarityText(look),
           body: esc(gearSpecialText(look)),
         } : "");
-      }
-      if (slotId === "itemL" || slotId === "itemR") {
-        const item = gear[slotId];
-        if (!item) return "";
-        const canUse = item.quick && screen === "battle" && phase === "player" && !outcome;
-        const hint = item.quick ? "" : "持っているだけでよい。死んだとき、ひとりでに使われる。";
-        const button = item.quick
-          ? `<button type="button" class="item-use" data-use-item="${slotId}" ${canUse ? "" : "disabled"}>使う</button>`
-          : "";
-        return gearPopShell(slotId, {
-          item,
-          name: item.name || "アイテム",
-          image: item.image || "",
-          rarity: gearRarityText(item),
-          body: esc(gearSpecialText(item)),
-          hint,
-          button,
-          action: !!button,
-        });
       }
       const item = gear[slotId];
       if (!item) return "";
@@ -12967,13 +12937,9 @@
           }
         }
         if (player.hp <= 0) {
-          const saved = cheatDeath();
-          if (saved === "retry") return;
-          if (!saved) {
-            scrapPlay();
-            scheduleFinish("lose");
-            return;
-          }
+          scrapPlay();
+          scheduleFinish("lose");
+          return;
         }
         const guardKind = fxGuard;
         const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
@@ -13020,12 +12986,8 @@
       const poisoned = tickPoison("player");
       turnCall = "resolve";
       if (poisoned) {
-        const saved = cheatDeath();
-        if (saved === "retry") return;
-        if (!saved) {
-          scheduleFinish("lose");
-          return;
-        }
+        scheduleFinish("lose");
+        return;
       }
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 1100;
       render();
@@ -13034,14 +12996,10 @@
 
     function startPlayerTurn(quiet) {
       if (player.hp <= 0) {
-        const saved = cheatDeath();
-        if (saved === "retry") return;
-        if (!saved) {
-          fxFatal = true;
-          fatalHold = true;
-          scheduleFinish("lose");
-          return;
-        }
+        fxFatal = true;
+        fatalHold = true;
+        scheduleFinish("lose");
+        return;
       }
       turn += 1;
       logTurn("player");
@@ -13406,13 +13364,10 @@
         route,
         dungeonFloors,
         floorAt,
-        battleStartHp,
         floorZero: true, // 祝福を0層目として数える新しい道（古いセーブの見分け用）
         dungeonName,
         heroCast,
         job,
-        jobsHad,
-        ultimate,
         rewardReady,
         rewardStars,
         rewardPicks,
@@ -13430,7 +13385,6 @@
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
-        bonusCard,
         floorGift,
         runBonus,
         bossPicks,
@@ -13483,7 +13437,6 @@
       runEnded = data.runEnded || (data.cleared ? "win" : null);
       defeatSnap = data.defeatSnap || null;
       battleIndex = data.battleIndex || 0;
-      battleStartHp = Number(data.battleStartHp) || (data.player && Number(data.player.hp)) || 30;
       turn = data.turn || 0;
       intentIndex = data.intentIndex || 0;
       phase = data.phase || "player";
@@ -13612,14 +13565,12 @@
       invalidateFoeAct();
       if (screen === "battle" && phase === "player" && enemy && !foePlan.length && enemyLoop.length) buildFoePlan();
       heroCast = castByName(data.heroCast || "戦士").name;
-      job = data.job || "戦士";
-      jobsHad = Array.isArray(data.jobsHad) && data.jobsHad.length ? data.jobsHad : ["戦士"];
-      ultimate = data.ultimate || "";
+      job = "戦士";
       rewardReady = !!data.rewardReady;
       rewardStars = data.rewardStars || 0;
       rewardPicks = Array.isArray(data.rewardPicks) ? data.rewardPicks : [];
-      rewardPaths = Array.isArray(data.rewardPaths) ? data.rewardPaths : [];
-      pathBag = Array.isArray(data.pathBag) ? data.pathBag.slice() : null;
+      rewardPaths = (Array.isArray(data.rewardPaths) ? data.rewardPaths : []).filter((id) => PATHS[id]);
+      pathBag = Array.isArray(data.pathBag) ? data.pathBag.filter((id) => PATHS[id]) : null;
       fixedRestAt = Array.isArray(data.fixedRestAt) ? data.fixedRestAt.map((n) => Number(n) || 0) : [];
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
       runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
@@ -13635,7 +13586,6 @@
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
       rewardStep = data.rewardStep || "cards";
       pathEventTitle = data.pathEventTitle || "探索";
-      bonusCard = data.bonusCard || null;
       floorGift = data.floorGift && data.floorGift.kind ? data.floorGift : null;
       bossPicks = Array.isArray(data.bossPicks) ? data.bossPicks : [];
       shopStock = Array.isArray(data.shopStock) ? data.shopStock : [];
@@ -13657,7 +13607,6 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      battleStartHp = hp;
       player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
@@ -13722,20 +13671,6 @@
       startPlayerTurn(true);
     }
 
-    const ITEM_IMAGE = "gear-item.jpg?v=1";
-    // 使い捨てアイテム。クイックは戦闘中の自分のターンに押して使う（マナはいらない）。
-    // 天使の輪・天使のペンダントは持っているだけでよく、死んだときひとりでに使われる。
-    // stars が 0 のものはレアリティ未定（お店に並べるときの値段が決まっていない）。
-    const ITEMS = [];
-    function itemDef(id) {
-      return ITEMS.find((item) => item.id === id) || null;
-    }
-    function rollItem() {
-      return null;
-    }
-    function blessItem() {
-      return rollItem(2);
-    }
     function rollBlessGear() {
       const pool = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
       const list = pool.length ? pool : GEAR_ITEMS;
@@ -13748,71 +13683,6 @@
       const pick = pickWeighted(offers, (card) => rarityWeight(card.stars)) || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
       return keepCard(pick);
     }
-    function itemSlotWith(flag) {
-      return ["itemL", "itemR"].find((key) => gear && gear[key] && gear[key][flag]) || "";
-    }
-
-    function giveItem(gift) {
-      if (!gear.itemL) gear.itemL = { ...gift };
-      else if (!gear.itemR) gear.itemR = { ...gift };
-      else gear.itemL = { ...gift };
-    }
-
-    // クイックのアイテムを使う（自分のターンだけ。マナはいらない。使ったら消える）
-    function useItem(slot) {
-      if (screen !== "battle" || phase !== "player" || outcome) return;
-      const item = gear && gear[slot];
-      if (!item || !item.quick) return;
-      if (item.heal) {
-        const gain = restoreHp(item.heal);
-        log(`${heroName()}は${item.name}を使った。HPが${gain}回復。`);
-      } else if (item.damage) {
-        const result = applyDamage(enemy, item.damage);
-        if (result.hpLoss || result.blocked) {
-          slashFoe();
-          noteHit("enemy", result.hpLoss, item.damage);
-        }
-        log(`${heroName()}は${item.name}を投げた。${enemy.name}に${result.hpLoss}ダメージ。`);
-      }
-      gear[slot] = null;
-      gearOpen = null;
-      if (enemy.hp <= 0) {
-        scrapPlay();
-        scheduleFinish("win");
-        return;
-      }
-      render();
-    }
-
-    // 死んだとき、天使の輪（復活）→天使のペンダント（戦闘をやり直す）の順に、ひとりでに使われる。
-    // 戻り値：使ったものが無ければ ""。"revive" はその場で続行、"retry" は startBattle をやり直し済み。
-    function cheatDeath() {
-      if (!player || player.hp > 0) return "";
-      const halo = itemSlotWith("revive");
-      if (halo) {
-        const item = gear[halo];
-        gear[halo] = null;
-        player.hp = player.maxHp;
-        fxHeal = true;
-        fxFatal = false;
-        fatalHold = false;
-        log(`${heroName()}は倒れた。${item.name}が光り、復活した。`);
-        return "revive";
-      }
-      const pendant = itemSlotWith("retry");
-      if (pendant) {
-        const item = gear[pendant];
-        gear[pendant] = null;
-        clearTimer();
-        clearBattleMods();
-        startBattle(battleStartHp);
-        log(`${item.name}が砕けた。時が戻り、戦闘をはじめからやり直す。`);
-        render();
-        return "retry";
-      }
-      return "";
-    }
-
     function emptyRunBonus() {
       return { hp: 0, spd: 0, mana: 0 };
     }
@@ -14184,28 +14054,6 @@
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
     }
 
-    function jobCandidates() {
-      const list = [];
-      if (jobsHad.includes("戦士") && jobsHad.includes("魔法使い")) list.push("パラディン");
-      if (job !== "魔法使い") list.push("魔法使い");
-      if (job !== "戦士") list.push("戦士");
-      return list;
-    }
-
-    function rollUltimates(nextJob) {
-      const pairs = [];
-      for (let w = 0; w <= 4; w++) pairs.push(`${w}:${4 - w}`);
-      const picks = shuffle(pairs).slice(0, nextJob === "戦士" ? 1 : 2);
-      if (nextJob === "戦士") picks.unshift("parry-stack");
-      return picks;
-    }
-
-    function ultimateLabel(pair) {
-      if (pair === "parry-stack") return "パリィが重複する";
-      const [w, m] = String(pair).split(":");
-      return `戦士${w}と魔法使い${m}`;
-    }
-
     function enterFloorScreen() {
       screen = "floor";
       render();
@@ -14227,7 +14075,6 @@
       trainPicks = [];
       beggarCut = false;
       beggarPick = -1;
-      ultimatePicks = [];
       if (kind === "祝福") {
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
@@ -14289,10 +14136,6 @@
         beggarPick = -1;
         floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
         floorPrompt = "物乞いにカードをあげろ。";
-      } else if (kind === "ジョブ") {
-        floorPhase = "job";
-        floorNote = "光る紋章の前に立つと、別の戦い方が見えてきた。";
-        floorPrompt = `いまのジョブは${job}。カードは捨てない。ジョブを1つ選ぶ。`;
       } else if (kind === "鍛冶屋") {
         floorKind = "鍛冶屋";
         floorPhase = "show";
@@ -14407,8 +14250,7 @@
         runBonus = runBonus && typeof runBonus === "object" ? runBonus : emptyRunBonus();
         gear = gear && gear.sword ? gear : starterGear();
         heroCast = heroCast || castByName(castLock).name;
-        job = job || "戦士";
-        jobsHad = jobsHad && jobsHad.length ? jobsHad : ["戦士"];
+        job = "戦士";
         stolen = Array.isArray(stolen) ? stolen : [];
         removed = Array.isArray(removed) ? removed : [];
         runEnchants = runEnchants || {};
@@ -14554,8 +14396,6 @@
       beggarGift = [];
       heroCast = castByName(castLock).name;
       job = "戦士";
-      jobsHad = ["戦士"];
-      ultimate = "";
       runEnded = null;
       enterNode(runMaxHp());
       persistSave(true);
@@ -16141,12 +15981,6 @@
         runEntrance = false;
         return;
       }
-      const jobs = floorPhase === "job"
-        ? jobCandidates().map((name) => `<button type="button" class="primary" data-action="job-pick" data-job="${esc(name)}">${esc(name)}</button>`).join("")
-        : "";
-      const ultimates = floorPhase === "ultimate"
-        ? ultimatePicks.map((pair) => `<button type="button" class="primary" data-action="ultimate-pick" data-ultimate="${esc(pair)}">${esc(ultimateLabel(pair))}</button>`).join("")
-        : "";
       const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" && floorKind !== "物乞いに遭遇" && floorKind !== "探索" && floorKind !== "鍛冶屋"
         ? menuButton("進む", "floor-next", true)
         : "";
@@ -16165,7 +15999,6 @@
         "探索": ["event-search.jpg?v=13", "宝箱の蓋は戦士のほうへ開く"],
         "休憩": ["event-rest.jpg?v=10", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
-        "ジョブ": ["event-job.jpg?v=13", "光る紋章の前に立っている"],
         "修行": ["event-train.jpg?v=7", "カメラは上を過ぎ、顔は少しやわらかい"],
         "お店": ["event-shop.jpg?v=1", "ポーション瓶と巻物"],
         "鍛冶屋": ["event-smith.svg?v=2", "空のイベント絵。あとから差し替える"],
@@ -16197,7 +16030,7 @@
       const shopMode = floorKind === "お店";
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art">${art}</div>` : "";
-      const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${jobs}${ultimates}${next}${bless}${train}`;
+      const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${next}${bless}${train}`;
       const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-side">${title}<div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>`);
@@ -17308,15 +17141,13 @@
       shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "見えている2枚を消して、道を引き直す。階は進まない。", image: "path-lost.jpg?v=11" },
       smith: { name: "鍛冶屋", text: "合成は★3。エンチャントは★2。★が無いと使えない。", image: "path-smith.svg?v=2" },
-      job: { name: "ジョブ", text: "ジョブを変えられる。カードは捨てない。", image: "path-job.jpg?v=8" },
       unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードを3つから1つ選ぶ。デッキの1枚が熟練する。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
-      skip: { name: "走り抜ける", text: "階層を1つ飛ばして、ゴールに近づく。", image: "path-dash.jpg?v=6" },
     };
     // 右の1枠。左は休憩、真ん中は戦闘で固定
     const PATH_RIGHT = ["search", "beggar", "shop", "lost", "unknown", "train"];
-    // 迷子は、見えている2つと迷子自身を除く。休憩・戦闘を含め、ボス戦は入れない。祝福は遭遇だけ。ジョブはいま出さない
+    // 迷子は、見えている2つと迷子自身を除く。休憩・戦闘を含め、ボス戦は入れない。祝福は遭遇だけ
     const LOST_POOL = ["camp", "straight", "search", "beggar", "shop", "unknown", "train"];
 
     function starsForRank(rank) {
@@ -17392,7 +17223,7 @@
     }
 
     function classCards() {
-      if (job !== "戦士" && job !== "パラディン") return [];
+      if (job !== "戦士") return [];
       const starter = new Set(CARD_POOL.map(([name]) => name));
       return Object.keys(WARRIOR).filter((name) => !starter.has(name)).map((name) => ({ ...keepCard({ name, ...WARRIOR[name] }), source: "戦士" }));
     }
@@ -17441,7 +17272,6 @@
       rewardPicks = [];
       rewardPaths = [];
       rewardStep = "cards";
-      bonusCard = null;
     }
 
     function removeBagOne(id) {
@@ -17514,7 +17344,6 @@
         search: "出来事:探索",
         shop: "出来事:お店",
         beggar: "出来事:物乞い",
-        job: "出来事:ジョブ",
         train: "出来事:修行",
         bless: "出来事:祝福",
         smith: "出来事:鍛冶屋",
@@ -17531,7 +17360,6 @@
         "出来事:探索": "search",
         "出来事:お店": "shop",
         "出来事:物乞い": "beggar",
-        "出来事:ジョブ": "job",
         "出来事:修行": "train",
         "出来事:鍛冶屋": "smith",
       }[name] || "";
@@ -17660,7 +17488,6 @@
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       persistMeta();
       rewardPaths = [];
-      bonusCard = null;
       bossPicks = [];
       shopStock = [];
       if (bossNow()) {
@@ -18007,7 +17834,7 @@
       if (rewardStep === "done" || rewardStep === "cards") return;
       rewardStep = "done";
       if (id === "straight") placeNext(dungeonEnemy());
-      advance(id === "skip" ? 2 : 1);
+      advance(1);
     }
 
     function enterPath(id) {
@@ -18019,7 +17846,7 @@
         enterPath(resolveEncounter());
         return;
       }
-      if (id === "straight" || id === "skip") {
+      if (id === "straight") {
         applyPath(id);
         return;
       }
@@ -18153,15 +17980,11 @@
       }
       if (Array.isArray(pathBag)) {
         if (id === "unknown") removeBagOne("unknown");
-        else if (id !== "skip") removeBagOne(id);
+        else removeBagOne(id);
       }
       if (id === "unknown") {
         const resolved = pathNode(resolveEncounter());
         beginPathFlight(id, () => placeNext(resolved || dungeonEnemy()), 1);
-        return;
-      }
-      if (id === "skip") {
-        beginPathFlight(id, null, 2);
         return;
       }
       if (id === "straight") {
@@ -19017,23 +18840,6 @@
         if (name === "beggar-skip") skipBeggar();
         if (name === "search-take") takeSearchGear();
         if (name === "search-skip") skipSearchGear();
-        if (name === "job-pick") {
-          const nextJob = action.dataset.job || "戦士";
-          job = nextJob;
-          if (!jobsHad.includes(nextJob)) jobsHad.push(nextJob);
-          floorPhase = "ultimate";
-          ultimatePicks = rollUltimates(nextJob);
-          floorNote = "紋章の光が、新しいジョブを女の戦士に重ねた。";
-          floorPrompt = `${nextJob}になった。カードは残っている。奥義を1つ選ぶ。`;
-          render();
-        }
-        if (name === "ultimate-pick") {
-          ultimate = ultimateLabel(action.dataset.ultimate || "");
-          floorPhase = "show";
-          floorNote = "選んだ奥義が、女の戦士の戦い方に残った。";
-          floorPrompt = ultimate === "パリィが重複する" ? "パリィが重なるようになった。" : `奥義は${ultimate}。`;
-          render();
-        }
         if (name === "iphone-play") {
           iphonePlay = !iphonePlay;
           try { sessionStorage.setItem("card-battle-iphone-play", iphonePlay ? "1" : "0"); } catch (error) { /* 保存できないブラウザでは、この画面のあいだだけ回す */ }
@@ -19099,11 +18905,6 @@
         return;
       }
       if (screen !== "battle") return;
-      const useBtn = el.closest("[data-use-item]");
-      if (useBtn) {
-        useItem(useBtn.dataset.useItem);
-        return;
-      }
       const gearBtn = el.closest("[data-gear]");
       if (gearBtn) {
         const id = gearBtn.dataset.gear;
