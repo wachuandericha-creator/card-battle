@@ -4612,6 +4612,43 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .overlay.paths .path-list button { animation: none; }
+      .road-node.path-land { animation: none; }
+    }
+    .overlay.paths .path-list button.path-dismiss {
+      animation: path-dismiss 0.28s ease forwards;
+    }
+    .overlay.paths .path-list button.path-chosen {
+      z-index: 3;
+      animation: path-lift 0.28s cubic-bezier(0.16, 0.84, 0.32, 1) forwards;
+    }
+    @keyframes path-dismiss {
+      to { opacity: 0; transform: translateY(28px) scale(0.9); }
+    }
+    @keyframes path-lift {
+      to { transform: translateY(-22px) scale(1.06); }
+    }
+    .path-flyer {
+      position: absolute;
+      z-index: 80;
+      margin: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.5), 0 0 0 4px #ffe7a0;
+      pointer-events: none;
+    }
+    .path-flyer img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .road-node.path-inbound > img,
+    .road-node.path-inbound > i { opacity: 0; }
+    .road-node.path-land { animation: path-slot 0.42s ease-out; }
+    @keyframes path-slot {
+      0% { transform: scale(0.86); filter: brightness(1.55); }
+      60% { transform: scale(1.05); filter: brightness(1.12); }
+      100% { transform: none; filter: none; }
     }
     .overlay.gear-offer { z-index: 32; }
     .overlay.gear-offer .panel { width: min(720px, calc(100cqw - 32px)); }
@@ -16218,45 +16255,105 @@
       advance(1);
     }
 
-    function flyPathIntoMap(button, done) {
+    function capturePathShot(id) {
+      const button = document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
       const img = button && button.querySelector("img");
-      const now = document.querySelector(".road-map .road-node.now");
-      const above = now && now.previousElementSibling;
-      const dest = above && above.classList.contains("road-node") && !above.classList.contains("pad") ? above : now;
-      if (!img || !dest || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (button) {
+        document.querySelectorAll(".overlay.paths .path-list button").forEach((el) => {
+          el.classList.toggle("path-chosen", el === button);
+          el.classList.toggle("path-dismiss", el !== button);
+        });
+      }
+      if (!img) return null;
+      return { frame: stageFrameOf(img), src: img.getAttribute("src") || "" };
+    }
+
+    function pathLandNode() {
+      const maps = [...document.querySelectorAll(".road-map")];
+      const map = maps.find((el) => el.offsetWidth > 0 && el.offsetHeight > 0) || maps[0];
+      if (!map) return null;
+      const now = map.querySelector(".road-node.now");
+      if (!now) return null;
+      const above = now.previousElementSibling;
+      if (above && above.classList.contains("road-node") && !above.classList.contains("pad")) return above;
+      return now;
+    }
+
+    function flyPathIntoMap(shot, done) {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
         done();
+      };
+      placeRoad();
+      const dest = pathLandNode();
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || !shot || !shot.frame || !dest || !("animate" in Element.prototype)) {
+        finish();
         return;
       }
-      const overlay = document.querySelector(".overlay.paths");
-      if (overlay) {
-        overlay.style.transition = "opacity 0.28s ease";
-        overlay.style.opacity = "0.12";
+      const face = dest.querySelector("img, i") || dest;
+      const to = stageFrameOf(face);
+      const from = shot.frame;
+      if (!from.w || !from.h || !to.w || !to.h) {
+        finish();
+        return;
       }
-      const from = stageFrameOf(img);
-      const to = stageFrameOf(dest);
-      const ghost = img.cloneNode(true);
-      ghost.style.position = "fixed";
-      ghost.style.zIndex = "90";
-      ghost.style.margin = "0";
-      ghost.style.left = `${from.left}px`;
-      ghost.style.top = `${from.top}px`;
+      dest.classList.add("path-inbound");
+      const ghost = document.createElement("div");
+      ghost.className = "path-flyer";
+      ghost.setAttribute("aria-hidden", "true");
+      const pic = document.createElement("img");
+      pic.alt = "";
+      pic.src = shot.src;
+      ghost.appendChild(pic);
+      ghost.style.left = `${from.cx}px`;
+      ghost.style.top = `${from.cy}px`;
       ghost.style.width = `${from.w}px`;
       ghost.style.height = `${from.h}px`;
-      ghost.style.objectFit = "cover";
-      ghost.style.borderRadius = "8px";
-      ghost.style.pointerEvents = "none";
-      ghost.style.transition = "left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.55s ease, height 0.55s ease";
       mountFloat(ghost);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        ghost.style.left = `${to.left}px`;
-        ghost.style.top = `${to.top}px`;
-        ghost.style.width = `${Math.max(to.w, 8)}px`;
-        ghost.style.height = `${Math.max(to.h, 8)}px`;
-      }));
-      setTimeout(() => {
-        ghost.remove();
-        done();
-      }, 580);
+      const dx = to.cx - from.cx;
+      const dy = to.cy - from.cy;
+      const arc = Math.max(56, Math.min(170, Math.abs(dx) * 0.2 + 48));
+      const sx = Math.max(0.16, to.w / from.w);
+      const sy = Math.max(0.16, to.h / from.h);
+      const anim = ghost.animate([
+        { transform: "translate(-50%, -50%) scale(1.06)", opacity: 1, offset: 0 },
+        { transform: `translate(calc(-50% + ${dx * 0.34}px), calc(-50% + ${dy * 0.18 - arc}px)) scale(0.74)`, opacity: 1, offset: 0.46 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${sx}, ${sy})`, opacity: 1, offset: 1 },
+      ], { duration: 1080, easing: "cubic-bezier(0.18, 0.74, 0.16, 1)", fill: "forwards" });
+      const land = () => {
+        if (!ghost.isConnected && dest.classList.contains("path-land")) return;
+        if (ghost.parentNode) ghost.remove();
+        dest.classList.remove("path-inbound");
+        dest.classList.add("path-land");
+        setTimeout(finish, 420);
+      };
+      anim.onfinish = land;
+      setTimeout(land, 1400);
+    }
+
+    function beginPathFlight(id, place, step) {
+      const shot = capturePathShot(id);
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      rewardStep = "lifting";
+      const go = () => {
+        const img = document.querySelector(`[data-action="reward-path"][data-path="${id}"] img`);
+        const live = img ? { frame: stageFrameOf(img), src: img.getAttribute("src") || "" } : shot;
+        rewardStep = "flying";
+        if (place) place();
+        render();
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          flyPathIntoMap(live, () => {
+            rewardStep = "done";
+            advance(step);
+            schedulePlaceRoad();
+          });
+        }));
+      };
+      if (shot && !reduce) setTimeout(go, 280);
+      else go();
     }
 
     function takePath(id) {
@@ -16281,28 +16378,20 @@
         else if (id !== "skip") removeBagOne(id);
       }
       if (id === "unknown") {
-        enterPath(resolveEncounter());
+        const resolved = pathNode(resolveEncounter());
+        beginPathFlight(id, () => placeNext(resolved || dungeonEnemy()), 1);
         return;
       }
-      if (id === "straight" || id === "skip") {
-        enterPath(id);
+      if (id === "skip") {
+        beginPathFlight(id, null, 2);
+        return;
+      }
+      if (id === "straight") {
+        beginPathFlight(id, () => placeNext(dungeonEnemy()), 1);
         return;
       }
       const node = pathNode(id);
-      if (!node) {
-        enterPath(id);
-        return;
-      }
-      rewardStep = "flying";
-      placeNext(node);
-      render();
-      schedulePlaceRoad();
-      const button = document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
-      flyPathIntoMap(button, () => {
-        rewardStep = "done";
-        advance(1);
-        schedulePlaceRoad();
-      });
+      beginPathFlight(id, () => placeNext(node || dungeonEnemy()), 1);
     }
 
     function offerTone(card) {
