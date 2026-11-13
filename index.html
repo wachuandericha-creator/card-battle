@@ -9274,6 +9274,8 @@
         rgba(40, 28, 12, 0.45);
     }
     .turn-call.resolve b { color: #fff6d8; letter-spacing: 0.22em; }
+    .enemy-main.staged,
+    .battle-plate.foe-plate.staged { opacity: 0; }
     .enemy-main.arrive { animation: foe-arrive 1.05s cubic-bezier(0.16, 0.84, 0.32, 1) both; }
     @keyframes foe-arrive {
       0% { transform: translate(36%, 10%) scale(0.58); opacity: 0; }
@@ -15102,7 +15104,8 @@
       const atkLine = extra && extra.atk != null ? statLine(swordIcon(), "ATK", extra.atk, "stat-atk") : "";
       const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def, "stat-def") : "";
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
-      return `<section class="battle-plate ${cls}${mods}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
+      const quiet = extra && extra.quiet ? " staged" : "";
+      return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block, extra && extra.threat)}
         ${atkLine}${defLine}${spdLine}${extra && extra.tail ? extra.tail : ""}
@@ -16860,7 +16863,34 @@
         fitCardNames();
         fitCardEffects();
         if (screen === "fx" || screen === "battle") fitFighters();
+        armFoeArrive(8);
       });
+    }
+
+    // 階の表示中は敵を出さない。位置を決めてから、登場は一度だけ。
+    function armFoeArrive(tries) {
+      if (screen !== "battle" || !encounter || floorCall) return;
+      const arriving = root.querySelector(".enemy-main.staged");
+      if (!arriving || !arriving.isConnected) return;
+      const img = arriving.querySelector("img");
+      if (img && !img.complete) {
+        img.addEventListener("load", () => armFoeArrive(8), { once: true });
+        return;
+      }
+      fitFighters();
+      const foeFig = arriving.querySelector("img") || arriving;
+      const heroFig = root.querySelector(".hero-fig");
+      const foeW = foeFig.getBoundingClientRect().width;
+      const heroW = heroFig ? heroFig.getBoundingClientRect().width : 10;
+      if ((foeW < 8 || heroW < 8) && tries > 0) {
+        requestAnimationFrame(() => armFoeArrive(tries - 1));
+        return;
+      }
+      const plate = root.querySelector(".foe-plate.staged");
+      if (plate) plate.classList.remove("staged");
+      arriving.classList.remove("staged");
+      void arriving.offsetWidth;
+      arriving.classList.add("arrive");
     }
 
     // 効果欄はカードごと。余白は固定。そのカードの中では説明と数字を同じ大きさ、アイコンも同じ大きさ（文字より大きい）にする。
@@ -19116,7 +19146,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             <div class="duel-side ally">
               <div class="ally-piles">
                 ${pileMarkup("deck", deck.length)}
@@ -19129,7 +19159,7 @@
               ${useZoneMarkup()}
             </div>
             <div class="duel-side foe">
-              <div class="enemy-main${encounter ? " arrive" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
+              <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
@@ -19254,12 +19284,23 @@
       main.style.marginLeft = "0px";
       const field = ally.parentElement;
       if (!field) return;
+      const motions = main.classList.contains("arrive") ? main.getAnimations() : [];
+      const heldAt = motions.map((anim) => anim.currentTime);
+      motions.forEach((anim) => {
+        anim.pause();
+        const dur = anim.effect && anim.effect.getComputedTiming().duration;
+        if (typeof dur === "number") anim.currentTime = dur;
+      });
       const fieldRect = field.getBoundingClientRect();
       const scale = fieldRect.width / field.clientWidth || 1;
       const heroFig = hero.querySelector(".hero-fig") || hero;
       const foeFig = main.querySelector("img") || main;
       const heroRect = heroFig.getBoundingClientRect();
       const foeRect = foeFig.getBoundingClientRect();
+      motions.forEach((anim, i) => {
+        anim.currentTime = heldAt[i];
+        anim.play();
+      });
       if (heroRect.width < 8 || foeRect.width < 8) return;
       const heroInkLeft = 64;
       const inkRight = parseFloat(getComputedStyle(main).getPropertyValue("--ink-right")) || imgW;
