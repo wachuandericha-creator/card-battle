@@ -5035,7 +5035,8 @@
       gap: 14px;
       padding: 24px;
     }
-    .menu.settings-screen {
+    .menu.settings-screen,
+    .menu.odds-screen {
       box-sizing: border-box;
       justify-content: flex-start;
       overflow-x: hidden;
@@ -5043,6 +5044,13 @@
       padding-top: max(20px, env(safe-area-inset-top));
       padding-bottom: max(28px, env(safe-area-inset-bottom));
     }
+    .odds-screen { align-items: stretch; text-align: left; }
+    .odds-screen h1 { text-align: center; }
+    .odds-screen h2 { margin: 22px 0 8px; font-size: 22px; letter-spacing: 0.08em; }
+    .odds-screen p { margin: 0 0 8px; line-height: 1.55; }
+    .odds-screen table { width: min(920px, 100%); border-collapse: collapse; margin: 0 0 8px; }
+    .odds-screen th, .odds-screen td { border-bottom: 1px solid rgba(212, 168, 74, 0.35); padding: 6px 10px; text-align: left; vertical-align: top; }
+    .odds-screen th { color: #ffe6a8; font-weight: 700; }
     /* タイトル：絵とボタンで画面を使い、ボタンは大きく離して押しやすく */
     .title-screen {
       position: relative;
@@ -5703,7 +5711,7 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* イベント画面：左半分は横を切った挿絵。右半分は見出し、その下に説明と報酬 */
+    /* イベント画面：左半分の挿絵は8割。右は上から並べ、余白は見出し・説明・報酬のあいだ */
     .menu.event {
       width: 100%;
       height: 100%;
@@ -5923,8 +5931,10 @@
       position: relative;
       min-width: 0;
       min-height: 0;
-      height: 100%;
-      width: 100%;
+      width: 80%;
+      height: 80%;
+      align-self: center;
+      justify-self: center;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -5948,10 +5958,11 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      justify-content: flex-start;
-      gap: 14px;
+      justify-content: space-between;
+      gap: 18px;
       overflow: auto;
-      padding: 4px 8px 8px 4px;
+      height: 100%;
+      padding: 8px 16px 12px;
       box-sizing: border-box;
     }
     .menu.event .event-copy {
@@ -9048,13 +9059,21 @@
       return [{ from: 1, to: Math.max(1, floors - 2), combat: [7, 11] }];
     }
 
+    const PATH_FILL = ["search", "beggar", "shop", "camp", "train", "lost", "unknown", "smith"];
+    const VICTORY_EXTRA = {
+      road: { none: 0.5, gear: 0.25, item: 0.15 },
+      boss: { none: 0.3, gear: 0.4, item: 0.2 },
+    };
+    const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "臆病者の構え"];
+    const BLESS_KINDS = ["maxhp", "spd", "mana", "gear", "card"];
+    const ENCOUNTER_BEGGAR = 0.5;
+
     function fillSpan(span) {
       const size = Math.max(0, span.to - span.from + 1);
       const combats = Math.min(size, randBetween(span.combat[0], span.combat[1]));
-      const others = ["search", "beggar", "shop", "camp", "train", "lost", "unknown", "smith"];
       const bag = [];
       for (let i = 0; i < combats; i++) bag.push("straight");
-      for (let i = combats; i < size; i++) bag.push(others[Math.floor(Math.random() * others.length)]);
+      for (let i = combats; i < size; i++) bag.push(PATH_FILL[Math.floor(Math.random() * PATH_FILL.length)]);
       return bag;
     }
 
@@ -12541,7 +12560,7 @@
     }
 
     function rollBlessPicks() {
-      const kinds = shuffle(["maxhp", "spd", "mana", "gear", "card"]).slice(0, 3);
+      const kinds = shuffle(BLESS_KINDS).slice(0, 3);
       return kinds.map((kind) => {
         if (kind === "maxhp") return { kind, label: "最大HP" };
         if (kind === "spd") return { kind, label: "SPD" };
@@ -12745,7 +12764,7 @@
         floorNote = "松明の光が、古びた宝箱を照らしている。女の戦士は蓋に手をかけ、今にも開けようとしている。目は星のように輝き、よだれが一筋落ちた。";
         floorPrompt = floorGift ? "宝箱の中から使えそうな装備を見つけた。" : "中は空っぽだった。";
       } else if (kind === "未知") {
-        if (Math.random() < 0.5) {
+        if (Math.random() < ENCOUNTER_BEGGAR) {
           floorKind = "物乞いに遭遇";
           beggarGift = [];
           floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
@@ -13415,6 +13434,7 @@
               ${menuButton(loginWord ? `ログイン済 (${loginWord})` : "データがありません", "account", false, !loginWord)}
               ${menuButton("カードリスト", "album")}
               ${menuButton("設定資料", "sheet")}
+              ${menuButton("確率", "odds")}
               ${menuButton("演出", "fx-lab")}
               ${menuButton("オプション", "settings")}
               </div>
@@ -13461,6 +13481,72 @@
           ${medalBtn}
           ${eventBlock}
           ${menuButton("もどる", "back")}
+        </div>`;
+    }
+
+    function oddsTable(headers, rows) {
+      const head = headers.map((cell) => `<th>${esc(cell)}</th>`).join("");
+      const body = rows.map((row) => `<tr>${row.map((cell) => `<td>${esc(cell)}</td>`).join("")}</tr>`).join("");
+      return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+    }
+
+    function pct(rate) {
+      return `${Math.round(Number(rate) * 1000) / 10}%`;
+    }
+
+    function pathFillLabel(id) {
+      return (PATHS[id] && PATHS[id].name) || id;
+    }
+
+    function renderOdds() {
+      const spanRows = DUNGEON_LIST.map((dungeon) => {
+        const spans = bagSpans(dungeon.name, dungeon.floors);
+        const bosses = bossStops(dungeon.name, dungeon.floors);
+        const rests = bosses.filter((n) => n > 1).map((n) => n - 1);
+        const bags = spans.map((span) => {
+          const size = Math.max(0, span.to - span.from + 1);
+          return `${span.from}〜${span.to}階 ${size}枠　戦闘${span.combat[0]}〜${span.combat[1]}`;
+        }).join("／");
+        return [dungeon.name, bags, `休憩 ${rests.join("・")}`, `ボス ${bosses.join("・")}`];
+      });
+      const otherShare = pct(1 / PATH_FILL.length);
+      const otherNames = PATH_FILL.map(pathFillLabel).join("、");
+      const extraRows = ["なし", "装備", "アイテム", "エンチャント"].map((name) => {
+        const key = name === "なし" ? "none" : name === "装備" ? "gear" : name === "アイテム" ? "item" : "enchant";
+        const road = key === "enchant" ? 1 - VICTORY_EXTRA.road.none - VICTORY_EXTRA.road.gear - VICTORY_EXTRA.road.item : VICTORY_EXTRA.road[key];
+        const boss = key === "enchant" ? 1 - VICTORY_EXTRA.boss.none - VICTORY_EXTRA.boss.gear - VICTORY_EXTRA.boss.item : VICTORY_EXTRA.boss[key];
+        return [name, pct(road), pct(boss)];
+      });
+      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", mana: "マナ+1", gear: "装備", card: "カード" };
+      const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2).map((item) => item.name);
+      const starterNames = new Set(CARD_POOL.map(([name]) => name));
+      const blessCards = Object.keys(COMMON)
+        .concat(Object.keys(WARRIOR).filter((name) => !starterNames.has(name)))
+        .filter((name) => {
+          const def = COMMON[name] || WARRIOR[name] || {};
+          return (Number(def.stars) || 1) >= 2;
+        });
+      const pools = [1, 2].map((tier) => [tier === 1 ? "前半" : "後半", (DUNGEON.pools[tier] || []).join("、") || "なし"]);
+      root.innerHTML = `
+        <div class="menu odds-screen">
+          <h1>確率</h1>
+          <p>攻略中の抽選と同じ数字。残りの枚数は、プレイ中の画面には出さない。</p>
+          <h2>道の袋</h2>
+          <p>0階は祝福で固定。ボスとその直前の休憩も固定で、袋には入れない。袋の戦闘枚数は、書いた範囲から一様に決める。残りの枠は、次の${PATH_FILL.length}種がそれぞれ${otherShare}。同じ種類が袋に複数入ることがある。出すときは残りから、名前が重ならないように最大3つ。直前の階と同じ名前は出さない。</p>
+          ${oddsTable(["ダンジョン", "袋", "固定の休憩", "固定のボス"], spanRows)}
+          <p>戦闘以外：${otherNames}</p>
+          <h2>戦闘の相手</h2>
+          <p>1階はスライム。洞窟は14階まで前半、15階から後半。古城と深淵は、最大階の半分まで前半。各枠の中は等確率。ボスは出ない。</p>
+          ${oddsTable(["区分", "候補"], pools)}
+          <h2>勝利の追加</h2>
+          <p>★と、カード3枚（共通・戦士・その敵のカードから1枚ずつ。足りないときは全体から）に加えて、追加を1回だけ振る。装備とアイテムとエンチャントは同時に出さない。</p>
+          ${oddsTable(["追加", "道中", "ボス"], extraRows)}
+          <p>装備は装備一覧から等確率。アイテムは${EXTRA_ITEM_NAMES.join("、")}から等確率。エンチャントは火・水・光が等確率で、まだ付いていないカード名から等確率。</p>
+          <h2>祝福</h2>
+          <p>${BLESS_KINDS.map((kind) => blessNames[kind]).join("、")}の${BLESS_KINDS.length}種から、重複なしで3つ。各種が候補に入る割合は${pct(3 / BLESS_KINDS.length)}。装備は★2以上（${blessGear.join("、")}）。カードは★2以上（${blessCards.join("、")}）。</p>
+          <h2>遭遇・探索・修行・お店</h2>
+          <p>遭遇は物乞い${pct(ENCOUNTER_BEGGAR)}、祝福${pct(1 - ENCOUNTER_BEGGAR)}。探索の装備は装備一覧から等確率。修行は、デッキで一番多いビルドの戦士カードから等確率。無ければ戦士カード全部から等確率。お店はカード2枚と装備2つ。カードは戦士の報酬から、装備は装備一覧から、それぞれ等確率。</p>
+          ${menuButton("タイトルへ", "title")}
         </div>`;
     }
 
@@ -14416,6 +14502,7 @@
       else if (screen === "sheet") renderSheet();
       else if (screen === "defeat") renderDefeat();
       else if (screen === "settings") renderSettings();
+      else if (screen === "odds") renderOdds();
       else if (screen === "fx") renderFxLab();
       else if (screen === "confirm") renderConfirm();
       else if (screen === "clear") renderClear();
@@ -15649,10 +15736,11 @@
 
     function rollVictoryExtra() {
       const boss = typeof bossNow === "function" && bossNow();
+      const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
       const roll = Math.random();
-      const none = boss ? 0.30 : 0.50;
-      const gearP = boss ? 0.40 : 0.25;
-      const itemP = boss ? 0.20 : 0.15;
+      const none = table.none;
+      const gearP = table.gear;
+      const itemP = table.item;
       if (roll < none) return "";
       if (roll < none + gearP) {
         const item = shuffle(GEAR_ITEMS)[0];
@@ -15662,7 +15750,7 @@
         return `${item.name}を手に入れた。`;
       }
       if (roll < none + gearP + itemP) {
-        const names = ["ベッド", "ホテル", "臆病者の構え"].filter((name) => cardDef(name));
+        const names = EXTRA_ITEM_NAMES.filter((name) => cardDef(name));
         const name = shuffle(names)[0];
         if (!name) return "";
         const def = cardDef(name);
@@ -16886,6 +16974,7 @@
           return;
         }
         if (name === "sheet") { clearArtZoom(); albumScrollTop = 0; screen = "sheet"; render(); }
+        if (name === "odds") { screen = "odds"; render(); }
         if (name === "character") {
           castHover = "";
           castLock = castLock || "戦士";
