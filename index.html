@@ -4585,7 +4585,32 @@
       right: calc(12.5cqw + 18px);
       top: 84px;
       bottom: 14px;
-      background: rgba(10, 8, 7, 0.82);
+      background: rgba(6, 4, 3, 0.32);
+    }
+    .overlay.paths .panel,
+    .overlay.paths .panel.wide {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+    .overlay.paths .path-list button {
+      animation: path-pop 0.52s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+    }
+    .overlay.paths .path-list button:nth-child(1) { animation-delay: 0.05s; }
+    .overlay.paths .path-list button:nth-child(2) { animation-delay: 0.14s; }
+    .overlay.paths .path-list button:nth-child(3) { animation-delay: 0.23s; }
+    .battle-screen.path-pick .foe-plate,
+    .battle-screen.path-pick .duel-side.foe,
+    .battle-screen.path-pick .use-board,
+    .battle-screen.path-pick .field-note {
+      visibility: hidden;
+    }
+    @keyframes path-pop {
+      0% { opacity: 0; transform: translateY(46px) scale(0.82); }
+      100% { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .overlay.paths .path-list button { animation: none; }
     }
     .overlay.gear-offer { z-index: 32; }
     .overlay.gear-offer .panel { width: min(720px, calc(100cqw - 32px)); }
@@ -14354,7 +14379,8 @@
         return;
       }
       if (floorPhase === "paths") {
-        root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`);
+        if (player && enemy) renderBattle();
+        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div></div>`);
         runEntrance = false;
         return;
       }
@@ -16405,7 +16431,14 @@
       return `<div class="win-stage" aria-hidden="true"><p class="win-banner">${esc(banner)}</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
     }
 
+    function choosingPath() {
+      return rewardStep === "paths";
+    }
+
     function rewardOverlay() {
+      if (choosingPath()) {
+        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div>`;
+      }
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
         const live = takeRare("reward");
@@ -16436,9 +16469,6 @@
         }).join("");
         const burst = victoryStars();
         return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
-      }
-      if (rewardStep === "paths") {
-        return `<div class="overlay paths"><div class="panel wide"><h2>道を選ぶ</h2>${pathFloorNowHtml()}<div class="path-list">${pathButtonsHtml()}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
@@ -16493,7 +16523,8 @@
     function renderBattle() {
       sortHand();
       const dealNow = fxDeal;
-      const cards = hand.map((card, i) => {
+      const pathPick = choosingPath();
+      const cards = pathPick ? "" : hand.map((card, i) => {
         const poor = !cardPlayable(card);
         const lit = handConditionLit(card);
         const mid = (hand.length - 1) / 2;
@@ -16569,7 +16600,7 @@
       const foeThreat = cast.give && cast.give.hp > 0 ? cast.give.hp : 0;
       const mineThreat = cast.take && cast.take.hp > 0 ? cast.take.hp : 0;
       root.innerHTML = `
-        <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}">
+        <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}${pathPick ? " path-pick" : ""}">
         <div class="game">
           <header class="hud-top">
             <div class="dungeon">
@@ -16625,7 +16656,7 @@
           <div class="handbar">
               <div class="mana-dock">${pips()}</div>
               <div class="hand${dealNow ? " deal-pending" : ""}">${cards}</div>
-              ${endButtonMarkup()}
+              ${pathPick ? "" : endButtonMarkup()}
             </div>
         </div>
         ${roadMapHtml()}
