@@ -290,11 +290,11 @@
       right: 5px;
       bottom: 5px;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-end;
-      gap: 2px;
-      padding: 14px 8px 6px;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 8px 8px 6px;
       pointer-events: none;
     }
     .road-floor {
@@ -308,15 +308,16 @@
     }
     .road-node.now .road-floor { font-size: 30px; }
     .road-name {
-      width: 100%;
+      flex: 1 1 auto;
+      width: auto;
       min-width: 0;
-      min-height: 1.15em;
       overflow: hidden;
       color: #fff6e4;
       font-size: 19px;
       font-weight: 900;
       line-height: 1.15;
       white-space: nowrap;
+      text-align: right;
       text-overflow: ellipsis;
       text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.8);
     }
@@ -9277,8 +9278,8 @@
         const capFloor = `<span class="road-floor">${floor}</span>`;
         const fixed = !!node && roadFixed(node, i);
         const tone = known ? (fixed ? "fight" : roadTone(node)) : "";
-        const name = visited ? esc(face.label || "") : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}<span class="road-name">${name}</span></span></li>`;
+        const name = known && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${icon}<span class="road-cap">${capFloor}${name}</span></li>`;
       }).join("");
       // 0F祝福だけ現在地をマップ最下段に。それ以外の開始直後は下に見えないパッドで従来どおり余白
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
