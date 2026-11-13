@@ -4701,6 +4701,11 @@
       transform: none;
     }
     .card:disabled { cursor: default; }
+  /* ターン終了後の解決中は disabled でも暗くしない（ブラウザ標準の半透明と unaffordable を抑える） */
+    .hand .card:disabled {
+      opacity: 1;
+      filter: none;
+    }
     .card.unaffordable { filter: saturate(0.7) brightness(0.92); }
     /* 条件を満たして使える、または強くなるカード。手札だけ脈打つ */
     .hand .card.lit {
@@ -9584,19 +9589,19 @@
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィを得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィ+1を得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
-      パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィを得る", damage: 10, parry: true, kind: "attack" },
+      パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィ+1を得る", damage: 10, parry: true, kind: "attack" },
       臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "power", power: true, coward: true },
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
-      余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィを得る", kind: "skill", poise: true, fullOnly: true },
+      余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィ+1を得る", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
-      ナイフパリィ: { cost: 3, stars: 3, text: "パリィを得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, stars: 3, text: "パリィを3得る", kind: "skill", parryAdd: 3 },
+      ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
+      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "skill", parryAdd: 3 },
       諸刃の剣: { cost: 2, stars: 2, text: "次に受けるダメージが２倍になる。", damage: 25, kind: "attack", doubleNext: true },
-      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィを得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
+      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を得る\n戦闘中1回", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
       自信過剰: { cost: 2, stars: 2, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
@@ -16556,6 +16561,7 @@
       if ("、。！？…・）】」』ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮー％%".includes(next)) return false;
       if ("（「『【〈《".includes(prev)) return false;
       if (next === "×" || prev === "×") return false;
+      if ((next === "+" || next === "＋") && text.slice(Math.max(0, i - 3), i) === "パリィ") return false;
       if (/[0-9０-９]/.test(prev) && /[0-9０-９＋+×\-－回枚倍%％]/.test(next)) return false;
       if (/[0-9０-９%％]/.test(next) && i >= 6 && text.slice(i - 6, i) === "クリティカル") return false;
       if (/[＋+\-－×]/.test(prev) && /[0-9０-９]/.test(next)) return false;
@@ -16670,7 +16676,6 @@
       const kwLine = (word, note, key) => `<span class="kw-line hint" data-word="${esc(key || word)}">${word}<i>${esc(note)}</i></span>`;
       const keywords = [];
       const item = isItemCard(card);
-      const grantsParry = !!(card.parry || card.parryAdd || card.knife || card.masterOnce);
       const kept = [];
       let critPct = card.critChance ? String(card.critChance) : "";
       String(rawNote || "").split("\n").forEach((line) => {
@@ -16683,7 +16688,6 @@
           if (rest) kept.push(rest);
           return;
         }
-        if (grantsParry && /^パリィを(?:\d+)?得る$/u.test(trimmed)) return;
         if (card.poison && /^相手に毒\+\d+を与える$/u.test(trimmed)) return;
         if (card.burn && /炎上\+\d+/u.test(trimmed)) {
           const rest = trimmed.replace(/炎上\+\d+/u, "").replace(/にを/gu, "に").trim();
@@ -16694,16 +16698,17 @@
         kept.push(trimmed);
       });
       let noteText = cardNoteHtml(kept.join("\n"));
+      const hintWord = (text, word, note) => {
+        if (!word || !note || !text.includes(word)) return text;
+        return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
+      };
+      noteText = hintWord(noteText, "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
-      if (grantsParry) {
-        const n = Number(card.parryAdd) || 1;
-        keywords.push(kwLine(n > 1 ? `パリィ×${n}` : "パリィ", (card.parry && card.note) ? card.note : PARRY_NOTE, "パリィ"));
-      }
       if (card.poison) keywords.push(kwLine(`毒+${card.poison}`, POISON_NOTE, "毒"));
       if (card.burn) keywords.push(kwLine(`炎上+${card.burn}`, BURN_NOTE, "炎上"));
       if (critPct) keywords.push(kwLine(`クリティカル${critPct}%`, CRIT_NOTE, "クリティカル"));
@@ -18452,8 +18457,9 @@
       const dealNow = fxDeal;
       const pathPick = choosingPath();
       const cards = pathPick ? "" : hand.map((card, i) => {
-        const poor = !cardPlayable(card);
-        const lit = handConditionLit(card);
+        const pickable = phase === "player" && !outcome && !foeRageBusy;
+        const poor = pickable && !cardPlayable(card);
+        const lit = pickable && handConditionLit(card);
         const mid = (hand.length - 1) / 2;
         const dist = i - mid;
         const t = mid === 0 ? 0 : dist / mid;
