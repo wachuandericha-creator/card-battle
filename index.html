@@ -4927,7 +4927,7 @@
     .card .fx { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; line-height: 1; color: #1a120e; }
     .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; word-break: keep-all; line-break: strict; overflow-wrap: normal; }
     .card .fx.note .nobr { display: inline-block; white-space: nowrap; vertical-align: baseline; }
-    .card .fx b { font-size: 14cqw; color: #1a120e; }
+    .card .fx b { font-size: 5.2cqw; font-weight: 700; color: #1a120e; }
     .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
@@ -4988,7 +4988,7 @@
     .kw-tip p { margin: 0; }
     .kw-tip p + p { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(228, 177, 90, 0.3); }
     .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
-    .card .fx .ico { width: 15cqw; height: 15cqw; color: #1a120e; }
+    .card .fx .ico { width: 16cqw; height: 16cqw; color: #1a120e; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
     /* カードスタイル。★は銅、★★は銀、★★★は金。ジャンルの札は枠に描かない。ボスは赤の四隅 */
     .card.attack, .card.block, .card.skill, .card.power, .card.foe {
@@ -5125,7 +5125,10 @@
       gap: 1cqw;
     }
     .card .card-fit .fx.note,
-    .card .card-fit .fx.kw { width: 100%; min-width: 0; font-size: 5.2cqw; font-weight: 700; line-height: 1.15; }
+    .card .card-fit .fx.kw,
+    .card .card-fit .fx b { width: auto; min-width: 0; font-size: 5.2cqw; font-weight: 700; line-height: 1.15; }
+    .card .card-fit .fx.note,
+    .card .card-fit .fx.kw { width: 100%; }
     .card .card-fit .genre { z-index: 6; }
     .card .card-fit .nameplate,
     .card .card-fit .text { z-index: 5; }
@@ -16403,30 +16406,26 @@
     }
 
     function fitCardEffects() {
-      root.querySelectorAll(".card-fit .text").forEach((box) => {
-        if (box.clientHeight < 8) return;
-        const notes = box.querySelectorAll(".fx.note, .fx.kw");
-        const nums = box.querySelectorAll(".fx b");
-        const icons = box.querySelectorAll(".fx .ico");
-        const apply = (scale) => {
-          notes.forEach((el) => { el.style.fontSize = `${(5.2 * scale).toFixed(2)}cqw`; });
-          nums.forEach((el) => { el.style.fontSize = `${(14 * scale).toFixed(2)}cqw`; });
-          icons.forEach((el) => {
-            const px = `${(15 * scale).toFixed(2)}cqw`;
-            el.style.width = px;
-            el.style.height = px;
+      const boxes = [...root.querySelectorAll(".card-fit .text")].filter((box) => box.clientHeight >= 8);
+      const apply = (scale) => {
+        const text = `${(5.2 * scale).toFixed(2)}cqw`;
+        boxes.forEach((box) => {
+          box.querySelectorAll(".fx.note, .fx.kw, .fx b").forEach((el) => { el.style.fontSize = text; });
+          box.querySelectorAll(".fx .ico").forEach((el) => {
+            el.style.width = "16cqw";
+            el.style.height = "16cqw";
           });
-        };
-        apply(1);
-        let scale = 1;
-        let guard = 0;
-        const overflow = () => box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1;
-        while (overflow() && scale > 0.62 && guard < 16) {
-          scale = Math.round((scale - 0.04) * 100) / 100;
-          apply(scale);
-          guard += 1;
-        }
-      });
+        });
+      };
+      apply(1);
+      let scale = 1;
+      let guard = 0;
+      const overflow = (box) => box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1;
+      while (boxes.some(overflow) && scale > 0.62 && guard < 16) {
+        scale = Math.round((scale - 0.04) * 100) / 100;
+        apply(scale);
+        guard += 1;
+      }
     }
 
     function fitCardNames() {
