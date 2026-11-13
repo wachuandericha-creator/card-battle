@@ -169,11 +169,18 @@
       box-sizing: border-box;
       overflow-x: hidden;
       overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
       gap: 6px;
+    }
+    .road-map ol::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
     .road-node {
       position: relative;
@@ -6178,8 +6185,8 @@
     }
     .menu.event .event-choice:has(.gift-show) .gift-show .card.preview,
     .menu.event .event-choice:has(.gift-show) .gift-show .gift-img {
-      width: min(220px, 100%);
-      height: auto;
+      width: var(--choice-w);
+      height: calc(var(--choice-w) * 4 / 3);
     }
     .menu.event .event-choice:has(.gift-show) .event-actions,
     .menu.event .event-choice:has(.gift-show) > button {
@@ -6195,7 +6202,14 @@
       gap: 12px;
       padding-bottom: 6px;
     }
-    .menu.event.beggar .beggar-card .card.preview { width: 168px; max-width: none; }
+    .menu.event.beggar button.beggar-card {
+      flex: 0 0 auto;
+      width: var(--choice-w);
+      min-width: var(--choice-w);
+      max-width: var(--choice-w);
+      padding: 0;
+    }
+    .menu.event.beggar .beggar-card .card.preview { width: 100%; max-width: none; }
     .menu.event.beggar .event-actions {
       flex-direction: row;
       width: min(100%, 860px);
