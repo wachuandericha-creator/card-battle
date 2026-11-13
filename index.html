@@ -1648,14 +1648,7 @@
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
     .reward-pick:hover .card.preview { box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100cqw - 40px)); padding: 36px 48px 32px; }
-    .reward-lead {
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "Source Han Serif", "源ノ明朝", serif;
-      font-size: clamp(20px, 1.7cqw, 26px);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      line-height: 1.6;
-      color: #fff6e4;
-    }
+    .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
     .reward-pick.gear-pick { width: min(250px, 24cqw); padding: 0; border: 0; background: none; color: var(--cream); }
     .gear-offer { width: min(250px, 24cqw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .gear-offer-card { width: min(240px, 100%); }
@@ -5425,19 +5418,10 @@
     .overlay.victory .panel {
       position: relative;
       z-index: 1;
-      border-radius: 22px;
-      border: 1px solid rgba(255, 236, 190, 0.9);
-      background:
-        radial-gradient(120% 55% at 50% 0%, rgba(255, 214, 140, 0.28), transparent 58%),
-        linear-gradient(180deg, #3a2a1c 0%, #1c140e 46%, #100c0a 100%);
-      box-shadow:
-        0 0 0 3px #15100d,
-        0 0 0 5px rgba(228, 177, 90, 0.78),
-        0 0 0 6px #5c3a12,
-        0 22px 48px rgba(0, 0, 0, 0.62),
-        0 0 42px rgba(228, 177, 90, 0.28),
-        inset 0 1px 0 rgba(255, 244, 210, 0.35);
-      padding: 28px 40px 24px;
+      background: linear-gradient(180deg, #4a3418 0%, #24180f 100%);
+      border: 2px solid #e4b15a;
+      box-shadow: 0 0 0 6px rgba(36, 24, 12, 0.72), 0 0 48px rgba(228, 177, 90, 0.5);
+      padding: 34px 40px 28px;
     }
     .overlay.victory.finale {
       display: grid;
@@ -5463,33 +5447,15 @@
       left: 50%;
       top: 4%;
       z-index: 4;
-      width: min(920px, 72%);
       transform: translateX(-50%);
       margin: 0;
-      justify-content: center;
-      gap: 18px;
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "Source Han Serif", "源ノ明朝", serif;
       font-size: clamp(48px, 8cqw, 88px);
       font-weight: 800;
-      letter-spacing: 0.28em;
+      letter-spacing: 0.36em;
       color: #ffe7a8;
+      text-shadow: 0 3px 0 #6a4a16, 0 0 22px rgba(255, 220, 140, 0.9);
       animation: win-banner 0.9s cubic-bezier(0.12, 1.35, 0.28, 1) both;
       pointer-events: none;
-    }
-    .overlay.victory.finale .win-banner .win-word {
-      flex: 0 0 auto;
-      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 34%, #e2ad4a 62%, #fff1c4 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.55));
-    }
-    .overlay.victory.finale .win-banner > .fade-line {
-      flex: 1 1 auto;
-      width: auto;
-      max-width: none;
-      min-width: 36px;
-      height: 3px;
     }
     .overlay.victory.finale .win-pose {
       height: min(56cqh, 640px);
@@ -5572,35 +5538,17 @@
       margin-bottom: 8px;
     }
     .overlay.victory h2.win-head {
-      flex: 1 1 auto;
-      min-width: 0;
-      justify-content: center;
-      gap: clamp(12px, 1.6cqw, 22px);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
       margin: 0;
-      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "Source Han Serif", "源ノ明朝", serif;
-      font-size: clamp(48px, 4.4cqw, 72px);
-      font-weight: 800;
-      letter-spacing: 0.22em;
-      line-height: 1.1;
+      font-size: 64px;
+      letter-spacing: 0;
       color: #ffe7a8;
+      text-shadow: 0 2px 0 #6a4a16, 0 0 18px rgba(255, 220, 140, 0.85);
     }
-    .overlay.victory h2.win-head .win-word {
-      flex: 0 0 auto;
-      letter-spacing: 0.28em;
-      background: linear-gradient(180deg, #fff8dc 0%, #ffe8a8 34%, #e2ad4a 62%, #fff1c4 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 3px 0 #6a4a16) drop-shadow(0 0 18px rgba(255, 196, 110, 0.55));
-    }
-    .overlay.victory h2.win-head > .fade-line {
-      flex: 1 1 auto;
-      width: auto;
-      max-width: none;
-      min-width: 28px;
-      height: 2px;
-    }
-    .win-word { letter-spacing: 0.28em; }
+    .win-word { letter-spacing: 0.32em; }
     .win-star-dock {
       display: inline-flex;
       align-items: center;
@@ -15391,8 +15339,7 @@
       const stars = Array.from({ length: 3 }, (_, i) => `<span class="fly-star" style="--i:${i};--n:3">★</span>`).join("");
       const winFoe = fxLabFoeImage(fxLabFoeName);
       const foeImg = winFoe ? `<img class="win-foe" src="${esc(winFoe)}" alt="">` : "";
-      const banner = fadeSandwichMarkup(`<span class="win-word">勝利</span>`, { tag: "p", className: "win-banner" });
-      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true">${banner}<i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foeImg}</div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
+      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foeImg}</div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
     }
 
     function fxStage(id) {
@@ -16819,7 +16766,7 @@
         <div class="overlay victory finale clear-finale">
           ${victoryStage("踏破")}
           <div class="panel wide reward-panel">
-            ${fadeSandwichMarkup(`<span class="win-word">踏破</span>`, { tag: "h2", className: "win-head" })}
+            <h2>踏破</h2>
             <p class="victory-count">${esc(dungeonName)}を抜けた。解放が進んだ。</p>
             <p>余った★${Number(meta.lastStars) || 0}は、5つにつきカードパック1つ。${Number(meta.lastPacks) || 0}個になった。端数は消えた。パックの中身は、まだ開かない。次の攻略は★0から。</p>
             <div class="gear-offer-actions">
@@ -17035,6 +16982,7 @@
     }
 
     const CARD_STYLE = [
+      ["style-basic-foe", "敵 基本", "frame-basic-foe.png?v=1"],
       ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=1"],
       ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=1"],
       ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=1"],
@@ -17043,10 +16991,6 @@
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=1"],
       ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=1"],
       ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=1"],
-      ["style-attack-color-copper", "マナ銅", "frame-attack-color-copper.png?v=3"],
-      ["style-attack-color-silver", "マナ銀", "frame-attack-color-silver.png?v=3"],
-      ["style-attack-color-gold", "マナ金", "frame-attack-color-gold.png?v=5"],
-      ["style-attack-color-black", "マナ黒", "frame-attack-color-black.png?v=3"],
       ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=14"],
       ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=14"],
       ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=16"],
@@ -17063,12 +17007,6 @@
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=1"],
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=3"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
-      ["style-mana-red", "棘 赤", "frame-blue-mana-red.png?v=1"],
-      ["style-mana-blue", "棘 青", "frame-blue-mana-blue.png?v=1"],
-      ["style-mana-green", "棘 緑", "frame-blue-mana-green.png?v=1"],
-      ["style-mana-yellow", "棘 黄", "frame-blue-mana-yellow.png?v=1"],
-      ["style-mana-white", "棘 白", "frame-blue-mana-white.png?v=1"],
-      ["style-mana-navy", "棘 紺", "frame-blue-mana-navy.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -17091,11 +17029,11 @@
       }).join("");
     }
     const STYLE_GENRES = [
-      ["アタック", ["style-basic-attack", "style-red-over-copper", "style-red-over-silver", "style-red-over-gold", "style-red-over-black", "style-attack-color-copper", "style-attack-color-silver", "style-attack-color-gold", "style-attack-color-black", "style-mana-red", "style-mana-white"]],
-      ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black", "style-mana-blue"]],
-      ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black", "style-mana-yellow"]],
-      ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black", "style-mana-green"]],
-      ["敵", ["style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black", "style-mana-navy"]],
+      ["アタック", ["style-basic-attack", "style-red-over-copper", "style-red-over-silver", "style-red-over-gold", "style-red-over-black"]],
+      ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black"]],
+      ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black"]],
+      ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
+      ["敵", ["style-basic-foe", "style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black"]],
     ];
     function cardStyleColumns(mode) {
       const byId = {};
@@ -18982,13 +18920,6 @@
       return `<div class="overlay"><div class="panel"><h2>熟練</h2><p>${lead}</p><div class="event-actions">${menuButton("強さ　数字を1.3倍", "mastery-power", true)}${menuButton("軽さ　マナ-1", "mastery-light", true)}</div></div></div>`;
     }
 
-    function victoryHead(starsHtml, count) {
-      return fadeSandwichMarkup(
-        `<span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${count}">${starsHtml}</span>`,
-        { tag: "h2", className: "win-head" },
-      );
-    }
-
     function victoryStars() {
       const count = starBurst;
       if (!count) return { flash: "", stars: "" };
@@ -19004,8 +18935,8 @@
       const pose = heroItem().victory;
       const foe = enemy && enemy.image ? `<img class="win-foe" src="${esc(enemy.image)}" alt="">` : "";
       const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${1.5 + (i % 5) * 0.18}s"></i>`).join("");
-      const banner = fadeSandwichMarkup(`<span class="win-word">${esc(bannerText || "勝利")}</span>`, { tag: "p", className: "win-banner" });
-      return `<div class="win-stage" aria-hidden="true">${banner}<i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
+      const banner = bannerText || "勝利";
+      return `<div class="win-stage" aria-hidden="true"><p class="win-banner">${esc(banner)}</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
     }
 
     function choosingPath() {
@@ -19026,7 +18957,7 @@
           return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top">${victoryHead(burst.stars, rewardStars)}<button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGearHtml()}${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGearHtml()}${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "boss") {
         const live = takeRare("reward");
@@ -19045,7 +18976,7 @@
           return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top">${victoryHead(burst.stars, rewardStars)}<button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}${victoryGearHtml()}<p class="reward-lead">ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
+        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}${victoryGearHtml()}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-row${rareJack(levels)}">${picks}</div></div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
