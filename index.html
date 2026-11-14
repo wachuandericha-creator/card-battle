@@ -5308,8 +5308,8 @@
       left: 11.328cqw;
       top: 11.270cqw;
       transform: translate(-50%, -50%);
-      width: 8.781cqw;
-      height: 8.781cqw;
+      width: 9.042cqw;
+      height: 9.042cqw;
       display: grid;
       place-items: center;
       line-height: 1;
@@ -5320,7 +5320,7 @@
       box-shadow: none;
       color: #fffef8;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: 7.581cqw;
+      font-size: 7.842cqw;
       font-weight: 900;
       -webkit-text-stroke: 0;
       text-shadow: 0 1px 0 #140c08, 0 0 2px #140c08;
@@ -5474,56 +5474,13 @@
       margin: 0 0 8px;
       font-size: 22px;
       font-weight: 800;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.06em;
+      text-align: center;
       color: #ffe7a8;
     }
-    .overlay.paths .path-list.forced { gap: 0; }
-    .overlay.paths .path-list.forced button.fold-left,
-    .overlay.paths .path-list.forced button.fold-right,
-    .overlay.paths .path-list.forced button.fold-center {
-      animation-duration: 0.9s;
-      animation-delay: 0.05s;
-      animation-timing-function: cubic-bezier(0.16, 0.84, 0.32, 1);
-      animation-fill-mode: both;
-    }
-    .overlay.paths .path-list.forced button.fold-left {
-      z-index: 1;
-      margin-right: -14%;
-      animation-name: path-fold-left;
-    }
-    .overlay.paths .path-list.forced button.fold-right {
-      z-index: 1;
-      margin-left: -14%;
-      animation-name: path-fold-right;
-      animation-delay: 0.12s;
-    }
-    .overlay.paths .path-list.forced button.fold-center {
-      z-index: 3;
-      animation-name: path-fold-center;
-      animation-delay: 0.08s;
-      box-shadow:
-        inset 0 0 0 2px var(--path-line, #e4b15a),
-        0 0 0 3px rgba(255, 231, 168, 0.85),
-        0 16px 28px rgba(0, 0, 0, 0.4);
-    }
-    @keyframes path-fold-left {
-      0% { opacity: 0; transform: translate(-80px, 48px) scale(0.86); }
-      48% { opacity: 1; transform: translate(-28px, 0) scale(1); }
-      100% { opacity: 1; transform: translate(22%, 10px) rotate(-8deg) scale(0.9); }
-    }
-    @keyframes path-fold-right {
-      0% { opacity: 0; transform: translate(80px, 48px) scale(0.86); }
-      48% { opacity: 1; transform: translate(28px, 0) scale(1); }
-      100% { opacity: 1; transform: translate(-22%, 10px) rotate(8deg) scale(0.9); }
-    }
-    @keyframes path-fold-center {
-      0% { opacity: 0; transform: translateY(48px) scale(0.86); }
-      100% { opacity: 1; transform: none; }
-    }
+    .overlay.paths .path-list.forced button { animation: none; }
     @media (prefers-reduced-motion: reduce) {
       .overlay.paths .path-list button { animation: none; }
-      .overlay.paths .path-list.forced button.fold-left { transform: translate(22%, 10px) rotate(-8deg) scale(0.9); }
-      .overlay.paths .path-list.forced button.fold-right { transform: translate(-22%, 10px) rotate(8deg) scale(0.9); }
       .path-black,
       .battle-screen.path-handoff .battle-bands,
       .battle-screen.path-handoff .handbar,
@@ -17986,6 +17943,8 @@
               <section>
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
+                <h4 class="trial-head">暗めの紫</h4>
+                <div class="style-genres trial">${cardStyleSheet([["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=1"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -18126,23 +18085,29 @@
       return route[0] === "出来事:祝福" && battleIndex === 0 && id === "straight";
     }
 
+    function pathForcedNote() {
+      if (!pathChoiceForced()) return "";
+      const id = rewardPaths[0];
+      const next = battleIndex + 1;
+      if (route[0] === "出来事:祝福" && battleIndex === 0 && id === "straight") return "1Fは戦闘";
+      if (id === "camp" && fixedRestAt.indexOf(next) >= 0) return "次はボス戦だ！！大いに体を休めよ";
+      return "";
+    }
+
     function pathButtonsHtml() {
       const ids = rewardPaths || [];
-      const forced = pathChoiceForced();
-      const shown = forced ? [ids[0], ids[0], ids[0]] : ids;
-      const folds = ["left", "center", "right"];
-      return shown.map((id, index) => {
+      return ids.map((id) => {
         const path = PATHS[id];
         if (!path) return "";
         const picture = path.image ? `<img src="${path.image}" alt="">` : "";
-        const fold = forced ? ` fold-${folds[index] || "center"}` : "";
-        return `<button type="button" class="path-${id}${fold}" data-action="reward-path" data-path="${id}"><b class="path-name">${esc(path.name)}</b><span class="path-art">${picture}</span><span class="path-text">${esc(path.text)}</span></button>`;
+        return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}"><b class="path-name">${esc(path.name)}</b><span class="path-art">${picture}</span><span class="path-text">${esc(path.text)}</span></button>`;
       }).join("");
     }
 
     function pathListHtml() {
-      const note = pathChoiceForced() ? `<p class="path-fixed">次は決まっている</p>` : "";
-      return `${note}<div class="path-list${pathChoiceForced() ? " forced" : ""}">${pathButtonsHtml()}</div>`;
+      const note = pathForcedNote();
+      const line = note ? `<p class="path-fixed">${esc(note)}</p>` : "";
+      return `${line}<div class="path-list${pathChoiceForced() ? " forced" : ""}">${pathButtonsHtml()}</div>`;
     }
 
     function eventShell(body) {
@@ -18553,6 +18518,7 @@
       ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=1"],
       ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
       ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
+      ["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
