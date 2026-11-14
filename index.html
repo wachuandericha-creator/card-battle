@@ -2006,14 +2006,40 @@
     .foe-starter-stats .num { text-align: right; }
     .foe-starter-stats .num b { color: #fff6e0; font-size: 26px; }
     .menu.foe-index {
-      width: min(1180px, 100%);
-      align-items: stretch;
-      justify-content: flex-start;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-content: start;
+      justify-content: stretch;
+      gap: 16px 18px;
+      padding: 64px 28px 28px;
       overflow: auto;
-      gap: 22px;
       text-align: left;
     }
-    .foe-index h1 { text-align: center; }
+    .foe-index h1 {
+      grid-column: 1 / -1;
+      margin: 0;
+      text-align: center;
+    }
+    .menu.foe-index .foe-file { min-width: 0; }
+    .menu.foe-index .foe-starter-sheet {
+      grid-template-columns: minmax(160px, 34%) minmax(0, 1fr);
+    }
+    .menu.foe-index .foe-starter-deck .cast-deck {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .menu.foe-index .foe-starter-deck .cast-deck .deck-card,
+    .menu.foe-index .foe-starter-deck .cast-deck .deck-card:hover,
+    .menu.foe-index .foe-starter-deck .cast-deck .card,
+    .menu.foe-index .foe-starter-deck .cast-deck .card:hover,
+    .menu.foe-index .foe-starter-deck .cast-deck .card.preview,
+    .menu.foe-index .foe-starter-deck .cast-deck .card.preview:hover {
+      width: 100%;
+    }
+    html.phone .menu.foe-index { grid-template-columns: 1fr; }
     .foe-file {
       padding: 16px;
       border-radius: 18px;
@@ -7002,7 +7028,7 @@
       background: linear-gradient(180deg, #6a2218, #3a100c);
       color: #ffe8dc;
     }
-    /* イベント画面：見出しは横幅いっぱい。左の挿絵は9割弱。右は本文から報酬までを一塊にして高さの中央 */
+    /* イベント画面：左半分は挿絵（9割弱）。右半分の上に見出し。その下の本文から報酬までを一塊にして高さの中央 */
     .menu.event {
       width: 100%;
       height: 100%;
@@ -7153,10 +7179,11 @@
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
     .menu.event.shop .shop-have { margin: 0; width: 100%; text-align: center; font-size: clamp(22px, 2cqw, 30px); font-weight: 900; color: #ffe08a; }
     .menu.event .event-title {
-      grid-column: 1 / -1;
+      grid-area: title;
       width: 100%;
       flex: 0 0 auto;
-      padding: clamp(40px, 4.5cqh, 72px) 12px 0;
+      align-self: start;
+      padding: 4px 12px 0;
       box-sizing: border-box;
     }
     .menu.event .event-title > h1 {
@@ -7218,6 +7245,9 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "art title"
+        "art side";
       align-items: stretch;
       align-self: stretch;
       gap: 8px 18px;
@@ -7227,14 +7257,18 @@
       justify-self: stretch;
       min-height: 0;
       overflow: hidden;
-      padding: 0;
+      padding: 8px 0 0;
       box-sizing: border-box;
     }
     .menu.event.shop .event-lead {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "art title"
+        "art side";
     }
     .menu.event .event-art {
+      grid-area: art;
       position: relative;
       min-width: 0;
       min-height: 0;
@@ -7254,10 +7288,14 @@
     .menu.event .event-lead.no-art {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows: auto minmax(0, 1fr);
+      grid-template-areas:
+        "title"
+        "side";
     }
     .menu.event .event-side,
     .menu.event.shop .event-side,
     .menu.event.beggar .event-side {
+      grid-area: side;
       min-width: 0;
       min-height: 0;
       max-width: none;
@@ -7687,8 +7725,18 @@
       html:not(.stage-fit) .menu.event.shop .event-lead {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto minmax(220px, 52cqh) auto;
+        grid-template-areas:
+          "title"
+          "art"
+          "side";
         overflow: auto;
         padding: 0;
+      }
+      html:not(.stage-fit) .menu.event .event-lead.no-art {
+        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-areas:
+          "title"
+          "side";
       }
       html:not(.stage-fit) .menu.event .event-art { min-height: 0; height: 100%; }
       html:not(.stage-fit) .menu.event .event-art .event-picture {
@@ -8690,17 +8738,17 @@
     .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 16px; height: 16px; }
     .cast-screen.character-focus .cast-on-stats .hp-line b { font-size: 16px; }
     .cast-screen.character-focus .cast-on-blurb {
-      left: 16px;
+      left: 22px;
       right: auto;
-      bottom: 16px;
-      width: min(48%, 440px);
+      bottom: 22px;
+      width: min(68%, 680px);
     }
     .cast-screen.character-focus .cast-on-blurb .cast-blurb-wrap {
       width: 100%;
       box-sizing: border-box;
       margin: 0;
       max-width: none;
-      padding: 12px 14px;
+      padding: 22px 28px;
       border-radius: 10px;
       border: 1px solid rgba(228, 177, 90, 0.62);
       background: rgba(8, 6, 4, 0.94);
@@ -8720,7 +8768,7 @@
       letter-spacing: 0.03em;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
     }
-    .cast-screen.character-focus .cast-on-blurb .cast-blurb + .cast-blurb { margin-top: 8px; }
+    .cast-screen.character-focus .cast-on-blurb .cast-blurb + .cast-blurb { margin-top: 12px; }
     .cast-screen.character-focus .cast-title::after { content: none; }
     .cast-screen.character-focus .cast-title.fade-sandwich > .cast-title-name {
       flex: 0 1 auto;
@@ -11676,26 +11724,26 @@
     }
 
     const GEAR_ITEMS = [
-      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
-      { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=4" },
-      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
-      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
-      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
-      { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
-      { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=6" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
-      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
-      { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=6" },
-      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=7" },
+      { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=5" },
+      { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=5" },
+      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=7" },
+      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=7" },
+      { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=4" },
+      { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=4" },
+      { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=7" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=7" },
+      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=6" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=8" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=8" },
+      { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=7" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=9" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=8" },
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=3", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=4", halfMana: 1 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=4", halfAtk: 2 },
+      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=5", halfMana: 1 },
     ];
     const GEAR_CARD_TEXT = {
       "short-sword": "ATK+1",
@@ -12020,7 +12068,7 @@
       const left = slotButton({ id: "braceletL", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
-      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=3";
+      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=4";
       const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="戦利品"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
       return `<div class="gear-board">${sword}${shield}${left}${right}${medals}</div>`;
     }
