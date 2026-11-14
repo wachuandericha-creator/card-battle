@@ -1903,14 +1903,6 @@
       align-items: stretch;
       text-align: left;
       padding: 18px 22px 16px;
-      border: 2px solid rgba(228, 177, 90, 0.92);
-      background:
-        radial-gradient(90% 46% at 18% 0%, rgba(228, 177, 90, 0.22), transparent 58%),
-        linear-gradient(180deg, #3a2818 0%, #1a120e 46%, #100c0a 100%);
-      box-shadow:
-        0 0 0 4px #15100d,
-        0 0 0 6px rgba(228, 177, 90, 0.45),
-        0 28px 56px rgba(0, 0, 0, 0.62);
     }
     .foe-starter-sheet {
       flex: 1 1 auto;
@@ -5493,15 +5485,6 @@
     .overlay.paths .panel,
     .overlay.paths .panel.wide {
       pointer-events: auto;
-      background:
-        radial-gradient(120% 80% at 50% 0%, rgba(255, 220, 140, 0.18), transparent 58%),
-        rgba(32, 22, 14, 0.94);
-      border: 3px solid #e4b15a;
-      border-radius: 22px;
-      box-shadow:
-        0 0 0 2px #5c3a12,
-        inset 0 1px 0 rgba(255, 241, 196, 0.28),
-        0 18px 36px rgba(0, 0, 0, 0.45);
     }
     .overlay.paths .path-list button {
       animation: path-pop 0.52s cubic-bezier(0.16, 0.84, 0.32, 1) both;
@@ -5577,15 +5560,26 @@
     .gear-delta .same { color: #e8dcc8; }
     .gear-offer-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .overlay .panel {
-      background: #2a221c;
-      border: 1px solid rgba(244, 234, 215, 0.2);
+      background: var(--panel-sheen), var(--panel-face);
+      border: 3px solid #e4b15a;
       border-radius: 18px;
+      box-shadow:
+        0 0 0 2px #5c3a12,
+        inset 0 1px 0 rgba(255, 241, 196, 0.28),
+        0 18px 36px rgba(0, 0, 0, 0.45);
       padding: 28px 32px;
       text-align: center;
       min-width: 280px;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+    .deck-sort {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 12px;
     }
     .overlay.mastery-ask {
       background:
@@ -5596,11 +5590,6 @@
       position: relative;
       width: min(780px, calc(100cqw - 32px));
       overflow: hidden;
-      border: 2px solid #e4b15a;
-      background:
-        radial-gradient(120% 70% at 50% 0%, rgba(255, 214, 140, 0.18), transparent 52%),
-        linear-gradient(180deg, #3a2a18 0%, #140e0a 100%);
-      box-shadow: 0 0 0 6px rgba(20, 12, 8, 0.82), 0 28px 64px rgba(0, 0, 0, 0.58);
     }
     .mastery-kicker {
       margin: 0;
@@ -5695,9 +5684,6 @@
     .overlay.victory .panel {
       position: relative;
       z-index: 1;
-      background: linear-gradient(180deg, #4a3418 0%, #24180f 100%);
-      border: 2px solid #e4b15a;
-      box-shadow: 0 0 0 6px rgba(36, 24, 12, 0.72), 0 0 48px rgba(228, 177, 90, 0.5);
       padding: 34px 40px 28px;
     }
     .overlay.victory.finale {
@@ -6060,6 +6046,18 @@
       border-radius: 999px;
       padding: 10px 22px;
       cursor: pointer;
+    }
+    .overlay.deck-view.my-deck .deck-sort button {
+      border: 2px solid rgba(228, 177, 90, 0.7);
+      background: rgba(12, 9, 7, 0.55);
+      color: #f0e4cc;
+      font-size: 18px;
+      padding: 8px 18px;
+    }
+    .overlay.deck-view.my-deck .deck-sort button.on {
+      background: var(--gold);
+      color: #2a2118;
+      border-color: #fff1c8;
     }
     .overlay button.reward-skip {
       font-size: 28px;
@@ -7799,6 +7797,56 @@
       min-height: 0;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .event-gear {
+      flex: 0 0 auto;
+      align-self: flex-start;
+      width: max-content;
+      max-width: calc(100% - 16px);
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 8px 8px;
+      padding: 8px 12px 10px;
+      border-radius: 16px;
+      background: rgba(14, 11, 9, 0.94);
+      box-shadow: var(--panel-frame);
+      pointer-events: auto;
+    }
+    .event-gear h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      writing-mode: vertical-rl;
+      color: var(--gold);
+    }
+    .event-gear .plate-gear { width: auto; min-width: 0; }
+    .event-gear .plate-gear .gear-board {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 8px;
+      width: auto;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .event-gear .gear-slot { width: 76px; flex: 0 0 76px; }
+    .event-gear .gear-frame { width: 76px; height: 76px; }
+    .event-gear .gear-label {
+      display: block;
+      max-width: 76px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+      color: #ffe7a8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .event-deck {
       position: absolute;
@@ -7818,8 +7866,10 @@
     .event-deck .pile-label { font-size: 16px; letter-spacing: 0.08em; }
     .event-host .menu.event,
     .event-host .menu.event.bless {
-      position: absolute;
-      inset: 0;
+      position: relative;
+      inset: auto;
+      flex: 1 1 auto;
+      min-height: 0;
       z-index: 1;
       width: auto;
       height: auto;
@@ -10740,6 +10790,7 @@
     let fxLabTick = 0;
     let askLeave = false;
     let showDeck = false;
+    let deckOrder = "hand";
     let eventMapOpen = false;
     let eventDeckOpen = false;
     let showFoeDeck = false;
@@ -12123,7 +12174,8 @@
           : `<span class="gear-mark">${slot.icon}</span>`;
         const title = item && item.name ? gearTitle(item) : slot.label;
         const active = shown === slot.id;
-        return `<button type="button" class="gear-slot${item ? " filled" : ""}${active ? (gearOpen === slot.id ? " open" : " hot") : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span></button>`;
+        const label = item && item.name ? item.name : slot.label;
+        return `<button type="button" class="gear-slot${item ? " filled" : ""}${active ? (gearOpen === slot.id ? " open" : " hot") : ""}" data-gear="${slot.id}" aria-label="${esc(slot.aria || title)}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(label)}</span></button>`;
       };
       const sword = slotButton({ id: "sword", label: "剣", icon: swordIcon() });
       const shield = slotButton({ id: "shield", label: "盾", icon: shieldIcon() });
@@ -12131,7 +12183,8 @@
       const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
       const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=4";
-      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="戦利品"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span></button>`).join("");
+      const medalName = (gear && gear.medal && gear.medal.name) || "戦利品";
+      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
       return `<div class="gear-board">${sword}${shield}${left}${right}${medals}</div>`;
     }
 
@@ -15126,7 +15179,7 @@
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
       runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
-      smithUsed = !!data.smithUsed || cardAlters.some((item) => item && item.fused);
+      smithUsed = !!data.smithUsed;
       cardMastery = Array.isArray(data.cardMastery) ? data.cardMastery : [];
       masteryOffer = data.masteryOffer && data.masteryOffer.name ? {
         name: String(data.masteryOffer.name),
@@ -16027,7 +16080,7 @@
           floorKind = "物乞いに遭遇";
           beggarGift = [];
           floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
-          floorPrompt = "デッキからカードを一枚削除できる。";
+          floorPrompt = "カードを削除できる。";
         } else {
           floorKind = "挑戦者に祝福を";
           floorPhase = "bless";
@@ -16048,17 +16101,16 @@
         beggarGift = [];
         beggarPick = -1;
         floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
-        floorPrompt = "デッキからカードを一枚削除できる。";
+        floorPrompt = "カードを削除できる。";
       } else if (kind === "鍛冶屋") {
         floorKind = "鍛冶屋";
         floorPhase = "show";
+        smithUsed = false;
         smithBase = -1;
         smithName = "";
         smithElem = "";
         floorNote = "あやしい婆さんが、火の前で手を振っている。";
-        floorPrompt = smithUsed
-          ? "この攻略では、もう鍛冶屋を使った。"
-          : "この攻略で一度だけ。合成は★3。土台よりマナが低い、同じジャンルのカードを足す。効果は全部混ざる。素材は消える。エンチャントは★2。";
+        floorPrompt = "カードを強化できる。";
       }
     }
 
@@ -16097,7 +16149,7 @@
       smithUsed = true;
       persistMeta();
       floorPhase = "show";
-      floorPrompt = `${base.name}に、${mat.name}の効果を足した。素材は消えた。この攻略の鍛冶屋は、これで終わり。`;
+      floorPrompt = `${base.name}に、${mat.name}の効果を足した。素材は消えた。`;
       persistSave(true);
       render();
     }
@@ -16116,7 +16168,7 @@
       enchantPop = "";
       smithElem = "";
       floorPhase = "show";
-      floorPrompt = `${smithName}に、${face.name}のエンチャントを付けた。${face.sub}${added}。この攻略の鍛冶屋は、これで終わり。`;
+      floorPrompt = `${smithName}に、${face.name}のエンチャントを付けた。${face.sub}${added}。`;
       persistSave(true);
       render();
     }
@@ -16153,7 +16205,7 @@
       const raw = deckCore();
       const cards = runDeck();
       if (smithUsed) {
-        return `<p>この攻略では、もう鍛冶屋を使った。</p><div class="event-actions">${menuButton("出ていく", "smith-leave")}</div>`;
+        return `<p>この鍛冶屋では、もう使った。</p><div class="event-actions">${menuButton("出ていく", "smith-leave")}</div>`;
       }
       if (floorPhase === "smith-base") {
         const rows = raw.map((card, index) => {
@@ -18190,7 +18242,7 @@
     function eventShell(body) {
       const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${deckOverlay()}${enchantPickOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside></div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${deckOverlay()}${enchantPickOverlay()}`;
     }
 
     function renderFloor() {
@@ -18351,6 +18403,10 @@
       paintEdgeClear();
       paintTitleNav();
       paintFullscreenLabels();
+      if (root.querySelector(".event-gear")) {
+        bindGearHover();
+        paintGear();
+      }
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
@@ -19499,8 +19555,34 @@
       });
     }
 
+    function deckOrdered(cards) {
+      const list = cards.slice();
+      if (deckOrder === "got") return list;
+      if (deckOrder === "cost") {
+        return list.sort((a, b) =>
+          (Number(a.cost) || 0) - (Number(b.cost) || 0)
+          || String(a.name).localeCompare(String(b.name), "ja")
+        );
+      }
+      if (deckOrder === "genre") return sortedCards(list);
+      return list.sort(compareHandOrder);
+    }
+
+    function deckSortBar() {
+      const items = [
+        ["hand", "手札順"],
+        ["got", "入手順"],
+        ["cost", "コスト順"],
+        ["genre", "ジャンル順"],
+      ];
+      const buttons = items.map(([id, label]) =>
+        `<button type="button" data-action="deck-sort" data-order="${id}" class="${deckOrder === id ? "on" : ""}" aria-pressed="${deckOrder === id ? "true" : "false"}">${label}</button>`
+      ).join("");
+      return `<div class="deck-sort" role="group" aria-label="並び替え">${buttons}</div>`;
+    }
+
     function deckGroup(label, cards) {
-      const faces = sortedCards(cards).map((card) =>
+      const faces = deckOrdered(cards).map((card) =>
         `<div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`
       ).join("");
       const heading = label ? `${label} ${cards.length}` : `${cards.length}枚`;
@@ -19516,7 +19598,7 @@
     function deckOverlay() {
       if (!showDeck || outcome || askLeave) return "";
       const cards = runDeck();
-      return `<div class="overlay deck-view"><div class="panel"><h2>マイデッキ</h2><div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
+      return `<div class="overlay deck-view my-deck"><div class="panel"><h2>マイデッキ</h2>${deckSortBar()}<div class="deck-scroll">${deckGroup("", cards)}</div><button type="button" data-action="close-deck">閉じる</button></div></div>`;
     }
 
     function foeDeckOverlay() {
@@ -19554,10 +19636,10 @@
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=3" },
       straight: { name: "戦闘", text: "このダンジョンの敵と戦う。", image: "path-fight.jpg?v=5" },
       search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=13" },
-      beggar: { name: "物乞い", text: "デッキからカードを1枚削除できる。", image: "path-beggar.jpg?v=6" },
+      beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=6" },
       shop: { name: "お店", text: "敵から得た★で、貴重な品を買おう。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
-      smith: { name: "鍛冶屋", text: "この攻略で一度だけ。カードを合成する。", image: "path-smith.svg?v=2" },
+      smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.svg?v=2" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
@@ -20596,9 +20678,8 @@
       return "";
     }
 
-    // hand-sort-v2
-    function sortHand() {
-      // 色：黄（スキル）→緑（アイテム）→赤（攻撃）→青（防御）
+    // 手札の並び：色（スキル→アイテム→攻撃→防御）→コスト→予想ダメージ→予想ブロック→予想回復
+    function compareHandOrder(a, b) {
       const colorRank = (card) => {
         const kind = cardKind(card);
         if (kind === "skill") return 0;
@@ -20618,15 +20699,16 @@
         return Math.max(0, base + focusLeftFor(card, true));
       };
       const expectHeal = (card) => Number(card.heal) || 0;
-      // 手札の並び：色 → コスト → 予想ダメージ昇順 → 予想ブロック昇順 → 予想回復量昇順
-      hand.sort((a, b) =>
-        colorRank(a) - colorRank(b)
+      return colorRank(a) - colorRank(b)
         || (Number(a.cost) || 0) - (Number(b.cost) || 0)
         || expectDmg(a) - expectDmg(b)
         || expectBlk(a) - expectBlk(b)
         || expectHeal(a) - expectHeal(b)
-        || String(a.name).localeCompare(b.name, "ja")
-      );
+        || String(a.name).localeCompare(String(b.name), "ja");
+    }
+
+    function sortHand() {
+      hand.sort(compareHandOrder);
     }
 
     function renderBattle() {
@@ -21196,7 +21278,12 @@
         if (name === "ask-title") { askLeave = true; showDeck = false; showFoeDeck = false; render(); }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
         if (name === "toggle-deck") { eventDeckOpen = !eventDeckOpen; render(); }
-        if (name === "deck") { showFoeDeck = false; showDeck = true; render(); }
+        if (name === "deck") { showFoeDeck = false; showDeck = true; deckOrder = "hand"; render(); }
+        if (name === "deck-sort") {
+          const order = action.dataset.order;
+          if (order === "hand" || order === "got" || order === "cost" || order === "genre") deckOrder = order;
+          render();
+        }
         if (name === "close-deck") { showDeck = false; render(); }
         if (name === "foe-deck") { showDeck = false; showFoeDeck = true; render(); }
         if (name === "close-foe-deck") { showFoeDeck = false; render(); }
