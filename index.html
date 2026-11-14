@@ -1701,9 +1701,6 @@
       100% { opacity: 1; transform: none; }
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
-    .reward-pick.foe-drop .card.preview {
-      box-shadow: 0 0 0 3px #e4c6ff, 0 0 24px rgba(176, 90, 240, 0.95), 0 0 48px rgba(110, 30, 180, 0.55), 0 22px 36px rgba(0, 0, 0, 0.55);
-    }
     .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 1px rgba(255, 244, 210, 0.9), 0 0 36px rgba(240, 195, 106, 0.62), 0 22px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100cqw - 40px)); padding: 36px 48px 32px; }
@@ -5362,7 +5359,7 @@
       text-shadow: 0 1px 0 #140c08, 0 0 2px #140c08;
     }
     .card .card-fit .nameplate .name {
-      left: 20.891cqw;
+      left: 23.438cqw;
       right: 6.5cqw;
       top: 11.35cqw;
       transform: translateY(-50%);
@@ -5404,6 +5401,8 @@
     .card .card-fit .fx b { width: auto; min-width: 0; font-size: 5.2cqw; font-weight: 700; line-height: 1.25; }
     .card .card-fit .fx.kw,
     .card .card-fit .fx b { text-box-trim: trim-both; text-box-edge: text; }
+    .card .card-fit .fx.note .star-line { color: #8a5a12; letter-spacing: 0.08em; }
+    .card .card-fit.rboss .fx.note .star-line { color: #9a1f14; }
     .card .card-fit .fx.note .nobr { display: block; line-height: 1.22; }
     .card .card-fit .fx.note .nobr + .nobr { margin-top: 1.1cqw; }
     /* 装備と祝福の報酬は、文ごとの改行が <br> になり折り返しより一段空く。折り返しと同じ行間に揃える */
@@ -10382,9 +10381,9 @@
       クイックステップ: "card-quick-step.jpg?v=2",
       魔法のパリィ: "card-magic-parry.jpg?v=1",
       盾削ぎ: "card-shield-shave.jpg?v=1",
-      ツインアタック: "card-twin.jpg?v=1",
+      ツインアタック: "card-twin.jpg?v=2",
       ハードブロック: "card-hard-block-f.jpg?v=3",
-      ビッグブロック: "card-big-block-f.jpg?v=3",
+      ビッグブロック: "card-big-block-f.jpg?v=4",
       応急手当: "card-first-aid.jpg?v=1",
       ベッド: "card-bed.jpg?v=1",
       ホテル: "card-hotel.jpg?v=1",
@@ -11551,7 +11550,7 @@
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=12", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
       if (name === "出来事:修行") return { src: "path-train.jpg?v=5", label: "修行" };
-      if (name === "出来事:鍛冶屋") return { src: "path-smith.svg?v=2", label: "鍛冶屋" };
+      if (name === "出来事:鍛冶屋") return { src: "path-smith.jpg?v=1", label: "鍛冶屋" };
       if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=3", label: "ボス戦", boss: true };
       if (!name) return { mark: "？", label: "" };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
@@ -17841,7 +17840,8 @@
         return zoomSidePanel(title, `<div class="art-zoom-frame"><img class="art-zoom-img" src="${style[2]}" alt="${esc(title)}"></div>`, false);
       }
       const card = albumCatalog().find((item) => item.name === name) || { name, ...(CARDS[name] || WARRIOR[name] || COMMON[name] || gearCardByName(name) || {}) };
-      const body = `<div class="art-zoom-card"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></div>`;
+      const asFoe = card.klass === "敵";
+      const body = `<div class="art-zoom-card"><div class="card preview ${asFoe ? "foe" : cardKind(card)}">${cardFace(card, false, asFoe)}</div></div>`;
       return zoomSidePanel(name, body, false);
     }
 
@@ -17989,7 +17989,7 @@
               ${sheetFig("path-job.jpg?v=8", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=9", "遭遇")}
               ${sheetFig("path-train.jpg?v=5", "修行")}
-              ${sheetFig("path-smith.svg?v=2", "鍛冶屋（空）")}
+              ${sheetFig("path-smith.jpg?v=1", "鍛冶屋")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
@@ -18056,7 +18056,8 @@
         .join("");
       const faces = sortedCards(shown).map((card) => {
         const cap = card.deckCopies ? ` aria-label="${esc(card.name)}×${card.deckCopies}"` : ` aria-label="${esc(card.name)}のカードを拡大"`;
-        return `<button type="button" class="card preview ${cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}"${cap} aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false)}</button>`;
+        const asFoe = card.klass === "敵";
+        return `<button type="button" class="card preview ${asFoe ? "foe" : cardKind(card)} album-card${albumZoom === card.name ? " on" : ""}" data-art-zoom="${esc(card.name)}"${cap} aria-pressed="${albumZoom === card.name ? "true" : "false"}">${cardFace(card, false, asFoe)}</button>`;
       }).join("");
       const starterNote = albumTab === "初期デッキ" ? "戦士（種類4）　チャージアタックはこの1枚だけ　" : "";
       const metaLine = albumTab === "未採用"
@@ -18073,7 +18074,7 @@
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
                 <h4 class="trial-head">暗めの紫</h4>
-                <div class="style-genres trial">${cardStyleSheet([["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=1"]])}</div>
+                <div class="style-genres trial">${cardStyleSheet([["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=2"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -18340,7 +18341,7 @@
           const card = logLines[Number(line.dataset.log)] && logLines[Number(line.dataset.log)].card;
           if (!card) return;
           const tone = line.dataset.foe === "1" ? "foe" : cardKind(card);
-          peek.innerHTML = `<div class="card preview ${tone}">${cardFace(card, false)}</div>`;
+          peek.innerHTML = `<div class="card preview ${tone}">${cardFace(card, false, line.dataset.foe === "1")}</div>`;
           peek.hidden = false;
           placeAnchored(peek, line, {
             prefer: "left",
@@ -18654,7 +18655,7 @@
       ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=1"],
       ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
       ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
-      ["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=1"],
+      ["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=2"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -18932,12 +18933,17 @@
       ].join("");
       const kwHtml = keywords.length ? `<span class="fx kw">${keywords.join("")}</span>` : "";
       const iconHtml = icons ? `<span class="fx-row">${icons}</span>` : "";
+      const stars = basicCardName(card.name) ? 0 : (Number(card.stars) || 0);
+      const kind = foe ? "foe" : cardKind(card);
+      if ((kind === "gear" || kind === "boon") && stars) {
+        const mark = `<span class="nobr star-line">${"★".repeat(stars)}</span>`;
+        noteText = noteText ? `${mark}<br>${noteText}` : mark;
+      }
       const noteHtml = noteText ? `<span class="fx note">${noteText}</span>` : "";
       const effects = `${kwHtml}${iconHtml}${noteHtml}`;
-      const stars = basicCardName(card.name) ? 0 : (Number(card.stars) || 0);
-      const picture = (card.image || cardArtSrc(card.name)) ? `<img src="${card.image || cardArtSrc(card.name)}" alt="">` : "";
-      const rank = card.boss ? "rboss" : stars >= 5 ? "r3" : stars >= 3 ? "r2" : stars >= 1 ? "r1" : "r0";
-      const kind = foe ? "foe" : cardKind(card);
+      const foeAttack = foe && card.name === "アタック" ? "card-attack-foe.jpg?v=1" : "";
+      const picture = (card.image || foeAttack || cardArtSrc(card.name)) ? `<img src="${card.image || foeAttack || cardArtSrc(card.name)}" alt="">` : "";
+      const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : stars >= 1 ? "r1" : "r0";
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
       return `<div class="card-fit ${rank} k-${kind}"><div class="nameplate">${costOrbs(card.cost)}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
@@ -19639,7 +19645,7 @@
       beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=6" },
       shop: { name: "お店", text: "敵から得た★で、貴重な品を買おう。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
-      smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.svg?v=2" },
+      smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=1" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
@@ -20465,7 +20471,7 @@
     }
 
     function offerTone(card) {
-      return card && card.source === "敵" ? "foe" : cardKind(card);
+      return cardKind(card);
     }
 
     function armRare(id) { rareArmed = id; }
@@ -20590,8 +20596,7 @@
     function rewardPickButtons(list, action) {
       const ordered = list.map((card, i) => ({ card, i })).sort((a, b) => Number(a.card.source === "敵") - Number(b.card.source === "敵"));
       return ordered.map(({ card, i }) => {
-        const foe = card.source === "敵" ? " foe-drop" : "";
-        return `<button type="button" class="reward-pick${foe}" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
+        return `<button type="button" class="reward-pick" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
       }).join("");
     }
 
@@ -20657,8 +20662,7 @@
         const ordered = bossPicks.map((pick, i) => ({ pick, i })).sort((a, b) => Number(a.pick.kind === "card" && a.pick.card && a.pick.card.source === "敵") - Number(b.pick.kind === "card" && b.pick.card && b.pick.card.source === "敵"));
         const picks = ordered.map(({ pick, i }) => {
           if (pick.kind === "card" && pick.card) {
-            const foe = pick.card.source === "敵" ? " foe-drop" : "";
-            return `<button type="button" class="reward-pick${foe}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
+            return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
