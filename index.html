@@ -744,6 +744,7 @@
       background: rgba(18, 12, 10, 0.9);
       box-shadow: inset 0 0 0 2px rgba(255, 196, 120, 0.78);
     }
+    .duel-mid .play-side.foe .forecast { transform: translateY(28px); }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -5453,64 +5454,31 @@
       .overlay.paths .path-list button { animation: none; }
       .overlay.paths .path-list.forced button.fold-left { transform: translate(22%, 10px) rotate(-8deg) scale(0.9); }
       .overlay.paths .path-list.forced button.fold-right { transform: translate(-22%, 10px) rotate(8deg) scale(0.9); }
-      .road-node.path-land { animation: none; }
-      .overlay.paths.path-leave,
+      .path-black,
       .battle-screen.path-handoff .battle-bands,
       .battle-screen.path-handoff .handbar,
       .battle-screen.path-handoff .event-stage { animation: none; }
     }
-    .overlay.paths .path-list button.path-dismiss {
-      animation: path-dismiss 0.28s ease forwards;
+    .path-black {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: #000;
+      opacity: 0;
+      animation: path-black-in 0.4s ease forwards;
     }
-    .overlay.paths .path-list button.path-chosen {
-      z-index: 3;
-      animation: path-lift 0.28s cubic-bezier(0.16, 0.84, 0.32, 1) forwards;
-    }
-    @keyframes path-dismiss {
-      to { opacity: 0; transform: translateY(28px) scale(0.9); }
-    }
-    @keyframes path-lift {
-      to { transform: translateY(-22px) scale(1.06); }
-    }
-    .path-flyer {
-      position: absolute;
-      z-index: 80;
-      margin: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.5), 0 0 0 4px #ffe7a0;
-      pointer-events: none;
-    }
-    .path-flyer img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .road-node.path-inbound > img,
-    .road-node.path-inbound > i { opacity: 0; }
-    .road-node.path-land { animation: path-slot 0.42s ease-out; }
-    .overlay.paths.path-leave {
-      animation: path-board-out 0.48s ease forwards;
-      pointer-events: none;
-    }
-    .overlay.paths.path-leave .panel { pointer-events: none; }
-    @keyframes path-board-out {
-      to { opacity: 0; }
-    }
+    .path-black.path-black-out { animation: path-black-out 0.5s ease forwards; }
+    @keyframes path-black-in { to { opacity: 1; } }
+    @keyframes path-black-out { from { opacity: 1; } to { opacity: 0; } }
     .battle-screen.path-handoff .battle-bands,
     .battle-screen.path-handoff .handbar,
     .battle-screen.path-handoff .event-stage {
-      animation: path-handoff 0.5s ease;
+      animation: path-arrive 0.72s cubic-bezier(0.16, 0.84, 0.32, 1) both;
     }
-    @keyframes path-handoff {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes path-slot {
-      0% { transform: scale(0.86); filter: brightness(1.55); }
-      60% { transform: scale(1.05); filter: brightness(1.12); }
-      100% { transform: none; filter: none; }
+    @keyframes path-arrive {
+      0% { opacity: 0; transform: translateY(36px); filter: brightness(1.8); }
+      42% { opacity: 1; transform: translateY(0); filter: brightness(1.18); }
+      100% { opacity: 1; transform: none; filter: none; }
     }
     .overlay.gear-offer { z-index: 32; }
     .overlay.gear-offer .panel { width: min(720px, calc(100cqw - 32px)); }
@@ -7534,13 +7502,87 @@
       white-space: nowrap;
       font-size: clamp(18px, 1.4cqw, 24px);
     }
-    .menu.event .beggar-card.picked .card.preview { outline: none; }
-    @keyframes beggar-frame-glow {
-      0%, 100% { filter: drop-shadow(0 0 5px #ffe08a) drop-shadow(0 0 12px rgba(255, 186, 50, 0.95)); }
-      50% { filter: drop-shadow(0 0 8px #fff4c2) drop-shadow(0 0 22px rgba(255, 210, 80, 1)); }
+    .menu.event.smith .event-side { overflow: auto; }
+    .menu.event.smith .event-choice { overflow: visible; }
+    .menu.event.smith .smith-dest {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: max-content;
     }
-    .menu.event.beggar .beggar-card.picked .card-fit .frame {
-      animation: beggar-frame-glow 1.15s ease-in-out infinite;
+    .menu.event.smith .smith-k {
+      color: #f0c36a;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      line-height: 1.2;
+    }
+    .menu.event.smith .smith-cards {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      align-content: flex-start;
+      gap: 10px;
+    }
+    .menu.event.smith button.smith-card {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .menu.event.smith button.smith-card .card.preview,
+    .menu.event.smith .smith-dest .card.preview {
+      width: var(--smith-w, 120px);
+      max-width: none;
+    }
+    .menu.event.smith button.smith-card:not(:disabled):hover { transform: translateY(-6px); }
+    .menu.event.smith .smith-arrow {
+      align-self: center;
+      color: #ffe08a;
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 2px 0 #1a120c;
+    }
+    .menu.event.smith .smith-after {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .menu.event.smith .event-actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: max-content;
+      max-width: 100%;
+      align-self: flex-start;
+      gap: 12px;
+    }
+    .menu.event.smith .event-actions button {
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      min-height: 52px;
+      white-space: nowrap;
+    }
+    .menu.event.beggar .beggar-card.picked .card.preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      border: 4px solid #ffe08a;
+      box-shadow: inset 0 0 0 2px #6a3e08, 0 0 12px rgba(255, 196, 70, 0.9);
+      pointer-events: none;
     }
     .menu.event .gift-row { width: 100%; height: auto; min-height: 0; flex: 0 1 auto; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 14px; }
     .menu.event .shop-row { width: 100%; justify-content: stretch; }
@@ -10076,6 +10118,7 @@
     }
     #stage-float,
     #stage-float * { pointer-events: none; }
+    #stage-float .path-black,
     #stage-float .depart,
     #stage-float .depart *,
     #stage-float .foe-deck-pop,
@@ -10598,6 +10641,7 @@
       ["物乞い", "物乞い"],
       ["修行", "修行"],
       ["未知", "未知"],
+      ["鍛冶屋", "鍛冶屋"],
     ];
     const META_KEY = "card-battle-meta-v1";
     const ACCOUNT_KEY = "card-battle-account-v1";
@@ -10665,6 +10709,7 @@
     let runEnchants = {};
     let runEnchantWords = {};
     let cardAlters = [];
+    let smithUsed = false;
     let cardMastery = [];
     let masteryOffer = null;
     let masteryQueue = [];
@@ -12822,6 +12867,46 @@
       return cardMastery.find((item) => item && item.name === name && item.nth === nth) || null;
     }
 
+    const SMITH_NUM = ["damage", "block", "heal", "focus", "poison", "thorns", "draw", "parryAdd", "expose", "fullBonus", "safeBonus", "kick", "shave", "nextDraw", "redTimes", "counter", "burn", "hits", "critChance"];
+    const SMITH_FLAG = ["parry", "press", "power", "rage", "during", "flash", "spite", "burst", "headbutt", "poise", "guardBreak", "fullOnly", "finisher", "knife", "doubleNext", "masterOnce", "magicParry", "pride", "step", "coward", "instant", "quick", "permanent", "keep", "halfOnly", "burnFirst"];
+
+    function mixEffectText(a, b) {
+      const lines = [];
+      const seen = {};
+      for (const part of `${a || ""}\n${b || ""}`.split(/\n+/)) {
+        const line = part.trim();
+        if (!line || seen[line]) continue;
+        seen[line] = true;
+        lines.push(line);
+      }
+      return lines.join("\n");
+    }
+
+    function mixSmithAlter(base, mat, nth) {
+      const alter = { name: base.name, nth, fused: true, text: mixEffectText(base.text, mat.text) };
+      for (const key of SMITH_NUM) {
+        const n = (Number(base[key]) || 0) + (Number(mat[key]) || 0);
+        if (!n) continue;
+        alter[key] = key === "critChance" ? Math.min(100, n) : n;
+      }
+      for (const key of SMITH_FLAG) {
+        if (base[key] || mat[key]) alter[key] = true;
+      }
+      return alter;
+    }
+
+    function applySmithAlter(next, alter) {
+      if (!next || !alter) return;
+      if (alter.text) next.text = alter.text;
+      for (const key of SMITH_NUM) {
+        if (alter[key]) next[key] = alter[key];
+      }
+      for (const key of SMITH_FLAG) {
+        if (alter[key]) next[key] = true;
+      }
+      if (alter.fused) next.fused = true;
+    }
+
     function tuneDeck(cards) {
       const seen = {};
       return cards.map((card) => {
@@ -12830,13 +12915,7 @@
         seen[card.name] = nth + 1;
         const next = { ...card, copyNth: nth };
         const alter = cardAlters.find((item) => item && item.name === card.name && item.nth === nth);
-        if (alter) {
-          if (alter.text) next.text = alter.text;
-          if (alter.damage) next.damage = alter.damage;
-          if (alter.block) next.block = alter.block;
-          if (alter.heal) next.heal = alter.heal;
-          if (alter.fused) next.fused = true;
-        }
+        if (alter) applySmithAlter(next, alter);
         const picked = (masteryRow(card.name, nth) || {}).picked || "";
         if (picked === "power") {
           if (next.damage) next.damage = roundMastery(next.damage);
@@ -14518,6 +14597,7 @@
         runEnchants,
         runEnchantWords,
         cardAlters,
+        smithUsed,
         cardMastery,
         masteryOffer,
         masteryQueue,
@@ -14727,6 +14807,7 @@
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
       runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
+      smithUsed = !!data.smithUsed || cardAlters.some((item) => item && item.fused);
       cardMastery = Array.isArray(data.cardMastery) ? data.cardMastery : [];
       masteryOffer = data.masteryOffer && data.masteryOffer.name ? {
         name: String(data.masteryOffer.name),
@@ -15687,7 +15768,9 @@
         smithName = "";
         smithElem = "";
         floorNote = "あやしい婆さんが、火の前で手を振っている。";
-        floorPrompt = "合成は★3で、同じ土台は一度きり。エンチャントは★2で、同じカード名のすべてにかかる。★が無いと使えない。";
+        floorPrompt = smithUsed
+          ? "この攻略では、もう鍛冶屋を使った。"
+          : "この攻略で一度だけ。合成は★3。土台よりマナが低い、同じジャンルのカードを足す。効果は全部混ざる。素材は消える。エンチャントは★2。";
       }
     }
 
@@ -15703,74 +15786,105 @@
       if (at >= 0) stolen.splice(at, 1);
     }
 
+    function smithMateOk(base, baseSeen, baseIndex, card, index) {
+      if (!base || !card || index === baseIndex || (baseSeen && baseSeen.fused)) return false;
+      if (cardKind(base) !== cardKind(card)) return false;
+      const baseCost = Number(base.cost) || 0;
+      const cost = Number(card.cost) || 0;
+      return baseCost >= 1 && cost < baseCost;
+    }
+
     function fuseSmith(matIndex) {
-      if ((Number(meta.stars) || 0) < 3) return;
+      if (smithUsed || (Number(meta.stars) || 0) < 3) return;
       const raw = deckCore();
       const shown = runDeck();
       const base = raw[smithBase];
       const mat = raw[matIndex];
       const baseShown = shown[smithBase];
-      const matShown = shown[matIndex];
-      if (!base || !mat || !baseShown || !matShown || baseShown.fused || smithBase === matIndex) return;
-      const baseCost = Number(baseShown.cost) || 0;
-      const matCost = Number(matShown.cost) || 0;
-      if (baseCost < 2 || matCost >= baseCost) return;
+      if (!smithMateOk(base, baseShown, smithBase, mat, matIndex)) return;
       const nth = raw.slice(0, smithBase).filter((card) => card.name === base.name).length;
-      const alter = { name: base.name, nth, text: `${base.text || ""} ${mat.text || ""}`.replace(/\s+/g, " ").trim(), fused: true };
-      const damage = (Number(base.damage) || 0) + (Number(mat.damage) || 0);
-      const block = (Number(base.block) || 0) + (Number(mat.block) || 0);
-      const heal = (Number(base.heal) || 0) + (Number(mat.heal) || 0);
-      if (damage) alter.damage = damage;
-      if (block) alter.block = block;
-      if (heal) alter.heal = heal;
-      cardAlters.push(alter);
+      cardAlters.push(mixSmithAlter(base, mat, nth));
       dropOneCard(mat.name);
       meta.stars -= 3;
+      smithUsed = true;
       persistMeta();
       floorPhase = "show";
-      floorPrompt = `${base.name}に、${mat.name}の効果を足した。素材は消えた。`;
+      floorPrompt = `${base.name}に、${mat.name}の効果を足した。素材は消えた。この攻略の鍛冶屋は、これで終わり。`;
       persistSave(true);
       render();
     }
 
     function enchantSmith(kind) {
       if (enchantPop !== "smith") return;
-      if ((Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
+      if (smithUsed || (Number(meta.stars) || 0) < 2 || !smithName || runEnchants[smithName]) return;
       const word = grantEnchant(smithName, kind);
       if (!word && kind === "dark") return;
       if (!runEnchants[smithName]) return;
       meta.stars -= 2;
+      smithUsed = true;
       persistMeta();
       const face = enchantFace(kind);
       const added = word ? `　${word}` : "";
       enchantPop = "";
       smithElem = "";
       floorPhase = "show";
-      floorPrompt = `${smithName}に、${face.name}のエンチャントを付けた。${face.sub}${added}。`;
+      floorPrompt = `${smithName}に、${face.name}のエンチャントを付けた。${face.sub}${added}。この攻略の鍛冶屋は、これで終わり。`;
       persistSave(true);
       render();
     }
 
+    function smithFace(card) {
+      return `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
+    }
+
+    function smithResultCard(baseIndex, matIndex) {
+      const raw = deckCore();
+      const base = raw[baseIndex];
+      const mat = raw[matIndex];
+      if (!base || !mat) return base;
+      const nth = raw.slice(0, baseIndex).filter((card) => card && card.name === base.name).length;
+      cardAlters.push(mixSmithAlter(base, mat, nth));
+      let shown = null;
+      try {
+        shown = runDeck()[baseIndex];
+      } finally {
+        cardAlters.pop();
+      }
+      return shown ? { ...shown } : { ...base };
+    }
+
+    function smithCardButton(action, index, card, ok, result) {
+      const after = ok && result
+        ? `<span class="smith-arrow" aria-hidden="true">→</span><span class="smith-after">${smithFace(result)}<span class="smith-k">こうなる</span></span>`
+        : "";
+      return `<button type="button" class="smith-card${after ? " pair" : ""}" data-action="${action}" data-index="${index}" ${ok ? "" : "disabled"} aria-label="${esc(card.name)}">${smithFace(card)}${after}</button>`;
+    }
+
     function smithPanelHtml() {
       const have = Number(meta.stars) || 0;
+      const raw = deckCore();
       const cards = runDeck();
+      if (smithUsed) {
+        return `<p>この攻略では、もう鍛冶屋を使った。</p><div class="event-actions">${menuButton("出ていく", "smith-leave")}</div>`;
+      }
       if (floorPhase === "smith-base") {
-        const rows = cards.map((card, index) => {
-          const cost = Number(card.cost) || 0;
-          const ok = cost >= 2 && !card.fused;
-          return `<button type="button" data-action="smith-base" data-index="${index}" ${ok ? "" : "disabled"}>${esc(card.name)}　${cost}マナ${card.fused ? "　合成済み" : ""}</button>`;
+        const rows = raw.map((card, index) => {
+          const ok = raw.some((other, i) => smithMateOk(card, cards[index], index, other, i));
+          return smithCardButton("smith-base", index, cards[index] || card, ok, null);
         }).join("");
-        return `<p>2マナ以上の土台を選ぶ。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
+        return `<p>土台にするカード。同じジャンルで、より低いマナのカードが要る。所持 ★${have}</p><div class="smith-cards">${rows}</div><div class="event-actions">${menuButton("もどる", "smith-back")}</div>`;
       }
       if (floorPhase === "smith-mat") {
-        const base = cards[smithBase];
-        const baseCost = base ? Number(base.cost) || 0 : 0;
-        const rows = cards.map((card, index) => {
-          const cost = Number(card.cost) || 0;
-          const ok = base && index !== smithBase && cost < baseCost;
-          return `<button type="button" data-action="smith-mat" data-index="${index}" ${ok ? "" : "disabled"}>${esc(card.name)}　${cost}マナ</button>`;
+        const base = raw[smithBase];
+        const dest = cards[smithBase] || base;
+        const destHtml = dest ? `<div class="smith-dest">${smithFace(dest)}<span class="smith-k">合成先</span></div>` : "";
+        const rows = raw.map((card, index) => {
+          if (index === smithBase) return "";
+          const ok = smithMateOk(base, cards[smithBase], smithBase, card, index);
+          const face = cards[index] || card;
+          return smithCardButton("smith-mat", index, face, ok, ok ? smithResultCard(smithBase, index) : null);
         }).join("");
-        return `<p>${esc(base ? base.name : "")}に足すカード。素材は消える。★3。所持 ★${have}</p><div class="event-actions">${rows}${menuButton("もどる", "smith-back")}</div>`;
+        return `<p>足すカード。矢印の先が、合成したあとのカード。素材は消える。★3。所持 ★${have}</p>${destHtml}<div class="smith-cards">${rows}</div><div class="event-actions">${menuButton("もどる", "smith-back")}</div>`;
       }
       return `<div class="event-actions">${menuButton("合成する　★3", "smith-fuse", true, have < 3)}${menuButton("エンチャント　★2", "smith-enchant", true, have < 2)}${menuButton("出ていく", "smith-leave")}</div>`;
     }
@@ -15925,6 +16039,7 @@
       eventBattleSeen = false;
       runEnchantWords = {};
       cardAlters = [];
+      smithUsed = false;
       cardMastery = [];
       masteryOffer = null;
       masteryQueue = [];
@@ -17782,7 +17897,7 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}"><div class="event-title">${title}</div>${artBox}<div class="event-side"><div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div>`;
       const choiceShell = lead;
       const roadDeck = blessMidRoad() ? `<div class="event-deck">${pileMarkup("deck", runDeck().length)}</div>` : "";
-      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`);
+      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`);
       runEntrance = false;
     }
 
@@ -17884,6 +17999,7 @@
         if (screen === "fx" || screen === "battle") fitFighters();
         fitSearchGearPop();
         fitBeggarDeck();
+        fitSmithDeck();
         armFoeArrive(8);
       });
     }
@@ -17942,6 +18058,35 @@
         if (w > best) best = w;
       }
       box.style.setProperty("--beggar-w", `${Math.min(220, Math.max(36, best))}px`);
+    }
+
+    function fitSmithDeck() {
+      const host = root.querySelector(".menu.event.smith");
+      const box = host && host.querySelector(".smith-cards");
+      if (!host || !box) return;
+      const buttons = [...box.querySelectorAll("button.smith-card")];
+      const n = buttons.length;
+      if (!n) return;
+      const pair = buttons.some((button) => button.classList.contains("pair"));
+      const side = box.closest(".event-side");
+      const choice = box.closest(".event-choice");
+      const actions = choice && choice.querySelector(".event-actions");
+      const copy = side && side.querySelector(".event-copy");
+      const dest = choice && choice.querySelector(".smith-dest");
+      const gap = 10;
+      const availW = Math.max(80, (choice ? choice.clientWidth : box.clientWidth) - 12);
+      const used = (copy ? copy.offsetHeight : 0) + (actions ? actions.offsetHeight : 0) + (dest ? dest.offsetHeight : 0);
+      const availH = Math.max(80, (side ? side.clientHeight : 0) - used - 36);
+      const unit = pair ? 2.2 : 1;
+      let best = 72;
+      for (let cols = 1; cols <= n; cols += 1) {
+        const rows = Math.ceil(n / cols);
+        const byW = Math.floor((availW - gap * (cols - 1)) / (cols * unit));
+        const byH = Math.floor(((availH - gap * (rows - 1)) / rows) * 3 / 4);
+        const w = Math.min(byW, byH);
+        if (w > best) best = w;
+      }
+      host.style.setProperty("--smith-w", `${Math.min(160, Math.max(72, best))}px`);
     }
 
     function armFoeArrive(tries) {
@@ -18637,6 +18782,21 @@
       return { raw: dealt, hp: hit.hpLoss, parry: false, show: true };
     }
 
+    function forecastChip(kind, amount) {
+      const label = kind === "give" ? "与" : "被";
+      const n = Math.max(0, Math.round(Number(amount) || 0));
+      return `<div class="forecast ${kind}" aria-label="${label}ダメージ ${n}"><em>${label}</em><b>${n}</b></div>`;
+    }
+
+    function playForecastHtml() {
+      if (phase !== "player" || outcome || !player || !enemy) return { give: "", take: "" };
+      const cast = forecastTurn();
+      return {
+        give: cast.give && cast.give.show ? forecastChip("give", cast.give.hp) : "",
+        take: cast.take && cast.take.show ? forecastChip("take", cast.take.hp) : "",
+      };
+    }
+
     function useZoneMarkup() {
       const resolving = phase === "resolve";
       const active = resolving ? resolveAt - 1 : -1;
@@ -18650,10 +18810,11 @@
         const hot = resolving && active === inPlay.length && i === 0;
         return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !hot }) : "";
       }).join("");
+      const cast = playForecastHtml();
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
-          <div class="play-side mine use-half"><div class="play-cards">${mine}</div></div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div></div>
+          <div class="play-side mine use-half"><div class="play-cards">${mine}${cast.give}</div></div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCards}${cast.take}</div></div>
         </div>
         ${vsMarkup()}
       </div>`;
@@ -18982,7 +19143,7 @@
       beggar: { name: "物乞い", text: "デッキからカードを1枚削除できる。", image: "path-beggar.jpg?v=6" },
       shop: { name: "お店", text: "敵から得た★で、貴重な品を買おう。", image: "path-shop.jpg?v=12" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
-      smith: { name: "鍛冶屋", text: "カードを合成して、強化しよう。", image: "path-smith.svg?v=2" },
+      smith: { name: "鍛冶屋", text: "この攻略で一度だけ。カードを合成する。", image: "path-smith.svg?v=2" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
@@ -19764,132 +19925,47 @@
       advance(1);
     }
 
-    function capturePathShot(id) {
-      const button = document.querySelector(".overlay.paths .path-list button.path-picked")
-        || document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
-      const img = button && button.querySelector("img");
-      if (button) {
-        document.querySelectorAll(".overlay.paths .path-list button").forEach((el) => {
-          el.classList.toggle("path-chosen", el === button);
-          el.classList.toggle("path-dismiss", el !== button);
-        });
-      }
-      if (!img) return null;
-      return { frame: stageFrameOf(img), src: img.getAttribute("src") || "" };
-    }
-
-    function pathLandNode() {
-      const maps = [...document.querySelectorAll(".road-map")];
-      const map = maps.find((el) => el.offsetWidth > 0 && el.offsetHeight > 0) || maps[0];
-      if (!map) return null;
-      const now = map.querySelector(".road-node.now");
-      if (!now) return null;
-      const above = now.previousElementSibling;
-      if (above && above.classList.contains("road-node") && !above.classList.contains("pad")) return above;
-      return now;
-    }
-
-    function flyPathIntoMap(shot, done) {
-      let settled = false;
-      let ghost = null;
-      let dest = null;
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        if (ghost && ghost.parentNode) ghost.remove();
-        if (dest) dest.classList.remove("path-inbound");
-        done();
-      };
-      placeRoad("instant");
-      dest = pathLandNode();
+    function crossPathBlack(place, step) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce || !shot || !shot.frame || !dest || !("animate" in Element.prototype)) {
-        finish();
-        return;
-      }
-      const face = dest.querySelector("img, i") || dest;
-      const to = stageFrameOf(face);
-      const from = shot.frame;
-      if (!from.w || !from.h || !to.w || !to.h) {
-        finish();
-        return;
-      }
-      dest.classList.add("path-inbound");
-      ghost = document.createElement("div");
-      ghost.className = "path-flyer";
-      ghost.setAttribute("aria-hidden", "true");
-      const pic = document.createElement("img");
-      pic.alt = "";
-      pic.src = shot.src;
-      ghost.appendChild(pic);
-      ghost.style.left = `${from.cx}px`;
-      ghost.style.top = `${from.cy}px`;
-      ghost.style.width = `${from.w}px`;
-      ghost.style.height = `${from.h}px`;
-      mountFloat(ghost);
-      const dx = to.cx - from.cx;
-      const dy = to.cy - from.cy;
-      const arc = Math.max(56, Math.min(170, Math.abs(dx) * 0.2 + 48));
-      const sx = Math.max(0.16, to.w / from.w);
-      const sy = Math.max(0.16, to.h / from.h);
-      const anim = ghost.animate([
-        { transform: "translate(-50%, -50%) scale(1.06)", opacity: 1, offset: 0 },
-        { transform: `translate(calc(-50% + ${dx * 0.34}px), calc(-50% + ${dy * 0.18 - arc}px)) scale(0.74)`, opacity: 1, offset: 0.46 },
-        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${sx}, ${sy})`, opacity: 1, offset: 1 },
-      ], { duration: 1000, easing: "cubic-bezier(0.18, 0.74, 0.16, 1)", fill: "forwards" });
-      anim.onfinish = finish;
-      setTimeout(finish, 1000);
-    }
-
-    function fadePathBoard(done) {
-      const board = document.querySelector(".overlay.paths");
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduce || !board) {
-        done();
-        return;
-      }
-      const play = document.querySelector(".battle-screen");
-      if (play) play.style.pointerEvents = "none";
-      let settled = false;
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        done();
-      };
-      board.classList.add("path-leave");
-      board.addEventListener("animationend", (event) => {
-        if (event.target !== board) return;
-        finish();
-      });
-      setTimeout(finish, 560);
-    }
-
-    function beginPathFlight(id, place, step) {
-      const shot = capturePathShot(id);
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      rewardStep = "lifting";
       const go = () => {
-        const button = document.querySelector(".overlay.paths .path-list button.path-picked")
-        || document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
-        const img = button && button.querySelector("img");
-        const live = img ? { frame: stageFrameOf(img), src: img.getAttribute("src") || "" } : shot;
-        if (button) button.style.visibility = "hidden";
-        rewardStep = "flying";
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          flyPathIntoMap(live, () => {
-            fadePathBoard(() => {
-              pathHandoff = true;
-              rewardStep = "done";
-              roadGlide = true;
-              if (place) place();
-              advance(step);
-              schedulePlaceRoad();
-            });
-          });
-        }));
+        pathHandoff = true;
+        rewardStep = "done";
+        roadGlide = true;
+        if (place) place();
+        advance(step);
+        schedulePlaceRoad();
       };
-      if (shot && !reduce) setTimeout(go, 280);
-      else go();
+      if (reduce) {
+        go();
+        return;
+      }
+      rewardStep = "lifting";
+      const veil = document.createElement("div");
+      veil.className = "path-black";
+      veil.setAttribute("aria-hidden", "true");
+      mountFloat(veil);
+      let swapped = false;
+      const swap = () => {
+        if (swapped) return;
+        swapped = true;
+        go();
+        requestAnimationFrame(() => {
+          veil.classList.add("path-black-out");
+          const clear = () => {
+            if (veil.parentNode) veil.remove();
+          };
+          veil.addEventListener("animationend", (event) => {
+            if (event.target !== veil || event.animationName !== "path-black-out") return;
+            clear();
+          });
+          setTimeout(clear, 700);
+        });
+      };
+      veil.addEventListener("animationend", (event) => {
+        if (event.target !== veil || event.animationName !== "path-black-in") return;
+        setTimeout(swap, 160);
+      });
+      setTimeout(swap, 720);
     }
 
     function takePath(id) {
@@ -19914,17 +19990,17 @@
       }
       if (id === "unknown") {
         const resolved = pathNode(resolveEncounter());
-        beginPathFlight(id, () => placeNext(resolved || dungeonEnemy()), 1);
+        crossPathBlack(() => placeNext(resolved || dungeonEnemy()), 1);
         return;
       }
       if (id === "straight") {
         const place = pathAlreadyAtNext(id) ? null : () => placeNext(dungeonEnemy());
-        beginPathFlight(id, place, 1);
+        crossPathBlack(place, 1);
         return;
       }
       const node = pathNode(id);
       const place = pathAlreadyAtNext(id) ? null : () => placeNext(node || dungeonEnemy());
-      beginPathFlight(id, place, 1);
+      crossPathBlack(place, 1);
     }
 
     function offerTone(card) {
@@ -20606,6 +20682,7 @@
       if (screen === "battle") fitHand();
       fitSearchGearPop();
       fitBeggarDeck();
+        fitSmithDeck();
     });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", () => {
@@ -20613,6 +20690,7 @@
         if (screen === "battle") fitHand();
         fitSearchGearPop();
         fitBeggarDeck();
+        fitSmithDeck();
       });
     }
     window.matchMedia("(max-width: 500px), (max-height: 500px)").addEventListener("change", () => {
@@ -20620,6 +20698,7 @@
       if (screen === "battle") fitHand();
       fitSearchGearPop();
       fitBeggarDeck();
+        fitSmithDeck();
     });
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
@@ -20627,6 +20706,7 @@
         if (screen === "battle") fitHand();
         fitSearchGearPop();
         fitBeggarDeck();
+        fitSmithDeck();
       }, 80);
     });
 
@@ -20857,12 +20937,12 @@
         if (name === "smith-leave") finishEvent();
         if (name === "smith-back") { floorPhase = "show"; render(); }
         if (name === "smith-fuse") {
-          if ((Number(meta.stars) || 0) < 3) return;
+          if (smithUsed || (Number(meta.stars) || 0) < 3) return;
           floorPhase = "smith-base";
           render();
         }
         if (name === "smith-enchant") {
-          if ((Number(meta.stars) || 0) < 2) return;
+          if (smithUsed || (Number(meta.stars) || 0) < 2) return;
           if (!enchantTargets(false).length) return;
           smithName = "";
           smithElem = "";
