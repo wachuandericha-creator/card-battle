@@ -660,6 +660,7 @@
       gap: 4px;
     }
     .duel-mid .play-side {
+      position: relative;
       display: flex;
       width: 100%;
       height: 100%;
@@ -697,7 +698,7 @@
       height: 100%;
       max-height: 300px;
       max-width: 78%;
-      transform: translateY(28px);
+      transform: translateY(56px);
     }
     .duel-mid .card.preview {
       width: auto;
@@ -734,17 +735,33 @@
       letter-spacing: 0.06em;
       color: #ffe08a;
     }
-    .play-side.mine .forecast {
+    .duel-mid .forecasts {
+      position: absolute;
+      left: 50%;
+      z-index: 7;
+      display: flex;
+      gap: 8px;
+      pointer-events: none;
+      transform: translateX(-50%);
+    }
+    .duel-mid .play-side.mine .forecasts { bottom: 70px; }
+    .duel-mid .play-side.foe .forecasts { top: 70px; }
+    .play-side.mine .forecast,
+    .forecast.damage {
       color: #fff4ea;
       background: rgba(92, 18, 14, 0.92);
       box-shadow: inset 0 0 0 2px rgba(255, 186, 120, 0.85);
     }
-    .play-side.foe .forecast {
-      color: #fff8ee;
-      background: rgba(18, 12, 10, 0.9);
-      box-shadow: inset 0 0 0 2px rgba(255, 196, 120, 0.78);
+    .forecast.shield {
+      color: #f4f7fb;
+      background: rgba(16, 24, 34, 0.92);
+      box-shadow: inset 0 0 0 2px rgba(186, 198, 214, 0.9);
     }
-    .duel-mid .play-side.foe .forecast { transform: translateY(28px); }
+    .forecast.status {
+      color: #f7ecff;
+      background: rgba(36, 16, 48, 0.92);
+      box-shadow: inset 0 0 0 2px rgba(196, 140, 220, 0.9);
+    }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -1684,6 +1701,10 @@
       100% { opacity: 1; transform: none; }
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
+    .reward-pick.foe-drop .card.preview {
+      box-shadow: 0 0 0 3px #e4c6ff, 0 0 24px rgba(176, 90, 240, 0.95), 0 0 48px rgba(110, 30, 180, 0.55), 0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 1px rgba(255, 244, 210, 0.9), 0 0 36px rgba(240, 195, 106, 0.62), 0 22px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100cqw - 40px)); padding: 36px 48px 32px; }
     .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
@@ -1694,6 +1715,7 @@
     .gear-offer-art { width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #1a1410; }
     .gear-offer-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .reward-gear { display: flex; justify-content: center; margin: 0 0 14px; }
+    .reward-gear .card.preview { width: min(220px, 22cqw); height: auto; }
     .reward-gear .gear-effect,
     .gear-offer .gear-effect,
     .reward-pick .gear-effect {
@@ -1868,12 +1890,14 @@
       font-size: 22px;
       padding: 12px 40px;
     }
-    .overlay.foe-starter {
+    .overlay.foe-starter,
+    .overlay.foe-deck-view {
       background:
         radial-gradient(ellipse at 50% 42%, rgba(120, 64, 18, 0.38), transparent 52%),
         rgba(6, 4, 3, 0.8);
     }
-    .overlay.foe-starter .panel {
+    .overlay.foe-starter .panel,
+    .overlay.foe-deck-view .panel {
       width: min(1500px, calc(100cqw - 20px));
       height: min(1000px, calc(100cqh - 12px));
       align-items: stretch;
@@ -2050,6 +2074,12 @@
       border: 2px solid rgba(228, 177, 90, 0.7);
       background: rgba(12, 9, 7, 0.72);
     }
+    .overlay.foe-deck-view .foe-file {
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow: auto;
+    }
     .foe-starter-deck {
       grid-column: 1 / -1;
       grid-row: 2;
@@ -2138,6 +2168,11 @@
       height: auto;
       max-height: none;
       pointer-events: none;
+    }
+    .enchant-pick .enchant-got .card.preview,
+    .enchant-pick .enchant-elem .card.preview {
+      width: 168px;
+      height: auto;
     }
     .enchant-pick .enchant-elem {
       flex: 0 0 auto;
@@ -5214,7 +5249,7 @@
     .card .fx .ico.heart { transform: scale(1.08); }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
     /* カードスタイル。★は銅、★★は銀、★★★は金。ジャンルの札は枠に描かない。ボスは赤の四隅 */
-    .card.attack, .card.block, .card.skill, .card.power, .card.foe {
+    .card.attack, .card.block, .card.skill, .card.power, .card.gear, .card.foe {
       border-width: 0;
       border-radius: 0;
       background: #0c0a08;
@@ -5259,10 +5294,15 @@
     .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=3"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=3"); }
     .card .card-fit.k-gear.r0,
-    .card .card-fit.k-gear.r1 { --frame-img: url("frame-silver-over-copper.png?v=1"); }
-    .card .card-fit.k-gear.r2 { --frame-img: url("frame-silver-over-silver.png?v=1"); }
-    .card .card-fit.k-gear.r3 { --frame-img: url("frame-silver-over-gold.png?v=1"); }
-    .card .card-fit.k-gear.rboss { --frame-img: url("frame-silver-over-black.png?v=1"); }
+    .card .card-fit.k-gear.r1,
+    .card .card-fit.k-boon.r0,
+    .card .card-fit.k-boon.r1 { --frame-img: url("frame-silver-over-copper.png?v=1"); }
+    .card .card-fit.k-gear.r2,
+    .card .card-fit.k-boon.r2 { --frame-img: url("frame-silver-over-silver.png?v=1"); }
+    .card .card-fit.k-gear.r3,
+    .card .card-fit.k-boon.r3 { --frame-img: url("frame-silver-over-gold.png?v=1"); }
+    .card .card-fit.k-gear.rboss,
+    .card .card-fit.k-boon.rboss { --frame-img: url("frame-silver-over-black.png?v=1"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
       position: absolute;
@@ -5374,6 +5414,11 @@
     .card .card-fit .fx b { text-box-trim: trim-both; text-box-edge: text; }
     .card .card-fit .fx.note .nobr { display: block; line-height: 1.22; }
     .card .card-fit .fx.note .nobr + .nobr { margin-top: 1.1cqw; }
+    /* 装備と祝福の報酬は、文ごとの改行が <br> になり折り返しより一段空く。折り返しと同じ行間に揃える */
+    .card .card-fit.k-gear .fx.note br,
+    .card .card-fit.k-boon .fx.note br { display: none; }
+    .card .card-fit.k-gear .fx.note .nobr:not(:first-child),
+    .card .card-fit.k-boon .fx.note .nobr:not(:first-child) { margin-top: 1.1cqw; }
     .card .card-fit .fx.note,
     .card .card-fit .fx.kw { width: 100%; text-align: center; line-break: strict; word-break: keep-all; text-wrap: balance; }
     .card .card-fit .genre { z-index: 6; }
@@ -7156,6 +7201,7 @@
       text-align: center;
       margin: 0;
       justify-content: center;
+      font-size: clamp(46px, calc(4cqw + 10px), 66px);
     }
     .menu.event .event-title > h1.fade-sandwich > .event-title-name {
       flex: 0 0 auto;
@@ -7779,8 +7825,9 @@
       height: auto;
       margin: 0;
     }
-    .menu.bless h1 {
-      font-size: clamp(42px, 5cqw, 72px);
+    .menu.bless h1,
+    .menu.event.bless .event-title > h1 {
+      font-size: clamp(52px, calc(5cqw + 10px), 82px);
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
     }
@@ -9873,6 +9920,12 @@
       padding: 0;
       justify-content: center;
     }
+    /* 道を選んだあとの階表示は、画面をフェードアウトしない */
+    .turn-call.floor-call,
+    .turn-call.floor-call b {
+      animation: none;
+      opacity: 1;
+    }
     .floor-call b {
       flex: 0 0 auto;
       font-size: min(34cqw, 420px);
@@ -10734,6 +10787,7 @@
     let fxDeal = false;
     let fxNoMana = false;
     let turnCall = "";
+    let foeTurnAnnounced = false;
     const SAVE_KEY = "card-battle-save-v1";
     const CLEAR_INBOX_URL = "https://script.google.com/macros/s/AKfycbyAIYVVPuoXqxvYYpnjP5yyUS9URHj8q2QhkJjQLdcKb-oO5bNc7QpUfCZvotTjMT_5/exec";
     const LIVE_KEY = "card-battle-live-v1";
@@ -10824,6 +10878,7 @@
     let dropLine = "";
     let victoryGear = null;
     let victoryEnchant = null;
+    let victoryItem = null;
     let smithBase = -1;
     let smithName = "";
     let smithElem = "";
@@ -11446,7 +11501,7 @@
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
       if (name === "出来事:修行") return { src: "path-train.jpg?v=5", label: "修行" };
       if (name === "出来事:鍛冶屋") return { src: "path-smith.svg?v=2", label: "鍛冶屋" };
-      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=2", label: "ボス戦", boss: true };
+      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=3", label: "ボス戦", boss: true };
       if (!name) return { mark: "？", label: "" };
       return { src: "path-fight.jpg?v=5", label: "戦闘" };
     }
@@ -11740,6 +11795,51 @@
     }
     function gearCardByName(name) {
       return gearCardList().find((card) => card.name === name) || null;
+    }
+
+    function gearAsCard(item) {
+      if (!item) return null;
+      const known = gearCardByName(item.name);
+      if (known) {
+        return {
+          ...known,
+          image: item.image || known.image,
+          stars: Number(item.stars) || known.stars,
+          boss: !!item.boss || !!known.boss,
+        };
+      }
+      const lines = [];
+      if (Number(item.atk) > 0) lines.push(`ATK+${item.atk}`);
+      if (Number(item.def) > 0) lines.push(`DEF+${item.def}`);
+      const special = String(gearSpecialText(item) || "").replace(/。+$/u, "");
+      if (special && !lines.includes(special)) lines.push(special);
+      return {
+        name: item.name || "装備",
+        cost: 0,
+        stars: Number(item.stars) || 1,
+        boss: !!item.boss,
+        kind: "gear",
+        gear: true,
+        image: item.image || "",
+        text: lines.filter(Boolean).join("\n"),
+      };
+    }
+
+    function boonAsCard(kind, elem) {
+      const face = blessGearOpts(kind, elem);
+      return {
+        name: face.name,
+        cost: 0,
+        stars: Number(face.stars) || 3,
+        kind: "boon",
+        image: face.image || "",
+        text: String(face.body || ""),
+      };
+    }
+
+    function rewardCardHtml(card) {
+      if (!card) return "";
+      return `<div class="card preview ${cardKind(card)}">${cardFace(card)}</div>`;
     }
 
     function gearRarityText(item) {
@@ -14202,6 +14302,7 @@
 
     function finishResolve() {
       timer = null;
+      foeTurnAnnounced = false;
       scrapPlay();
       banner = "";
       if (tickPoison("enemy")) {
@@ -14223,6 +14324,13 @@
       const enemyIndex = inPlay.length;
       if (phase !== "resolve" || resolveAt > enemyIndex) {
         finishResolve();
+        return;
+      }
+      if (resolveAt === enemyIndex && !foeTurnAnnounced) {
+        foeTurnAnnounced = true;
+        turnCall = "enemy";
+        render();
+        timer = setTimeout(stepResolve, 1150);
         return;
       }
       const index = resolveAt;
@@ -14292,6 +14400,7 @@
       }
       phase = "resolve";
       resolveAt = 0;
+      foeTurnAnnounced = false;
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
       const kept = hand.filter((card) => card.keep || isItemCard(card));
       discard.push(...hand.filter((card) => !card.keep && !isItemCard(card)));
@@ -14299,7 +14408,7 @@
       settleKeptHand();
       note = "";
       const poisoned = tickPoison("player");
-      turnCall = "resolve";
+      turnCall = "player";
       if (poisoned) {
         scheduleFinish("lose");
         return;
@@ -14316,7 +14425,7 @@
       timer = setTimeout(stepResolve, Math.max(poisonWait, shieldBreak ? 1800 : 0));
     }
 
-    function startPlayerTurn(quiet) {
+    function startPlayerTurn() {
       if (player.hp <= 0) {
         fxFatal = true;
         fatalHold = true;
@@ -14358,13 +14467,13 @@
       pullFromBracelets();
       fxDeal = true;
       slashSeq = 0;
-      if (!quiet) turnCall = "player";
+      turnCall = "player";
       phase = "player";
       intentShown = false;
       foeAngerShow = false;
       if (finishIfStuck()) return;
       render();
-      timer = setTimeout(presentNextFoeCard, quiet ? 280 : 1150);
+      timer = setTimeout(presentNextFoeCard, 1150);
     }
 
     function finish(kind) {
@@ -14814,6 +14923,7 @@
         dropLine,
         victoryGear,
         victoryEnchant,
+        victoryItem,
         hurtRestUsed,
         rewardStep,
         pathEventTitle,
@@ -15035,6 +15145,7 @@
       dropLine = data.dropLine || "";
       victoryGear = data.victoryGear && data.victoryGear.name ? data.victoryGear : null;
       victoryEnchant = data.victoryEnchant && data.victoryEnchant.elem ? data.victoryEnchant : null;
+      victoryItem = data.victoryItem && data.victoryItem.name ? data.victoryItem : null;
       hurtRestUsed = !!data.hurtRestUsed;
       // 古い保存（走り抜けが混ざる・右端が未知との遭遇でない）は引き直す
       if (!Array.isArray(pathBag) && rewardPaths.length && (rewardPaths[1] !== "straight" || rewardPaths.length !== 3)) rewardPaths = rollPaths();
@@ -15124,7 +15235,7 @@
     function openFight() {
       timer = null;
       if (phase !== "intro" || outcome) return;
-      startPlayerTurn(true);
+      startPlayerTurn();
     }
 
     function rollBlessGear() {
@@ -15363,16 +15474,7 @@
     }
 
     function enchantAwardHtml(elem) {
-      const face = blessGearOpts("enchant", elem);
-      return gearPopShell(face.slot, {
-        name: face.name,
-        image: face.image,
-        body: face.body,
-        kind: "祝福",
-        rarity: gearRarityText(face),
-        likeGear: true,
-        embedded: true,
-      });
+      return rewardCardHtml(boonAsCard("enchant", elem));
     }
 
     function enchantPickOverlay() {
@@ -15506,70 +15608,19 @@
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
       }
       if (gift.kind === "enchant" || gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
-        const face = blessGearOpts(gift.kind, gift.elem);
-        return `<div class="${cls}">${gearPopShell(face.slot, {
-          name: face.name,
-          image: face.image,
-          body: face.body,
-          kind: "祝福",
-          rarity: gearRarityText(face),
-          likeGear: true,
-          embedded: true,
-        })}</div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(boonAsCard(gift.kind, gift.elem))}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
       if (gift.kind === "gear") {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${gearPopShell(item.slot || "sword", {
-          item,
-          name: item.name,
-          image: item.image || "",
-          rarity: gearRarityText(item),
-          embedded: true,
-          sheetPop: !!asSheet,
-        })}</div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(gearAsCard(item))}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
       const detail = `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
       return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rareCaption(item)}${picture}${detail}</div>`;
     }
 
-    function blessPickFace(pick) {
-      if (!pick) return "";
-      if (pick.kind === "card" && pick.card) {
-        return `<div class="gift-pick"><div class="card preview ${cardKind(pick.card)}">${cardFace(pick.card)}</div></div>`;
-      }
-      let image = "";
-      if (pick.kind === "gear" && pick.gear) image = pick.gear.image || "";
-      else if (pick.kind === "enchant" || pick.kind === "maxhp" || pick.kind === "spd" || pick.kind === "mana") {
-        image = blessGearOpts(pick.kind, pick.elem).image;
-      }
-      const picture = image ? `<img class="gift-img" src="${esc(image)}" alt="">` : "";
-      return `<div class="gift-pick">${picture}</div>`;
-    }
-
-    function blessPickPopupHtml(pick) {
-      if (!pick) return "";
-      if (pick.kind === "gear" && pick.gear) {
-        const item = pick.gear;
-        return gearPopShell(item.slot || "sword", {
-          item,
-          name: item.name,
-          image: item.image || "",
-          rarity: gearRarityText(item),
-        });
-      }
-      if (pick.kind === "enchant" || pick.kind === "spd" || pick.kind === "maxhp" || pick.kind === "mana") {
-        const face = blessGearOpts(pick.kind, pick.elem);
-        return gearPopShell(face.slot, {
-          name: face.name,
-          image: face.image,
-          body: face.body,
-          kind: "祝福",
-          rarity: gearRarityText(face),
-          likeGear: true,
-        });
-      }
+    function blessPickPopupHtml() {
       return "";
     }
 
@@ -15969,7 +16020,7 @@
         const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
         floorGift = item ? { kind: "gear", gear: { ...item } } : null;
         floorPhase = floorGift ? "search" : "show";
-        floorNote = "松明の光が、古びた宝箱を照らしている。女の戦士は蓋に手をかけ、今にも開けようとしている。目は星のように輝き、よだれが一筋落ちた。";
+        floorNote = "松明の光が、古びた宝箱を照らしている。\nこの瞬間のために生きている。\nドーパミンに支配されるまま、宝箱を開く。";
         floorPrompt = floorGift ? "宝箱の中から使えそうな装備を見つけた。" : "中は空っぽだった。";
       } else if (kind === "未知") {
         if (Math.random() < ENCOUNTER_BEGGAR) {
@@ -16288,6 +16339,7 @@
       dropLine = "";
       victoryGear = null;
       victoryEnchant = null;
+      victoryItem = null;
       runBonus = emptyRunBonus();
       runEntrance = true;
       gear = starterGear();
@@ -17521,11 +17573,11 @@
       if (!root.dataset.foeDeckDismissBound) {
         root.dataset.foeDeckDismissBound = "1";
         root.addEventListener("click", (event) => {
-          if (!root.querySelector(".foe-starter, .foe-index")) return;
+          if (!root.querySelector(".foe-starter, .foe-index, .foe-deck-view")) return;
           const pop = root.querySelector(".cast-card-pop");
           if (!pop) return;
           const el = event.target;
-          if (el instanceof Element && (el.closest(".cast-card-pop") || el.closest(".foe-starter .deck-card") || el.closest(".foe-index .deck-card"))) return;
+          if (el instanceof Element && (el.closest(".cast-card-pop") || el.closest(".foe-starter .deck-card") || el.closest(".foe-index .deck-card") || el.closest(".foe-deck-view .deck-card"))) return;
           hideCastCardPop();
         });
       }
@@ -17877,7 +17929,7 @@
               ${sheetFig("path-search.jpg?v=13", "探索")}
               ${sheetFig("path-bless-v4.jpg?v=1", "祝福")}
               ${sheetFig("path-fight.jpg?v=5", "戦闘", "", "path-series")}
-              ${sheetFig("path-boss.jpg?v=2", "ボス戦", "", "path-series")}
+              ${sheetFig("path-boss.jpg?v=3", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
               ${sheetFig("path-shop.jpg?v=12", "お店")}
               ${sheetFig("path-rest.jpg?v=3", "休憩")}
@@ -18180,9 +18232,12 @@
           const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
           const lv = blessLive ? rareLevel(entity) : 0;
           if (lv) blessLevels.push(lv);
-          const inner = pick.kind === "card"
-            ? `<span class="gift-label">${esc(pick.label)}</span>${blessPickFace(pick)}`
-            : giftMarkup(pick, false);
+          const card = pick.kind === "card" && pick.card
+            ? pick.card
+            : pick.kind === "gear"
+              ? gearAsCard(pick.gear)
+              : boonAsCard(pick.kind, pick.elem);
+          const inner = `<div class="gift-pick">${rewardCardHtml(card)}</div>`;
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}${inner}</button>`;
         })
         : [];
@@ -18488,6 +18543,7 @@
     function cardKind(card) {
       if (!card) return "skill";
       if (card.kind === "foe") return "foe";
+      if (card.kind === "boon") return "boon";
       if (card.kind === "gear" || card.gear) return "gear";
       if (card.kind === "power" || card.power) return "power";
       if (card.kind === "attack" || card.kind === "block" || card.kind === "skill") return card.kind;
@@ -18507,6 +18563,7 @@
         skill: "スキル",
         power: "アイテム",
         gear: "装備",
+        boon: "祝福",
         foe: "敵",
       })[kind] || "スキル";
     }
@@ -18904,6 +18961,7 @@
         hp: enemy.hp,
         maxHp: enemy.maxHp,
         block: Math.max(0, Number(enemy.block) || 0),
+        def: Number(enemy.def) || 0,
         thorns: Math.max(0, Number(enemy.thorns) || 0),
         atk: Number(enemy.atk) || 0,
         spiteOn: !!enemy.spiteOn,
@@ -18922,7 +18980,7 @@
         scratchApply(mine, amount);
         if (mine.hp <= 0) return { give: null, take: null };
       }
-      const give = { raw: 0, hp: 0, show: false };
+      const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
       const queue = inPlay || [];
       for (const card of queue) {
         if (card.keep && card.resolved) continue;
@@ -18930,7 +18988,7 @@
         if (foe.hp <= 0) break;
       }
       const breakShield = foeHadBlock && foe.block <= 0;
-      if (foe.hp <= 0) return { give: give.show ? give : null, take: null, breakShield, foeAtk: foe.atk };
+      if (foe.hp <= 0) return { give: forecastBag(give), take: null, breakShield, foeAtk: foe.atk };
       foe.block = 0;
       let take = null;
       let angerAhead = false;
@@ -18948,20 +19006,44 @@
         for (let n = 0; n < times; n += 1) {
           const blow = scratchEnemyBlow(card, mine, foe);
           if (!blow) continue;
-          if (!take) take = { raw: 0, hp: 0, parry: false, show: false };
+          if (!take) take = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0 };
           take.raw += blow.raw;
           take.hp += blow.hp;
           take.show = take.show || blow.show;
           take.parry = take.parry && blow.parry;
           if (blow.parry && take.raw === blow.raw) take.parry = true;
         }
+        take = scratchEnemyRest(card, foe, take);
       }
-      return { give: give.show ? give : null, take, breakShield, foeAtk: foe.atk };
+      return { give: forecastBag(give), take, breakShield, foeAtk: foe.atk };
+    }
+
+    function forecastBag(bag) {
+      if (!bag) return null;
+      if (bag.show || bag.shield > 0 || bag.status > 0) return bag;
+      return null;
+    }
+
+    function scratchEnemyRest(card, foe, bag) {
+      if (!card || (card.halfOnly && !(foe.hp <= foe.maxHp / 2))) return bag;
+      const status = (card.thorns ? (Number(card.thorns) || 1) : 0)
+        + (Number(card.burn) || 0)
+        + (!card.damage && card.poison ? (Number(card.poison) || 0) : 0);
+      const shield = !card.damage && card.block ? Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)) : 0;
+      if (!status && !shield) return bag;
+      if (!bag) bag = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0 };
+      bag.status += status;
+      bag.shield += shield;
+      return bag;
     }
 
     function scratchPlayerCard(card, mine, foe, queue, give) {
       if (!card) return;
-      if (card.thorns) mine.thorns += Number(card.thorns) || 1;
+      if (card.thorns) {
+        const stacks = Number(card.thorns) || 1;
+        mine.thorns += stacks;
+        give.status += stacks;
+      }
       if (card.power) {
         if (card.coward) mine.guardThrough = true;
         return;
@@ -19013,6 +19095,7 @@
         return;
       }
       if ((card.poison && !card.damage && !card.block) || card.heal || card.draw) {
+        if (card.poison && !card.damage && !card.block && !card.heal && !card.draw) give.status += Number(card.poison) || 0;
         if (card.heal) scratchHeal(mine, card.heal);
         return;
       }
@@ -19045,10 +19128,16 @@
         scratchStrike(foe, give, (Number(card.damage) || 0) + added + mine.atk + bonus);
         if (card.doubleNext) mine.doubleNext = true;
       }
+      if (card.burn) give.status += Number(card.burn) || 0;
       if (card.expose) mine.expose = (Number(mine.expose) || 0) + card.expose;
       if (card.parry && card.damage) scratchGainParry(mine, 1);
-      if (card.block) scratchGainBlock(mine, (Number(card.block) || 0) + added);
+      if (card.block) {
+        const before = mine.block;
+        scratchGainBlock(mine, (Number(card.block) || 0) + added);
+        give.shield += Math.max(0, mine.block - before);
+      }
       if (card.parry && card.block && !card.damage) scratchGainParry(mine, 1);
+      if (card.poison && (card.damage || card.block)) give.status += Number(card.poison) || 0;
     }
 
     function previewFoeAtk() {
@@ -19095,17 +19184,26 @@
     }
 
     function forecastChip(kind, amount) {
-      const label = kind === "give" ? "与" : "被";
+      const label = kind === "shield" ? "シールド" : kind === "status" ? "状態異常" : "ダメージ";
       const n = Math.max(0, Math.round(Number(amount) || 0));
-      return `<div class="forecast ${kind}" aria-label="${label}ダメージ ${n}"><em>${label}</em><b>${n}</b></div>`;
+      return `<div class="forecast ${kind}" aria-label="${label} ${n}"><em>${label}</em><b>${n}</b></div>`;
+    }
+
+    function forecastChips(bag) {
+      if (!bag) return "";
+      const chips = [];
+      if (bag.show) chips.push(forecastChip("damage", bag.hp));
+      if (bag.shield > 0) chips.push(forecastChip("shield", bag.shield));
+      if (bag.status > 0) chips.push(forecastChip("status", bag.status));
+      return chips.length ? `<div class="forecasts">${chips.join("")}</div>` : "";
     }
 
     function playForecastHtml() {
       if (phase !== "player" || outcome || !player || !enemy) return { give: "", take: "" };
       const cast = forecastTurn();
       return {
-        give: cast.give && cast.give.show ? forecastChip("give", cast.give.hp) : "",
-        take: cast.take && cast.take.show ? forecastChip("take", cast.take.hp) : "",
+        give: forecastChips(cast.give),
+        take: forecastChips(cast.take),
       };
     }
 
@@ -19125,8 +19223,8 @@
       const cast = playForecastHtml();
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
-          <div class="play-side mine use-half"><div class="play-cards">${mine}${cast.give}</div></div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCards}${cast.take}</div></div>
+          <div class="play-side mine use-half"><div class="play-cards">${mine}</div>${cast.give}</div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div>${cast.take}</div>
         </div>
         ${vsMarkup()}
       </div>`;
@@ -19423,9 +19521,9 @@
 
     function foeDeckOverlay() {
       if (!showFoeDeck || outcome || askLeave || !enemy) return "";
-      const n = sourcePattern().length;
-      const lead = "毎ターン、残りの中からSPDの枚数だけ無作為に置く。置けない枠は怒りが代わりに入る（ATK+2、DEF-2。1回だけ）。置いたあと、捨て札を山札に戻す。残りの枠があれば、戻した山札から引く。";
-      return `<div class="overlay deck-view foe-deck-view"><div class="panel wide"><h2>${esc(enemy.name)}の山札</h2><p class="deck-lead">${lead}</p><div class="deck-scroll"><section class="deck-group"><h3>${n}枚</h3>${foeDeckCards()}</section></div><button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
+      const foe = ENEMIES.find((item) => item.name === enemyKey(enemy.name));
+      if (!foe) return "";
+      return `<div class="overlay deck-view foe-deck-view"><div class="panel">${foeDossierHtml(foe)}<button type="button" data-action="close-foe-deck">閉じる</button></div></div>`;
     }
 
     // 敵の行動パターン（山札）。順番は見せず、中身だけ。
@@ -19445,7 +19543,7 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><button type="button" class="foe-pile${showFoeDeck ? " open" : ""}" data-action="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚を見る" aria-pressed="${showFoeDeck ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div></div>`;
+      return `<div class="foe-piles"><button type="button" class="foe-pile${showFoeDeck ? " open" : ""}" data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る" aria-pressed="${showFoeDeck ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div></div>`;
     }
 
     function clearFoeDeckPop() {
@@ -19802,6 +19900,7 @@
     function rollVictoryExtra() {
       victoryGear = null;
       victoryEnchant = null;
+      victoryItem = null;
       const boss = typeof bossNow === "function" && bossNow();
       const table = boss ? VICTORY_EXTRA.boss : VICTORY_EXTRA.road;
       const kind = pickWeighted(Object.keys(table), (key) => table[key]);
@@ -19818,8 +19917,10 @@
         const name = pickRarityCard(names, (itemName) => (cardDef(itemName) || {}).stars);
         if (!name) return "";
         const def = cardDef(name);
-        stolen.push(keepCard({ name, ...def, stars: def.stars || 1 }));
-        return `${name}を手に入れた。`;
+        const card = keepCard({ name, ...def, stars: def.stars || 1 });
+        stolen.push(card);
+        victoryItem = card;
+        return "";
       }
       if (kind !== "enchant") return "";
       const names = enchantTargets();
@@ -20021,15 +20122,7 @@
           return `<div class="shop-slot${sold}${limited}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
-          const item = slot.gear;
-          const face = gearPopShell(item.slot || "sword", {
-            item,
-            name: item.name || "",
-            image: item.image || "",
-            rarity: gearRarityText(item),
-            embedded: true,
-          });
-          return `<div class="shop-slot${sold}${limited}">${ribbon}${face}<span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}">${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
@@ -20305,14 +20398,7 @@
 
     function gearOfferHtml(item) {
       if (!item) return "";
-      return gearPopShell(item.slot || "sword", {
-        item,
-        name: item.name || "",
-        image: item.image || "",
-        rarity: gearRarityText(item),
-        body: esc(gearSpecialText(item)),
-        embedded: true,
-      });
+      return rewardCardHtml(gearAsCard(item));
     }
 
     function gearCompareHtml(item) {
@@ -20405,15 +20491,26 @@
       return gift.item;
     }
 
-    function victoryGearHtml() {
-      const bits = [];
-      if (victoryGear) bits.push(`<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`);
-      if (victoryEnchant && victoryEnchant.elem) bits.push(`<div class="reward-gear">${giftMarkup(victoryEnchant, true)}</div>`);
-      return bits.join("");
+    function victoryLead() {
+      const n = Math.max(1, Number(rewardStars) || 1);
+      return `勝利報酬として${"★".repeat(n)}とカードを獲得。`;
     }
 
-    function victoryGrowthHtml() {
-      return [growthLine, dropLine].filter(Boolean).map((line) => `<p class="victory-count">${esc(line)}</p>`).join("");
+    function victoryExtraHtml() {
+      const bits = [];
+      if (victoryGear) bits.push(`<div class="reward-gear">${gearOfferHtml(victoryGear)}</div>`);
+      if (victoryItem) bits.push(`<div class="reward-gear"><div class="card preview ${cardKind(victoryItem)}">${cardFace(victoryItem, false)}</div></div>`);
+      if (victoryEnchant && victoryEnchant.elem) bits.push(`<div class="reward-gear">${giftMarkup(victoryEnchant, true)}</div>`);
+      if (!bits.length) return "";
+      return `<p class="reward-lead">敵がアイテムをドロップした!!</p><div class="reward-extra">${bits.join("")}</div>`;
+    }
+
+    function rewardPickButtons(list, action) {
+      const ordered = list.map((card, i) => ({ card, i })).sort((a, b) => Number(a.card.source === "敵") - Number(b.card.source === "敵"));
+      return ordered.map(({ card, i }) => {
+        const foe = card.source === "敵" ? " foe-drop" : "";
+        return `<button type="button" class="reward-pick${foe}" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
+      }).join("");
     }
 
     function masteryShownCard() {
@@ -20467,34 +20564,25 @@
       }
       if (outcome !== "win") return "";
       if (rewardStep === "cards") {
-        const live = takeRare("reward");
-        const levels = [];
-        const picks = rewardPicks.map((card, i) => {
-          const lv = live ? rareLevel(card) : 0;
-          if (lv) levels.push(lv);
-          return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, i)} data-action="reward-card" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
-        }).join("");
+        takeRare("reward");
+        const picks = rewardPickButtons(rewardPicks, "reward-card");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">あなたはカードを入手することができる。</p>${victoryGearHtml()}${victoryGrowthHtml()}<div class="reward-altar"><i class="reward-rays" aria-hidden="true"></i><div class="reward-row${rareJack(levels)}">${picks}</div></div></div></div>`;
+        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div><p class="reward-lead">${esc(victoryLead())}</p><div class="reward-altar"><div class="reward-row">${picks}</div></div>${victoryExtraHtml()}</div></div>`;
       }
       if (rewardStep === "boss") {
-        const live = takeRare("reward");
-        const levels = [];
-        if (live && gear.medal) levels.push(rareLevel(gear.medal));
-        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true, live, 0)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
-        const picks = bossPicks.map((pick, i) => {
-          const entity = pick.kind === "card" ? pick.card : pick.gear;
-          const lv = live ? rareLevel(entity) : 0;
-          if (lv) levels.push(lv);
-          const at = gear.medal ? i + 1 : i;
+        takeRare("reward");
+        const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
+        const ordered = bossPicks.map((pick, i) => ({ pick, i })).sort((a, b) => Number(a.pick.kind === "card" && a.pick.card && a.pick.card.source === "敵") - Number(b.pick.kind === "card" && b.pick.card && b.pick.card.source === "敵"));
+        const picks = ordered.map(({ pick, i }) => {
           if (pick.kind === "card" && pick.card) {
-            return `<button type="button" class="reward-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}<div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
+            const foe = pick.card.source === "敵" ? " foe-drop" : "";
+            return `<button type="button" class="reward-pick${foe}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
-          return `<button type="button" class="reward-pick gear-pick${rareClass(lv)}"${rareStyle(lv, at)} data-action="reward-boss" data-reward="${i}">${rareFx(lv)}${gearOfferHtml(item)}</button>`;
+          return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
-        return `<div class="overlay victory">${rareScreen(levels)}${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}${victoryGearHtml()}<p>ボスの報酬。1つだけ選ぶ。</p>${victoryGrowthHtml()}<div class="reward-altar"><i class="reward-rays" aria-hidden="true"></i><div class="reward-row${rareJack(levels)}">${picks}</div></div></div></div>`;
+        return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span></h2><button type="button" class="reward-skip" data-action="reward-skip">スキップ</button></div>${medal}<p class="reward-lead">${esc(victoryLead())}</p><div class="reward-altar"><div class="reward-row">${picks}</div></div>${victoryExtraHtml()}</div></div>`;
       }
       if (rewardStep === "shop") {
         const live = takeRare("shop");
@@ -20701,6 +20789,7 @@
       enemy.hit = false;
       persistLive();
       kickHp();
+      bindFoeStarterDeck(root.querySelector(".foe-deck-view .cast-deck"));
       bindLogPeek();
       bindGearHover();
       startManaFires();
