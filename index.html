@@ -5791,6 +5791,48 @@
       pointer-events: none;
     }
     .ending-lose .ending-banner { color: #ffd2c4; text-shadow: 0 3px 0 #4a0c08, 0 0 18px rgba(0, 0, 0, 0.85); }
+    .ending-lose {
+      grid-template-columns: minmax(220px, 28%) minmax(0, 1fr);
+    }
+    .ending-lose .ending-art {
+      background:
+        radial-gradient(ellipse at 50% 62%, rgba(90, 24, 16, 0.55), transparent 58%),
+        #100c0a;
+    }
+    .ending-lose .ending-art .ending-pose {
+      object-fit: contain;
+      object-position: center center;
+      padding: 64px 16px 20px;
+      box-sizing: border-box;
+    }
+    .ending-lose .ending-banner {
+      font-size: clamp(28px, 3vw, 48px);
+      letter-spacing: 0.22em;
+    }
+    .ending-lose .ending-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 28px;
+      align-content: start;
+      padding: 28px 32px 32px;
+    }
+    .ending-lose .ending-lead,
+    .ending-lose .end-chips,
+    .ending-lose .ending-note,
+    .ending-lose .gear-offer-actions,
+    .ending-lose .ending-card > .end-block:last-of-type {
+      grid-column: 1 / -1;
+    }
+    .ending-lose .ending-lead { font-size: 26px; }
+    .ending-lose .end-chips { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+    .ending-lose .end-chip b { font-size: 24px; }
+    .ending-lose .end-block p { font-size: 18px; }
+    .ending-lose .end-pills span { font-size: 16px; }
+    .ending-lose .end-floors {
+      columns: 2;
+      column-gap: 24px;
+    }
+    .ending-lose .end-floors li { break-inside: avoid; }
     .ending-card {
       min-height: 0;
       overflow: auto;
@@ -5859,7 +5901,14 @@
     @media (max-width: 800px) {
       .ending { grid-template-columns: 1fr; grid-template-rows: 36vh minmax(0, 1fr); }
       .ending-card { border-left: 0; border-top: 2px solid #e4b15a; }
-      .ending-lose .ending-card { border-top-color: #c45a48; }
+      .ending-lose { grid-template-rows: 22vh minmax(0, 1fr); }
+      .ending-lose .ending-art .ending-pose { padding: 36px 8px 8px; }
+      .ending-lose .ending-card {
+        grid-template-columns: 1fr;
+        border-left: 0;
+        border-top: 2px solid #c45a48;
+      }
+      .ending-lose .end-floors { columns: 1; }
     }
     .reward-top {
       display: flex;
@@ -10641,7 +10690,6 @@
       ["物乞い", "物乞い"],
       ["修行", "修行"],
       ["未知", "未知"],
-      ["鍛冶屋", "鍛冶屋"],
     ];
     const META_KEY = "card-battle-meta-v1";
     const ACCOUNT_KEY = "card-battle-account-v1";
@@ -14459,9 +14507,8 @@
       sendRunSheet();
     }
 
-    function runSheetPayload() {
-      const sealed = runSheet && runSheet.sealed;
-      if (!sealed) return null;
+    function payloadFromSealed(sealed) {
+      if (!sealed || typeof sealed !== "object") return null;
       return {
         player: sealed.player || "",
         result: sealed.result === "win" ? "win" : "lose",
@@ -14484,12 +14531,56 @@
         killer: sealed.killer || "",
         stars: Number(sealed.stars) || 0,
         playMs: sealed.playMs == null ? null : Math.max(0, Number(sealed.playMs) || 0),
-        at: new Date().toISOString(),
+        at: sealed.at || new Date().toISOString(),
       };
+    }
+
+    function runSheetPayload() {
+      return payloadFromSealed(runSheet && runSheet.sealed);
+    }
+
+    function runRecordKey(body) {
+      if (!body) return "";
+      return [body.player, body.result, body.dungeon, body.reached, body.killer, body.level, body.stars, body.playMs, body.hp].join("|");
+    }
+
+    function rememberRunSheet() {
+      const body = runSheetPayload();
+      if (!body) return;
+      const account = readAccount();
+      const runs = Array.isArray(account.runs) ? account.runs.filter((row) => row && row.result) : [];
+      const key = runRecordKey(body);
+      if (!runs.some((row) => runRecordKey(row) === key)) runs.push(body);
+      account.runs = runs.slice(-80);
+      writeAccount(account);
+    }
+
+    function browserRuns() {
+      const account = readAccount();
+      const runs = Array.isArray(account.runs) ? account.runs.filter((row) => row && row.result) : [];
+      const keys = new Set(runs.map(runRecordKey));
+      let added = false;
+      Object.keys(account.slots || {}).forEach((name) => {
+        const slot = account.slots[name];
+        const sealed = slot && slot.save && slot.save.runSheet && slot.save.runSheet.sealed;
+        const body = payloadFromSealed(sealed);
+        if (!body) return;
+        const key = runRecordKey(body);
+        if (keys.has(key)) return;
+        keys.add(key);
+        runs.push(body);
+        added = true;
+      });
+      if (added) {
+        account.runs = runs.slice(-80);
+        writeAccount(account);
+      }
+      return (account.runs || runs).slice();
     }
 
     function sendRunSheet() {
       const body = runSheetPayload();
+      rememberRunSheet();
       if (!CLEAR_INBOX_URL || !body) return;
       fetch(CLEAR_INBOX_URL, {
         method: "POST",
@@ -17670,7 +17761,7 @@
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
                 <h4 class="trial-head">アタック ボス　棘を右へ</h4>
-                <div class="style-genres trial">${cardStyleSheet([["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"], ["style-boss-mana-bigger", "ボス 棘大", "frame-attack-boss-mana-bigger.png?v=1"], ["style-boss-mana-bigger-right", "ボス 棘大右", "frame-attack-boss-mana-bigger-right.png?v=1"]])}</div>
+                <div class="style-genres trial">${cardStyleSheet([["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"], ["style-boss-mana-bigger", "ボス 棘大", "frame-attack-boss-mana-bigger.png?v=1"], ["style-boss-mana-bigger-right", "ボス 棘大右", "frame-attack-boss-mana-bigger-right.png?v=2"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -17706,8 +17797,10 @@
     }
 
     function renderRecords() {
-      const ask = !recordRuns;
-      const rows = (recordRuns || []).map((run, index) => {
+      const localRuns = browserRuns().slice().reverse();
+      const ask = !!CLEAR_INBOX_URL && !recordRuns;
+      const shown = CLEAR_INBOX_URL && recordRuns ? recordRuns : localRuns;
+      const rows = shown.map((run, index) => {
         const open = recordOpen === index;
         const result = run.result === "win" ? "踏破" : "敗北";
         const name = run.player || "なまえなし";
@@ -17716,11 +17809,9 @@
         const time = playTimeText(run.playMs);
         return `<button type="button" class="records-item" data-action="records-open" data-index="${index}"><span class="record-name">${esc(name)}</span><span class="record-line">${esc(result)}　${esc(run.dungeon || "")}　${esc(run.reached || "")} / ${Number(run.floors) || 0}F　レベル${Number(run.level) || 0}　★${Number(run.stars) || 0}${time ? `　${esc(time)}` : ""}</span>${more}</button>`;
       }).join("");
-      const body = !CLEAR_INBOX_URL
-        ? `<p>記録の受け皿が、まだつながっていません。</p>`
-        : ask
-          ? `<p>管理の言葉を入れてください。</p><div class="pass-box"><input id="record-word" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">${recordNote ? `<p class="pass-error">${esc(recordNote)}</p>` : ""}${recordBusy ? `<p>開いています。</p>` : menuButton("開く", "records-ok", true)}</div>`
-          : `<div class="records-list">${rows || `<p>まだ記録はありません。</p>`}</div>`;
+      const body = ask
+        ? `<p>管理の言葉を入れてください。</p><div class="pass-box"><input id="record-word" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">${recordNote ? `<p class="pass-error">${esc(recordNote)}</p>` : ""}${recordBusy ? `<p>開いています。</p>` : menuButton("開く", "records-ok", true)}</div>`
+        : `<div class="records-list">${rows || `<p>まだ記録はありません。</p>`}</div>`;
       root.innerHTML = `
         <div class="menu records-screen">
           <h1>統計</h1>
@@ -18230,7 +18321,7 @@
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
       ["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"],
       ["style-boss-mana-bigger", "ボス 棘大", "frame-attack-boss-mana-bigger.png?v=1"],
-      ["style-boss-mana-bigger-right", "ボス 棘大右", "frame-attack-boss-mana-bigger-right.png?v=1"],
+      ["style-boss-mana-bigger-right", "ボス 棘大右", "frame-attack-boss-mana-bigger-right.png?v=2"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -20534,7 +20625,9 @@
       const foeVisRight = (foeRect.left - fieldRect.left) / scale + (foeRect.width / scale) * (inkRight / imgW);
       const leftGap = heroVisLeft;
       const rightGap = field.clientWidth - foeVisRight;
-      main.style.marginLeft = `${Math.round(rightGap - leftGap)}px`;
+      let place = Math.round(rightGap - leftGap);
+      if (stature === "small") place = Math.round(place * 0.35);
+      main.style.marginLeft = `${place}px`;
       if (body && foeSrc.split("?")[0].endsWith("enemy-kobold.png")) {
         const inkBottom = getComputedStyle(main).getPropertyValue("--ink-bottom") || "0";
         const foot = main.style.getPropertyValue("--foot-gap") || "12px";
