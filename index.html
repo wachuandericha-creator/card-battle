@@ -914,6 +914,18 @@
       font-size: 18px;
       letter-spacing: 0.08em;
     }
+    .plate-stars.star-1,
+    .foe-starter-id .plate-stars.star-1,
+    .battle-plate h2 .plate-stars.star-1 { color: #cd7f32; }
+    .plate-stars.star-2,
+    .foe-starter-id .plate-stars.star-2,
+    .battle-plate h2 .plate-stars.star-2 { color: #d7dee8; }
+    .plate-stars.star-3,
+    .foe-starter-id .plate-stars.star-3,
+    .battle-plate h2 .plate-stars.star-3 { color: #f0c36a; }
+    .plate-stars.star-4,
+    .foe-starter-id .plate-stars.star-4,
+    .battle-plate h2 .plate-stars.star-4 { color: #e4453a; }
     .battle-plate h2 .tag {
       flex: 0 0 auto;
       padding: 1px 7px 2px;
@@ -2023,7 +2035,20 @@
       flex-direction: column;
       gap: 12px;
     }
-    .foe-starter-id { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+    .foe-starter-id { display: flex; flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 8px 10px; }
+    .foe-starter-id .plate-stars { font-size: 22px; font-weight: 800; letter-spacing: 0.06em; line-height: 1; }
+    .foe-starter-block .dossier-plate { position: static; width: 100%; z-index: auto; }
+    .foe-phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .foe-phase {
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
+      text-align: center;
+    }
+    .foe-phase b { display: block; color: #f0c36a; font-size: 14px; letter-spacing: 0.14em; }
+    .foe-phase p { margin: 4px 0 0; color: #fff8e8; font-size: 16px; font-weight: 800; line-height: 1.4; }
+    .foe-phase-note { margin: 8px 0 0; color: #d9c39a; font-size: 14px; font-weight: 800; text-align: center; }
     .overlay.foe-starter .foe-starter-rank {
       margin: 0;
       color: #ffe9ae;
@@ -2126,6 +2151,12 @@
     .menu.foe-index .foe-file { min-width: 0; }
     .menu.foe-index .foe-starter-sheet {
       grid-template-columns: minmax(160px, 34%) minmax(0, 1fr);
+    }
+    .menu.foe-index .foe-starter-portrait {
+      align-items: center;
+    }
+    .menu.foe-index .foe-starter-portrait img {
+      object-position: center center;
     }
     .menu.foe-index .foe-starter-deck .cast-deck {
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -5661,8 +5692,15 @@
       line-height: 1;
       text-align: left;
       color: #14110e;
-      -webkit-text-stroke: 0;
-      text-shadow: none;
+      padding-left: 0.45cqw;
+      padding-right: 0.45cqw;
+      -webkit-text-stroke: 0.32cqw #fff;
+      paint-order: stroke fill;
+      text-shadow:
+        0.22cqw 0 0 #fff,
+        -0.22cqw 0 0 #fff,
+        0 0.22cqw 0 #fff,
+        0 -0.22cqw 0 #fff;
     }
     .card .card-fit .text {
       position: absolute;
@@ -12275,14 +12313,14 @@
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=4", halfAtk: 2 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=5", halfAtk: 2 },
       { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=6", halfMana: 1 },
     ];
     const GEAR_CARD_TEXT = {
       "short-sword": "ATK+1",
       "long-sword": "ATK+2",
       "poison-sword": "ATK+1\nアタックカードでダメージを与えるたび毒+1",
-      "excalibur": "ATK+5\n相手の特性を無視してダメージを与える",
+      "excalibur": "ATK+5\n相手の特性を無視して\nダメージを与える",
       "buckler": "DEF+1",
       "leather-shield": "DEF+1",
       "iron-shield": "DEF+2",
@@ -12651,7 +12689,7 @@
       const left = slotButton({ id: "braceletL", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
-      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=4";
+      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=5";
       const medalName = (gear && gear.medal && gear.medal.name) || "戦利品";
       const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
       const bootN = runSpdBonus();
@@ -12707,7 +12745,7 @@
     function gearSpecialText(item) {
       if (!item) return "";
       if (item.statusImmune) return gearPunctLines("状態異常にならない");
-      if (item.ignoreTrait) return gearPunctLines("相手の特性を無視してダメージを与える");
+      if (item.ignoreTrait) return "相手の特性を無視して\nダメージを与える。";
       if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
       if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
       if (item.carryMana) return gearPunctLines("未使用マナを次のターンに持ち越す。");
@@ -16637,7 +16675,7 @@
       return `<div class="end-pills">${items.map((text) => `<span>${esc(text)}</span>`).join("")}</div>`;
     }
 
-    function runSheetHtml() {
+    function runSheetHtml(brief) {
       const sealed = runSheet && runSheet.sealed;
       if (!sealed) return `<p class="ending-lead">この攻略の記録は無い。</p>`;
       const win = sealed.result === "win";
@@ -16670,20 +16708,20 @@
           ${endChip("到達", `${sealed.reached || ""} / ${Number(sealed.floors) || 0}F`)}
           ${playTimeText(sealed.playMs) ? endChip("時間", playTimeText(sealed.playMs)) : ""}
         </div>
-        <section class="end-block"><h3>祝福</h3><p>${esc(sealed.bless || "なし")}</p></section>
         <section class="end-block"><h3>装備</h3><div class="end-gear">${gearRows}</div></section>
         <section class="end-block"><h3>ステータス</h3><p>ATK ${Number(sealed.atk) || 0}　DEF ${Number(sealed.def) || 0}　SPD ${Number(sealed.spd) || 0}</p></section>
         <section class="end-block"><h3>デッキ</h3>${endPills(deck)}</section>
-        <section class="end-block"><h3>会った敵</h3>${endPills(meet)}</section>
-        <section class="end-block"><h3>いちばん長い戦い</h3><p>${esc(sealed.longest || "なし")}</p></section>
+        ${brief ? "" : `<section class="end-block"><h3>祝福</h3><p>${esc(sealed.bless || "なし")}</p></section>`}
+        ${brief ? "" : `<section class="end-block"><h3>会った敵</h3>${endPills(meet)}</section>`}
+        ${brief ? "" : `<section class="end-block"><h3>いちばん長い戦い</h3><p>${esc(sealed.longest || "なし")}</p></section>`}
         ${win ? "" : `<section class="end-block"><h3>倒された相手</h3><p>${esc(killer || "なし")}</p></section>`}
-        <section class="end-block"><h3>道</h3><ol class="end-floors">${floors}</ol></section>`;
+        ${brief ? "" : `<section class="end-block"><h3>道</h3><ol class="end-floors">${floors}</ol></section>`}`;
     }
 
     function endingFrame(win) {
       const sealed = runSheet && runSheet.sealed;
       const art = win
-        ? ((sealed && sealed.victoryArt) || heroItem().victory)
+        ? "girl-victory-2.jpg?v=1"
         : ((sealed && sealed.defeatArt) || (defeatSnap && defeatSnap.defeatArt) || heroItem().defeat);
       const banner = win ? "踏破" : "敗北";
       const finalStars = sealed ? Math.max(0, Number(sealed.stars) || 0) : 0;
@@ -16693,7 +16731,7 @@
       return `<div class="ending ${win ? "ending-win" : "ending-lose"}">
         <div class="ending-art"><img class="ending-pose" src="${esc(art)}" alt=""><p class="ending-banner">${banner}</p></div>
         <div class="ending-card">
-          ${runSheetHtml()}
+          ${runSheetHtml(win)}
           <p class="ending-note">${esc(after)}</p>
           <div class="gear-offer-actions">
             ${menuButton("カードリスト", "album")}
@@ -17273,7 +17311,7 @@
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
       const badges = `<span class="plate-badges">${extra && extra.badges ? extra.badges : ""}</span>`;
       const stars = extra && extra.stars
-        ? `<span class="plate-stars" aria-label="ランク">${esc(extra.stars)}</span>`
+        ? `<span class="plate-stars ${starToneClass(extra.stars)}" aria-label="ランク">${esc(extra.stars)}</span>`
         : "";
       // 板の数値は＋を付けない。値は中央ぞろえ。HP行は出さない。いま/最大は体力バーに出す。
       const statLine = (icon, label, value, kind) => {
@@ -18370,14 +18408,66 @@
       return lines;
     }
 
+    function starToneClass(mark) {
+      const n = String(mark || "").split("★").length - 1;
+      if (n >= 4) return "star-4";
+      if (n === 3) return "star-3";
+      if (n === 2) return "star-2";
+      return "star-1";
+    }
+
+    function foeStarMark(foe) {
+      return "★".repeat(starsForRank((foe && foe.rank) || "雑魚"));
+    }
+
+    function foeIdHtml(foe) {
+      const mark = foeStarMark(foe);
+      return `<div class="foe-starter-id"><h2 class="foe-starter-name">${esc(foe.name)}</h2><span class="plate-stars ${starToneClass(mark)}" aria-label="ランク">${mark}</span></div>`;
+    }
+
     function foeStarterStats(foe) {
-      const rows = [
-        ["HP", heartIcon(), foe.hp || 0],
-        ["ATK", swordIcon(), foeBaseAtk(foe)],
-        ["DEF", shieldIcon(), foeBaseDef(foe)],
-        ["SPD", bootIcon(), Number(foe.spd) || 1],
-      ];
-      return `<div class="foe-starter-stats" aria-label="ステータス">${rows.map(([label, icon, value]) => `<p class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></p>`).join("")}</div>`;
+      const hp = Math.max(0, Number(foe && foe.hp) || 0);
+      const line = (icon, label, value) => `<div class="hp-line"><span class="lbl">${icon}${label}</span><span class="num"><b>${value}</b></span></div>`;
+      const stats = [
+        line(swordIcon(), "ATK", foeBaseAtk(foe)),
+        line(shieldIcon(), "DEF", foeBaseDef(foe)),
+        line(bootIcon(), "SPD", Number(foe && foe.spd) || 1),
+      ].join("");
+      return `<div class="battle-plate foe-plate dossier-plate" aria-label="ステータス">${meters("look", hp, hp, 0)}<div class="plate-stats">${stats}</div></div>`;
+    }
+
+    function foePhaseOf(floor, floors) {
+      const p = Math.max(1, Number(floor) || 1) / Math.max(1, Number(floors) || 1);
+      if (p <= 1 / 3) return "序盤";
+      if (p <= 2 / 3) return "中盤";
+      return "終盤";
+    }
+
+    function foeAppearHtml(foe) {
+      const bands = { 序盤: [], 中盤: [], 終盤: [] };
+      let note = "";
+      if (foe && foe.name === "ハデス") {
+        DUNGEON_LIST.forEach((dungeon) => {
+          const seen = new Set();
+          bossStops(dungeon.name, dungeon.floors).forEach((floor) => {
+            const phase = foePhaseOf(floor, dungeon.floors);
+            if (seen.has(phase)) return;
+            seen.add(phase);
+            bands[phase].push(dungeon.name);
+          });
+        });
+      } else if (foe) {
+        const tier = enemyStar(foe);
+        const phases = tier <= 1 ? ["序盤", "中盤", "終盤"] : tier === 2 ? ["中盤", "終盤"] : ["終盤"];
+        phases.forEach((phase) => bands[phase].push("洞窟"));
+        note = foe.name === "物乞い" ? "洞窟の初戦には出ない。古城・深淵は未定。" : "古城・深淵は未定。";
+      }
+      const cols = ["序盤", "中盤", "終盤"].map((phase) => {
+        const names = bands[phase];
+        return `<div class="foe-phase"><b>${phase}</b><p>${esc(names.length ? names.join("、") : "なし")}</p></div>`;
+      }).join("");
+      const foot = note ? `<p class="foe-phase-note">${esc(note)}</p>` : "";
+      return `<div class="foe-phases">${cols}</div>${foot}`;
     }
 
     function foeStarterDeckMarkup(cards) {
@@ -18430,30 +18520,11 @@
       if (pop) pop.remove();
     }
 
-    function foeAppearText(foe) {
-      if (!foe) return "未定。";
-      if (foe.name === "ハデス") {
-        const where = DUNGEON_LIST.map((dungeon) => {
-          const stops = bossStops(dungeon.name, dungeon.floors).map((n) => `${n}階`).join("、");
-          return `${dungeon.name}は${stops}`;
-        }).join("。");
-        return `${where}。道中には出ない。`;
-      }
-      if (foe.name === "物乞い") return "物乞いのイベントで戦ったあとの洞窟の道中。1階の初戦には出ない。古城と深淵は未定。";
-      const tier = enemyStar(foe);
-      if (tier <= 1) return "洞窟の道中。1階から。古城と深淵は未定。";
-      if (tier === 2) return "洞窟の道中。11階から。ボス階の1/3を超えてから。古城と深淵は未定。";
-      if (tier === 3) return "洞窟の道中。21階から。ボス階の2/3を超えてから。古城と深淵は未定。";
-      return "未定。";
-    }
-
     function foeDossierHtml(foe) {
-      const boss = foe.name === DUNGEON.boss;
-      const mark = boss ? "ボス" : "★".repeat(enemyStar(foe));
       const trait = foe.trait ? String(foe.trait) : "なし";
       const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
       const cards = foeStarterCards(foe);
-      return `<article class="foe-file"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特性</h3><div class="foe-starter-blurb"><p>${esc(trait)}</p></div></section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現階層</h3><div class="foe-starter-blurb"><p>${esc(foeAppearText(foe))}</p></div></section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div></article>`;
+      return `<article class="foe-file"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特性</h3><div class="foe-starter-blurb"><p>${esc(trait)}</p></div></section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div></article>`;
     }
 
     function renderFoes() {
@@ -18470,15 +18541,13 @@
       const foe = ENEMIES.find((enemy) => enemy.name === name);
       if (!foe) return;
       closeFoeStarter();
-      const boss = foe.name === DUNGEON.boss;
-      const mark = boss ? "ボス" : "★".repeat(enemyStar(foe));
       const lines = foeFeatureLines(foe);
       const feature = lines.length
         ? `<div class="foe-starter-blurb">${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</div>`
         : `<div class="foe-starter-blurb"><p>なし</p></div>`;
       const cards = foeStarterCards(foe);
       const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info"><div class="foe-starter-id"><p class="foe-starter-rank${boss ? " boss" : ""}">${mark}</p><h2 class="foe-starter-name">${esc(foe.name)}</h2></div><section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現階層</h3><div class="foe-starter-blurb"><p>${esc(foeAppearText(foe))}</p></div></section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
       bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
     }
 
@@ -19411,17 +19480,50 @@
       });
     }
 
+    function firstNameInkGap(name) {
+      const node = [...name.childNodes].find((item) => item.nodeType === Node.TEXT_NODE && item.textContent);
+      const ch = node ? [...node.textContent][0] : "";
+      if (!ch || ch === " ") return 0;
+      const cs = getComputedStyle(name);
+      const size = parseFloat(cs.fontSize) || 16;
+      const canvas = firstNameInkGap.canvas || (firstNameInkGap.canvas = document.createElement("canvas"));
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const pad = Math.ceil(size);
+      canvas.width = Math.ceil(size * 3);
+      canvas.height = Math.ceil(size * 2);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+      ctx.fillStyle = "#000";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(ch, pad, size * 1.2);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let minX = canvas.width;
+      for (let i = 3; i < data.length; i += 4) {
+        if (data[i] <= 16) continue;
+        const x = ((i - 3) / 4) % canvas.width;
+        if (x < minX) minX = x;
+      }
+      if (minX >= canvas.width) return 0;
+      return Math.max(0, minX - pad);
+    }
+
     function fitCardNames() {
       root.querySelectorAll(".card .name").forEach((name) => {
         if (name.clientWidth < 8) return;
         let size = 7.4;
         name.style.fontSize = size + "cqw";
+        name.style.left = "23.438cqw";
         let guard = 0;
         while (name.scrollWidth > name.clientWidth + 1 && size > 4.4 && guard < 16) {
           size = Math.round((size - 0.25) * 100) / 100;
           name.style.fontSize = size + "cqw";
           guard += 1;
         }
+        const card = name.closest(".card");
+        const cardW = card ? card.getBoundingClientRect().width : 0;
+        const gap = cardW > 8 ? firstNameInkGap(name) : 0;
+        const shift = cardW > 8 ? (gap / cardW) * 100 : 0;
+        name.style.left = `${Math.round((23.438 - shift - 0.45) * 1000) / 1000}cqw`;
       });
     }
 
