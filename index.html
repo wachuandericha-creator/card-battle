@@ -5323,6 +5323,10 @@
     @media (prefers-reduced-motion: reduce) {
       .overlay.paths .path-list button { animation: none; }
       .road-node.path-land { animation: none; }
+      .overlay.paths.path-leave,
+      .battle-screen.path-handoff .battle-bands,
+      .battle-screen.path-handoff .handbar,
+      .battle-screen.path-handoff .event-stage { animation: none; }
     }
     .overlay.paths .path-list button.path-dismiss {
       animation: path-dismiss 0.28s ease forwards;
@@ -5355,6 +5359,23 @@
     .road-node.path-inbound > img,
     .road-node.path-inbound > i { opacity: 0; }
     .road-node.path-land { animation: path-slot 0.42s ease-out; }
+    .overlay.paths.path-leave {
+      animation: path-board-out 0.48s ease forwards;
+      pointer-events: none;
+    }
+    .overlay.paths.path-leave .panel { pointer-events: none; }
+    @keyframes path-board-out {
+      to { opacity: 0; }
+    }
+    .battle-screen.path-handoff .battle-bands,
+    .battle-screen.path-handoff .handbar,
+    .battle-screen.path-handoff .event-stage {
+      animation: path-handoff 0.5s ease;
+    }
+    @keyframes path-handoff {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
     @keyframes path-slot {
       0% { transform: scale(0.86); filter: brightness(1.55); }
       60% { transform: scale(1.05); filter: brightness(1.12); }
@@ -6912,7 +6933,7 @@
       grid-template-rows: auto minmax(0, 1fr);
       align-items: stretch;
       align-self: stretch;
-      gap: 12px 18px;
+      gap: 8px 18px;
       width: 100%;
       max-width: 100%;
       max-height: 100%;
@@ -6958,10 +6979,10 @@
       flex-direction: column;
       align-items: stretch;
       justify-content: safe center;
-      gap: 40px;
+      gap: 32px;
       overflow: auto;
       height: 100%;
-      padding: 8px 16px 12px;
+      padding: 4px 16px 12px;
       box-sizing: border-box;
     }
     .menu.event .event-copy {
@@ -7041,10 +7062,11 @@
       gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.6cqw, 10px);
     }
     .menu.event.bless .event-side {
-      gap: 40px;
+      gap: 32px;
       padding-right: clamp(2px, 0.5cqw, 8px);
     }
     .menu.event .event-copy .event-story p {
+      margin: 0;
       font-size: clamp(18px, 1.4cqw, 24px);
       line-height: 1.7;
     }
@@ -7156,8 +7178,8 @@
     .menu.event .event-split.both .event-play,
     .menu.event .event-split:not(.both):has(.event-story) + .event-where {
       border-top: 2px solid #e4c27a;
-      margin-top: 10px;
-      padding-top: 10px;
+      margin-top: 4px;
+      padding-top: 6px;
     }
     .menu.event.bless .gift-row {
       justify-content: center;
@@ -7169,6 +7191,38 @@
     }
     .menu.event.search .event-choice { padding-right: 4px; padding-left: 4px; gap: 16px; }
     .menu.event.search .gift-show { width: min(260px, 48%); max-width: 270px; align-self: center; }
+    .menu.event.search .gift-show:has(.sheet-pop) {
+      width: max-content;
+      max-width: none;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+      align-self: center;
+      flex: 0 0 auto;
+    }
+    .menu.event.search .gift-show .gear-effect.sheet-pop {
+      width: max-content;
+      min-width: 340px;
+      max-width: none;
+      overflow: visible;
+      transform-origin: top left;
+    }
+    .menu.event.search .gift-show .gear-effect.sheet-pop .gear-effect-inner {
+      width: 100%;
+      min-width: max-content;
+      max-width: none;
+    }
+    .menu.event.search .gift-show .gear-effect.sheet-pop .gear-effect-head,
+    .menu.event.search .gift-show .gear-effect.sheet-pop .gear-effect-name {
+      width: auto;
+      max-width: none;
+      overflow: visible;
+    }
+    .menu.event.search .gift-show .gear-effect.sheet-pop .gear-effect-head {
+      width: 100%;
+    }
     .menu.event .event-choice > button,
     .menu.event .event-actions { width: min(100%, 440px); align-self: center; }
     .menu.event .event-choice > button,
@@ -7206,35 +7260,62 @@
       flex: 1 1 220px;
       align-self: center;
     }
+    .menu.event.search .event-choice:has(.gift-show) .gift-show:has(.sheet-pop) {
+      width: max-content;
+      max-width: none;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    .menu.event.beggar .event-side { overflow: hidden; }
+    .menu.event.beggar .event-choice { overflow: hidden; }
     .menu.event.beggar .beggar-cards {
       width: 100%;
-      flex-wrap: nowrap;
-      overflow-x: auto;
+      flex-wrap: wrap;
+      overflow: visible;
       justify-content: flex-start;
-      gap: 12px;
-      padding-bottom: 6px;
+      align-content: flex-start;
+      gap: 8px;
+      padding-bottom: 0;
+      --beggar-w: 120px;
     }
     .menu.event.beggar button.beggar-card {
       flex: 0 0 auto;
-      width: var(--choice-w);
-      min-width: var(--choice-w);
-      max-width: var(--choice-w);
+      width: var(--beggar-w);
+      min-width: 0;
+      max-width: none;
       padding: 0;
     }
     .menu.event.beggar .beggar-card .card.preview { width: 100%; max-width: none; }
     .menu.event.beggar .event-actions {
       flex-direction: row;
-      width: min(100%, 860px);
-      align-self: center;
-      gap: 16px;
+      flex-wrap: wrap;
+      width: max-content;
+      max-width: 100%;
+      align-self: flex-start;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
     }
     .menu.event.beggar .event-actions button {
-      flex: 1 1 0;
-      min-height: 68px;
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 0;
+      align-self: center;
+      min-height: 52px;
       white-space: nowrap;
       font-size: clamp(18px, 1.4cqw, 24px);
     }
-    .menu.event .beggar-card.picked .card.preview { outline: 4px solid #ffe08a; outline-offset: 2px; }
+    .menu.event .beggar-card.picked .card.preview { outline: none; }
+    @keyframes beggar-frame-glow {
+      0%, 100% { filter: drop-shadow(0 0 5px #ffe08a) drop-shadow(0 0 12px rgba(255, 186, 50, 0.95)); }
+      50% { filter: drop-shadow(0 0 8px #fff4c2) drop-shadow(0 0 22px rgba(255, 210, 80, 1)); }
+    }
+    .menu.event.beggar .beggar-card.picked .card-fit .frame {
+      animation: beggar-frame-glow 1.15s ease-in-out infinite;
+    }
     .menu.event .gift-row { width: 100%; height: auto; min-height: 0; flex: 0 1 auto; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 14px; }
     .menu.event .shop-row { width: 100%; justify-content: stretch; }
     .menu.event .gift-btn { flex: 1 1 200px; width: auto; min-width: 180px; max-width: 280px; height: auto; align-self: center; }
@@ -7427,13 +7508,20 @@
     .menu.event .gift-pick .card.preview,
     .menu.event .gift-show .card.preview,
     .menu.event.bless .gift-pick .card.preview,
-    .menu.event.shop .shop-slot .card.preview,
-    .menu.event.beggar .beggar-card .card.preview {
+    .menu.event.shop .shop-slot .card.preview {
       width: var(--choice-w);
       min-width: var(--choice-w);
       max-width: var(--choice-w);
       height: calc(var(--choice-w) * 4 / 3);
       min-height: calc(var(--choice-w) * 4 / 3);
+      aspect-ratio: 3 / 4;
+    }
+    .menu.event.beggar .beggar-card .card.preview {
+      width: var(--beggar-w, 120px);
+      min-width: 0;
+      max-width: none;
+      height: calc(var(--beggar-w, 120px) * 4 / 3);
+      min-height: 0;
       aspect-ratio: 3 / 4;
     }
     .menu.event .gift-btn .gear-effect,
@@ -8128,7 +8216,8 @@
       flex-direction: column;
       align-items: stretch;
       gap: 12px;
-      padding: 12px;
+      padding: 12px 0;
+      overflow: hidden;
       border-radius: 22px;
       border: 2px solid rgba(228, 177, 90, 0.85);
       box-shadow:
@@ -8199,39 +8288,46 @@
       pointer-events: none;
     }
     .cast-screen.character-focus .cast-on-stats {
-      top: 16px;
-      left: 16px;
-      width: min(280px, 46%);
+      top: 12px;
+      left: 12px;
+      width: min(196px, 34%);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
-      margin: 0 0 6px;
+      margin: 0 0 3px;
       text-align: center;
       color: #f0c36a;
-      font-size: 16px;
+      font-size: 13px;
       font-weight: 800;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-board.cast-vitals {
       width: 100%;
       background: linear-gradient(180deg, rgba(28, 20, 14, 0.92), rgba(10, 8, 6, 0.9));
     }
+    .cast-screen.character-focus .cast-on-stats .hp-line {
+      padding: 3px 8px;
+      gap: 4px;
+    }
+    .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: 11px; gap: 4px; }
+    .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 16px; height: 16px; }
+    .cast-screen.character-focus .cast-on-stats .hp-line b { font-size: 16px; }
     .cast-screen.character-focus .cast-on-blurb {
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100%;
+      left: auto;
+      right: 16px;
+      bottom: 16px;
+      width: min(48%, 440px);
     }
     .cast-screen.character-focus .cast-on-blurb .cast-blurb-wrap {
       width: 100%;
       box-sizing: border-box;
       margin: 0;
       max-width: none;
-      padding: 14px 18px 16px;
-      border-radius: 0;
-      border: 0;
-      border-top: 1px solid rgba(228, 177, 90, 0.62);
-      background: rgba(8, 6, 4, 0.46);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
+      backdrop-filter: none;
     }
     .cast-screen.character-focus .cast-on-blurb .cast-blurb {
       margin: 0;
@@ -8270,20 +8366,23 @@
       flex: 0 0 auto;
       width: 100%;
       margin: 0;
-      justify-content: stretch;
+      justify-content: center;
     }
     .cast-screen.character-focus .cast-token.mini {
-      flex: 1 1 auto;
-      min-height: 148px;
-      padding: 10px 18px;
+      flex: 0 0 auto;
+      width: auto;
+      max-width: calc(100% - 24px);
+      min-height: 0;
+      padding: 6px 14px;
       flex-direction: row;
       justify-content: center;
-      gap: 18px;
+      gap: 12px;
       cursor: pointer;
     }
     .cast-screen.character-focus .cast-token.mini img {
-      width: 128px;
-      height: 128px;
+      width: 104px;
+      height: 104px;
+      flex: none;
     }
     .cast-screen.character-focus .cast-token.mini span {
       font-size: clamp(26px, 2.2cqw, 34px);
@@ -9798,7 +9897,7 @@
       タウロスアタック: "card-tauros.jpg?v=1",
       ファイアパラダイス: "card-fireparadise-v2.jpg?v=1",
       無心: "card-mushin.jpg?v=1",
-      餌だ: "card-bait-v3.jpg?v=1",
+      "餌だ!!": "card-bait-v3.jpg?v=1",
       さぼる: "card-slack.jpg?v=1",
       弱者の意地: "card-spite-v4.jpg?v=1",
       死者の軍団: "card-legion.jpg?v=1",
@@ -9979,7 +10078,7 @@
       },
       {
         name: "物乞い",
-        image: "enemy-beggar.png?v=4",
+        image: "enemy-beggar.png?v=5",
         rank: "雑魚",
         stature: "same",
         hp: 25,
@@ -10333,6 +10432,7 @@
     let hurtRestUsed = false;
     let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
+    let pathHandoff = false;
     let rareArmed = "";
     let bossPicks = [];
     let shopStock = [];
@@ -11096,7 +11196,7 @@
       "enemy-minotaur.png": { w: 864, h: 1152, top: 50, bottom: 75, left: 67, right: 853 },
       "enemy-dragon.png": { w: 864, h: 1152, top: 120, bottom: 150, left: 27, right: 863 },
       "enemy-troll.png": { w: 864, h: 1152, top: 39, bottom: 42, left: 23, right: 776 },
-      "enemy-beggar.png": { w: 864, h: 1152, top: 30, bottom: 32, left: 94, right: 718 },
+      "enemy-beggar.png": { w: 864, h: 1152, top: 40, bottom: 60, left: 63, right: 833 },
       "enemy-hades.png": { w: 864, h: 1152, top: 84, bottom: 131, left: 41, right: 857 },
     };
 
@@ -11119,6 +11219,12 @@
 
     function foeSize() {
       return foeStature(enemyNow());
+    }
+
+    function smallFoeRatio(src) {
+      const file = String(src || "").split("?")[0];
+      if (file.endsWith("enemy-goblin.png")) return 0.78;
+      return 0.5;
     }
 
     function fxLabFoeSize(name) {
@@ -14756,7 +14862,7 @@
       return takeGift({ kind: "gear", gear: { ...item } });
     }
 
-    function giftMarkup(gift, big, hot, index) {
+    function giftMarkup(gift, big, hot, index, asSheet) {
       if (!gift) return "";
       const cls = big ? "gift-show" : "gift-pick";
       const lv = hot ? rareLevel(giftEntity(gift)) : 0;
@@ -14786,6 +14892,7 @@
           image: item.image || "",
           rarity: gearRarityText(item),
           embedded: true,
+          sheetPop: !!asSheet,
         })}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
@@ -15194,8 +15301,8 @@
         if (Math.random() < ENCOUNTER_BEGGAR) {
           floorKind = "物乞いに遭遇";
           beggarGift = [];
-          floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
-          floorPrompt = "物乞いにカードをあげろ。";
+          floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
+          floorPrompt = "デッキからカードを一枚削除できる。";
         } else {
           floorKind = "挑戦者に祝福を";
           floorPhase = "bless";
@@ -15215,8 +15322,8 @@
         floorKind = "物乞いに遭遇";
         beggarGift = [];
         beggarPick = -1;
-        floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。腰には、きらりと光るものがある。";
-        floorPrompt = "物乞いにカードをあげろ。";
+        floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
+        floorPrompt = "デッキからカードを一枚削除できる。";
       } else if (kind === "鍛冶屋") {
         floorKind = "鍛冶屋";
         floorPhase = "show";
@@ -16127,7 +16234,7 @@
               <li>休憩とボスは下の表で固定です。袋には入りません。</li>
               <li>戦闘の枚数は、表の範囲のどれも同じ確率です。</li>
               <li>残りの枠は、下の${PATH_FILL.length}種がそれぞれ${otherShare}です。同じ種類が何枠も入ることがあります。</li>
-              <li>選ぶときは、違う名前を最大3つ出します。直前と同じ名前は出ません。</li>
+              <li>選ぶときは、違う名前を3つ出します。直前と同じ名前は出ません。3つに足りないときは、袋に無い戦闘以外の道を足します。1階の戦闘固定は足しません。</li>
             </ul>
             ${oddsTable(["ダンジョン", "ランダムな階", "戦闘の枚数", "休憩", "ボス"], spanRows)}
             <h3>戦闘以外（各${otherShare}）</h3>
@@ -16950,7 +17057,7 @@
               ${sheetFig("enemy-minotaur.png?v=11", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=7", "ちびドラゴン", "enemy-ref")}
               ${sheetFig("enemy-death-dragon.png?v=1", "デスドラゴン", "enemy-ref")}
-              ${sheetFig("enemy-beggar.png?v=4", "物乞い", "enemy-ref")}
+              ${sheetFig("enemy-beggar.png?v=5", "物乞い", "enemy-ref")}
               ${sheetFig("enemy-hades.png?v=9", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
@@ -17075,7 +17182,7 @@
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
                 <h4 class="trial-head">アタック ボス　棘を右へ</h4>
-                <div class="style-genres trial">${cardStyleSheet([["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"]])}</div>
+                <div class="style-genres trial">${cardStyleSheet([["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"], ["style-boss-mana-bigger", "ボス 棘大", "frame-attack-boss-mana-bigger.png?v=1"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -17270,7 +17377,7 @@
         ? `<div class="gift-row">${trainPicks.map((card, i) => `<button type="button" class="gift-btn" data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false)}</button>`).join("")}</div>`
         : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
-      const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0) : "";
+      const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0, floorKind === "探索") : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
       const smith = floorKind === "鍛冶屋" ? smithPanelHtml() : "";
@@ -17373,16 +17480,78 @@
       paintEdgeClear();
       paintTitleNav();
       paintFullscreenLabels();
+      if (pathHandoff) {
+        pathHandoff = false;
+        const host = root.querySelector(".battle-screen");
+        if (host) host.classList.add("path-handoff");
+      }
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
         fitCardEffects();
         if (screen === "fx" || screen === "battle") fitFighters();
+        fitSearchGearPop();
+        fitBeggarDeck();
         armFoeArrive(8);
       });
     }
 
     // 階の表示中は敵を出さない。位置を決めてから、登場は一度だけ。
+    function fitSearchGearPop() {
+      const choice = root.querySelector(".menu.event.search .event-choice");
+      const show = choice && choice.querySelector(".gift-show");
+      const pop = show && show.querySelector(".gear-effect.sheet-pop");
+      if (!choice || !show || !pop) return;
+      pop.style.transform = "none";
+      const side = choice.closest(".event-side");
+      const copy = side && side.querySelector(".event-copy");
+      const actions = choice.querySelector(".event-actions");
+      const sideCs = side ? getComputedStyle(side) : null;
+      const padY = sideCs ? (parseFloat(sideCs.paddingTop) || 0) + (parseFloat(sideCs.paddingBottom) || 0) : 0;
+      const gapY = sideCs ? (parseFloat(sideCs.rowGap || sideCs.gap) || 0) : 0;
+      const availW = Math.max(80, choice.clientWidth);
+      const availH = Math.max(80, (side ? side.clientHeight : pop.offsetHeight) - padY - (copy ? copy.offsetHeight : 0) - (actions ? actions.offsetHeight : 0) - gapY - 8);
+      const w = pop.offsetWidth;
+      const h = pop.offsetHeight;
+      if (w < 8 || h < 8) return;
+      const scale = Math.min(1, availW / w, availH / h);
+      pop.style.transformOrigin = "top left";
+      pop.style.transform = scale < 0.995 ? `scale(${scale})` : "";
+      show.style.overflow = scale < 0.995 ? "hidden" : "visible";
+      show.style.width = `${Math.ceil(w * Math.min(scale, 1))}px`;
+      show.style.height = `${Math.ceil(h * Math.min(scale, 1))}px`;
+      const img = pop.querySelector("img");
+      if (img && !img.complete) img.addEventListener("load", () => fitSearchGearPop(), { once: true });
+    }
+
+    function fitBeggarDeck() {
+      const box = root.querySelector(".menu.event.beggar .beggar-cards");
+      if (!box) return;
+      const n = box.querySelectorAll("button.beggar-card").length;
+      if (!n) return;
+      const side = box.closest(".event-side");
+      const choice = box.closest(".event-choice");
+      const actions = choice && choice.querySelector(".event-actions");
+      const copy = side && side.querySelector(".event-copy");
+      const gap = 8;
+      const sideCs = side ? getComputedStyle(side) : null;
+      const choiceCs = choice ? getComputedStyle(choice) : null;
+      const padX = choiceCs ? (parseFloat(choiceCs.paddingLeft) || 0) + (parseFloat(choiceCs.paddingRight) || 0) : 0;
+      const padY = sideCs ? (parseFloat(sideCs.paddingTop) || 0) + (parseFloat(sideCs.paddingBottom) || 0) : 0;
+      const gapY = sideCs ? (parseFloat(sideCs.rowGap || sideCs.gap) || 0) : 0;
+      const availW = Math.max(80, (choice ? choice.clientWidth : box.clientWidth) - padX);
+      const availH = Math.max(72, (side ? side.clientHeight : 0) - padY - (copy ? copy.offsetHeight : 0) - (actions ? actions.offsetHeight : 0) - gapY * 2 - 8);
+      let best = 36;
+      for (let cols = 1; cols <= n; cols += 1) {
+        const rows = Math.ceil(n / cols);
+        const byW = Math.floor((availW - gap * (cols - 1)) / cols);
+        const byH = Math.floor(((availH - gap * (rows - 1)) / rows) * 3 / 4);
+        const w = Math.min(byW, byH);
+        if (w > best) best = w;
+      }
+      box.style.setProperty("--beggar-w", `${Math.min(220, Math.max(36, best))}px`);
+    }
+
     function armFoeArrive(tries) {
       if (screen !== "battle" || !encounter || floorCall) return;
       const arriving = root.querySelector(".enemy-main.staged");
@@ -17523,6 +17692,7 @@
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=4"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=1"],
       ["style-boss-mana-right", "ボス 棘右", "frame-attack-boss-mana-right.png?v=3"],
+      ["style-boss-mana-bigger", "ボス 棘大", "frame-attack-boss-mana-bigger.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -18414,13 +18584,13 @@
     const PATHS = {
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=3" },
       straight: { name: "戦闘", text: "このダンジョンの敵と戦う。", image: "path-fight.jpg?v=5" },
-      search: { name: "探索", text: "装備だけ。戦闘にはならない。", image: "path-search.jpg?v=13" },
-      beggar: { name: "物乞い", text: "カードを1枚捨てると、物乞いが襲ってくる。", image: "path-beggar.jpg?v=6" },
-      shop: { name: "お店", text: "★で買い物。カード2つと装備2つ。", image: "path-shop.jpg?v=12" },
-      lost: { name: "迷子", text: "見えている2枚を消して、道を引き直す。階は進まない。", image: "path-lost.jpg?v=11" },
-      smith: { name: "鍛冶屋", text: "合成は★3。エンチャントは★2。★が無いと使えない。", image: "path-smith.svg?v=2" },
-      unknown: { name: "遭遇", text: "物乞いか、祝福が起きる。", image: "path-unknown.jpg?v=9" },
-      train: { name: "修行", text: "カードを3つから1つ選ぶ。デッキの1枚が熟練する。", image: "path-train.jpg?v=5" },
+      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=13" },
+      beggar: { name: "物乞い", text: "デッキからカードを1枚削除できる。", image: "path-beggar.jpg?v=6" },
+      shop: { name: "お店", text: "敵から得た★で、貴重な品を買おう。", image: "path-shop.jpg?v=12" },
+      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
+      smith: { name: "鍛冶屋", text: "カードを合成して、強化しよう。", image: "path-smith.svg?v=2" },
+      unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
+      train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=1" },
     };
     // 右の1枠。左は休憩、真ん中は戦闘で固定
@@ -18595,8 +18765,40 @@
       return paths;
     }
 
+    function bagNames(skip) {
+      const names = new Set();
+      for (const id of pathBag || []) {
+        const path = PATHS[id];
+        if (!path || path.name === skip) continue;
+        names.add(path.name);
+      }
+      return names;
+    }
+
+    // 選ぶ階が残っているあいだ、直前と違う名前が3つ未満なら戦闘以外を足す。
+    function topUpPathBag() {
+      if (!Array.isArray(pathBag)) return;
+      const prev = nodePathName(route[battleIndex]);
+      const order = shuffle(PATH_FILL.slice());
+      let guard = 0;
+      while (bagNames(prev).size < 3 && guard < PATH_FILL.length) {
+        guard += 1;
+        const have = bagNames("");
+        let id = "";
+        for (const candidate of order) {
+          const path = PATHS[candidate];
+          if (!path || have.has(path.name) || path.name === prev) continue;
+          id = candidate;
+          break;
+        }
+        if (!id) break;
+        pathBag.push(id);
+      }
+    }
+
     function rollPaths() {
       if (!Array.isArray(pathBag)) return rollPathsLegacy();
+      topUpPathBag();
       const prev = nodePathName(route[battleIndex]);
       const others = pathBag.some((id) => PATHS[id] && PATHS[id].name !== prev);
       const picked = [];
@@ -19056,10 +19258,6 @@
         advance(1);
         return;
       }
-      if (Array.isArray(pathBag) && !pathBag.length) {
-        skipToNextPlaced();
-        return;
-      }
       rewardPaths = rollPaths();
       if (Array.isArray(pathBag) && !rewardPaths.length) {
         skipToNextPlaced();
@@ -19246,6 +19444,29 @@
       setTimeout(finish, 1000);
     }
 
+    function fadePathBoard(done) {
+      const board = document.querySelector(".overlay.paths");
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || !board) {
+        done();
+        return;
+      }
+      const play = document.querySelector(".battle-screen");
+      if (play) play.style.pointerEvents = "none";
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        done();
+      };
+      board.classList.add("path-leave");
+      board.addEventListener("animationend", (event) => {
+        if (event.target !== board) return;
+        finish();
+      });
+      setTimeout(finish, 560);
+    }
+
     function beginPathFlight(id, place, step) {
       const shot = capturePathShot(id);
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -19258,10 +19479,13 @@
         rewardStep = "flying";
         requestAnimationFrame(() => requestAnimationFrame(() => {
           flyPathIntoMap(live, () => {
-            rewardStep = "done";
-            if (place) place();
-            advance(step);
-            schedulePlaceRoad();
+            fadePathBoard(() => {
+              pathHandoff = true;
+              rewardStep = "done";
+              if (place) place();
+              advance(step);
+              schedulePlaceRoad();
+            });
           });
         }));
       };
@@ -19273,12 +19497,11 @@
       if (rewardStep !== "paths" || !PATHS[id]) return;
       if (Array.isArray(pathBag) && id === "lost") {
         for (const shown of rewardPaths) removeBagOne(shown);
-        rewardPaths = [];
-        if (!pathBag.length) {
+        rewardPaths = rollPaths();
+        if (!rewardPaths.length) {
           skipToNextPlaced();
           return;
         }
-        rewardPaths = rollPaths();
         rewardStep = "paths";
         floorPhase = "paths";
         if (screen !== "battle") screen = "floor";
@@ -19783,8 +20006,9 @@
       if (heroW > laneW) heroW = laneW;
       const heroShown = heroW * heroInk / heroImg;
       const stature = main.dataset.size || "same";
+      const foeSrc = (main.querySelector("img") && main.querySelector("img").getAttribute("src")) || "";
       let foeVis = heroShown;
-      if (stature === "small") foeVis = heroShown * 0.5;
+      if (stature === "small") foeVis = heroShown * smallFoeRatio(foeSrc);
       if (stature === "huge") foeVis = Math.max(heroShown, laneH - footGap);
       let foeW = foeVis * imgW / inkH;
       const foeCap = stature === "huge" ? Math.max(foeLaneW * 1.45, laneW) : foeLaneW;
@@ -19807,6 +20031,8 @@
       const scale = fieldRect.width / field.clientWidth || 1;
       const heroFig = hero.querySelector(".hero-fig") || hero;
       const foeFig = main.querySelector("img") || main;
+      const body = main.querySelector(".foe-body");
+      if (body) body.style.transform = "";
       const heroRect = heroFig.getBoundingClientRect();
       const foeRect = foeFig.getBoundingClientRect();
       motions.forEach((anim, i) => {
@@ -19821,6 +20047,15 @@
       const leftGap = heroVisLeft;
       const rightGap = field.clientWidth - foeVisRight;
       main.style.marginLeft = `${Math.round(rightGap - leftGap)}px`;
+      if (body && foeSrc.split("?")[0].endsWith("enemy-kobold.png")) {
+        const inkBottom = getComputedStyle(main).getPropertyValue("--ink-bottom") || "0";
+        const foot = main.style.getPropertyValue("--foot-gap") || "12px";
+        body.style.transformOrigin = "50% 100%";
+        body.style.transform = `translateY(calc(${inkBottom} * 100% - ${foot})) scale(1.12)`;
+      } else if (body) {
+        body.style.transformOrigin = "";
+        body.style.transform = "";
+      }
     }
 
     // 手札は大きいまま扇状。枚数が多いときは重ねる（潰さない）。確認はホバーで浮かせる。
@@ -19957,21 +20192,29 @@
     window.addEventListener("resize", () => {
       fitStage();
       if (screen === "battle") fitHand();
+      fitSearchGearPop();
+      fitBeggarDeck();
     });
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", () => {
         fitStage();
         if (screen === "battle") fitHand();
+        fitSearchGearPop();
+        fitBeggarDeck();
       });
     }
     window.matchMedia("(max-width: 500px), (max-height: 500px)").addEventListener("change", () => {
       fitStage();
       if (screen === "battle") fitHand();
+      fitSearchGearPop();
+      fitBeggarDeck();
     });
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
         fitStage();
         if (screen === "battle") fitHand();
+        fitSearchGearPop();
+        fitBeggarDeck();
       }, 80);
     });
 
