@@ -837,9 +837,9 @@
     .battle-plate .hp-line .lbl .ico.sword { color: #ff5a3a; filter: drop-shadow(0 0 5px rgba(255, 70, 40, 0.75)); }
     .battle-plate .hp-line .lbl .ico.shield { color: #d7dde6; filter: drop-shadow(0 0 5px rgba(220, 226, 232, 0.45)); }
     .battle-plate .hp-line .lbl .ico.boot { color: #e8c878; filter: drop-shadow(0 0 4px rgba(232, 200, 120, 0.55)); }
-    .foe-plate[data-rank="雑魚"] { width: min(300px, 50%); }
-    .foe-plate[data-rank="普通"] { width: min(300px, 48%); }
-    .foe-plate[data-rank="強敵"] { width: min(340px, 50%); }
+    .foe-plate[data-rank="雑魚"],
+    .foe-plate[data-rank="普通"],
+    .foe-plate[data-rank="強敵"] { width: min(300px, 42%); }
     .battle-plate h2 {
       position: relative;
       margin: 0 0 4px;
@@ -1218,16 +1218,20 @@
     .battle-plate .hp-line.stat-star .lbl { color: #f0c36a; }
     .battle-plate .hp-line.stat-mana .lbl,
     .battle-plate .hp-line.stat-mana .ico { color: #ffe14a; }
-    /* 状態異常は名前の右に横並び */
+    /* 状態異常の行は最初から空ける。付いても枠は伸びない */
     .battle-plate h2 .plate-badges {
-      display: inline-flex;
-      flex-wrap: wrap;
+      display: flex;
+      flex: 1 0 100%;
+      flex-wrap: nowrap;
       align-items: center;
       gap: 5px;
       margin: 0;
       min-width: 0;
+      height: 28px;
+      overflow: hidden;
     }
-    .battle-plate h2 .plate-badges:empty { display: none; }
+    html.stage-fit .battle-plate .plate-stats,
+    .fx-lab-preview .battle-plate .plate-stats { min-height: 99px; }
     /* 状態のアイコン札：丸い暗地に色つきアイコン。重なるものは右に数字 */
     .status-chip {
       position: relative;
@@ -3890,12 +3894,12 @@
       filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55));
     }
     .mana-read b {
-      width: 84px;
-      height: 84px;
+      width: 87px;
+      height: 87px;
       display: grid;
       place-items: center;
       border-radius: 0;
-      font-size: 44px;
+      font-size: 64px;
       line-height: 1;
       font-weight: 900;
       color: #fff8e8;
@@ -5481,31 +5485,6 @@
     .overlay.paths .path-list.forced button { animation: none; }
     @media (prefers-reduced-motion: reduce) {
       .overlay.paths .path-list button { animation: none; }
-      .path-black,
-      .battle-screen.path-handoff .battle-bands,
-      .battle-screen.path-handoff .handbar,
-      .battle-screen.path-handoff .event-stage { animation: none; }
-    }
-    .path-black {
-      position: fixed;
-      inset: 0;
-      z-index: 90;
-      background: #000;
-      opacity: 0;
-      animation: path-black-in 0.4s ease forwards;
-    }
-    .path-black.path-black-out { animation: path-black-out 0.5s ease forwards; }
-    @keyframes path-black-in { to { opacity: 1; } }
-    @keyframes path-black-out { from { opacity: 1; } to { opacity: 0; } }
-    .battle-screen.path-handoff .battle-bands,
-    .battle-screen.path-handoff .handbar,
-    .battle-screen.path-handoff .event-stage {
-      animation: path-arrive 0.72s cubic-bezier(0.16, 0.84, 0.32, 1) both;
-    }
-    @keyframes path-arrive {
-      0% { opacity: 0; transform: translateY(36px); filter: brightness(1.8); }
-      42% { opacity: 1; transform: translateY(0); filter: brightness(1.18); }
-      100% { opacity: 1; transform: none; filter: none; }
     }
     .overlay.gear-offer { z-index: 32; }
     .overlay.gear-offer .panel { width: min(720px, calc(100cqw - 32px)); }
@@ -6621,12 +6600,40 @@
       width: 100%;
       height: 100%;
     }
-    .fx-lab-preview .battle-screen.no-log {
-      grid-template-columns: minmax(0, 1fr);
+    .fx-lab-preview .battle-screen.fx-lab-play {
+      grid-template-columns: minmax(0, 1fr) minmax(132px, 16%);
       grid-template-areas:
-        "hud"
-        "arena"
-        "hand";
+        "hud log"
+        "arena log"
+        "hand log";
+    }
+    .fx-lab-preview .side-rail { position: relative; z-index: 30; }
+    .fx-lab-preview .fx-foe-log {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      height: 100%;
+    }
+    .fx-lab-preview .fx-foe-log h2 { margin-bottom: 8px; }
+    .fx-lab-preview .fx-foe-log button {
+      width: 100%;
+      text-align: center;
+      border-radius: 10px;
+      border: 1px solid rgba(240, 195, 106, 0.4);
+      background: rgba(12, 8, 6, 0.45);
+      color: #fff1d2;
+      padding: 8px 4px;
+      font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    .fx-lab-preview .fx-foe-log button:hover { border-color: #ffe6a8; }
+    .fx-lab-preview .fx-foe-log button.on {
+      border-color: #ffe6a8;
+      background: linear-gradient(180deg, rgba(90, 62, 24, 0.95), rgba(36, 24, 12, 0.95));
+      color: #ffe7a8;
     }
     .fx-lab-preview .fx-lab-hand {
       position: relative;
@@ -10216,7 +10223,6 @@
     }
     #stage-float,
     #stage-float * { pointer-events: none; }
-    #stage-float .path-black,
     #stage-float .depart,
     #stage-float .depart *,
     #stage-float .foe-deck-pop,
@@ -10824,7 +10830,6 @@
     let hurtRestUsed = false;
     let pathEventTitle = "探索"; // 道のあとの出来事パネルの見出し（探索／未知との遭遇）
     let rewardStep = "cards";
-    let pathHandoff = false;
     let rareArmed = "";
     let bossPicks = [];
     let shopStock = [];
@@ -16416,9 +16421,7 @@
         : "";
       const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
-      const badges = extra && extra.badges
-        ? `<span class="plate-badges">${extra.badges}</span>`
-        : "";
+      const badges = `<span class="plate-badges">${extra && extra.badges ? extra.badges : ""}</span>`;
       const stars = extra && extra.stars
         ? `<span class="plate-stars" aria-label="ランク">${esc(extra.stars)}</span>`
         : "";
@@ -16435,7 +16438,7 @@
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}${badges}</h2>
         ${meters(who, shownHp, maxHp, block, extra && extra.threat)}
-        ${stats}${extra && extra.tail ? extra.tail : ""}
+        <div class="plate-stats">${stats}${extra && extra.tail ? extra.tail : ""}</div>
       </section>`;
     }
 
@@ -16637,27 +16640,52 @@
       return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(name)}の山札 6">${foePileFace(6, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="捨て札 1">${foePileFace(1, true)}<div class="pile-label">捨て札</div></div></div>`;
     }
 
+    function fxLabHandList() {
+      const names = ["アタック", "アタック", "チャージアタック", "ブロック", "パリィ"];
+      const cards = names.map((name) => {
+        const base = cardDef(name);
+        return base ? { name, ...base } : null;
+      }).filter(Boolean);
+      const colorRank = (card) => {
+        const kind = cardKind(card);
+        if (kind === "skill") return 0;
+        if (kind === "power") return 1;
+        if (kind === "attack") return 2;
+        if (kind === "block") return 3;
+        return 4;
+      };
+      cards.sort((a, b) => colorRank(a) - colorRank(b) || (Number(a.cost) || 0) - (Number(b.cost) || 0) || String(a.name).localeCompare(b.name, "ja"));
+      return cards;
+    }
+
     function fxLabHand(id) {
       const mana = `<div class="mana-dock"><div class="mana-read" aria-label="マナ残り 3"><b>3</b></div></div>`;
-      if (id === "deal") {
-        const cards = [0, 1, 2].map((i) => `<div class="card deal" style="--deal:${i};--fan:${(i - 1) * 8}deg;--drop:0px"><div class="pile-card back"></div></div>`).join("");
-        return `${mana}<div class="hand fx-deal">${cards}</div>`;
-      }
-      const names = ["アタック", "ブロック", "パリィ"];
-      const cards = names.map((name, i) => {
-        const base = cardDef(name);
-        if (!base) return "";
-        const card = { name, ...base };
-        const fan = (i - 1) * 8;
-        return `<button type="button" class="card ${cardKind(card)}" disabled style="--fan:${fan}deg;--drop:0px;--hand-z:${i + 1}">${cardFace(card, false)}</button>`;
+      const cards = fxLabHandList();
+      const dealNow = id === "deal";
+      const html = cards.map((card, i) => {
+        const mid = (cards.length - 1) / 2;
+        const dist = i - mid;
+        const t = mid === 0 ? 0 : dist / mid;
+        const fan = Math.round(t * 8 * 10) / 10;
+        const drop = Math.round((-12 + 28 * t * t) * 10) / 10;
+        const label = `${card.cost} ${card.name} ${String(card.text || "").replace(/\n/g, " ")}`;
+        return `<button type="button" class="card ${cardKind(card)}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${fan}deg;--drop:${drop}px;--deal:${i};--hand-z:${i + 1}">${cardFace(card, true)}</button>`;
       }).join("");
-      return `${mana}<div class="hand">${cards}</div>`;
+      return `${mana}<div class="hand${dealNow ? " deal-pending" : ""}">${html}</div>`;
+    }
+
+    function fxLabFoeRail() {
+      const foePick = ENEMIES.map((row) => {
+        const on = row.name === fxLabFoeName ? " on" : "";
+        return `<button type="button" class="${on.trim()}" data-action="fx-foe" data-foe-name="${esc(row.name)}">${esc(row.name)}</button>`;
+      }).join("");
+      return `<aside class="side-rail"><div class="battle-log fx-foe-log"><h2>敵</h2>${foePick}</div></aside>`;
     }
 
     function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
       const shake = shellCls.includes("shake") ? " shake" : "";
       const fatal = shellCls.includes("fatal") ? " fatal" : "";
-      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand" aria-hidden="true">${handHtml || ""}</div></div></div></div>`;
+      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
     }
 
     function fxVictory() {
@@ -16708,7 +16736,7 @@
       }
       const handHtml = id === "victory" ? "" : fxLabHand(id);
       if (id === "victory") {
-        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play">${fxVictory()}</div></div>`;
+        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play">${fxVictory()}${fxLabFoeRail()}</div></div>`;
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
@@ -16725,12 +16753,9 @@
         const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
         return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
-      const foePick = ENEMIES.map((row) => {
-        const on = row.name === fxLabFoeName ? " on" : "";
-        return `<button type="button" class="${on.trim()}" data-action="fx-foe" data-foe-name="${esc(row.name)}">${esc(row.name)}</button>`;
-      }).join("");
-      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><h2>敵（サイズ比較）</h2>${foePick}<button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
       placeFoePoisonWords();
+      fitHand();
     }
 
     function placeFoePoisonWords() {
@@ -18271,16 +18296,14 @@
       paintEdgeClear();
       paintTitleNav();
       paintFullscreenLabels();
-      if (pathHandoff) {
-        pathHandoff = false;
-        const host = root.querySelector(".battle-screen");
-        if (host) host.classList.add("path-handoff");
-      }
       requestAnimationFrame(() => {
         placeRoad();
         fitCardNames();
         fitCardEffects();
-        if (screen === "fx" || screen === "battle") fitFighters();
+        if (screen === "fx" || screen === "battle") {
+          fitFighters();
+          fitHand();
+        }
         fitSearchGearPop();
         fitBeggarDeck();
         fitSmithDeck();
@@ -20218,47 +20241,12 @@
       advance(1);
     }
 
-    function crossPathBlack(place, step) {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const go = () => {
-        pathHandoff = true;
-        rewardStep = "done";
-        roadGlide = true;
-        if (place) place();
-        advance(step);
-        schedulePlaceRoad();
-      };
-      if (reduce) {
-        go();
-        return;
-      }
-      rewardStep = "lifting";
-      const veil = document.createElement("div");
-      veil.className = "path-black";
-      veil.setAttribute("aria-hidden", "true");
-      mountFloat(veil);
-      let swapped = false;
-      const swap = () => {
-        if (swapped) return;
-        swapped = true;
-        go();
-        requestAnimationFrame(() => {
-          veil.classList.add("path-black-out");
-          const clear = () => {
-            if (veil.parentNode) veil.remove();
-          };
-          veil.addEventListener("animationend", (event) => {
-            if (event.target !== veil || event.animationName !== "path-black-out") return;
-            clear();
-          });
-          setTimeout(clear, 700);
-        });
-      };
-      veil.addEventListener("animationend", (event) => {
-        if (event.target !== veil || event.animationName !== "path-black-in") return;
-        setTimeout(swap, 160);
-      });
-      setTimeout(swap, 720);
+    function commitPath(place, step) {
+      rewardStep = "done";
+      roadGlide = true;
+      if (place) place();
+      advance(step);
+      schedulePlaceRoad();
     }
 
     function takePath(id) {
@@ -20288,17 +20276,17 @@
       }
       if (id === "unknown") {
         const resolved = pathNode(resolveEncounter());
-        crossPathBlack(() => placeNext(resolved || dungeonEnemy()), 1);
+        commitPath(() => placeNext(resolved || dungeonEnemy()), 1);
         return;
       }
       if (id === "straight") {
         const place = pathAlreadyAtNext(id) ? null : () => placeNext(dungeonEnemy());
-        crossPathBlack(place, 1);
+        commitPath(place, 1);
         return;
       }
       const node = pathNode(id);
       const place = pathAlreadyAtNext(id) ? null : () => placeNext(node || dungeonEnemy());
-      crossPathBlack(place, 1);
+      commitPath(place, 1);
     }
 
     function offerTone(card) {
@@ -20974,7 +20962,7 @@
     }
     window.addEventListener("resize", () => {
       fitStage();
-      if (screen === "battle") fitHand();
+      if (screen === "battle" || screen === "fx") fitHand();
       fitSearchGearPop();
       fitBeggarDeck();
         fitSmithDeck();
@@ -20982,7 +20970,7 @@
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", () => {
         fitStage();
-        if (screen === "battle") fitHand();
+        if (screen === "battle" || screen === "fx") fitHand();
         fitSearchGearPop();
         fitBeggarDeck();
         fitSmithDeck();
@@ -20990,7 +20978,7 @@
     }
     window.matchMedia("(max-width: 500px), (max-height: 500px)").addEventListener("change", () => {
       fitStage();
-      if (screen === "battle") fitHand();
+      if (screen === "battle" || screen === "fx") fitHand();
       fitSearchGearPop();
       fitBeggarDeck();
         fitSmithDeck();
@@ -20998,7 +20986,7 @@
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
         fitStage();
-        if (screen === "battle") fitHand();
+        if (screen === "battle" || screen === "fx") fitHand();
         fitSearchGearPop();
         fitBeggarDeck();
         fitSmithDeck();
