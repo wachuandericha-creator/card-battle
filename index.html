@@ -2014,30 +2014,6 @@
       text-align: left;
     }
     .foe-index h1 { text-align: center; }
-    .menu.foe-index {
-      width: min(1680px, calc(100% - 8px));
-    }
-    .menu.foe-index .foe-starter-sheet {
-      grid-template-columns: minmax(420px, 520px) minmax(0, 1fr);
-      align-items: stretch;
-    }
-    .menu.foe-index .foe-starter-portrait {
-      grid-row: 1 / span 2;
-      min-height: 640px;
-      align-self: stretch;
-    }
-    .menu.foe-index .foe-starter-portrait img {
-      width: auto;
-      max-width: 100%;
-      height: 100%;
-      max-height: none;
-    }
-    .menu.foe-index .foe-starter-deck { grid-column: 2; }
-    @media (max-width: 900px) {
-      html:not(.stage-fit) .menu.foe-index .foe-starter-sheet { grid-template-columns: 1fr; }
-      html:not(.stage-fit) .menu.foe-index .foe-starter-portrait { grid-row: auto; min-height: 360px; }
-      html:not(.stage-fit) .menu.foe-index .foe-starter-deck { grid-column: 1; }
-    }
     .foe-file {
       padding: 16px;
       border-radius: 18px;
@@ -6626,37 +6602,11 @@
       font-size: 13px;
       line-height: 1.45;
     }
-    .fx-col-scroll {
-      min-height: 0;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-right: 2px;
-    }
-    .fx-col-foot {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .fx-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 8px;
-      border-radius: 14px;
-      border: 1px solid rgba(228, 177, 90, 0.35);
-      background: rgba(20, 14, 10, 0.72);
-    }
     .fx-col h2 {
-      margin: 0;
-      padding: 4px 8px;
-      border-radius: 8px;
-      background: rgba(90, 58, 22, 0.45);
-      font-size: 13px;
+      margin: 8px 0 0;
+      font-size: 12px;
       letter-spacing: 0.18em;
-      text-align: center;
-      color: #ffe7a8;
+      color: #e4b15a;
     }
     .fx-col button {
       text-align: left;
@@ -6688,49 +6638,12 @@
       width: 100%;
       height: 100%;
     }
-    .fx-lab-preview .side-rail { position: relative; z-index: 30; }
-    .fx-lab-preview .fx-foe-log {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      height: 100%;
-    }
-    .fx-lab-preview .fx-foe-log h2 { margin-bottom: 6px; }
-    .fx-lab-preview .fx-foe-log button {
-      width: 100%;
-      text-align: center;
-      border-radius: 10px;
-      border: 1px solid rgba(240, 195, 106, 0.4);
-      background: rgba(12, 8, 6, 0.45);
-      color: #fff1d2;
-      padding: 8px 4px;
-      font-family: "Yu Gothic UI", "Meiryo", sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-    }
-    .fx-lab-preview .fx-foe-log button:hover { border-color: #ffe6a8; }
-    .fx-lab-preview .fx-foe-log button.on {
-      border-color: #ffe6a8;
-      background: linear-gradient(180deg, rgba(90, 62, 24, 0.95), rgba(36, 24, 12, 0.95));
-      color: #ffe7a8;
-    }
-    html.phone .fx-lab-preview .battle-screen {
-      grid-template-columns: minmax(0, 1fr) minmax(108px, 30%);
+    .fx-lab-preview .battle-screen.no-log {
+      grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
-        "hud log"
-        "arena log"
-        "hand log";
-    }
-    html.phone .fx-lab-preview .side-rail { display: flex; }
-    html.phone .fx-lab-preview .battle-log {
-      display: flex;
-      position: static;
-      height: 100%;
-      left: auto;
-      right: auto;
-      bottom: auto;
+        "hud"
+        "arena"
+        "hand";
     }
     .fx-lab-preview .fx-lab-hand {
       position: relative;
@@ -6795,11 +6708,8 @@
         grid-template-rows: minmax(0, 1fr) auto;
         padding-top: 58px;
       }
-      .fx-col { max-height: 38%; }
-      .fx-col-scroll { flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
-      .fx-col h1 { flex: 1 0 100%; }
-      .fx-group { flex: 1 1 140px; }
-      .fx-col-foot { flex: 1 0 100%; }
+      .fx-col { max-height: 38%; flex-direction: row; flex-wrap: wrap; align-content: flex-start; }
+      .fx-col h1, .fx-col p { flex: 1 0 100%; }
       .fx-view { order: -1; }
     }
     .title-board {
@@ -11768,19 +11678,19 @@
     const GEAR_ITEMS = [
       { id: "short-sword", name: "ショートソード", slot: "sword", stars: 1, atk: 1, starterGear: true, effect: "★　ATK+1", image: "gear-short-sword.jpg?v=4" },
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=4" },
-      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 2, atk: 1, poisonHit: 1, effect: "★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
-      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 3, atk: 5, ignoreTrait: true, effect: "★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
+      { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=6" },
+      { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 5, atk: 5, ignoreTrait: true, effect: "★★★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=6" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=3" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=3" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=3" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 2, def: 2, thornsDef: true, effect: "★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=6" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 3, def: 5, statusImmune: true, effect: "★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
-      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 3, atk: 2, def: 2, atkInTrait: true, effect: "★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=6" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 5, def: 5, statusImmune: true, effect: "★★★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=6" },
+      { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 4, atk: 2, def: 2, atkInTrait: true, effect: "★★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=5" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=7" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 4, effect: "★★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=7" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 3, effect: "★★　アクセサリー。ATK+3", image: "gear-power-bracelet.jpg?v=6" },
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=8" },
-      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 2, carryMana: true, effect: "★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=7" },
+      { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=7" },
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
@@ -14485,8 +14395,7 @@
       }
       const fatalWait = fatal ? 3600 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
-      const shieldBreak = fxBreakPlayer || fxBreakEnemy;
-      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, fatalWait, poisonWait, shieldBreak ? 1800 : 0);
+      const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
       render();
       timer = setTimeout(() => finish(kind), wait);
@@ -16044,7 +15953,7 @@
       } else if (kind === "お店") {
         shopStock = rollShopStock();
         floorNote = "";
-        floorPrompt = "★で買い物。カード2つ、装備2つ。カードの値段は星の数。装備の値段は星の2倍。";
+        floorPrompt = "★で買い物。カード2つ、装備2つ。値段はレアリティと同じ。";
         armRare("shop");
       } else if (kind === "探索") {
         const item = GEAR_ITEMS[Math.floor(Math.random() * GEAR_ITEMS.length)];
@@ -16658,9 +16567,8 @@
       ];
     }
 
-    function fxCuts(dirs, pow, wait) {
-      const extra = Number(wait) || 0;
-      return dirs.map((dir, i) => `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * 0.34 + extra).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></span>`).join("");
+    function fxCuts(dirs, pow) {
+      return dirs.map((dir, i) => `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * 0.34).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i></span>`).join("");
     }
 
     function fxPops(hits, poison, wait) {
@@ -16683,8 +16591,7 @@
       const size = fxLabFoeSize(fxLabFoeName);
       const img = fxLabFoeImage(fxLabFoeName);
       const face = img ? `<img src="${esc(img)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      const wait = broke ? 0.7 : 0;
-      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}" style="${foeInkVars(img)}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}${broke ? " break-wait" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)};--flash-delay:${wait || 0.1}s">${face}${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6), wait) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, wait) : ""}</div></div></div>`;
+      return `<div class="enemy-main${opt.arrive ? " arrive" : ""}${opt.fatal ? " fatal" : ""}" data-size="${size}" style="${foeInkVars(img)}"><div class="foe-body"><div class="sprite${slash ? " slash" : ""}${poison ? " poison" : ""}${give ? " give" : ""}${anger ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, dirs.length)}">${face}${slash ? fxCuts(dirs, opt.pow || hitPower(hits[0] || 6)) : ""}${poison ? poisonFxHtml(give) : ""}${anger ? angerFxHtml() : ""}${hits.length ? fxPops(hits, poison && !slash, broke ? 0.7 : 0) : ""}</div></div></div>`;
     }
 
     function fxLabFoeDef() {
@@ -16745,7 +16652,7 @@
     function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
       const shake = shellCls.includes("shake") ? " shake" : "";
       const fatal = shellCls.includes("fatal") ? " fatal" : "";
-      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand" aria-hidden="true">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
+      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand" aria-hidden="true">${handHtml || ""}</div></div></div></div>`;
     }
 
     function fxVictory() {
@@ -16796,22 +16703,14 @@
       }
       const handHtml = id === "victory" ? "" : fxLabHand(id);
       if (id === "victory") {
-        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play">${fxVictory()}${fxLabFoeRail()}</div></div>`;
+        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen no-log fx-lab-play">${fxVictory()}</div></div>`;
       }
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
       const mid = `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half">${foeCard}</div></div><button type="button" class="vs-mark${id === "end-ready" ? " spent" : ""}" aria-label="ターン終了">VS</button></div>`;
       const hitPop = hero.n ? playerHitPop(hero.n, hero.kind, hero.fatal, hero.n >= 9, hero.break ? 0.7 : 0) : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold), hitPop, Boolean(hero.break))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold), hitPop)}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
-    }
-
-    function fxLabFoeRail() {
-      const foePick = ENEMIES.map((row) => {
-        const on = row.name === fxLabFoeName ? " on" : "";
-        return `<button type="button" class="${on.trim()}" data-action="fx-foe" data-foe-name="${esc(row.name)}">${esc(row.name)}</button>`;
-      }).join("");
-      return `<aside class="side-rail"><div class="battle-log fx-foe-log"><h2>敵</h2>${foePick}</div></aside>`;
     }
 
     function renderFxLab() {
@@ -16819,9 +16718,13 @@
       if (!known.has(fxLabId)) fxLabId = "guard";
       const groups = fxLabGroups().map(([title, rows]) => {
         const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
-        return `<section class="fx-group"><h2>${esc(title)}</h2>${buttons}</section>`;
+        return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
-      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><div class="fx-col-scroll">${groups}</div><div class="fx-col-foot"><button type="button" data-action="fx-replay">もう一度</button><button type="button" data-action="back">もどる</button></div></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
+      const foePick = ENEMIES.map((row) => {
+        const on = row.name === fxLabFoeName ? " on" : "";
+        return `<button type="button" class="${on.trim()}" data-action="fx-foe" data-foe-name="${esc(row.name)}">${esc(row.name)}</button>`;
+      }).join("");
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><h2>敵（サイズ比較）</h2>${foePick}<button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
       placeFoePoisonWords();
     }
 
@@ -17965,7 +17868,7 @@
               ${sheetFig("event-rest.jpg?v=10", "休憩", "land-ref", "span-2")}
               ${sheetFig("event-job.jpg?v=13", "ジョブ", "land-ref", "span-2")}
               ${sheetFig("event-train.jpg?v=7", "修行", "land-ref", "span-2")}
-              ${sheetFig("event-smith.jpg?v=1", "鍛冶屋", "land-ref", "span-2")}
+              ${sheetFig("event-smith.svg?v=2", "鍛冶屋（空）", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -17980,7 +17883,7 @@
             <h3>裏面</h3>
             <div class="ref-grid sheet-backs">${sheetBackFaces()}</div>
             <h3>カードスタイル</h3>
-            <p class="album-meta">ジャンルごとに6列。同じ形の棘</p>
+            <p class="album-meta">アタックほかは基本・★・★★・★★★・ボス。装備は銅・銀・金・ボス。</p>
             ${cardStyleColumns("sheet")}
           </div>
           ${sheetZoomSide()}
@@ -18035,8 +17938,6 @@
               <section>
                 <h3>カードスタイル</h3>
                 ${cardStyleColumns("album")}
-                <h4 class="trial-head">水色</h4>
-                <div class="style-genres trial">${cardStyleSheet([["style-boss-aqua", "ボス 水色", "frame-attack-boss-aqua.png?v=2"]])}</div>
               </section>
             </div>`;
       const unadoptedBody = albumTab === "未採用"
@@ -18229,7 +18130,7 @@
         "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
         "修行": ["event-train.jpg?v=7", "カメラは上を過ぎ、顔は少しやわらかい"],
         "お店": ["shop-merchant.jpg?v=7", "ジト目の戦士が店主に値段交渉をしている"],
-        "鍛冶屋": ["event-smith.jpg?v=1", "爺さんが金床のカードを槌で叩き、戦士が驚いている"],
+        "鍛冶屋": ["event-smith.svg?v=2", "空のイベント絵。あとから差し替える"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -18577,46 +18478,33 @@
     const CARD_STYLE = [
       ["style-basic-foe", "敵 基本", "frame-basic-foe.png?v=2"],
       ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=3"],
-      ["style-navy-silver", "敵 ★★★", "frame-navy-over-silver.png?v=2"],
-      ["style-navy-gold", "敵 ★★★★★", "frame-navy-over-gold.png?v=3"],
+      ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=2"],
+      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=3"],
       ["style-navy-black", "敵 ボス", "frame-navy-over-black.png?v=2"],
       ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=2"],
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=2"],
       ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=2"],
       ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=2"],
       ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=16"],
-      ["style-over-silver", "ブロック ★★★", "frame-blue-over-silver.png?v=15"],
-      ["style-over-gold", "ブロック ★★★★★", "frame-blue-over-gold.png?v=18"],
+      ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=15"],
+      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=18"],
       ["style-over-black", "ブロック ボス", "frame-blue-over-black.png?v=16"],
       ["style-red-over-copper", "アタック ★", "frame-red-over-copper.png?v=3"],
-      ["style-red-over-silver", "アタック ★★★", "frame-red-over-silver.png?v=2"],
-      ["style-red-over-gold", "アタック ★★★★★", "frame-red-over-gold.png?v=5"],
+      ["style-red-over-silver", "アタック ★★", "frame-red-over-silver.png?v=2"],
+      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=5"],
       ["style-red-over-black", "アタック ボス", "frame-red-over-black.png?v=2"],
       ["style-yellow-over-copper", "スキル ★", "frame-yellow-over-copper.png?v=3"],
-      ["style-yellow-over-silver", "スキル ★★★", "frame-yellow-over-silver.png?v=2"],
-      ["style-yellow-over-gold", "スキル ★★★★★", "frame-yellow-over-gold.png?v=5"],
+      ["style-yellow-over-silver", "スキル ★★", "frame-yellow-over-silver.png?v=2"],
+      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=5"],
       ["style-yellow-over-black", "スキル ボス", "frame-yellow-over-black.png?v=2"],
       ["style-green-over-copper", "アイテム ★", "frame-green-over-copper.png?v=3"],
-      ["style-green-over-silver", "アイテム ★★★", "frame-green-over-silver.png?v=2"],
-      ["style-green-over-gold", "アイテム ★★★★★", "frame-green-over-gold.png?v=5"],
+      ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=2"],
+      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=5"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=2"],
-      ["style-red-s2", "アタック ★★", "frame-red-over-copper.png?v=3"],
-      ["style-red-s4", "アタック ★★★★", "frame-red-over-silver.png?v=2"],
-      ["style-block-s2", "ブロック ★★", "frame-blue-over-copper.png?v=16"],
-      ["style-block-s4", "ブロック ★★★★", "frame-blue-over-silver.png?v=15"],
-      ["style-skill-s2", "スキル ★★", "frame-yellow-over-copper.png?v=3"],
-      ["style-skill-s4", "スキル ★★★★", "frame-yellow-over-silver.png?v=2"],
-      ["style-item-s2", "アイテム ★★", "frame-green-over-copper.png?v=3"],
-      ["style-item-s4", "アイテム ★★★★", "frame-green-over-silver.png?v=2"],
-      ["style-foe-s2", "敵 ★★", "frame-navy-over-copper.png?v=3"],
-      ["style-foe-s4", "敵 ★★★★", "frame-navy-over-silver.png?v=2"],
-      ["style-gear-s1", "装備 ★", "frame-silver-over-copper.png?v=1"],
-      ["style-gear-s2", "装備 ★★", "frame-silver-over-copper.png?v=1"],
-      ["style-gear-s3", "装備 ★★★", "frame-silver-over-silver.png?v=1"],
-      ["style-gear-s4", "装備 ★★★★", "frame-silver-over-silver.png?v=1"],
-      ["style-gear-s5", "装備 ★★★★★", "frame-silver-over-gold.png?v=1"],
+      ["style-gear-copper", "装備 銅", "frame-silver-over-copper.png?v=1"],
+      ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=1"],
+      ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
       ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
-      ["style-boss-aqua", "ボス 水色", "frame-attack-boss-aqua.png?v=2"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -18636,12 +18524,12 @@
       }).join("");
     }
     const STYLE_GENRES = [
-      ["アタック", ["style-red-over-copper", "style-red-s2", "style-red-over-silver", "style-red-s4", "style-red-over-gold", "style-red-over-black"]],
-      ["ブロック", ["style-over-copper", "style-block-s2", "style-over-silver", "style-block-s4", "style-over-gold", "style-over-black"]],
-      ["スキル", ["style-yellow-over-copper", "style-skill-s2", "style-yellow-over-silver", "style-skill-s4", "style-yellow-over-gold", "style-yellow-over-black"]],
-      ["アイテム", ["style-green-over-copper", "style-item-s2", "style-green-over-silver", "style-item-s4", "style-green-over-gold", "style-green-over-black"]],
-      ["敵", ["style-navy-copper", "style-foe-s2", "style-navy-silver", "style-foe-s4", "style-navy-gold", "style-navy-black"]],
-      ["装備", ["style-gear-s1", "style-gear-s2", "style-gear-s3", "style-gear-s4", "style-gear-s5", "style-gear-boss"]],
+      ["アタック", ["style-basic-attack", "style-red-over-copper", "style-red-over-silver", "style-red-over-gold", "style-red-over-black"]],
+      ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black"]],
+      ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black"]],
+      ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
+      ["敵", ["style-basic-foe", "style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black"]],
+      ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
     ];
     function cardStyleColumns(mode) {
       const byId = {};
@@ -19275,7 +19163,7 @@
       return `<div class="hero-hit ward${gold ? " spark-gold" : ""}" aria-hidden="true"><b class="mark m1">✨</b><b class="mark m2">✨</b><b class="mark m3">✨</b><b class="mark m4">✨</b><b class="mark m5">✨</b></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, ward, sparkGold, hitPop, breakWait) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, ward, sparkGold, hitPop) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
@@ -19293,7 +19181,7 @@
       const guardHtml = guarding ? holdGuard(guard === "parry") : "";
       const who = heroItem();
       const wash = blunt ? `<i class="hurt-wash" style="-webkit-mask-image:url('${esc(who.battle)}');mask-image:url('${esc(who.battle)}')"></i>` : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guard === "hold" ? " held" : ""}${guard === "parry" ? " parry-hold" : ""}${fatal ? " fatal" : ""}${breakWait ? " break-wait" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${wash}${hit}${healHtml}${wardHtml}${guardHtml}${hitPop || ""}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guard === "hold" ? " held" : ""}${guard === "parry" ? " parry-hold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${wash}${hit}${healHtml}${wardHtml}${guardHtml}${hitPop || ""}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -19835,14 +19723,11 @@
       return picks;
     }
 
-    // カードの値段は★の数。装備の値段は★の2倍。★が決まっていない品は値段も未定で、買えない。
+    // お店の値段はレアリティ（★の数）と同じ。★が決まっていない品は値段も未定で、買えない。
     function shopPrice(slot) {
       if (!slot) return null;
       if (slot.kind === "card" && slot.card) return Number(slot.card.stars) || 1;
-      if (slot.kind === "gear" && slot.gear) {
-        const stars = Number(slot.gear.stars) || 0;
-        return stars > 0 ? stars * 2 : null;
-      }
+      if (slot.kind === "gear" && slot.gear) return Number(slot.gear.stars) > 0 ? Number(slot.gear.stars) : null;
       return null;
     }
 
@@ -20707,15 +20592,15 @@
       const foeKind = hitNow && hitNow.side === "enemy" ? (hitNow.kind || "slash") : "";
       const hitPow = hitNow ? hitPower(hitNow.n) : "0.35";
       const HIT_GAP = 0.34;
+      const cutsHtml = slashesNow.map((dir, i) => {
+        const pow = foeHitsNow[i] != null ? hitPower(foeHitsNow[i]) : (hitNow && hitNow.side === "enemy" ? hitPow : "0.35");
+        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`;
+      }).join("");
       const breakPlayerNow = fxBreakPlayer;
       const breakEnemyNow = fxBreakEnemy;
       fxBreakPlayer = false;
       fxBreakEnemy = false;
       const foePopWait = breakEnemyNow ? 0.7 : 0;
-      const cutsHtml = slashesNow.map((dir, i) => {
-        const pow = foeHitsNow[i] != null ? hitPower(foeHitsNow[i]) : (hitNow && hitNow.side === "enemy" ? hitPow : "0.35");
-        return `<span class="cut dir-${dir}" style="--pow:${pow};--delay:${(i * HIT_GAP + foePopWait).toFixed(2)}s"><i class="trail"></i><i class="blade"></i><i class="scar"></i><i class="burst"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><i class="spark s4"></i><i class="spark s5"></i><i class="drop d1"></i><i class="drop d2"></i></span>`;
-      }).join("");
       const foePopsHtml = foeHitsNow.map((n, i) => {
         const shift = (i - (foeHitsNow.length - 1) / 2) * 64;
         const text = n;
@@ -20774,7 +20659,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, shieldPlayerNow, parryPlayerNow, playerPop, breakPlayerNow)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, shieldPlayerNow, parryPlayerNow, playerPop)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
@@ -20783,7 +20668,7 @@
             <div class="duel-side foe">
               <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${breakEnemyNow ? " break-wait" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)};--flash-delay:${foePopWait || 0.1}s">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`}
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
@@ -20813,7 +20698,7 @@
       player.hit = false;
       enemy.hit = false;
       persistLive();
-      kickHp((breakPlayerNow || breakEnemyNow) ? 700 : 0);
+      kickHp();
       bindLogPeek();
       bindGearHover();
       startManaFires();
