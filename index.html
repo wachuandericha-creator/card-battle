@@ -5691,16 +5691,16 @@
       letter-spacing: 0.02em;
       line-height: 1;
       text-align: left;
-      color: #14110e;
+      color: #fffef8;
       padding-left: 0.45cqw;
       padding-right: 0.45cqw;
-      -webkit-text-stroke: 0.32cqw #fff;
+      -webkit-text-stroke: 0.32cqw #0a0806;
       paint-order: stroke fill;
       text-shadow:
-        0.22cqw 0 0 #fff,
-        -0.22cqw 0 0 #fff,
-        0 0.22cqw 0 #fff,
-        0 -0.22cqw 0 #fff;
+        0.22cqw 0 0 #0a0806,
+        -0.22cqw 0 0 #0a0806,
+        0 0.22cqw 0 #0a0806,
+        0 -0.22cqw 0 #0a0806;
     }
     .card .card-fit .text {
       position: absolute;
@@ -10882,7 +10882,7 @@
       ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
       ファイアパラダイス: "card-fireparadise-v2.jpg?v=1",
-      泥棒: "card-mushin.jpg?v=2",
+      泥棒: "card-mushin.jpg?v=3",
       "餌だ!!": "card-bait-v3.jpg?v=1",
       さぼる: "card-slack.jpg?v=2",
       弱者の意地: "card-spite-v4.jpg?v=1",
@@ -10974,8 +10974,8 @@
         tier: 1,
         rank: "雑魚",
         stature: "small",
-        hp: 40,
-        atkHidden: 2,
+        hp: 45,
+        atkHidden: 3,
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
@@ -10988,8 +10988,8 @@
         tier: 1,
         rank: "雑魚",
         stature: "small",
-        hp: 40,
-        atkHidden: 2,
+        hp: 45,
+        atkHidden: 3,
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
@@ -11002,8 +11002,8 @@
         tier: 1,
         rank: "雑魚",
         stature: "small",
-        hp: 40,
-        atkHidden: 2,
+        hp: 45,
+        atkHidden: 3,
         spd: 2,
         pattern: [
           { name: "アタック" },
@@ -11018,8 +11018,8 @@
         tier: 3,
         rank: "強敵",
         stature: "huge",
-        hp: 120,
-        atkHidden: 7,
+        hp: 130,
+        atkHidden: 8,
         trait: "体力が最大の半分以下になったとき、SPD+1する。",
         halfSpd: true,
         loot: { low: "minotaur-medal", high: "minotaur-bracelet" },
@@ -11038,8 +11038,8 @@
         tier: 2,
         rank: "普通",
         stature: "small",
-        hp: 55,
-        atkHidden: 3,
+        hp: 60,
+        atkHidden: 4,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
@@ -11053,7 +11053,7 @@
         tier: 2,
         rank: "普通",
         stature: "huge",
-        hp: 90,
+        hp: 100,
         atkHidden: 0,
         pattern: [
           { name: "アタック" },
@@ -11078,8 +11078,8 @@
         tier: 4,
         rank: "★★★★",
         stature: "huge",
-        hp: 160,
-        atkHidden: 8,
+        hp: 170,
+        atkHidden: 9,
         defHidden: 6,
         spd: 2,
         pattern: [
@@ -11370,7 +11370,7 @@
         battle: "girl-battle-v42.png?v=1",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.jpg?v=17",
-        victory: "girl-victory.jpg?v=27",
+        victory: "girl-victory-2.jpg?v=2",
         bless: "event-bless-v10.jpg?v=1",
       },
     ];
@@ -16721,7 +16721,7 @@
     function endingFrame(win) {
       const sealed = runSheet && runSheet.sealed;
       const art = win
-        ? "girl-victory-2.jpg?v=1"
+        ? heroItem().victory
         : ((sealed && sealed.defeatArt) || (defeatSnap && defeatSnap.defeatArt) || heroItem().defeat);
       const banner = win ? "踏破" : "敗北";
       const finalStars = sealed ? Math.max(0, Number(sealed.stars) || 0) : 0;
@@ -18817,8 +18817,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory.jpg?v=27", "勝利", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory-2.jpg?v=1", "勝利の2枚目候補", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory-2.jpg?v=2", "勝利", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
