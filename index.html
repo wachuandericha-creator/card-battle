@@ -5679,28 +5679,30 @@
     .card .card-fit .nameplate .name {
       left: 23.438cqw;
       right: 6.5cqw;
-      top: 11.35cqw;
+      top: 11.719cqw;
       transform: translateY(-50%);
-      padding: 0;
+      padding: 1.05cqw 1.15cqw;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: clip;
       font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: 7.4cqw;
+      font-size: 6.05cqw;
       font-weight: 900;
       letter-spacing: 0.02em;
       line-height: 1;
       text-align: left;
       color: #fffef8;
-      padding-left: 0.45cqw;
-      padding-right: 0.45cqw;
-      -webkit-text-stroke: 0.32cqw #0a0806;
+      -webkit-text-stroke: 1.2cqw #0a0806;
       paint-order: stroke fill;
       text-shadow:
-        0.22cqw 0 0 #0a0806,
-        -0.22cqw 0 0 #0a0806,
-        0 0.22cqw 0 #0a0806,
-        0 -0.22cqw 0 #0a0806;
+        0.35cqw 0 0 #0a0806,
+        -0.35cqw 0 0 #0a0806,
+        0 0.35cqw 0 #0a0806,
+        0 -0.35cqw 0 #0a0806,
+        0.25cqw 0.25cqw 0 #0a0806,
+        -0.25cqw 0.25cqw 0 #0a0806,
+        0.25cqw -0.25cqw 0 #0a0806,
+        -0.25cqw -0.25cqw 0 #0a0806;
     }
     .card .card-fit .text {
       position: absolute;
@@ -10979,7 +10981,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 },
+          { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3 },
         ],
       },
       {
@@ -10993,7 +10995,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ライフフルネスアタック" },
+          { name: "乱打", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true },
         ],
       },
       {
@@ -11221,6 +11223,7 @@
     let resolveAt = 0;
     let player = null;
     let enemy = null;
+    let foeArtOwner = "";
     let turn = 0;
     let intentIndex = 0;
     let enemyLoop = [];
@@ -11370,8 +11373,8 @@
         battle: "girl-battle-v42.png?v=1",
         battleRatio: "3 / 4",
         defeat: "girl-defeat.jpg?v=17",
-        victory: "girl-victory-2.jpg?v=2",
-        bless: "event-bless-v10.jpg?v=1",
+        clear: "girl-victory-2.jpg?v=2",
+        bless: "event-bless-v10.jpg?v=2",
       },
     ];
     let heroCast = "戦士";
@@ -11926,6 +11929,7 @@
       road: { none: 0.7, gear: 0.1, item: 0.1, enchant: 0.1 },
       boss: { none: 0, gear: 1 / 3, item: 1 / 3, enchant: 1 / 3 },
     };
+    const ENEMY_CARD_RATE = 1 / 3;
     const LOOT_LOW_RATE = 0.7;
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル"];
     const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
@@ -14855,9 +14859,12 @@
       }
       if (card.hits && card.damage) {
         const times = Math.max(1, Number(card.hits) || 1);
+        const atk = card.atkEach
+          ? (card.hitAtk != null ? Number(card.hitAtk) || 0 : (Number(enemy.atk) || 0))
+          : 0;
         for (let n = 0; n < times; n += 1) {
           if (player.hp <= 0) break;
-          const rolled = rollCrit(card, card.damage);
+          const rolled = rollCrit(card, card.damage + atk);
           takeEnemyHit(rolled.amount, card, rolled.crit);
         }
         return;
@@ -14887,8 +14894,8 @@
     }
 
     function legionTraitFor(who) {
-      if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+2を与える", poison: 2 };
-      if (who === "ゴブリン") return applyEnemyHidden({ name: "ライフフルネスアタック" }, enemyNow());
+      if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3 };
+      if (who === "ゴブリン") return { name: "乱打", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true, hitAtk: 3 };
       if (who === "物乞い") return { ...FOE_ONLY["泥棒"], name: "泥棒" };
       if (who === "ちびドラゴン") return { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill" };
       if (who === "コボルド") return { name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true };
@@ -15229,7 +15236,7 @@
       return {
         hero: heroName(),
         defeatArt: heroItem().defeat,
-        victoryArt: heroItem().victory,
+        clearArt: heroItem().clear,
         foeName,
         foeImage: enemy && enemy.image ? enemy.image : "",
         foeHp: enemy ? `${enemy.hp}/${enemy.maxHp}` : "",
@@ -16648,7 +16655,7 @@
         playMs: Number(runSheet.startedAt) > 0 ? Math.max(0, Date.now() - Number(runSheet.startedAt)) : null,
         stars: Math.max(0, Number(meta.stars) || 0),
         player: loginWord || "",
-        victoryArt: heroItem().victory,
+        clearArt: heroItem().clear,
         defeatArt: heroItem().defeat,
       };
       runTracing = false;
@@ -16721,7 +16728,7 @@
     function endingFrame(win) {
       const sealed = runSheet && runSheet.sealed;
       const art = win
-        ? heroItem().victory
+        ? heroItem().clear
         : ((sealed && sealed.defeatArt) || (defeatSnap && defeatSnap.defeatArt) || heroItem().defeat);
       const banner = win ? "踏破" : "敗北";
       const finalStars = sealed ? Math.max(0, Number(sealed.stars) || 0) : 0;
@@ -17499,9 +17506,6 @@
           ["deal", "ドロー"],
           ["end-ready", "VS"],
         ]],
-        ["終わり", [
-          ["victory", "勝利"],
-        ]],
       ];
     }
 
@@ -17618,15 +17622,6 @@
       return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
     }
 
-    function fxVictory() {
-      const pose = heroItem().victory;
-      const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${(1.5 + (i % 5) * 0.18).toFixed(2)}s"></i>`).join("");
-      const stars = Array.from({ length: 3 }, (_, i) => `<span class="fly-star" style="--i:${i};--n:3">★</span>`).join("");
-      const winFoe = fxLabFoeImage(fxLabFoeName);
-      const foeImg = winFoe ? `<img class="win-foe" src="${esc(winFoe)}" alt="">` : "";
-      return `<div class="overlay victory finale"><div class="victory-flash" aria-hidden="true"></div><div class="win-stage" aria-hidden="true"><p class="win-banner">勝利</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foeImg}</div><p class="fx-starline"><span class="win-star-dock" aria-label="星3">${stars}</span></p></div>`;
-    }
-
     function fxStage(id) {
       let hero = {};
       let foe = {};
@@ -17665,10 +17660,7 @@
         call = `<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`;
         cls = " shake";
       }
-      const handHtml = id === "victory" ? "" : fxLabHand(id);
-      if (id === "victory") {
-        return `<div class="fx-view" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play">${fxVictory()}${fxLabFoeRail()}</div></div>`;
-      }
+      const handHtml = fxLabHand(id);
       const calls = call ? `<div class="stage-fx">${call}</div>` : "";
       const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
       const mid = `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half">${foeCard}</div></div><button type="button" class="vs-mark${id === "end-ready" ? " spent" : ""}" aria-label="ターン終了">VS</button></div>`;
@@ -17931,7 +17923,7 @@
             <h2>勝利</h2>
             <ul>
               <li>★と、カード3枚をもらいます。</li>
-              <li>カードは共通・戦士・その敵から1枚ずつです。足りない分は全体から補います。</li>
+              <li>カードは共通と戦士から出します。敵のカードは${pct(ENEMY_CARD_RATE)}で、3枚のうち1枠になります。外れたときは、その枠も共通と戦士から補います。</li>
               <li>枠の中では、先にレアリティを引きます。★60%、★★30%、★★★以上10%です。そのあと、当たった★のカードから均等に1枚です。その★が無いときは、残りの比率で引き直します。</li>
               <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
             </ul>
@@ -17945,8 +17937,7 @@
             </ul>
             <h3>報酬カード（枠ごと）</h3>
             <ul>
-              <li>3枚は、共通・戦士・その敵から1枚ずつです。下の割合は、その枠の中だけです。3枠を足した割合ではありません。</li>
-              <li>敵の枠は、その戦闘の山札にあるカードだけです。名前は敵によります。重みは同じです。</li>
+              <li>3枚のうち、敵の枠は${pct(ENEMY_CARD_RATE)}だけです。出たときは、その戦闘の山札にあるカードから引きます。アタックとブロックは入りません。さぼるは入ります。名前は敵によります。</li>
             </ul>
             <h3>共通</h3>
             ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(commonReward))}
@@ -18470,8 +18461,12 @@
       return `<div class="foe-phases">${cols}</div>${foot}`;
     }
 
-    function foeStarterDeckMarkup(cards) {
-      return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview foe">${cardFace(card, false, true)}</div></button>`).join("");
+    function foeStarterDeckMarkup(cards, ownerName) {
+      const prev = foeArtOwner;
+      foeArtOwner = ownerName || "";
+      const html = sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview foe">${cardFace(card, false, true)}</div></button>`).join("");
+      foeArtOwner = prev;
+      return html;
     }
 
     function showFoeStarterCard(button) {
@@ -18524,7 +18519,7 @@
       const trait = foe.trait ? String(foe.trait) : "なし";
       const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
       const cards = foeStarterCards(foe);
-      return `<article class="foe-file"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特性</h3><div class="foe-starter-blurb"><p>${esc(trait)}</p></div></section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div></article>`;
+      return `<article class="foe-file"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特性</h3><div class="foe-starter-blurb"><p>${esc(trait)}</p></div></section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards, foe.name)}</div></section></div></article>`;
     }
 
     function renderFoes() {
@@ -18547,7 +18542,7 @@
         : `<div class="foe-starter-blurb"><p>なし</p></div>`;
       const cards = foeStarterCards(foe);
       const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards, foe.name)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
       bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
     }
 
@@ -18803,7 +18798,7 @@
               ${sheetFig("enemy-troll.png?v=10", "トロール", "enemy-ref")}
               ${sheetFig("enemy-minotaur.png?v=11", "ミノタウロス", "enemy-ref")}
               ${sheetFig("enemy-dragon.png?v=7", "ちびドラゴン", "enemy-ref")}
-              ${sheetFig("enemy-death-dragon.png?v=2", "デスドラゴン", "enemy-ref")}
+              ${sheetFig("enemy-death-dragon.png?v=5", "デスドラゴン", "enemy-ref")}
               ${sheetFig("enemy-beggar.png?v=5", "物乞い", "enemy-ref")}
               ${sheetFig("enemy-hades.png?v=9", "ハデス", "enemy-ref")}
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
@@ -18817,7 +18812,7 @@
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
-              ${sheetFig("girl-victory-2.jpg?v=2", "勝利", "land-ref", "wide-land")}
+              ${sheetFig("girl-victory-2.jpg?v=2", "踏破", "land-ref", "wide-land")}
             </div>
             <h3>ジョブ選択</h3>
             <div class="ref-grid">
@@ -18849,15 +18844,15 @@
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
             <div class="ref-grid">
-              ${sheetFig("event-bless-v10.jpg?v=1", "祝福", "land-ref", "span-2")}
-              ${sheetFig("event-search.jpg?v=13", "探索", "land-ref", "span-2")}
-              ${sheetFig("event-fight.jpg?v=1", "戦闘", "land-ref", "span-2 path-series")}
-              ${sheetFig("event-beggar.jpg?v=1", "物乞い", "land-ref", "span-2")}
-              ${sheetFig("shop-merchant.jpg?v=7", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=10", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=13", "ジョブ", "land-ref", "span-2")}
-              ${sheetFig("event-train.jpg?v=7", "修行", "land-ref", "span-2")}
-              ${sheetFig("event-smith.svg?v=2", "鍛冶屋（空）", "land-ref", "span-2")}
+              ${sheetFig("event-bless-v10.jpg?v=2", "祝福", "land-ref", "span-2")}
+              ${sheetFig("event-search.jpg?v=14", "探索", "land-ref", "span-2")}
+              ${sheetFig("event-fight.jpg?v=2", "戦闘", "land-ref", "span-2 path-series")}
+              ${sheetFig("event-beggar.jpg?v=2", "物乞い", "land-ref", "span-2")}
+              ${sheetFig("shop-merchant.jpg?v=8", "お店", "land-ref", "span-2")}
+              ${sheetFig("event-rest.jpg?v=11", "休憩", "land-ref", "span-2")}
+              ${sheetFig("event-job.jpg?v=14", "ジョブ", "land-ref", "span-2")}
+              ${sheetFig("event-train.jpg?v=8", "修行", "land-ref", "span-2")}
+              ${sheetFig("event-smith.jpg?v=1", "鍛冶屋", "land-ref", "span-2")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -19151,12 +19146,12 @@
         : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
-        "探索": ["event-search.jpg?v=13", "宝箱の蓋は戦士のほうへ開く"],
-        "休憩": ["event-rest.jpg?v=10", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
-        "物乞いに遭遇": ["event-beggar.jpg?v=1", "物乞いにカードを差し出す戦士"],
-        "修行": ["event-train.jpg?v=7", "カメラは上を過ぎ、顔は少しやわらかい"],
-        "お店": ["shop-merchant.jpg?v=7", "ジト目の戦士が店主に値段交渉をしている"],
-        "鍛冶屋": ["event-smith.svg?v=2", "空のイベント絵。あとから差し替える"],
+        "探索": ["event-search.jpg?v=14", "宝箱の蓋は戦士のほうへ開く"],
+        "休憩": ["event-rest.jpg?v=11", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
+        "物乞いに遭遇": ["event-beggar.jpg?v=2", "物乞いにカードを差し出す戦士"],
+        "修行": ["event-train.jpg?v=8", "カメラは上を過ぎ、顔は少しやわらかい"],
+        "お店": ["shop-merchant.jpg?v=8", "ジト目の戦士が店主に値段交渉をしている"],
+        "鍛冶屋": ["event-smith.jpg?v=1", "カードを叩き、戦士は両手を口に当ててドン引き"],
       };
       const eventRow = eventPictures[floorKind];
       const art = eventRow ? `<img class="event-picture" src="${esc(eventRow[0])}" alt="${esc(eventRow[1])}">` : "";
@@ -19509,7 +19504,7 @@
     function fitCardNames() {
       root.querySelectorAll(".card .name").forEach((name) => {
         if (name.clientWidth < 8) return;
-        let size = 7.4;
+        let size = 6.05;
         name.style.fontSize = size + "cqw";
         name.style.left = "23.438cqw";
         let guard = 0;
@@ -19518,11 +19513,11 @@
           name.style.fontSize = size + "cqw";
           guard += 1;
         }
-        const card = name.closest(".card");
-        const cardW = card ? card.getBoundingClientRect().width : 0;
+        const fit = name.closest(".card-fit") || name.closest(".card");
+        const cardW = fit ? fit.clientWidth : 0;
         const gap = cardW > 8 ? firstNameInkGap(name) : 0;
         const shift = cardW > 8 ? (gap / cardW) * 100 : 0;
-        name.style.left = `${Math.round((23.438 - shift - 0.45) * 1000) / 1000}cqw`;
+        name.style.left = `${Math.round((23.438 - shift - 1.15) * 1000) / 1000}cqw`;
       });
     }
 
@@ -19686,7 +19681,10 @@
       }
       if (card.hits) {
         const hits = [];
-        for (let n = 0; n < card.hits; n++) hits.push(Math.max(0, printedDamage(card) + atk + (n === 0 ? focus : 0)));
+        const per = foe
+          ? (card.atkEach ? (card.hitAtk != null ? Number(card.hitAtk) || 0 : (Number(enemy && enemy.atk) || 0)) : 0)
+          : atk;
+        for (let n = 0; n < card.hits; n++) hits.push(Math.max(0, printedDamage(card) + per + (n === 0 ? focus : 0)));
         return hits;
       }
       if (card.damage) {
@@ -19876,7 +19874,9 @@
       const noteHtml = noteText ? `<span class="fx note">${noteText}</span>` : "";
       const effects = `${kwHtml}${iconHtml}${noteHtml}`;
       const foeAttack = foe && card.name === "アタック" ? "card-attack-foe.jpg?v=1" : "";
-      const picture = (card.image || foeAttack || cardArtSrc(card.name)) ? `<img src="${card.image || foeAttack || cardArtSrc(card.name)}" alt="">` : "";
+      const blockOwner = foeArtOwner || (enemy && enemy.name) || "";
+      const foeBlock = foe && card.name === "ブロック" && blockOwner === "ミノタウロス" ? "card-block-minotaur.jpg?v=1" : "";
+      const picture = (card.image || foeAttack || foeBlock || cardArtSrc(card.name)) ? `<img src="${card.image || foeAttack || foeBlock || cardArtSrc(card.name)}" alt="">` : "";
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : stars >= 1 ? "r1" : "r0";
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
@@ -20765,7 +20765,7 @@
       list.push(...classCards().filter((card) => !basicCardName(card.name)));
       const seen = new Set();
       for (const card of enemyNow().pattern) {
-        if (!card || card.slack || basicCardName(card.name)) continue;
+        if (!card || basicCardName(card.name)) continue;
         const reward = playerCopy(card);
         if (basicCardName(reward.name) || seen.has(reward.name)) continue;
         seen.add(reward.name);
@@ -20778,18 +20778,20 @@
       return shuffle(rewardPool()).slice(0, n);
     }
 
-    // ふだんの3枚は、共通・クラス専用・敵のカードの3プールから1枚ずつ。足りないプールは全体から補う。
+    // ふだんの3枚は共通と戦士。敵のカードは ENEMY_CARD_RATE のときだけ1枠。外れた枠は共通と戦士から補う。
     function rewardTrio() {
       const all = rewardPool();
       const picks = [];
       const seen = new Set();
-      for (const source of ["共通", "戦士", "敵"]) {
+      const sources = ["共通", "戦士"];
+      if (Math.random() < ENEMY_CARD_RATE) sources.push("敵");
+      for (const source of sources) {
         const pool = all.filter((card) => card.source === source && !seen.has(card.name));
         const card = pickRarityCard(pool);
         if (card) { picks.push(card); seen.add(card.name); }
       }
       while (picks.length < 3) {
-        const pool = all.filter((card) => !seen.has(card.name));
+        const pool = all.filter((card) => card.source !== "敵" && !seen.has(card.name));
         const card = pickRarityCard(pool);
         if (!card) break;
         picks.push(card);
@@ -21915,14 +21917,6 @@
         flash: `<div class="victory-flash" aria-hidden="true"></div>`,
         stars
       };
-    }
-
-    function victoryStage(bannerText) {
-      const pose = heroItem().victory;
-      const foe = enemy && enemy.image ? `<img class="win-foe" src="${esc(enemy.image)}" alt="">` : "";
-      const rain = Array.from({ length: 18 }, (_, i) => `<i style="left:${6 + (i * 5.2) % 92}%;animation-delay:${(i % 9) * 0.12}s;animation-duration:${1.5 + (i % 5) * 0.18}s"></i>`).join("");
-      const banner = bannerText || "勝利";
-      return `<div class="win-stage" aria-hidden="true"><p class="win-banner">${esc(banner)}</p><i class="win-rays"></i><div class="win-rain">${rain}</div><i class="win-spark s1"></i><i class="win-spark s2"></i><i class="win-spark s3"></i><i class="win-spark s4"></i><i class="win-spark s5"></i><i class="win-spark s6"></i><img class="win-pose" src="${esc(pose)}" alt="">${foe}</div>`;
     }
 
     function choosingPath() {
