@@ -1286,30 +1286,32 @@
     .battle-plate .plate-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      column-gap: 18px;
-      margin-top: 2px;
-    }
-    .battle-plate .plate-col {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 100%;
+      column-gap: 0;
+      margin-top: 4px;
     }
     .battle-plate .plate-split .hp-line {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
+      gap: 6px;
       width: 100%;
       margin-top: 0;
+      padding: 3px 8px;
+      box-sizing: border-box;
       font-size: 14px;
       letter-spacing: 0.04em;
+      border-bottom: 1px solid rgba(212, 168, 74, 0.45);
     }
+    .battle-plate .plate-split .hp-line:nth-child(odd) {
+      border-right: 1px solid rgba(212, 168, 74, 0.45);
+    }
+    .battle-plate .plate-split .hp-line:nth-last-child(-n + 2) { border-bottom: 0; }
     .battle-plate .plate-split .hp-line .lbl,
     .battle-plate .plate-split .hp-line .num { width: auto; }
     .battle-plate .plate-split .hp-line b { font-size: 22px; }
     .battle-plate .plate-split .hp-line .lbl .ico { width: 16px; height: 16px; }
-    .battle-plate .hp-line.stat-mana .lbl { font-size: 22px; line-height: 1; }
+    .battle-plate .hp-line.stat-mana .lbl,
+    .battle-plate .hp-line.stat-star .lbl { font-size: 14px; line-height: 1; }
     .battle-plate .hp-line.stat-lv .lbl,
     .battle-plate .hp-line.stat-star .lbl { color: #f0c36a; }
     .battle-plate .hp-line.stat-mana .lbl,
@@ -1454,8 +1456,8 @@
     .hero-hit .ring,
     .hero-guard .ring {
       position: absolute;
-      left: var(--hero-head-x, 52.7%);
-      top: calc(var(--hero-head-y, 6.8%) + 16%);
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
       width: calc(70px + var(--pow, 0.35) * 50px);
       height: calc(70px + var(--pow, 0.35) * 50px);
       margin: calc((70px + var(--pow, 0.35) * 50px) * -0.5) 0 0 calc((70px + var(--pow, 0.35) * 50px) * -0.5);
@@ -1472,10 +1474,19 @@
       animation-delay: 0.08s;
       animation-duration: 0.68s;
     }
+    .hero-guard.hold .ring {
+      left: var(--hero-shield-x, 75.2%);
+      top: var(--hero-shield-y, 42.4%);
+    }
+    .hero-hit.fatal .ring {
+      width: calc((70px + var(--pow, 0.35) * 50px) * 1.8);
+      height: calc((70px + var(--pow, 0.35) * 50px) * 1.8);
+      margin: calc((70px + var(--pow, 0.35) * 50px) * -0.9) 0 0 calc((70px + var(--pow, 0.35) * 50px) * -0.9);
+    }
     .hero-hit .star {
       position: absolute;
-      left: var(--hero-head-x, 52.7%);
-      top: calc(var(--hero-head-y, 6.8%) + 16%);
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
       width: 8px;
       height: 8px;
       margin: -4px 0 0 -4px;
@@ -3414,15 +3425,37 @@
     .sprite.slash.break-wait { animation-delay: 0.7s; }
     .sprite.break-wait .poison-hit,
     .sprite.break-wait .poison-hit * { animation-delay: 0.7s; }
-    .sprite.anger { overflow: visible; }
-    .sprite.anger img {
+    .sprite.anger,
+    .sprite.buff { overflow: visible; }
+    .sprite.anger img,
+    .sprite.buff img,
+    .hero-shoulder.buff .hero-fig {
       transform-origin: center bottom;
-      animation: foe-anger-grow 0.9s ease-in-out both;
+      animation: buff-glow 0.9s ease-in-out both;
     }
-    @keyframes foe-anger-grow {
+    @keyframes buff-glow {
       0% { transform: scale(1); filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5)); }
-      38% { transform: scale(1.08); filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(255, 48, 28, 0.95)) drop-shadow(0 0 26px rgba(170, 16, 10, 0.85)); }
+      40% { transform: scale(1.06); filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 226, 140, 0.95)) drop-shadow(0 0 28px rgba(255, 176, 48, 0.8)); }
       100% { transform: scale(1); filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.5)); }
+    }
+    .buff-ring {
+      position: absolute;
+      left: var(--spot-body-x, 50%);
+      top: var(--spot-body-y, 42%);
+      z-index: 6;
+      width: 34%;
+      height: 34%;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 220, 140, 0.95);
+      box-shadow: 0 0 16px rgba(255, 190, 70, 0.9), inset 0 0 12px rgba(255, 236, 180, 0.45);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.25);
+      animation: buff-ring 0.8s ease-out both;
+      pointer-events: none;
+    }
+    @keyframes buff-ring {
+      0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.25); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
     }
     .dmg-pop {
       position: absolute;
@@ -3456,9 +3489,10 @@
       animation-delay: var(--delay, 0s);
       white-space: nowrap;
     }
-    .hero-body > .dmg-pop.me.on-hit {
-      left: var(--hero-head-x, 52.7%);
-      top: calc(var(--hero-head-y, 6.8%) + 16%);
+    .hero-body > .dmg-pop.me.on-hit,
+    .hero-body > .dmg-pop.me.poison {
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
       transform: translate(-50%, -50%);
       font-size: calc(54px + var(--pow, 0.35) * 30px);
       animation-name: dmg-pop-hit;
@@ -3598,7 +3632,7 @@
     }
     .hero-body .hero-guard {
       position: absolute;
-      inset: -4% -8% -2%;
+      inset: 0;
       z-index: 6;
       pointer-events: none;
       overflow: visible;
@@ -3634,11 +3668,12 @@
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
-      left: calc(50% + var(--shift, 0px));
+      left: calc(var(--spot-body-x, 50%) + var(--shift, 0px));
       top: var(--pop-y, 30%);
       z-index: 7;
       transform: translate(-50%, -50%);
       font-size: calc(54px + var(--pow, 0.35) * 30px);
+      animation-name: dmg-pop-hit;
       animation-delay: var(--delay, 0s);
       animation-fill-mode: both;
     }
@@ -3660,21 +3695,22 @@
     }
     .poison-hit .mist {
       position: absolute;
-      left: 18%;
-      top: 22%;
-      width: 64%;
-      height: 58%;
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
+      width: 52%;
+      height: 42%;
+      margin: 0;
       background:
         radial-gradient(circle at 40% 55%, rgba(190, 255, 90, 0.72), transparent 46%),
         radial-gradient(circle at 68% 40%, rgba(170, 70, 240, 0.62), transparent 48%);
       filter: blur(2px);
       mix-blend-mode: screen;
-      animation: poison-mist 1.85s ease-out forwards;
+      animation: poison-mist-body 1.85s ease-out forwards;
     }
     .poison-hit .bubble {
       position: absolute;
-      left: 46%;
-      top: 58%;
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
       width: 16px;
       height: 16px;
       border-radius: 50%;
@@ -3690,8 +3726,8 @@
     .poison-hit .b5 { --px: -52px; --py: -48px; animation-delay: 0.36s; }
     .poison-hit .drip {
       position: absolute;
-      left: 50%;
-      top: 36%;
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
       width: 8px;
       height: 18px;
       border-radius: 40%;
@@ -3710,13 +3746,14 @@
     .hero-shoulder.poison .hero-fig { animation: poison-flash 1.85s ease-out both; }
     .poison-stamp {
       position: absolute;
-      left: 50%;
-      top: 16%;
+      left: var(--spot-head-x, 52.7%);
+      top: var(--spot-head-y, 6.8%);
       z-index: 6;
       margin: 0;
-      font-size: 64px;
+      font-size: 28px;
       font-weight: 900;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
       line-height: 1;
       color: #e8ffb0;
       text-shadow: 0 4px 0 #3a1460, 0 0 16px rgba(90, 220, 70, 0.95), 0 0 26px rgba(160, 70, 230, 0.85);
@@ -3755,6 +3792,25 @@
     .hero-hit.heal .p3 { left: 60%; font-size: 40px; animation-delay: 0.2s; }
     .hero-hit.heal .p4 { left: 38%; font-size: 30px; animation-delay: 0.3s; }
     .hero-hit.heal .p5 { left: 68%; font-size: 44px; animation-delay: 0.06s; }
+    .hero-hit.heal .heal-num {
+      position: absolute;
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
+      z-index: 2;
+      margin: 0;
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1;
+      color: #eaffd8;
+      text-shadow: 0 3px 0 #146018, 0 0 14px rgba(90, 230, 80, 0.95);
+      animation: heal-num 1.25s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes heal-num {
+      0% { opacity: 0; transform: translate(-50%, -20%) scale(0.6); }
+      16% { opacity: 1; transform: translate(-50%, -70%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -140%) scale(0.96); }
+    }
     @keyframes heal-plus {
       0% { opacity: 0; bottom: 2%; transform: translate(-50%, 0) scale(0.65); }
       14% { opacity: 1; bottom: 8%; transform: translate(-50%, 0) scale(1); }
@@ -3796,30 +3852,36 @@
       overflow: visible;
       pointer-events: none;
     }
+    .hero-shoulder.status-warded .hero-fig { animation: status-aura 1.05s ease-out both; }
+    @keyframes status-aura {
+      0% { filter: none; }
+      28% { filter: drop-shadow(0 0 16px rgba(90, 245, 220, 0.95)) drop-shadow(0 0 30px rgba(20, 170, 160, 0.85)); }
+      100% { filter: none; }
+    }
     .hero-hit.status-ward .halo {
       position: absolute;
-      left: 50%;
-      top: 42%;
-      width: 46%;
-      height: 46%;
+      left: var(--spot-body-x, 48.3%);
+      top: var(--spot-body-y, 35.3%);
+      width: 36%;
+      height: 36%;
       margin: 0;
       border-radius: 50%;
-      border: 4px solid rgba(255, 224, 138, 0.95);
-      box-shadow: 0 0 18px rgba(255, 210, 90, 0.85), inset 0 0 12px rgba(255, 244, 200, 0.45);
-      transform: translate(-50%, -50%) scale(0.4);
+      border: 4px solid rgba(120, 245, 225, 0.96);
+      box-shadow: 0 0 18px rgba(50, 220, 200, 0.9), inset 0 0 12px rgba(190, 255, 245, 0.4);
+      transform: translate(-50%, -50%) scale(0.2);
       animation: status-ward-halo 1.05s ease-out both;
     }
     .hero-hit.status-ward .ward-word {
       position: absolute;
-      left: 50%;
-      top: 16%;
+      left: var(--spot-head-x, 52.7%);
+      top: var(--spot-head-y, 6.8%);
       margin: 0;
       font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
       font-size: 40px;
       font-weight: 900;
       letter-spacing: 0.18em;
-      color: #fff6d0;
-      text-shadow: 0 2px 0 #5a3d12, 0 0 12px rgba(255, 210, 80, 0.9);
+      color: #e9fffb;
+      text-shadow: 0 2px 0 #0c4a44, 0 0 12px rgba(80, 235, 215, 0.95);
       animation: status-ward-word 1.05s ease-out both;
     }
     .hero-hit.status-ward .mote {
@@ -3842,6 +3904,7 @@
       box-shadow: 0 0 10px #ffd25a;
       --mx: 34px;
     }
+    .hero-hit.status-ward .ward-slash { display: none; }
     .hero-hit.status-ward .ward-slash {
       position: absolute;
       left: 50%;
@@ -3855,15 +3918,15 @@
       animation: status-ward-slash 0.7s ease-out 0.15s both;
     }
     @keyframes status-ward-halo {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
-      35% { opacity: 1; }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+      28% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(2.6); }
     }
     @keyframes status-ward-word {
-      0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
-      25% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      0% { opacity: 0; transform: translate(-50%, calc(-100% + 8px)); }
+      25% { opacity: 1; transform: translate(-50%, calc(-100% - 8px)); }
       70% { opacity: 1; }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      100% { opacity: 0; transform: translate(-50%, calc(-100% - 18px)); }
     }
     @keyframes status-ward-mote {
       0% { opacity: 0; transform: translate(calc(-50% + var(--mx, 0px)), 20px) scale(0.7); }
@@ -4760,8 +4823,8 @@
       background: linear-gradient(180deg, rgba(226, 232, 240, 0.18), rgba(0, 0, 0, 0.4));
       border: 1px solid rgba(198, 208, 220, 0.75);
     }
-    .gear-effect-body .gear-stat-chip.atk { color: #ffc9a2; }
-    .gear-effect-body .gear-stat-chip.def { color: #d7dee8; }
+    .gear-effect-body .gear-stat-chip.atk { color: #ff5c4a; }
+    .gear-effect-body .gear-stat-chip.def { color: #7eb6ff; }
     .gear-effect-body .gear-stat-chip.costdown { color: #ffe7a8; }
     .gear-effect-body .gear-stat-chip.kw { color: #e4c8ff; }
     .gear-effect-inner {
@@ -5536,7 +5599,9 @@
     .kw-tip b { display: block; margin-bottom: 2px; color: #f6d48a; font-size: 16px; letter-spacing: 0.08em; }
     .card .fx .ico { width: 8cqw; height: 8cqw; flex: none; overflow: hidden; color: #1a120e; }
     .card .fx .ico.sword { transform: rotate(28deg) scale(0.8); }
-    .card .fx .ico.heart { transform: scale(1.08); }
+    .card .fx .ico.heart { transform: scale(0.72); }
+    .card .fx.note .stat-word.atk { color: #d62828; }
+    .card .fx.note .stat-word.def { color: #1d6fd4; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
     /* カードスタイル。★は銅、★★は銀、★★★は金。ジャンルの札は枠に描かない。ボスは赤の四隅 */
     .card.attack, .card.block, .card.skill, .card.power, .card.gear, .card.foe {
@@ -5740,8 +5805,8 @@
       background: rgba(255, 248, 230, 0.92);
       border: 1px solid rgba(90, 60, 20, 0.4);
     }
-    .card .fx.note .gear-stat-chip.atk { color: #9a3412; }
-    .card .fx.note .gear-stat-chip.def { color: #3d4a5c; }
+    .card .fx.note .gear-stat-chip.atk { color: #d62828; background: none; border: 0; padding: 0; }
+    .card .fx.note .gear-stat-chip.def { color: #1d6fd4; background: none; border: 0; padding: 0; }
     .card .fx.note .gear-stat-chip.costdown { color: #8a6a12; }
     .card .fx.note .gear-stat-chip.kw { color: #5b3d86; }
     .card .card-fit .genre { z-index: 6; }
@@ -10291,6 +10356,12 @@
       42% { opacity: 0.82; transform: scale(1.04); }
       62%, 100% { opacity: 0; transform: scale(1.08); }
     }
+    @keyframes poison-mist-body {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+      19% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      42% { opacity: 0.82; transform: translate(-50%, -50%) scale(1.04); }
+      62%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.08); }
+    }
     @keyframes poison-bubble {
       0% { opacity: 0; transform: translate(0, 12px) scale(0.4); }
       19% { opacity: 1; }
@@ -10318,10 +10389,10 @@
       80% { transform: translateX(2px); }
     }
     @keyframes poison-stamp {
-      0% { opacity: 0; transform: translate(-50%, 18px) scale(0.55); }
-      14% { opacity: 1; transform: translate(-50%, 0) scale(1.08); }
-      42% { opacity: 1; transform: translate(-50%, -4px) scale(1); }
-      58%, 100% { opacity: 0; transform: translate(-50%, -16px) scale(0.98); }
+      0% { opacity: 0; transform: translate(-50%, calc(-100% + 10px)) scale(0.55); }
+      14% { opacity: 1; transform: translate(-50%, calc(-100% - 8px)) scale(1.08); }
+      42% { opacity: 1; transform: translate(-50%, calc(-100% - 12px)) scale(1); }
+      58%, 100% { opacity: 0; transform: translate(-50%, calc(-100% - 24px)) scale(0.98); }
     }
     @keyframes poison-chip {
       0% { transform: scale(0.7); filter: brightness(1.85); }
@@ -10698,11 +10769,12 @@
     html.phone .battle-plate h2 { font-size: 14px; letter-spacing: 0.04em; }
     html.phone .battle-plate .meter.hp .hp-now span { font-size: 24px; }
     html.phone .battle-plate .hp-line b { font-size: 16px; }
-    html.phone .battle-plate .plate-split { column-gap: 4px; }
-    html.phone .battle-plate .plate-split .hp-line { font-size: 10px; letter-spacing: 0; }
+    html.phone .battle-plate .plate-split { column-gap: 0; }
+    html.phone .battle-plate .plate-split .hp-line { font-size: 10px; letter-spacing: 0; gap: 4px; padding: 2px 4px; }
     html.phone .battle-plate .plate-split .hp-line b { font-size: 14px; }
     html.phone .battle-plate .plate-split .hp-line .lbl .ico { width: 12px; height: 12px; }
-    html.phone .battle-plate .hp-line.stat-mana .lbl { font-size: 16px; }
+    html.phone .battle-plate .hp-line.stat-mana .lbl,
+    html.phone .battle-plate .hp-line.stat-star .lbl { font-size: 10px; }
     html.phone .battle-plate .shield-badge { width: 48px; height: 64px; top: -4px; }
     html.phone .handbar { padding: 4px 4px 6px; gap: 4px; }
     html.phone .handbar .end,
@@ -10860,7 +10932,7 @@
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
-      怒り: "card-anger-quiet.jpg?v=1",
+      怒り: "card-anger-quiet.jpg?v=2",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ライフフルネスアタック: "card-lifefull.jpg?v=2",
@@ -10889,7 +10961,7 @@
       ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
       ファイアパラダイス: "card-fireparadise-v2.jpg?v=1",
-      泥棒: "card-mushin.jpg?v=3",
+      泥棒: "card-mushin.jpg?v=4",
       "餌だ!!": "card-bait-v3.jpg?v=1",
       さぼる: "card-slack.jpg?v=2",
       弱者の意地: "card-spite-v4.jpg?v=1",
@@ -10924,19 +10996,19 @@
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィ+1を得る", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィ+1を獲得", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを獲得するこはできない。" },
       捨て身の一撃: { cost: 1, stars: 2, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
-      パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィ+1を得る", damage: 10, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを得る", kind: "skill", flash: true, coward: true },
+      パリィスラッシュ: { cost: 3, stars: 2, text: "10ダメージ\nパリィ+1を獲得", damage: 10, parry: true, kind: "attack" },
+      臆病者の構え: { cost: 2, stars: 2, text: "この戦闘中、パリィ中でもシールドを獲得", kind: "skill", flash: true, coward: true },
       ライフフルネスアタック: { cost: 2, stars: 2, text: "体力が満タンなら追加で15ダメージ", damage: 10, kind: "attack", fullBonus: 15 },
-      余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィ+1を得る", kind: "skill", poise: true, fullOnly: true },
+      余裕の構え: { cost: 1, stars: 2, text: "体力が満タンのときだけ使える\nパリィ+1を獲得", kind: "skill", poise: true, fullOnly: true },
       ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 3, stars: 3, text: "直前のターンに成功したパリィの数×20ダメージ", kind: "attack", finisher: true },
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
-      ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を得る\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, stars: 3, text: "パリィ+3を得る", kind: "block", parryAdd: 3 },
+      ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を獲得\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
+      超集中: { cost: 3, stars: 3, text: "パリィ+3を獲得", kind: "block", parryAdd: 3 },
       諸刃の剣: { cost: 2, stars: 2, text: "次に受けるダメージが２倍になる。", damage: 25, kind: "attack", doubleNext: true },
-      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を得る", heal: 10, kind: "skill", masterOnce: true, flash: true },
+      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を獲得", heal: 10, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
       自信過剰: { cost: 2, stars: 2, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
@@ -10986,7 +11058,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3 },
+          { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3, kind: "skill", stars: 1 },
         ],
       },
       {
@@ -11035,8 +11107,8 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 },
-          { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true },
+          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20, stars: 3 },
+          { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true, stars: 3 },
         ],
       },
       {
@@ -11051,7 +11123,7 @@
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill" },
+          { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 },
         ],
       },
       {
@@ -11066,7 +11138,7 @@
           { name: "アタック" },
           { name: "チャージアタック" },
           { name: "ビッグアタック" },
-          { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 1, slack: true },
+          { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true },
         ],
       },
       {
@@ -11094,8 +11166,8 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "餌だ!!", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", stars: 1 },
-          { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を1枚使う", legion: true, kind: "skill", stars: 1 },
+          { name: "餌だ!!", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", boss: true, stars: 4 },
+          { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を1枚使う", legion: true, kind: "skill", boss: true, stars: 4 },
         ],
       },
     ];
@@ -11234,7 +11306,7 @@
     let foeDiscard = [];
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを得ることはできない。";
+    const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。パリィ状態は、所持中のシールドをすべて破壊し、追加でシールドを獲得するこはできない。";
     const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。戦闘中1回。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
@@ -11330,7 +11402,8 @@
     let fxGuard = "";
     let fxBreakPlayer = false;
     let fxBreakEnemy = false;
-    let fxHeal = false;
+    let fxHeal = 0;
+    let fxBuff = false;
     let fxHit = null;
     let fxPoisonApply = { player: false, enemy: false };
     let fxStatusWard = [];
@@ -11376,6 +11449,9 @@
         action: "girl-action.jpg?v=6",
         battle: "girl-battle-v42.png?v=1",
         battleRatio: "3 / 4",
+        head: ["52.7%", "6.8%"],
+        body: ["48.3%", "35.3%"],
+        shield: ["75.2%", "42.4%"],
         defeat: "girl-defeat.jpg?v=17",
         clear: "girl-victory-2.jpg?v=2",
         bless: "event-bless-v10.jpg?v=2",
@@ -11673,8 +11749,15 @@
       const basic = enemyBasic(foe, card && card.name);
       if (basic) return basic;
       const known = cardDef(card && card.name);
-      if (known) return { name: card.name, ...known, stars: basicCardName(card.name) ? 0 : (known.stars || 1) };
-      return { ...card };
+      let next;
+      if (known) {
+        next = { name: card.name, ...known, stars: basicCardName(card.name) ? 0 : (known.stars || card.stars || 1) };
+        if (card.boss) next.boss = true;
+        if (card.legion) next.legion = true;
+      } else {
+        next = { ...card };
+      }
+      return applyEnemyCardRarity(next, foe);
     }
 
     function foeLiveAtk(foe) {
@@ -11936,7 +12019,13 @@
     const ENEMY_CARD_RATE = 1 / 3;
     const LOOT_LOW_RATE = 0.7;
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル"];
-    const BLESS_KINDS = ["maxhp", "spd", "gear", "card", "enchant"];
+    const BLESS_KINDS = [
+      { id: "maxhp", stars: 1 },
+      { id: "card", stars: 2 },
+      { id: "gear", stars: 3 },
+      { id: "enchant", stars: 3 },
+      { id: "spd", stars: 3 },
+    ];
     const ENCOUNTER_BEGGAR = 0.5;
 
     function fillSpan(span) {
@@ -12259,7 +12348,10 @@
       const mid = (ink.top + inkH / 2) / ink.h;
       const inkLeft = ink.left || 0;
       const inkRight = ink.right || ink.w;
-      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)};--ink-left:${inkLeft};--ink-right:${inkRight}`;
+      const cx = ((inkLeft + inkRight) / 2 / ink.w * 100).toFixed(1);
+      const headY = ((ink.top + inkH * 0.12) / ink.h * 100).toFixed(1);
+      const bodyY = ((ink.top + inkH * 0.42) / ink.h * 100).toFixed(1);
+      return `--img-w:${ink.w};--img-h:${ink.h};--ink-h:${inkH};--ink-bottom:${(ink.bottom / ink.h).toFixed(4)};--ink-mid:${mid.toFixed(4)};--ink-left:${inkLeft};--ink-right:${inkRight};--spot-head-x:${cx}%;--spot-head-y:${headY}%;--spot-body-x:${cx}%;--spot-body-y:${bodyY}%;--cut-x:${cx}%;--cut-y:${bodyY}%;--pop-y:${bodyY}%`;
     }
 
     // 絵の大きさは強さではなくキャラ。small は腰、same は自分と同じ、huge は画面いっぱい。
@@ -12310,7 +12402,7 @@
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, effect: "★　DEF+1", image: "gear-buckler.jpg?v=4" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=4" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
-      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを得る。", image: "gear-battle-counter.jpg?v=8" },
+      { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを獲得。", image: "gear-battle-counter.jpg?v=8" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 3, def: 5, statusImmune: true, effect: "★★★　DEF+5。状態異常にならない", image: "gear-eagle-shield.jpg?v=7" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 3, atk: 2, def: 2, atkInTrait: true, effect: "★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=6" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=9" },
@@ -12332,7 +12424,7 @@
       "buckler": "DEF+1",
       "leather-shield": "DEF+1",
       "iron-shield": "DEF+2",
-      "battle-counter": "DEF+2\n自分のDEFだけトゲを得る",
+      "battle-counter": "DEF+2\n自分のDEFだけトゲを獲得",
       "eagle-shield": "DEF+5\n状態異常にならない",
       "lion-shield": "ATK+2\nDEF+2",
       "chain-attack": "手札に攻撃がないとき、山札から攻撃カードを引く",
@@ -12754,7 +12846,7 @@
       if (!item) return "";
       if (item.statusImmune) return gearPunctLines("状態異常にならない");
       if (item.ignoreTrait) return "相手の特性を無視して\nダメージを与える。";
-      if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを得る");
+      if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを獲得");
       if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
       if (item.carryMana) return gearPunctLines("未使用マナを次のターンに持ち越す。");
       if (item.halfAtk) return gearPunctLines("体力が半分以下の時、ATK+2。");
@@ -12782,6 +12874,14 @@
       if (item.def) chips.push(`<span class="def">DEF ${signed(item.def)}</span>`);
       if (!chips.length) return "";
       return `<div class="gear-effect-stats">${chips.join("")}</div>`;
+    }
+
+    function colorStatWords(html) {
+      return String(html || "").replace(/ATK\s*[+＋\-－]\s*\d+|DEF\s*[+＋\-－]\s*\d+/gi, (m) => {
+        const label = m.replace(/\s+/g, "").replace(/＋/g, "+").replace(/－/g, "-");
+        const kind = /^DEF/i.test(label) ? "def" : "atk";
+        return `<span class="stat-word ${kind}">${label}</span>`;
+      });
     }
 
     function effectChipSpan(raw) {
@@ -12878,7 +12978,7 @@
       if (bodyLine.show) {
         const extra = bodyLine.extra ? ` ${bodyLine.extra}` : "";
         const bodyClass = `gear-effect-body${extra}`;
-        const bodyHtml = bodyLine.text ? (boon ? cardNoteHtml(bodyLine.text) : gearBodyHtml(bodyLine.text)) : "";
+        const bodyHtml = bodyLine.text ? ((boon || o.plain) ? cardNoteHtml(bodyLine.text) : gearBodyHtml(bodyLine.text)) : "";
         body = `<p class="${bodyClass}">${bodyHtml}</p>`;
       }
       const emb = embedded ? ` gear-effect-embedded${o.sheetPop ? " sheet-pop" : ""}${o.castPop ? " cast-pop" : ""}` : "";
@@ -13273,6 +13373,7 @@
       if (target === enemy && enemy.spiteOn) {
         enemy.spite = Math.max(0, Number(enemy.spite) || 0) + 1;
         syncEnemyAtk();
+        playBuff(document.querySelector(".duel-side.foe .sprite"));
         log(`${enemy.name}の弱者の意地。ATK${signed(enemy.atk)}。`);
         return;
       }
@@ -13280,6 +13381,7 @@
         player.atkMod = (Number(player.atkMod) || 0) + 1;
         noteStatCard("atk", player.spiteCard || "弱者の意地");
         syncGearStats();
+        fxBuff = true;
         log(`弱者の意地。ATK${signed(player.atk)}。`);
       }
     }
@@ -13666,6 +13768,7 @@
         player.atkMod = (Number(player.atkMod) || 0) + 1;
         noteStatCard("atk", player.prideCard || "自信過剰");
         syncGearStats();
+        fxBuff = true;
         log(`自信過剰。ATK${signed(player.atk)}。`);
       }
       if (player.shave && enemy) {
@@ -13713,7 +13816,7 @@
       const gain = Math.max(0, Math.min(Math.floor(Number(amount) || 0), room));
       if (!gain) return 0;
       player.hp += gain;
-      fxHeal = true;
+      fxHeal = gain;
       return gain;
     }
 
@@ -13956,7 +14059,7 @@
       }
       if (card.coward) {
         player.guardThrough = true;
-        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを得る。このカードはデッキから削除。戦闘が終わると戻る。`, card);
+        log(`${heroName()}は${card.name}。この戦闘中は、パリィ中でもシールドを獲得。このカードはデッキから削除。戦闘が終わると戻る。`, card);
         if (!card.damage && !card.block && !card.heal && !card.burn && !card.poison && !card.draw) return;
       }
       if (card.rage) {
@@ -13965,6 +14068,7 @@
         noteStatCard("atk", card.name);
         noteStatCard("def", card.name);
         syncGearStats();
+        fxBuff = true;
         log(`${heroName()}は${card.name}。ATK${signed(player.atk)}、DEF${signed(player.def)}。このカードはデッキから削除。戦闘が終わると戻る。`, card);
         if (!card.damage && !card.block && !card.heal && !card.burn && !card.poison && !card.draw) return;
       }
@@ -14444,14 +14548,22 @@
       });
     }
 
+    function playBuff(sprite) {
+      if (!sprite) return;
+      sprite.classList.remove("anger");
+      const old = sprite.querySelector(".buff-ring");
+      if (old) old.remove();
+      void sprite.offsetWidth;
+      sprite.classList.add("anger");
+      const ring = document.createElement("span");
+      ring.className = "buff-ring";
+      sprite.appendChild(ring);
+    }
+
     function pulseFoeAnger() {
       if (!foeAngerShow) return;
       foeAngerShow = false;
-      const sprite = document.querySelector(".duel-side.foe .sprite");
-      if (!sprite) return;
-      sprite.classList.remove("anger");
-      void sprite.offsetWidth;
-      sprite.classList.add("anger");
+      playBuff(document.querySelector(".duel-side.foe .sprite"));
     }
 
     function showFoePlay(play, gen) {
@@ -14907,16 +15019,18 @@
     }
 
     function legionTraitFor(who) {
-      if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3 };
-      if (who === "ゴブリン") return { name: "トリプルアタック", cost: 2, text: "1ダメージを3回\n各段にATKを足す", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true, hitAtk: 3 };
-      if (who === "物乞い") return { ...FOE_ONLY["泥棒"], name: "泥棒" };
-      if (who === "ちびドラゴン") return { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill" };
-      if (who === "コボルド") return { name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true };
+      const foe = enemyByName(who);
+      const wrap = (card) => (card && foe ? applyEnemyCardRarity(card, foe) : card);
+      if (who === "スライム") return wrap({ name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3, kind: "skill", stars: 1 });
+      if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "1ダメージを3回\n各段にATKを足す", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true, hitAtk: 3 });
+      if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
+      if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 });
+      if (who === "コボルド") return wrap({ name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true, stars: 1 });
       if (who === "ミノタウロス") {
-        return { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20 };
+        return wrap({ name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20, stars: 3 });
       }
       if (who === "トロール") {
-        return { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 1, slack: true };
+        return wrap({ name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true });
       }
       return null;
     }
@@ -16095,7 +16209,7 @@
         if (!/クリティカル\d+%/u.test(String(card.text || ""))) card.text = `${card.text || ""}\nクリティカル50%`.trim();
       } else if (id === "thorns") {
         if (!card.thorns) card.thorns = 3;
-        if (!String(card.text || "").includes("トゲ")) card.text = `${card.text || ""}\nトゲ+3を得る`.trim();
+        if (!String(card.text || "").includes("トゲ")) card.text = `${card.text || ""}\nトゲ+3を獲得`.trim();
       }
     }
 
@@ -16127,8 +16241,8 @@
 
     function rollBlessPicks() {
       const picks = [];
-      for (const kind of shuffle(BLESS_KINDS)) {
-        if (picks.length >= 3) break;
+      for (const entry of takeRarityCards(BLESS_KINDS, 3)) {
+        const kind = entry.id;
         if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
         else if (kind === "spd") picks.push({ kind, label: "SPD" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
@@ -16566,7 +16680,7 @@
     function blessChoiceText(pick, cardName, darkWord) {
       if (!pick) return "";
       if (pick.kind === "maxhp") return "最大HP+20";
-      if (pick.kind === "spd") return "SPD+1";
+      if (pick.kind === "spd") return "手札の枚数+1";
       if (pick.kind === "gear") return (pick.gear && pick.gear.name) || "装備";
       if (pick.kind === "card") return (pick.card && pick.card.name) || "カード";
       if (pick.kind === "enchant") {
@@ -16803,7 +16917,7 @@
       } else if (kind === "お店") {
         shopStock = rollShopStock();
         floorNote = "";
-        floorPrompt = "★で買い物。カード3つ、装備3つ。腕輪も出る。カードの値段はレアリティと同じ。装備は2倍。";
+        floorPrompt = "★で買い物。カード3つ、装備3つ。腕輪も出る。カードの値段はレアリティと同じ。装備は3倍。";
         armRare("shop");
       } else if (kind === "探索") {
         const item = drawGearOffers(1)[0];
@@ -17343,7 +17457,7 @@
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
       const combat = `${atkLine}${defLine}${spdLine}`;
       const stats = extra && extra.lv != null
-        ? `<div class="plate-split"><div class="plate-col">${statLine("", "Lv", extra.lv, "stat-lv")}${statLine("", "●", extra.mana != null ? extra.mana : MANA, "stat-mana")}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}</div><div class="plate-col">${combat}</div></div>`
+        ? `<div class="plate-split">${statLine("", "Lv", extra.lv, "stat-lv")}${atkLine}${statLine("", "●", extra.mana != null ? extra.mana : MANA, "stat-mana")}${defLine}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}${spdLine}</div>`
         : combat;
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
@@ -17491,6 +17605,7 @@
           ["poison-give", "毒を付与"],
           ["fatal", "止め"],
           ["heal", "回復"],
+          ["buff", "バフ"],
           ["shield", "シールド"],
           ["parry", "パリィ"],
           ["status-ward", "状態異常無効"],
@@ -17652,7 +17767,8 @@
         foe = { fatal: true };
         call = `<div class="fatal-call" aria-hidden="true">You are Dead</div>`;
         cls = " fatal";
-      }       else if (id === "heal") hero = { heal: true };
+      }       else if (id === "heal") hero = { heal: 10 };
+      else if (id === "buff") hero = { buff: true };
       else if (id === "shield") hero = { ward: true };
       else if (id === "parry") hero = { sparkGold: true };
       else if (id === "status-ward") hero = { statusWard: ["poison", "burn"] };
@@ -17680,7 +17796,7 @@
       const foeCard = id === "anger" ? `<div class="play-cards">${playFace(foeAngerCard(), false, false, true)}</div>` : "";
       const mid = `<div class="use-board"><div class="use-split"><div class="play-side mine use-half"></div><div class="play-side foe use-half">${foeCard}</div></div><button type="button" class="vs-mark${id === "end-ready" ? " spent" : ""}" aria-label="ターン終了">VS</button></div>`;
       const hitPop = hero.n ? playerHitPop(hero.n, hero.kind, hero.fatal, hero.big || hero.n >= 9, hero.break ? 0.7 : 0) : "";
-      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), Boolean(hero.heal), Boolean(hero.ward), Boolean(hero.sparkGold), hitPop, hero.statusWard || [], Boolean(hero.big))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
+      const arenaHtml = `<div class="stage"><div class="enemy-field">${fxPlate(id)}<div class="duel-side ally"><div class="ally-piles">${pileMarkup("deck", 10)}${pileMarkup("discard", 2)}</div>${heroShoulder("", Boolean(hero.hurt), hero.pow || "0.35", hero.guard ? "hold" : "", Boolean(hero.fatal), hero.kind || "", false, Boolean(hero.poisonApply), hero.heal || false, Boolean(hero.ward), Boolean(hero.sparkGold), hitPop, hero.statusWard || [], Boolean(hero.big), Boolean(hero.break), Boolean(hero.buff))}</div><div class="duel-mid">${mid}</div><div class="duel-side foe">${fxFoe(foe)}${fxLabPiles(fxLabFoeDef().name)}</div>${calls}</div></div>`;
       return fxLabPlayMarkup(arenaHtml, handHtml, cls);
     }
 
@@ -17697,24 +17813,6 @@
     }
 
     function placeFoePoisonWords() {
-      root.querySelectorAll(".sprite.poison").forEach((sprite) => {
-        const img = sprite.querySelector("img");
-        const words = sprite.querySelectorAll(".hurt-word, .dmg-pop.poison");
-        if (!img || !words.length) return;
-        const place = () => {
-          const box = sprite.getBoundingClientRect();
-          const nw = img.naturalWidth;
-          const nh = img.naturalHeight;
-          if (!nw || !nh || box.width < 8 || box.height < 8) return;
-          const painted = nh * Math.min(box.width / nw, box.height / nh);
-          words.forEach((word) => {
-            word.style.top = "auto";
-            word.style.bottom = `${Math.round(painted)}px`;
-          });
-        };
-        place();
-        if (!img.complete) img.addEventListener("load", place, { once: true });
-      });
     }
 
     function renderTitle() {
@@ -17883,7 +17981,7 @@
         const boss = VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", gear: "装備", card: "カード", enchant: "エンチャント" };
+      const blessNames = { maxhp: "最大HP+20", spd: "手札の枚数+1", gear: "装備", card: "カード", enchant: "エンチャント" };
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -17979,10 +18077,9 @@
           <section class="odds-block">
             <h2>祝福</h2>
             <ul>
-              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。</li>
-              <li>それぞれの種類が出る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
+              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。先にレアリティ（★60%、★★30%、★★★10%）です。表は1枠を引く割合です。</li>
             </ul>
-            ${oddsChips(BLESS_KINDS.map((kind) => blessNames[kind]))}
+            ${oddsTable(["★", "レアリティ", "1枠の割合", "祝福"], rarityRows(BLESS_KINDS.map((kind) => ({ name: blessNames[kind.id], stars: kind.stars }))))}
             <ul>
               <li>エンチャントは、上の属性の重みで一つ出ます。光が少し出にくいです。</li>
               <li>選ぶと、もらったエンチャントのポップと、デッキのカードが出ます。一つ決めて決定します。</li>
@@ -18016,6 +18113,24 @@
       return order[kind] ?? 5;
     }
 
+    function cardRarityRank(card) {
+      if (card && card.boss) return 4;
+      return Number(card && card.stars) || 0;
+    }
+
+    function compareCardListOrder(a, b) {
+      const ga = cardGenreRank(a);
+      const gb = cardGenreRank(b);
+      if (ga !== gb) return ga - gb;
+      const ca = Number(a.cost) || 0;
+      const cb = Number(b.cost) || 0;
+      if (ca !== cb) return ca - cb;
+      const ra = cardRarityRank(a);
+      const rb = cardRarityRank(b);
+      if (ra !== rb) return ra - rb;
+      return String(a.name).localeCompare(String(b.name), "ja");
+    }
+
     function starterDeckCards() {
       const cards = [];
       for (const [name, count] of CARD_POOL) {
@@ -18024,15 +18139,7 @@
           cards.push({ name, ...def });
         }
       }
-      cards.sort((a, b) => {
-        const ga = cardGenreRank(a);
-        const gb = cardGenreRank(b);
-        if (ga !== gb) return ga - gb;
-        const ca = Number(a.cost) || 0;
-        const cb = Number(b.cost) || 0;
-        if (ca !== cb) return ca - cb;
-        return a.name.localeCompare(b.name, "ja");
-      });
+      cards.sort(compareCardListOrder);
       return cards;
     }
 
@@ -18144,7 +18251,7 @@
             <p class="lead">敵から受けるダメージを1度だけ無効にする。</p>
             <p>重複可。</p>
             <p>ターン終了時に消滅</p>
-            <p>パリィ状態は、所持中のシールドをすべて破壊し、<br>追加でシールドを得ることはできない。</p>
+            <p>パリィ状態は、所持中のシールドをすべて破壊し、<br>追加でシールドを獲得するこはできない。</p>
             <p class="tail">パリィのタイミングを見極めた戦士にシールドは不要だ。</p>
           </section>
         </aside>`;
@@ -18657,10 +18764,13 @@
           if (name === "アタック" || name === "ブロック") continue;
           if (CARDS[name] || WARRIOR[name] || COMMON[name]) continue;
           const base = CARDS[name] || WARRIOR[name] || COMMON[name] || {};
-          push(name, { ...base, ...card }, "敵");
+          push(name, applyEnemyCardRarity({ ...base, ...card }, foe), "敵");
         }
       }
-      for (const [name, data] of Object.entries(FOE_ONLY)) push(name, data, "敵");
+      for (const [name, data] of Object.entries(FOE_ONLY)) {
+        const owner = name === "泥棒" ? enemyByName("物乞い") : null;
+        push(name, owner ? applyEnemyCardRarity({ ...data, name }, owner) : data, "敵");
+      }
       for (const card of gearCardList()) push(card.name, card, "装備");
       rewardAlbumCards().forEach((card, index) => push(card.name, { ...card, rewardOrder: index }, "祝福"));
       return list;
@@ -18763,11 +18873,11 @@
     }
 
     function blessGearOpts(kind, elem) {
-      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HP+20", stars: 3 };
-      if (kind === "spd") return { slot: "spd", name: "SPD", image: "reward-spd.jpg?v=1", body: "毎ターンの引く枚数が1増える。", stars: 3 };
-      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナが1増える。", stars: 5 };
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HP+20", stars: 1 };
+      if (kind === "spd") return { slot: "spd", name: "手札の枚数+1", image: "reward-spd.jpg?v=1", body: "SPD+1", stars: 3 };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナ+1", stars: 5 };
       const face = enchantFace(elem);
-      return { slot: "enchant", name: face.name, image: face.image, body: face.sub, stars: 3 };
+      return { slot: "enchant", name: face.name, image: face.image, body: face.sub, stars: 3, plain: true };
     }
 
     function sheetGearBoonCard(slot, o) {
@@ -18828,6 +18938,7 @@
               ${sheetFig("enemy-ram.png?v=1", "羊頭のデーモン", "enemy-ref")}
               ${sheetFig("enemy-gargoyle.png?v=1", "ガーゴイル", "enemy-ref")}
               ${sheetFig("enemy-merfolk.png?v=1", "マーフォーク", "enemy-ref")}
+              ${sheetFig("enemy-kappa.png?v=1", "河童", "enemy-ref")}
             </div>
             <h3>戦士</h3>
             <div class="ref-grid pose-grid">
@@ -18943,14 +19054,7 @@
         albumTab === "初期デッキ"
           ? shown.map((card) => `${card.name}×${card.deckCopies}`).join("　")
           : `${label} ${shown.length}`;
-      const albumTop = albumTab === "未採用" ? "" : `<div class="album-top">
-              <section>
-                <h3>カードスタイル</h3>
-                ${cardStyleColumns("album")}
-                <h4 class="trial-head">暗めの紫</h4>
-                <div class="style-genres trial">${cardStyleSheet([["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=2"]])}</div>
-              </section>
-            </div>`;
+      const albumTop = "";
       const unadoptedBody = albumTab === "未採用"
         ? `<div class="album-unadopted-tab"><div class="ref-grid blank-grid">${unadoptedCardSheet()}</div></div>`
         : `<section class="deck-group"><h3>${esc(groupTitle)}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
@@ -19582,11 +19686,6 @@
     }
 
     const CARD_STYLE = [
-      ["style-basic-foe", "敵 基本", "frame-basic-foe.png?v=20"],
-      ["style-navy-copper", "敵 ★", "frame-navy-over-copper.png?v=20"],
-      ["style-navy-silver", "敵 ★★", "frame-navy-over-silver.png?v=20"],
-      ["style-navy-gold", "敵 ★★★", "frame-navy-over-gold.png?v=20"],
-      ["style-navy-black", "敵 ボス", "frame-navy-over-black.png?v=20"],
       ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=20"],
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=20"],
       ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=4"],
@@ -19611,7 +19710,6 @@
       ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=1"],
       ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
       ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
-      ["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=2"],
       ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=1"],
       ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=1"],
       ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=1"],
@@ -19640,16 +19738,14 @@
       ["ブロック", ["style-basic-block", "style-over-copper", "style-over-silver", "style-over-gold", "style-over-black"]],
       ["スキル", ["style-basic-skill", "style-yellow-over-copper", "style-yellow-over-silver", "style-yellow-over-gold", "style-yellow-over-black"]],
       ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
-      ["敵", ["style-basic-foe", "style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black"]],
+      ["敵", ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"]],
       ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
     ];
-    const FOE_PLUM = ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"];
     function cardStyleColumns(mode) {
       const byId = {};
       CARD_STYLE.forEach((item) => { byId[item[0]] = item; });
       return `<div class="style-genres">${STYLE_GENRES.map((group) => {
-        const ids = mode === "album" && group[0] === "敵" ? FOE_PLUM : group[1];
-        const items = ids.map((id) => byId[id]).filter(Boolean);
+        const items = group[1].map((id) => byId[id]).filter(Boolean);
         const body = mode === "sheet"
           ? items.map((item) => sheetFig(item[2], item[1], "style-master")).join("")
           : cardStyleSheet(items);
@@ -19887,7 +19983,8 @@
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
       noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
-      if (cardKind(card) === "boon") noteText = effectChipHtml(noteText, false);
+      if (cardKind(card) === "boon" && !/エンチャント/.test(String(card.name || ""))) noteText = effectChipHtml(noteText, false);
+      noteText = colorStatWords(noteText);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
@@ -20343,16 +20440,18 @@
     }
 
     function angerFxHtml() {
-      return "";
+      return `<span class="buff-ring"></span>`;
     }
 
     function poisonFxHtml(stamp) {
-      const word = stamp ? `<b class="poison-stamp">毒</b>` : "";
+      const word = stamp ? `<b class="poison-stamp">毒になった！</b>` : "";
       return `<div class="poison-hit" aria-hidden="true">${word}<i class="mist"></i><i class="bubble b1"></i><i class="bubble b2"></i><i class="bubble b3"></i><i class="bubble b4"></i><i class="bubble b5"></i><i class="drip d1"></i><i class="drip d2"></i><i class="drip d3"></i></div>`;
     }
 
-    function healFxHtml() {
-      return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><b class="plus p1">+</b><b class="plus p2">+</b><b class="plus p3">+</b><b class="plus p4">+</b><b class="plus p5">+</b></div>`;
+    function healFxHtml(amount) {
+      const n = Math.max(0, Math.round(Number(amount) || 0));
+      const num = n ? `<b class="heal-num">${n}</b>` : "";
+      return `<div class="hero-hit heal" aria-hidden="true"><i class="glow"></i><b class="plus p1">+</b><b class="plus p2">+</b><b class="plus p3">+</b><b class="plus p4">+</b><b class="plus p5">+</b>${num}</div>`;
     }
 
     function wardFxHtml(gold) {
@@ -20366,11 +20465,11 @@
       return `<div class="hero-hit status-ward" aria-hidden="true"><span class="halo"></span><b class="ward-word">無効</b>${motes}<span class="ward-slash"></span></div>`;
     }
 
-    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, ward, sparkGold, hitPop, statusWard, doubleHit) {
+    function heroShoulder(vitals, hurt, pow, guard, fatal, kind, struck, poisonApply, heal, ward, sparkGold, hitPop, statusWard, doubleHit, breakWait, buff) {
       const poisonTick = Boolean(hurt && kind === "poison");
       const poison = poisonTick || Boolean(poisonApply);
       const blunt = Boolean(hurt && !poisonTick);
-      const twice = Boolean(blunt && doubleHit);
+      const twice = Boolean(blunt && doubleHit && !breakWait);
       const poisonHtml = poison
         ? `<div class="hero-hit poison${fatal && poisonTick ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${poisonFxHtml(!poisonTick)}</div>`
         : "";
@@ -20379,16 +20478,23 @@
         ? `<div class="hero-hit blunt${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${bluntInner}</div>${twice ? `<div class="hero-hit blunt late${fatal ? " fatal" : ""}" style="--pow:${pow}" aria-hidden="true">${bluntInner}</div>` : ""}`
         : "";
       const hit = poisonHtml + bluntHtml;
-      const healHtml = heal ? healFxHtml() : "";
+      const healN = Math.max(0, Math.round(Number(heal) || 0));
+      const showHeal = heal === true || healN > 0;
+      const healHtml = showHeal ? healFxHtml(healN) : "";
       const goldSpark = Boolean(sparkGold);
       const wardHtml = ward || goldSpark ? wardFxHtml(goldSpark) : "";
       const statusHtml = statusWardHtml(statusWard);
       const guarding = guard === "hold" || guard === "parry";
       const guardHtml = guarding ? holdGuard(guard === "parry") : "";
+      const buffHtml = buff ? `<span class="buff-ring"></span>` : "";
       const who = heroItem();
+      const head = Array.isArray(who.head) && who.head.length >= 2 ? who.head : ["52.7%", "6.8%"];
+      const body = Array.isArray(who.body) && who.body.length >= 2 ? who.body : ["48.3%", "35.3%"];
+      const shield = Array.isArray(who.shield) && who.shield.length >= 2 ? who.shield : [];
+      const spotStyle = `;--hero-head-x:${head[0]};--hero-head-y:${head[1]};--spot-head-x:${head[0]};--spot-head-y:${head[1]};--spot-body-x:${body[0]};--spot-body-y:${body[1]}${shield.length ? `;--hero-shield-x:${shield[0]};--hero-shield-y:${shield[1]}` : ""}`;
       const washStyle = `-webkit-mask-image:url('${esc(who.battle)}');mask-image:url('${esc(who.battle)}')`;
       const wash = blunt ? `<i class="hurt-wash" style="${washStyle}"></i>${twice ? `<i class="hurt-wash late" style="${washStyle}"></i>` : ""}` : "";
-      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${twice ? " double-hit" : ""}${heal ? " healed" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guard === "hold" ? " held" : ""}${guard === "parry" ? " parry-hold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${wash}${hit}${healHtml}${wardHtml}${statusHtml}${guardHtml}${hitPop || ""}</div></div>`;
+      return `<div class="hero-shoulder${hurt ? " hurt" : ""}${struck && !hurt ? " struck" : ""}${poison ? " poison" : ""}${blunt ? " blunt" : ""}${twice ? " double-hit" : ""}${breakWait ? " break-wait" : ""}${showHeal ? " healed" : ""}${buff ? " buff" : ""}${statusHtml ? " status-warded" : ""}${ward || goldSpark ? " ward" : ""}${goldSpark ? " spark-gold" : ""}${guard === "hold" ? " held" : ""}${guard === "parry" ? " parry-hold" : ""}${fatal ? " fatal" : ""}">${vitals}<div class="hero-body" style="aspect-ratio:${who.battleRatio}${spotStyle}"><img class="hero-fig" src="${who.battle}" alt="${esc(who.name)}">${wash}${hit}${healHtml}${wardHtml}${statusHtml}${guardHtml}${buffHtml}${hitPop || ""}</div></div>`;
     }
 
     function startHeroIdle() {
@@ -20561,18 +20667,7 @@
     }
 
     function sortedCards(cards) {
-      return cards.slice().sort((a, b) => {
-        const ga = cardGenreRank(a);
-        const gb = cardGenreRank(b);
-        if (ga !== gb) return ga - gb;
-        const ca = Number(a.cost) || 0;
-        const cb = Number(b.cost) || 0;
-        if (ca !== cb) return ca - cb;
-        if (cardKind(a) === "boon" && cardKind(b) === "boon" && a.rewardOrder != null && b.rewardOrder != null) {
-          return a.rewardOrder - b.rewardOrder;
-        }
-        return a.name.localeCompare(b.name, "ja");
-      });
+      return cards.slice().sort(compareCardListOrder);
     }
 
     function deckOrdered(cards) {
@@ -20679,6 +20774,21 @@
       return 1;
     }
 
+    function enemyRarity(foe) {
+      if (!foe) return { stars: 1, boss: false };
+      if (foe.rank === "★★★★") return { stars: 4, boss: true };
+      return { stars: starsForRank(foe.rank), boss: false };
+    }
+
+    function applyEnemyCardRarity(card, foe) {
+      if (!card || !foe || basicCardName(card.name)) return card;
+      const r = enemyRarity(foe);
+      const next = { ...card, stars: r.stars };
+      if (r.boss) next.boss = true;
+      else if (next.boss) delete next.boss;
+      return next;
+    }
+
     // 初期デッキは CARDS、報酬は WARRIOR／COMMON。名前だけで引くときはここを通す。
     function basicCardName(name) {
       return name === "アタック" || name === "アタック+" || name === "ブロック" || name === "ブロック+" || name === "チャージアタック";
@@ -20778,6 +20888,8 @@
       if (card.halfOnly) next.halfOnly = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
+      if (card.boss) next.boss = true;
+      if (card.legion) next.legion = true;
       next.stars = card.unrated || basicCardName(card.name) ? 0 : (card.stars || 1);
       return next;
     }
@@ -21020,13 +21132,13 @@
       return picks;
     }
 
-    // カードの値段はレアリティと同じ。装備は2倍。★が決まっていない品は値段も未定で、買えない。
+    // カードの値段はレアリティと同じ。装備は3倍。★が決まっていない品は値段も未定で、買えない。
     function shopPrice(slot) {
       if (!slot) return null;
       if (slot.kind === "card" && slot.card) return Number(slot.card.stars) || 1;
       if (slot.kind === "gear" && slot.gear) {
         const stars = Number(slot.gear.stars) || 0;
-        return stars > 0 ? stars * 2 : null;
+        return stars > 0 ? stars * 3 : null;
       }
       return null;
     }
@@ -22085,6 +22197,7 @@
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
       const healNow = fxHeal;
+      const buffNow = fxBuff;
       const hitNow = fxHit;
       const poisonPlayerNow = fxPoisonApply.player;
       const poisonEnemyNow = fxPoisonApply.enemy;
@@ -22109,7 +22222,7 @@
         return `<b class="dmg-pop foe-hit${foeKind === "poison" ? " poison" : ""}" style="--delay:${(i * HIT_GAP + 0.08 + foePopWait).toFixed(2)}s;--shift:${shift}px;--pow:${hitPower(n)}">${text}</b>`;
       }).join("");
       const playerBigNumber = Boolean(player && hitNow && hitNow.n >= player.maxHp * 0.3);
-      const playerBig = Boolean(hurtNow && hitNow && hitNow.side === "player" && hitNow.kind !== "poison" && playerBigNumber);
+      const playerBig = Boolean(hurtNow && hitNow && hitNow.side === "player" && hitNow.kind !== "poison" && playerBigNumber && !breakPlayerNow);
       const playerPop = hurtNow && hitNow && hitNow.side === "player"
         ? playerHitPop(hitNow.n, hitNow.kind, fatalNow, playerBigNumber, breakPlayerNow ? 0.7 : 0)
         : "";
@@ -22119,7 +22232,8 @@
       fxHurt = false;
       fxFatal = false;
       fxGuard = "";
-      fxHeal = false;
+      fxHeal = 0;
+      fxBuff = false;
       fxHit = null;
       fxDeal = false;
       const noManaNow = fxNoMana;
@@ -22165,7 +22279,7 @@
                 ${pileMarkup("deck", deck.length)}
                 ${pileMarkup("discard", discard.length)}
               </div>
-              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, shieldPlayerNow, parryPlayerNow, playerPop, statusWardNow, playerBig)}
+              ${heroShoulder("", Boolean(hurtNow && hitNow && hitNow.side === "player"), hitPow, guardNow, fatalNow, hitNow && hitNow.kind, struckNow, poisonPlayerNow, healNow, shieldPlayerNow, parryPlayerNow, playerPop, statusWardNow, playerBig, breakPlayerNow, buffNow)}
             </div>
             <div class="duel-mid">
               ${note ? `<p class="field-note${noManaNow ? " warn" : ""}">${esc(note)}</p>` : ""}
