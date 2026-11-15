@@ -1451,7 +1451,8 @@
     .hero-hit.blunt .e4 { --px: 48px; --py: -64px; width: 14px; height: 14px; animation-delay: 0.08s; }
     .hero-hit.blunt .e5 { --px: -52px; --py: -48px; animation-delay: 0.28s; }
     /* 自分が殴られる。刃は出さない。衝撃の輪と星 */
-    .hero-hit .ring {
+    .hero-hit .ring,
+    .hero-guard .ring {
       position: absolute;
       left: var(--hero-head-x, 52.7%);
       top: calc(var(--hero-head-y, 6.8%) + 16%);
@@ -1464,7 +1465,8 @@
       opacity: 0;
       animation: blunt-ring 0.55s cubic-bezier(0.1, 0.7, 0.2, 1) forwards;
     }
-    .hero-hit .ring.b {
+    .hero-hit .ring.b,
+    .hero-guard .ring.b {
       border-width: 3px;
       border-color: rgba(255, 150, 50, 0.8);
       animation-delay: 0.08s;
@@ -2695,6 +2697,8 @@
     .ref-grid img.cut-ref { aspect-ratio: 3 / 4; object-fit: contain; background: transparent; }
     .ref-grid img.back-ref { aspect-ratio: 204 / 300; object-fit: cover; }
     .ref-grid img.land-ref { aspect-ratio: 16 / 9; object-fit: cover; }
+    .ref-grid img.event-ref { aspect-ratio: 3 / 4; object-fit: contain; background: #120e0c; }
+    .ref-grid figure.event-portrait { max-width: 200px; }
     .ref-grid figure.span-2 { grid-column: span 2; max-width: 320px; }
     .ref-grid figure.wide-land { grid-column: 1 / -1; max-width: 720px; }
     /* カードスタイルの見本。★銅、★★銀、★★★金。ジャンルの札は枠に描かない */
@@ -3475,7 +3479,6 @@
       --spark-w: calc(1.27cqh + var(--pow, 0.35) * 1.01cqh);
       --spark-near: 4.3cqh;
       --spark-far: 14.2cqh;
-      --drop-far: 9.9cqh;
       position: absolute;
       left: var(--cut-x, 50%);
       top: var(--cut-y, 46%);
@@ -3532,19 +3535,9 @@
       background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 40%, #ffd1b8);
       filter: drop-shadow(0 0 0.5cqh rgba(255, 220, 180, 0.9));
     }
-    .sprite .cut .drop {
-      width: 1.01cqh;
-      height: 1.39cqh;
-      margin: -0.7cqh 0 0 -0.5cqh;
-      border-radius: 40% 40% 46% 46%;
-      background: radial-gradient(circle at 40% 30%, #ffb0a4, #c41414 70%);
-    }
-    .sprite .cut .drop.d1 { --fall: -4.3cqh; }
-    .sprite .cut .drop.d2 { --fall: 3.5cqh; }
     .sprite.slash .cut .blade { animation: slash-blade 0.42s var(--delay, 0s) cubic-bezier(0.12, 0.8, 0.2, 1) both; }
     .sprite.slash .cut .trail { animation: slash-blade 0.48s var(--delay, 0s) cubic-bezier(0.12, 0.8, 0.2, 1) both; }
     .sprite.slash .cut .scar { animation: slash-scar 0.95s var(--delay, 0s) ease-out both; }
-    .sprite.slash .cut .drop { animation: slash-drop 0.7s calc(var(--delay, 0s) + 0.18s) ease-in both; }
     .sprite.slash .cut .burst { animation: slash-burst 0.5s calc(var(--delay, 0s) + 0.1s) ease-out both; }
     .sprite.slash .cut .spark { animation: slash-spark 0.55s calc(var(--delay, 0s) + 0.1s) cubic-bezier(0.1, 0.8, 0.3, 1) both; }
     .sprite.slash .cut .spark.s1 { --sa: calc(var(--ang) + 90deg); --sd: 1; }
@@ -3565,11 +3558,6 @@
       28% { opacity: 0; transform: rotate(var(--ang)) scaleX(0.7); }
       42% { opacity: 1; transform: rotate(var(--ang)) scaleX(1); }
       100% { opacity: 0; transform: rotate(var(--ang)) scaleX(1); }
-    }
-    @keyframes slash-drop {
-      0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
-      22% { opacity: 1; }
-      100% { opacity: 0; transform: translate(var(--fall, 0px), var(--drop-far, 9.9cqh)) scale(0.85); }
     }
     @keyframes slash-burst {
       0% { opacity: 0; transform: scale(0.2); }
@@ -3630,26 +3618,7 @@
         0 0 12px rgba(255, 220, 140, 0.95),
         0 0 18px rgba(232, 170, 48, 0.9);
     }
-    .hero-guard .shock {
-      position: absolute;
-      left: 50%;
-      top: 46%;
-      width: 34%;
-      height: 34%;
-      margin: 0;
-      border-radius: 50%;
-      border: 8px solid rgba(255, 42, 32, 0.95);
-      box-shadow:
-        0 0 16px rgba(255, 36, 24, 0.9),
-        inset 0 0 10px rgba(255, 90, 60, 0.45);
-      opacity: 0;
-      animation: guard-shock 0.72s ease-out both;
-      pointer-events: none;
-    }
-    .hero-guard .shock.b {
-      border-width: 4px;
-      animation-delay: 0.12s;
-    }
+    .hero-guard { --pow: 0.35; }
     /* 与えたダメージは敵の絵（.foe-body）に置き、斬撃の真上で追随。体力札より前 */
     .dmg-pop.foe-hit {
       position: absolute;
@@ -4781,6 +4750,8 @@
     }
     .gear-effect-body .gear-stat-chip.atk { color: #ffc9a2; }
     .gear-effect-body .gear-stat-chip.def { color: #d7dee8; }
+    .gear-effect-body .gear-stat-chip.costdown { color: #ffe7a8; }
+    .gear-effect-body .gear-stat-chip.kw { color: #e4c8ff; }
     .gear-effect-inner {
       position: relative;
       padding: 8px;
@@ -5600,6 +5571,11 @@
     .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=20"); }
     .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=20"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=20"); }
+    .album-screen .card .card-fit.k-foe.r0 { --frame-img: url("frame-plum-basic.png?v=1"); }
+    .album-screen .card .card-fit.k-foe.r1 { --frame-img: url("frame-plum-copper.png?v=1"); }
+    .album-screen .card .card-fit.k-foe.r2 { --frame-img: url("frame-plum-silver.png?v=1"); }
+    .album-screen .card .card-fit.k-foe.r3 { --frame-img: url("frame-plum-gold.png?v=1"); }
+    .album-screen .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=1"); }
     .card .card-fit.k-gear.r0,
     .card .card-fit.k-gear.r1,
     .card .card-fit.k-boon.r0,
@@ -5737,6 +5713,25 @@
     .card .card-fit.k-boon .fx.note .nobr:not(:first-child) { margin-top: 1.1cqw; }
     .card .card-fit .fx.note,
     .card .card-fit .fx.kw { width: 100%; text-align: center; line-break: strict; word-break: keep-all; text-wrap: balance; }
+    .card .fx.note .gear-stat-chip {
+      display: inline-flex;
+      margin: 0 0.12em;
+      padding: 0 0.35em;
+      border-radius: 999px;
+      font-size: 0.92em;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1.35;
+      vertical-align: baseline;
+      white-space: nowrap;
+      color: #1c1816;
+      background: rgba(255, 248, 230, 0.92);
+      border: 1px solid rgba(90, 60, 20, 0.4);
+    }
+    .card .fx.note .gear-stat-chip.atk { color: #9a3412; }
+    .card .fx.note .gear-stat-chip.def { color: #3d4a5c; }
+    .card .fx.note .gear-stat-chip.costdown { color: #8a6a12; }
+    .card .fx.note .gear-stat-chip.kw { color: #5b3d86; }
     .card .card-fit .genre { z-index: 6; }
     .card .card-fit .nameplate,
     .card .card-fit .text { z-index: 5; }
@@ -6909,16 +6904,8 @@
       cursor: pointer;
       box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.22), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.75);
       transition: transform 0.16s ease;
-      animation: title-start-blink 1.15s ease-in-out infinite;
-    }
-    @keyframes title-start-blink {
-      0%, 100% { filter: brightness(0.82); box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.12), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.45); }
-      50% { filter: brightness(1.45); box-shadow: 0 0 0 4px rgba(255, 236, 180, 0.85), 0 0 36px rgba(255, 196, 90, 0.85), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.95); }
     }
     .title-actions > button.primary:hover { transform: translateY(-2px); }
-    @media (prefers-reduced-motion: reduce) {
-      .title-actions > button.primary { animation: none; filter: none; }
-    }
     .title-sub-actions {
       display: flex;
       flex-wrap: wrap;
@@ -10505,10 +10492,6 @@
       68% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(1.08); }
     }
-    @keyframes guard-shock {
-      0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.2); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(2.6); }
-    }
     @keyframes guard-word {
       0% { opacity: 0; transform: translate(-50%, calc(-100% + 14px)) scale(0.86); }
       14% { opacity: 1; transform: translate(-50%, calc(-100% - 8px)) scale(1); }
@@ -10876,7 +10859,7 @@
       ツインアタック: "card-twin.jpg?v=2",
       ハードブロック: "card-hard-block-f.jpg?v=3",
       ビッグブロック: "card-big-block-f.jpg?v=4",
-      応急手当: "card-first-aid.jpg?v=1",
+      薬草: "card-first-aid.jpg?v=1",
       ベッド: "card-bed.jpg?v=1",
       ホテル: "card-hotel.jpg?v=1",
       ダッシュ: "card-dash.jpg?v=1",
@@ -10961,7 +10944,7 @@
       ビッグアタック: { cost: 3, text: "30ダメージ", damage: 30, stars: 3, kind: "attack" },
       ハードブロック: { cost: 2, text: "ブロック12", block: 12, kind: "block" },
       ビッグブロック: { cost: 3, stars: 2, text: "ブロック25", block: 25, kind: "block" },
-      応急手当: { cost: 1, text: "体力を4回復", heal: 4, flash: true, kind: "skill" },
+      薬草: { cost: 1, text: "体力を4回復", heal: 4, kind: "power", power: true },
       ベッド: { cost: 2, text: "体力を10回復", heal: 10, kind: "power", power: true },
       ホテル: { cost: 3, stars: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
       ダッシュ: { cost: 1, text: "2枚引く", quick: true, draw: 2, kind: "skill" },
@@ -10995,7 +10978,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "乱打", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true },
+          { name: "トリプルアタック", cost: 2, text: "1ダメージを3回\n各段にATKを足す", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true },
         ],
       },
       {
@@ -12317,7 +12300,7 @@
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダル★★★、腕輪★★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=5", halfAtk: 2 },
+      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=6", halfAtk: 2 },
       { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 4, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=6", halfMana: 1 },
     ];
     const GEAR_CARD_TEXT = {
@@ -12342,7 +12325,7 @@
     function gearCardList() {
       return GEAR_ITEMS.concat(BOSS_GEAR).map((item) => ({
         name: item.name,
-        cost: 0,
+        cost: Number(item.stars) || 1,
         stars: item.stars || 1,
         boss: !!item.boss,
         kind: "gear",
@@ -12373,7 +12356,7 @@
       if (special && !lines.includes(special)) lines.push(special);
       return {
         name: item.name || "装備",
-        cost: 0,
+        cost: Number(item.stars) || 1,
         stars: Number(item.stars) || 1,
         boss: !!item.boss,
         kind: "gear",
@@ -12693,7 +12676,7 @@
       const left = slotButton({ id: "braceletL", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const right = slotButton({ id: "braceletR", label: "アクセサリー", aria: "アクセサリー", icon: braceletIcon() });
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
-      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=5";
+      const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=6";
       const medalName = (gear && gear.medal && gear.medal.name) || "戦利品";
       const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
       const bootN = runSpdBonus();
@@ -12780,12 +12763,21 @@
       return `<div class="gear-effect-stats">${chips.join("")}</div>`;
     }
 
-    function gearBodyHtml(raw) {
-      return cardNoteHtml(raw).replace(/ATK\s*[+＋\-－]\s*\d+|DEF\s*[+＋\-－]\s*\d+/g, (m) => {
-        const kind = /^DEF/i.test(m) ? "def" : "atk";
-        const label = m.replace(/\s+/g, "").replace(/＋/g, "+").replace(/－/g, "-");
-        return `</span><span class="gear-stat-chip ${kind}">${label}</span><span class="nobr">`;
+    function effectChipSpan(raw) {
+      const label = String(raw || "").replace(/\s+/g, "").replace(/＋/g, "+").replace(/－/g, "-");
+      const kind = /^DEF/i.test(label) ? "def" : label.startsWith("コスト") ? "costdown" : label.includes("キーワード") ? "kw" : "atk";
+      return `<span class="gear-stat-chip ${kind}">${label}</span>`;
+    }
+
+    function effectChipHtml(html, breakOut) {
+      return String(html || "").replace(/ATK\s*[+＋\-－]\s*\d+|DEF\s*[+＋\-－]\s*\d+|コスト\s*[-－]\s*\d+|ランダムなキーワード/g, (m) => {
+        const chip = effectChipSpan(m);
+        return breakOut ? `</span>${chip}<span class="nobr">` : chip;
       });
+    }
+
+    function gearBodyHtml(raw) {
+      return effectChipHtml(cardNoteHtml(raw), true);
     }
 
     function isStarterGear(item) {
@@ -14895,7 +14887,7 @@
 
     function legionTraitFor(who) {
       if (who === "スライム") return { name: "スライム粘液", cost: 1, text: "相手に毒+3を与える", poison: 3 };
-      if (who === "ゴブリン") return { name: "乱打", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true, hitAtk: 3 };
+      if (who === "ゴブリン") return { name: "トリプルアタック", cost: 2, text: "1ダメージを3回\n各段にATKを足す", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true, hitAtk: 3 };
       if (who === "物乞い") return { ...FOE_ONLY["泥棒"], name: "泥棒" };
       if (who === "ちびドラゴン") return { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill" };
       if (who === "コボルド") return { name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "skill", flash: true, spite: true };
@@ -15986,7 +15978,7 @@
       const pool = gearOfferPool().filter((item) => (Number(item.stars) || 0) >= 2);
       const list = pool.length ? pool : gearOfferPool();
       if (!list.length) return null;
-      const item = list[Math.floor(Math.random() * list.length)];
+      const item = pickRarityCard(list);
       noteApexGear(item);
       return { ...item };
     }
@@ -16030,10 +16022,10 @@
     const ENCHANT_ELEMS = ["fire", "water", "light", "dark"];
 
     function enchantFace(elem) {
-      if (elem === "water") return { name: "水のエンチャント", sub: "デッキのカード1枚のDEF+2", image: "enchant-water.jpg?v=1" };
-      if (elem === "light") return { name: "光のエンチャント", sub: "デッキのカード1枚のコスト-1", image: "enchant-light.jpg?v=1" };
+      if (elem === "water") return { name: "水のエンチャント", sub: "デッキのカード1枚にDEF+2付与", image: "enchant-water.jpg?v=1" };
+      if (elem === "light") return { name: "光のエンチャント", sub: "デッキのカード1枚にコスト-1付与", image: "enchant-light.jpg?v=1" };
       if (elem === "dark") return { name: "闇のエンチャント", sub: "デッキのカード1枚にランダムなキーワード付与", image: "enchant-dark.jpg?v=1" };
-      return { name: "火のエンチャント", sub: "デッキのカード1枚のATK+2", image: "enchant-fire.jpg?v=2" };
+      return { name: "火のエンチャント", sub: "デッキのカード1枚にATK+2付与", image: "enchant-fire.jpg?v=2" };
     }
 
     function darkWordLabel(id) {
@@ -17802,19 +17794,24 @@
 
     function rarityRows(cards) {
       const groups = new Map();
+      const bandCounts = new Map();
       for (const card of cards) {
         const stars = Math.max(1, Number(card.stars) || 1);
         const row = groups.get(stars) || { stars, names: [] };
         row.names.push(card.name);
         groups.set(stars, row);
+        const band = rarityBand(stars);
+        bandCounts.set(band, (bandCounts.get(band) || 0) + 1);
       }
       const rate = rarityBandRate(cards);
       return [...groups.values()].sort((a, b) => a.stars - b.stars).map((row) => {
-        const band = rate.get(rarityBand(row.stars)) || 0;
+        const band = rarityBand(row.stars);
+        const bandRate = rate.get(band) || 0;
+        const inBand = bandCounts.get(band) || row.names.length;
         return [
           "★".repeat(row.stars),
-          pct(band),
-          pct(row.names.length ? band / row.names.length : 0),
+          pct(bandRate),
+          pct(inBand ? bandRate / inBand : 0),
           row.names.join("、"),
         ];
       });
@@ -17864,7 +17861,7 @@
         return [name, pct(road), pct(boss)];
       });
       const blessNames = { maxhp: "最大HP+20", spd: "SPD+1", gear: "装備", card: "カード", enchant: "エンチャント" };
-      const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2).map((item) => item.name);
+      const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
         .concat(Object.keys(WARRIOR).filter((name) => !starterNames.has(name)))
@@ -17944,8 +17941,9 @@
             <h3>戦士</h3>
             ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(warriorReward))}
             <ul>
-              <li>装備は、腕輪を含む装備一覧から同じ確率です。★5の装備は、その攻略で一度報酬に出たら、その装備はもう出ません。</li>
+              <li>装備は、腕輪を含む装備一覧から、カードと同じく先にレアリティを引きます。★60%、★★30%、★★★以上10%です。当たった帯から均等です。その帯が無いときは、残りの比率で引き直します。★3以上の装備は、その攻略で一度並んだら、その装備はもう出ません。</li>
             </ul>
+            ${oddsTable(["★", "レアリティ", "1つの割合", "装備"], rarityRows(GEAR_ITEMS))}
             <h3>アイテム（先にレアリティ）</h3>
             ${oddsTable(["カード", "★", "レアリティ", "1枚の割合"], rarityShareRows(itemCards))}
             <h3>エンチャントの属性</h3>
@@ -17968,8 +17966,8 @@
               <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
-            <h3>装備（★2以上）</h3>
-            ${oddsChips(blessGear)}
+            <h3>装備（★2以上・先にレアリティ）</h3>
+            ${oddsTable(["★", "レアリティ", "1つの割合", "装備"], rarityRows(blessGear))}
             <h3>カード（★2以上・先にレアリティ）</h3>
             ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(blessCards.map((name) => {
               const def = COMMON[name] || WARRIOR[name] || {};
@@ -17980,9 +17978,9 @@
             <h2>そのほか</h2>
             ${oddsTable(["出来事", "出るもの"], [
               ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
-              ["探索", "装備を1つ。腕輪を含む装備一覧から同じ確率。★5は一度出たら、その攻略ではその装備は出ない"],
+              ["探索", "装備を1つ。先にレアリティ（★60%、★★30%、★★★以上10%）。当たった帯から均等。★3以上は一度並んだら、その攻略ではその装備は出ない"],
               ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。足りなければ戦士のカード。先にレアリティ（60/30/10）。もらったあと、未熟練の1枚が必要回数に達する"],
-              ["お店", "カード3枚と装備3つ。カードは先にレアリティ（60/30/10）。装備は腕輪を含む装備一覧から同じ確率。★5は一度出たら、その攻略ではその装備は出ない"],
+              ["お店", "カード3枚と装備3つ。カードも装備も先にレアリティ（60/30/10）。★3以上は一度並んだら、その攻略ではその装備は出ない"],
             ])}
           </section>
           ${menuButton("タイトルへ", "title")}
@@ -17991,7 +17989,7 @@
 
     function cardGenreRank(card) {
       const kind = cardKind(card);
-      const order = { attack: 0, block: 1, skill: 2, power: 3, gear: 4, foe: 5 };
+      const order = { attack: 0, block: 1, skill: 2, power: 3, gear: 4, boon: 5, foe: 6 };
       return order[kind] ?? 5;
     }
 
@@ -18645,7 +18643,14 @@
       }
       for (const [name, data] of Object.entries(FOE_ONLY)) push(name, data, "敵");
       for (const card of gearCardList()) push(card.name, card, "装備");
+      rewardAlbumCards().forEach((card, index) => push(card.name, { ...card, rewardOrder: index }, "祝福"));
       return list;
+    }
+
+    function rewardAlbumCards() {
+      return ["maxhp", "spd", "mana"].map((kind) => boonAsCard(kind)).concat(
+        ENCHANT_ELEMS.map((elem) => boonAsCard("enchant", elem)),
+      );
     }
 
     function clearArtZoom() {
@@ -18843,16 +18848,16 @@
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
-            <div class="ref-grid">
-              ${sheetFig("event-bless-v10.jpg?v=2", "祝福", "land-ref", "span-2")}
-              ${sheetFig("event-search.jpg?v=14", "探索", "land-ref", "span-2")}
-              ${sheetFig("event-fight.jpg?v=2", "戦闘", "land-ref", "span-2 path-series")}
-              ${sheetFig("event-beggar.jpg?v=2", "物乞い", "land-ref", "span-2")}
-              ${sheetFig("shop-merchant.jpg?v=8", "お店", "land-ref", "span-2")}
-              ${sheetFig("event-rest.jpg?v=11", "休憩", "land-ref", "span-2")}
-              ${sheetFig("event-job.jpg?v=14", "ジョブ", "land-ref", "span-2")}
-              ${sheetFig("event-train.jpg?v=8", "修行", "land-ref", "span-2")}
-              ${sheetFig("event-smith.jpg?v=1", "鍛冶屋", "land-ref", "span-2")}
+            <div class="ref-grid event-portrait-grid">
+              ${sheetFig("event-bless-v10.jpg?v=2", "祝福", "event-ref", "event-portrait")}
+              ${sheetFig("event-search.jpg?v=14", "探索", "event-ref", "event-portrait")}
+              ${sheetFig("event-fight.jpg?v=2", "戦闘", "event-ref", "event-portrait path-series")}
+              ${sheetFig("event-beggar.jpg?v=2", "物乞い", "event-ref", "event-portrait")}
+              ${sheetFig("shop-merchant.jpg?v=8", "お店", "event-ref", "event-portrait")}
+              ${sheetFig("event-rest.jpg?v=11", "休憩", "event-ref", "event-portrait")}
+              ${sheetFig("event-job.jpg?v=14", "ジョブ", "event-ref", "event-portrait")}
+              ${sheetFig("event-train.jpg?v=8", "修行", "event-ref", "event-portrait")}
+              ${sheetFig("event-smith.jpg?v=1", "鍛冶屋", "event-ref", "event-portrait")}
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
@@ -18888,7 +18893,7 @@
 
     function renderAlbum() {
       const catalog = albumCatalog();
-      const tabOrder = ["初期デッキ", "基本", "戦士", "共通", "装備", "敵"].filter(
+      const tabOrder = ["初期デッキ", "基本", "戦士", "共通", "装備", "祝福", "敵"].filter(
         (name) => name === "初期デッキ" || catalog.some((card) => card.klass === name),
       );
       if (!tabOrder.includes(albumTab) && albumTab !== "all" && albumTab !== "未採用") albumTab = "all";
@@ -19588,6 +19593,11 @@
       ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
       ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
       ["style-dark-purple", "暗めの紫", "frame-dark-purple.png?v=2"],
+      ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=1"],
+      ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=1"],
+      ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=1"],
+      ["style-plum-gold", "敵 ★★★", "frame-plum-gold.png?v=1"],
+      ["style-plum-black", "敵 ボス", "frame-plum-black.png?v=1"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -19614,11 +19624,13 @@
       ["敵", ["style-basic-foe", "style-navy-copper", "style-navy-silver", "style-navy-gold", "style-navy-black"]],
       ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
     ];
+    const FOE_PLUM = ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"];
     function cardStyleColumns(mode) {
       const byId = {};
       CARD_STYLE.forEach((item) => { byId[item[0]] = item; });
       return `<div class="style-genres">${STYLE_GENRES.map((group) => {
-        const items = group[1].map((id) => byId[id]).filter(Boolean);
+        const ids = mode === "album" && group[0] === "敵" ? FOE_PLUM : group[1];
+        const items = ids.map((id) => byId[id]).filter(Boolean);
         const body = mode === "sheet"
           ? items.map((item) => sheetFig(item[2], item[1], "style-master")).join("")
           : cardStyleSheet(items);
@@ -19856,6 +19868,7 @@
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
       noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
+      if (cardKind(card) === "boon") noteText = effectChipHtml(noteText, false);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
@@ -20534,6 +20547,9 @@
         const ca = Number(a.cost) || 0;
         const cb = Number(b.cost) || 0;
         if (ca !== cb) return ca - cb;
+        if (cardKind(a) === "boon" && cardKind(b) === "boon" && a.rewardOrder != null && b.rewardOrder != null) {
+          return a.rewardOrder - b.rewardOrder;
+        }
         return a.name.localeCompare(b.name, "ja");
       });
     }
@@ -20657,6 +20673,8 @@
       if (!card || !card.name) return card;
       let name = String(card.name);
       if (name === "アタック+" || name === "ブロック+") name = name.slice(0, -1);
+      if (name === "乱打" || name === "ゴブリンアタック" || name === "ゴブリンの乱打") name = "トリプルアタック";
+      if (name === "応急手当") name = "薬草";
       const known = cardDef(name);
       if (!known) return name === card.name ? card : { ...card, name };
       const text = String(card.text || "");
@@ -20724,6 +20742,8 @@
       if (card.coward) next.coward = true;
       if (card.note) next.note = card.note;
       if (card.hits) next.hits = card.hits;
+      if (card.atkEach) next.atkEach = true;
+      if (card.hitAtk != null) next.hitAtk = card.hitAtk;
       if (card.nextDraw) next.nextDraw = card.nextDraw;
       if (card.redTimes) next.redTimes = card.redTimes;
       if (card.counter) next.counter = card.counter;
@@ -20746,6 +20766,8 @@
       // 山札が名前だけのカードは、戦士・共通の定義を使う。ゴブリンのライフフルネスアタックがコスト0・無文になるのを防ぐ。
       let name = String(card.name || "");
       if (name === "アタック+" || name === "ブロック+") name = name.slice(0, -1);
+      if (name === "乱打" || name === "ゴブリンアタック" || name === "ゴブリンの乱打") name = "トリプルアタック";
+      if (name === "応急手当") name = "薬草";
       if (name === "アタック" || name === "ブロック") {
         return { ...keepCard({ name, ...CARDS[name], stars: 1 }), source: "敵" };
       }
@@ -20985,26 +21007,21 @@
       return null;
     }
 
-    function apexGearStar() {
-      return GEAR_ITEMS.reduce((max, item) => Math.max(max, Number(item.stars) || 0), 0);
-    }
-
     function noteApexGear(item) {
       if (!item || item.boss) return;
       const id = String(item.id || "");
       if (!id) return;
-      if ((Number(item.stars) || 0) < apexGearStar()) return;
+      if ((Number(item.stars) || 0) < 3) return;
       if (seenApexGear.indexOf(id) >= 0) return;
       seenApexGear.push(id);
     }
 
     function gearOfferPool() {
-      const cap = apexGearStar();
-      return GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) < cap || seenApexGear.indexOf(item.id) < 0);
+      return GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) < 3 || seenApexGear.indexOf(item.id) < 0);
     }
 
     function drawGearOffers(n) {
-      const picks = shuffle(gearOfferPool()).slice(0, Math.max(0, n));
+      const picks = takeRarityCards(gearOfferPool(), Math.max(0, n));
       picks.forEach(noteApexGear);
       return picks.map((item) => ({ ...item }));
     }
@@ -21304,7 +21321,7 @@
         }
         return "";
       }).join("");
-      const head = heading ? `<h2>${esc(heading)}</h2><p>所持 ★${have}</p><p>品は6つ。カード3つ、装備3つ。★5の装備は、一度出たらその攻略ではもう出ない。</p>` : `<p class="shop-have">所持 ★${have}</p>`;
+      const head = heading ? `<h2>${esc(heading)}</h2><p>所持 ★${have}</p><p>品は6つ。カード3つ、装備3つ。★3以上の装備は、一度並んだらその攻略ではもう出ない。</p>` : `<p class="shop-have">所持 ★${have}</p>`;
       return `${head}<div class="shop-row">${slots}</div>`;
     }
 
