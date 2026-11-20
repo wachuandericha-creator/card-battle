@@ -2480,7 +2480,7 @@
     .sheet-backs { max-width: 420px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .style-genres {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 8px 10px;
       margin: 0;
     }
@@ -11672,7 +11672,7 @@
     let blessCardName = "";
     let enchantPop = "";
     let floorHp = 30;
-    let runBonus = { hp: 0, spd: 0, mana: 0 };
+    let runBonus = { hp: 0, spd: 0, mana: 0, play: 0 };
     let runEntrance = false;
     let rewardReady = false;
     let rewardStars = 0;
@@ -11919,7 +11919,7 @@
     function syncEnemyAtk() {
       if (!enemy) return;
       const foe = enemyNow();
-      const anger = enemy.anger ? 2 : 0;
+      const anger = Math.max(0, Number(enemy.anger) || 0) * 2;
       const spite = enemy.spiteOn ? Math.max(0, Number(enemy.spite) || 0) : 0;
       enemy.atk = hiddenAtk(foe) + anger + spite;
     }
@@ -11986,7 +11986,7 @@
     function syncEnemyDef() {
       if (!enemy) return;
       const foe = enemyNow();
-      const angerCut = enemy.anger ? 2 : 0;
+      const angerCut = Math.max(0, Number(enemy.anger) || 0) * 2;
       enemy.def = hiddenDef(foe) - angerCut - (Number(enemy.defCut) || 0);
     }
 
@@ -12223,6 +12223,7 @@
       { id: "gear", stars: 3 },
       { id: "enchant", stars: 3 },
       { id: "spd", stars: 3 },
+      { id: "play", stars: 3 },
     ];
     const ENCOUNTER_BEGGAR = 0.5;
 
@@ -13443,7 +13444,7 @@
       return true;
     }
 
-    // SPDの枠を埋める。引けない枠は怒りが1回だけ代わりに入る。入ったあとに捨て札を山札へ戻し、残りの枠を引く。
+    // SPDの枠を埋める。山札が切れて引けない枠は、切れるたびに怒りが入る。処理後の怒りは山札にも捨て札にも戻らない。入ったあとに捨て札を山札へ戻し、残りの枠を引く。
     function buildFoePlan() {
       foePlan = [];
       const need = foeSpd();
@@ -13455,12 +13456,7 @@
           foePlan.push({ anger: false, card });
           continue;
         }
-        const angerAlready = !!(enemy && enemy.anger) || foePlan.some((step) => step.anger);
-        if (!angerAlready) {
-          foePlan.push({ anger: true, card: foeAngerCard() });
-          recycleDiscardToDeck();
-          continue;
-        }
+        foePlan.push({ anger: true, card: foeAngerCard() });
         if (!recycleDiscardToDeck()) break;
       }
       foeAngerShow = foePlan.some((step) => step.anger);
@@ -13495,12 +13491,7 @@
 
     function gainEnemyAnger() {
       if (!enemy) return;
-      const had = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
-      if (had >= 1) {
-        log(`${enemy.name}はすでに怒っている。`);
-        return;
-      }
-      enemy.anger = 1;
+      enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
       syncEnemyAtk();
       syncEnemyDef();
       fxFoeBuff = true;
@@ -14474,9 +14465,21 @@
       return false;
     }
 
+    const PLAY_AREA_BASE = 4;
+
+    function playAreaMax() {
+      return PLAY_AREA_BASE + Math.max(0, Number(runBonus && runBonus.play) || 0);
+    }
+
+    function playGloveBody(from) {
+      const now = Math.max(0, Number(from) || 0);
+      return `プレイエリア上限+1\n${now}→${now + 1}`;
+    }
+
     function cardPlayable(card) {
       if (!card) return false;
       if (masteryOffer) return false;
+      if (!playsImmediately(card) && inPlay.length >= playAreaMax()) return false;
       if ((Number(card.cost) || 0) > player.energy) return false;
       if (card.headbutt && !inPlay.length) return false;
       if (card.halfOnly && !hpHalf(player)) return false;
@@ -14494,6 +14497,11 @@
       if (player.energy < card.cost) {
         note = "";
         fxNoMana = true;
+        render();
+        return false;
+      }
+      if (!playsImmediately(card) && inPlay.length >= playAreaMax()) {
+        note = `プレイエリアは${playAreaMax()}枚まで`;
         render();
         return false;
       }
@@ -16088,7 +16096,7 @@
     function applySave(data) {
       runLevel = savedRunLevel(data);
       runBonus = data.runBonus && typeof data.runBonus === "object"
-        ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0 }
+        ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0, play: Number(data.runBonus.play) || 0 }
         : emptyRunBonus();
       cleared = !!data.cleared;
       runEnded = data.runEnded || (data.cleared ? "win" : null);
@@ -16118,7 +16126,7 @@
         player.hit = false;
         player.atk = player.atk || 0;
         player.def = player.def || 0;
-        player.maxHp = Math.max(runMaxHp(), Number(player.maxHp) || 30);
+        player.maxHp = Math.max(runMaxHp(), Number(player.maxHp) || 50);
         player.manaMod = Number(player.manaMod) || runBonus.mana || 0;
         player.spdMod = Number(player.spdMod) || runSpdBonus();
         if (player.hp > player.maxHp) player.hp = player.maxHp;
@@ -16159,7 +16167,7 @@
         enemy.thorns = Math.max(0, Number(enemy.thorns) || 0);
         enemy.halfSpdDone = !!enemy.halfSpdDone;
         enemy.spdBonus = Math.max(0, Number(enemy.spdBonus) || 0);
-        enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
         enemy.spiteOn = !!enemy.spiteOn;
         enemy.spite = Math.max(0, Number(enemy.spite) || 0);
         enemy.name = enemyKey(enemy.name);
@@ -16216,7 +16224,7 @@
       if (enemy && route[battleIndex] && !isEventNode(route[battleIndex])) {
         enemy.name = foeLabel();
         enemy.image = enemyNow().image;
-        enemy.anger = Math.min(1, Math.max(0, Number(enemy.anger) || 0));
+        enemy.anger = Math.max(0, Number(enemy.anger) || 0);
         enemy.spiteOn = !!enemy.spiteOn;
         enemy.spite = Math.max(0, Number(enemy.spite) || 0);
         syncEnemyAtk();
@@ -16382,7 +16390,7 @@
       return keepCard(pick);
     }
     function emptyRunBonus() {
-      return { hp: 0, spd: 0, mana: 0 };
+      return { hp: 0, spd: 0, mana: 0, play: 0 };
     }
 
     function runSpdBonus() {
@@ -16390,7 +16398,7 @@
     }
 
     function runMaxHp() {
-      const grown = Math.min(HP_CAP, 30 + Math.max(0, (Number(runLevel) || 1) - 1) * 3);
+      const grown = Math.min(HP_CAP, 50 + Math.max(0, (Number(runLevel) || 1) - 1) * 3);
       return grown + Math.max(0, Number(runBonus && runBonus.hp) || 0);
     }
 
@@ -16502,6 +16510,7 @@
         const kind = entry.id;
         if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
         else if (kind === "spd") picks.push({ kind, label: "SPD" });
+        else if (kind === "play") picks.push({ kind, label: "皮の手袋" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
         else if (kind === "enchant" && enchantTargets(true).length) {
@@ -16574,6 +16583,8 @@
           floorHp = runMaxHp();
         } else if (pick.kind === "spd") {
           runBonus.spd = (Number(runBonus.spd) || 0) + 1;
+        } else if (pick.kind === "play") {
+          runBonus.play = (Number(runBonus.play) || 0) + 1;
         } else if (!takeGift(pick)) {
           return;
         }
@@ -16941,6 +16952,7 @@
       if (!pick) return "";
       if (pick.kind === "maxhp") return "最大HP+20";
       if (pick.kind === "spd") return "手札の枚数+1";
+      if (pick.kind === "play") return "皮の手袋";
       if (pick.kind === "gear") return (pick.gear && pick.gear.name) || "装備";
       if (pick.kind === "card") return (pick.card && pick.card.name) || "カード";
       if (pick.kind === "enchant") {
@@ -17955,9 +17967,9 @@
     function fxPlate(id) {
       const foe = fxLabFoeDef();
       const heroBlock = id === "shield" ? 8 : 0;
-      const heroHp = id === "fatal" ? 0 : (id === "hurt" || id === "hurt-big" || id === "poison-tick" || id === "break" ? 18 : 30);
+      const heroHp = id === "fatal" ? 0 : (id === "hurt" || id === "hurt-big" || id === "poison-tick" || id === "break" ? 18 : 50);
       const heroThreat = id === "hurt" || id === "break" ? 6 : id === "hurt-big" ? 12 : id === "poison-tick" ? 3 : id === "fatal" ? 12 : 0;
-      const hero = plateMarkup("hero-plate", "player", heroName(), "", heroHp, 30, heroBlock, {
+      const hero = plateMarkup("hero-plate", "player", heroName(), "", heroHp, 50, heroBlock, {
         shieldFlash: id === "shield",
         break: id === "break",
         parry: id === "parry" ? 1 : 0,
@@ -18266,7 +18278,7 @@
         const boss = VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "手札の枚数+1", gear: "装備", card: "カード", enchant: "エンチャント" };
+      const blessNames = { maxhp: "最大HP+20", spd: "手札の枚数+1", gear: "装備", card: "カード", enchant: "エンチャント", play: "皮の手袋" };
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -19069,7 +19081,7 @@
     }
 
     function rewardAlbumCards() {
-      return ["maxhp", "spd", "mana"].map((kind) => boonAsCard(kind)).concat(
+      return ["maxhp", "spd", "play", "mana"].map((kind) => boonAsCard(kind)).concat(
         ENCHANT_ELEMS.map((elem) => boonAsCard("enchant", elem)),
       );
     }
@@ -19167,6 +19179,7 @@
     function blessGearOpts(kind, elem) {
       if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HP+20", stars: 1 };
       if (kind === "spd") return { slot: "spd", name: "手札の枚数+1", image: "reward-spd.jpg?v=1", body: "SPD+1", stars: 3 };
+      if (kind === "play") return { slot: "play", name: "皮の手袋", image: "reward-play.jpg?v=1", body: playGloveBody(PLAY_AREA_BASE), stars: 3 };
       if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナ+1", stars: 5 };
       const face = enchantFace(elem);
       return { slot: "enchant", name: face.name, image: face.image, body: face.sub, stars: 3, plain: true };
@@ -19199,7 +19212,7 @@
       const swords = GEAR_ITEMS.filter((item) => item.slot === "sword");
       const shields = GEAR_ITEMS.filter((item) => item.slot === "shield");
       const arms = GEAR_ITEMS.filter((item) => item.slot === "braceletAny" || item.slot === "braceletL" || item.slot === "braceletR");
-      const boons = ["maxhp", "spd", "mana"].map((kind) => {
+      const boons = ["maxhp", "spd", "play", "mana"].map((kind) => {
         const face = blessGearOpts(kind);
         return sheetGearBoonCard(face.slot, face);
       });
@@ -19586,6 +19599,7 @@
             : pick.kind === "gear"
               ? gearAsCard(pick.gear)
               : boonAsCard(pick.kind, pick.elem);
+          if (pick.kind === "play") card.text = playGloveBody(playAreaMax());
           const inner = `<div class="gift-pick">${rewardCardHtml(card)}</div>`;
           return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="bless-pick" data-bless="${i}">${rareFx(lv)}${inner}</button>`;
         })
@@ -19987,6 +20001,7 @@
       ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=20"],
       ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=4"],
       ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=2"],
+      ["style-basic-power", "パワー 基本", "frame-basic-power.png?v=1"],
       ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=20"],
       ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=20"],
       ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=20"],
@@ -20037,6 +20052,7 @@
       ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
       ["敵", ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"]],
       ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
+      ["パワー", ["style-basic-power"]],
     ];
     function cardStyleColumns(mode) {
       const byId = {};
@@ -20423,7 +20439,8 @@
       let take = null;
       for (const step of foePlan) {
         if (step.anger) {
-          if (!(enemy && enemy.anger)) foe.atk = (Number(foe.atk) || 0) + 2;
+          foe.atk = (Number(foe.atk) || 0) + 2;
+          foe.def = (Number(foe.def) || 0) - 2;
           continue;
         }
         let card = step.card;
@@ -20583,9 +20600,9 @@
     }
 
     function planCardFace(index) {
-      let angerAhead = false;
+      let angerAhead = 0;
       for (let i = 0; i < index; i += 1) {
-        if (foePlan[i] && foePlan[i].anger && !(enemy && enemy.anger)) angerAhead = true;
+        if (foePlan[i] && foePlan[i].anger) angerAhead += 1;
       }
       const step = foePlan[index];
       if (!step) return null;
@@ -20595,10 +20612,10 @@
       if (phase === "player" && enemy && enemy.spiteOn) {
         const cast = forecastTurn();
         const end = cast && cast.foeAtk != null ? Number(cast.foeAtk) : base;
-        const angerInPlan = foePlan.some((item) => item.anger) && !enemy.anger;
-        pending = end - base - (angerInPlan ? 2 : 0);
+        const angerInPlan = foePlan.filter((item) => item.anger).length;
+        pending = end - base - angerInPlan * 2;
       }
-      const atk = base + Math.max(0, pending) + (angerAhead ? 2 : 0);
+      const atk = base + Math.max(0, pending) + angerAhead * 2;
       return { ...step.card, previewAtk: atk };
     }
 
