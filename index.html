@@ -5880,7 +5880,7 @@
     .card .card-fit .nameplate .name {
       left: 23.438cqw;
       right: 6.5cqw;
-      top: 11.719cqw;
+      top: 11.27cqw;
       transform: translateY(-50%);
       padding: 1.05cqw 1.15cqw;
       overflow: hidden;
@@ -5893,17 +5893,42 @@
       line-height: 1;
       text-align: left;
       color: #fffef8;
-      -webkit-text-stroke: 1.2cqw #0a0806;
-      paint-order: stroke fill;
+      -webkit-text-stroke: 0;
+      paint-order: normal;
+      /* 縁は文字の影を円く重ねる。輪郭線だと「血」の右下のような鋭い角から棘が出る */
       text-shadow:
-        0.35cqw 0 0 #0a0806,
-        -0.35cqw 0 0 #0a0806,
-        0 0.35cqw 0 #0a0806,
-        0 -0.35cqw 0 #0a0806,
-        0.25cqw 0.25cqw 0 #0a0806,
-        -0.25cqw 0.25cqw 0 #0a0806,
-        0.25cqw -0.25cqw 0 #0a0806,
-        -0.25cqw -0.25cqw 0 #0a0806;
+        0.045em 0.000em 0.02em #0a0806,
+        0.042em 0.017em 0.02em #0a0806,
+        0.032em 0.032em 0.02em #0a0806,
+        0.017em 0.042em 0.02em #0a0806,
+        0.000em 0.045em 0.02em #0a0806,
+        -0.017em 0.042em 0.02em #0a0806,
+        -0.032em 0.032em 0.02em #0a0806,
+        -0.042em 0.017em 0.02em #0a0806,
+        -0.045em 0.000em 0.02em #0a0806,
+        -0.042em -0.017em 0.02em #0a0806,
+        -0.032em -0.032em 0.02em #0a0806,
+        -0.017em -0.042em 0.02em #0a0806,
+        -0.000em -0.045em 0.02em #0a0806,
+        0.017em -0.042em 0.02em #0a0806,
+        0.032em -0.032em 0.02em #0a0806,
+        0.042em -0.017em 0.02em #0a0806,
+        0.090em 0.000em 0.02em #0a0806,
+        0.083em 0.034em 0.02em #0a0806,
+        0.064em 0.064em 0.02em #0a0806,
+        0.034em 0.083em 0.02em #0a0806,
+        0.000em 0.090em 0.02em #0a0806,
+        -0.034em 0.083em 0.02em #0a0806,
+        -0.064em 0.064em 0.02em #0a0806,
+        -0.083em 0.034em 0.02em #0a0806,
+        -0.090em 0.000em 0.02em #0a0806,
+        -0.083em -0.034em 0.02em #0a0806,
+        -0.064em -0.064em 0.02em #0a0806,
+        -0.034em -0.083em 0.02em #0a0806,
+        -0.000em -0.090em 0.02em #0a0806,
+        0.034em -0.083em 0.02em #0a0806,
+        0.064em -0.064em 0.02em #0a0806,
+        0.083em -0.034em 0.02em #0a0806;
     }
     .card .card-fit .text {
       position: absolute;
@@ -7176,6 +7201,24 @@
         0 0 0 11px #ffe7a8,
         0 10px 28px rgba(0, 0, 0, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+    .title-run-actions > button.glow {
+      animation: none;
+      box-shadow:
+        0 0 0 3px rgba(255, 226, 160, 0.5),
+        0 0 18px 4px rgba(255, 196, 70, 0.95),
+        0 0 46px 12px rgba(255, 150, 30, 0.62),
+        0 10px 28px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .title-run-actions > button.primary.framed.glow {
+      box-shadow:
+        0 0 0 4px #120c09,
+        0 0 0 8px #ffe7a8,
+        0 0 22px 6px rgba(255, 210, 90, 0.95),
+        0 0 52px 14px rgba(255, 160, 40, 0.7),
+        0 10px 28px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .title-sub-actions {
       display: flex;
@@ -11305,9 +11348,7 @@
       捨て身の一撃: { cost: 1, stars: 1, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "14ダメージ\nパリィ+1を獲得", damage: 14, parry: true, kind: "attack" },
       臆病者の構え: { cost: 1, stars: 2, text: "ブロック4\nこの戦闘中、パリィ中でもシールドを獲得", block: 4, kind: "skill", coward: true },
-      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
       致命の一撃: { cost: 4, stars: 3, text: "30ダメージ\nこの戦闘中、パリィに成功するたびコスト-1", damage: 30, kind: "attack", finisher: true },
-      シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を獲得\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, stars: 3, text: "パリィ+3を獲得", kind: "block", parryAdd: 3 },
       諸刃の剣: { cost: 2, stars: 2, text: "28ダメージ\n次に受けるダメージが2倍", damage: 28, kind: "attack", doubleNext: true },
@@ -11316,13 +11357,29 @@
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
       自信過剰: { cost: 2, stars: 3, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
     };
+    const DEMON = {
+      悪魔の剣: { cost: 1, stars: 1, text: "悪魔化1\n6ダメージ\nこの戦闘中、すべての悪魔の剣のダメージ+3", damage: 6, kind: "attack" },
+      "悪魔剣・双斬": { cost: 2, stars: 2, text: "悪魔化2\n現在の悪魔の剣のダメージで2回攻撃する", kind: "attack" },
+      魔剣封印: { cost: 1, stars: 1, text: "手札の悪魔の剣1枚を戦闘中除外する\nそのダメージ+4のシールドを得る", kind: "block" },
+      血の呼び声: { cost: 1, stars: 1, text: "悪魔化1\n捨て札からカードを1枚手札に加える\nそれが悪魔の剣なら、このターンそのコスト-1", kind: "skill" },
+      鮮血の塗布: { cost: 0, stars: 1, text: "悪魔化3\nこの戦闘中、すべての悪魔の剣のダメージ+3", kind: "skill", quick: true },
+      血の饗宴: { cost: 2, stars: 2, text: "このターン、悪魔の剣で与えたダメージ分、HPを回復する", kind: "skill", flash: true },
+      血の契約: { cost: 1, stars: 2, text: "悪魔化3\n山札と捨て札から悪魔の剣を最大2枚まで手札に加える", kind: "skill" },
+      血の味: { cost: 0, stars: 3, text: "このターン悪魔の剣で敵を倒したとき\nデッキ内の悪魔の剣1枚の基本ダメージが永続で+2", kind: "skill", flash: true },
+      魔剣招来: { cost: 0, stars: 3, text: "悪魔化は最大HPの半分（切り捨て）\n山札と捨て札の悪魔の剣をすべて手札に加える\nこのターンそれらのコストを0にし、バーストを付与する", kind: "skill" },
+      呪われた鞘: { cost: 2, stars: 2, text: "悪魔の剣を使用したとき、捨て札ではなく山札の一番上に置く", kind: "skill" },
+      魔剣増殖: { cost: 2, stars: 3, text: "ターン開始時、手札に悪魔の剣を1枚生成する\nコスト0・フラッシュ", kind: "skill" },
+      悪魔二刀流: { cost: 2, stars: 3, text: "悪魔の剣を使うたび、追加で悪魔化1\n同じ対象にそのダメージをもう1回与える", kind: "skill" },
+    };
+    const KNIGHT = {
+      シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
+      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
+    };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
       パリィスラッシュ: "パリィ",
       臆病者の構え: "パリィ",
-      ガードブレイク: "パリィ",
       致命の一撃: "パリィ",
-      シールドアタック: "パリィ",
       ナイフパリィ: "パリィ",
       超集中: "パリィ",
       諸刃の剣: "パリィ",
@@ -11330,6 +11387,18 @@
       魔法のパリィ: "パリィ",
       クイックステップ: "パリィ",
       自信過剰: "パリィ",
+      悪魔の剣: "悪魔剣",
+      "悪魔剣・双斬": "悪魔剣",
+      魔剣封印: "悪魔剣",
+      血の呼び声: "悪魔剣",
+      鮮血の塗布: "悪魔剣",
+      血の饗宴: "悪魔剣",
+      血の契約: "悪魔剣",
+      血の味: "悪魔剣",
+      魔剣招来: "悪魔剣",
+      呪われた鞘: "悪魔剣",
+      魔剣増殖: "悪魔剣",
+      悪魔二刀流: "悪魔剣",
     };
     const COMMON = {
       怒り: { cost: 0, text: "ATK+2　DEF-2", kind: "skill", rage: true, flash: true },
@@ -12857,12 +12926,12 @@
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=5" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=8" },
       { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 3, atk: 5, ignoreTrait: true, effect: "★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=8" },
-      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、カードを1枚引く", image: "" },
-      { id: "rapier", name: "レイピア", slot: "sword", stars: 1, atk: 1, firstAttack: 3, effect: "★　ATK+1。毎ターン、最初に使うアタックのダメージ+3", image: "" },
-      { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "" },
-      { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "" },
-      { id: "tyrant-sword", name: "覇王の大剣", slot: "sword", stars: 3, atk: 6, oneAttack: true, attackBoost: true, effect: "★★★　ATK+6。1ターンにアタックは1枚。アタックのダメージは1.5倍（切り上げ）", image: "" },
-      { id: "demon-sword", name: "悪魔の剣", slot: "sword", stars: 3, atk: 7, turnHpLoss: 3, effect: "★★★　ATK+7。自分のターン開始時、HPを3失う", image: "" },
+      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、カードを1枚引く", image: "gear-hunter-dagger.jpg?v=1" },
+      { id: "rapier", name: "レイピア", slot: "sword", stars: 1, atk: 1, firstAttack: 3, effect: "★　ATK+1。毎ターン、最初に使うアタックのダメージ+3", image: "gear-rapier.jpg?v=1" },
+      { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=1" },
+      { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "gear-gale-sword.jpg?v=1" },
+      { id: "tyrant-sword", name: "覇王の大剣", slot: "sword", stars: 3, atk: 6, oneAttack: true, attackBoost: true, effect: "★★★　ATK+6。1ターンにアタックは1枚。アタックのダメージは1.5倍（切り上げ）", image: "gear-tyrant-sword.jpg?v=1" },
+      { id: "demon-sword", name: "悪魔の剣", slot: "sword", stars: 3, atk: 7, turnHpLoss: 3, effect: "★★★　ATK+7。自分のターン開始時、HPを3失う", image: "gear-demon-sword.jpg?v=1" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, parryDiscount: true, effect: "★　DEF+1。パリィを得るカードのコスト-1", image: "gear-buckler.jpg?v=4" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=4" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
@@ -19122,8 +19191,8 @@
             </div>
             <div class="title-actions">
             <div class="title-run-actions">
-              ${menuButton("攻略開始", "new", !openRunSave())}
-              ${openRunSave() ? menuButton("続きから", "continue", true, false, "framed") : ""}
+              ${menuButton("攻略開始", "new", !openRunSave(), false, openRunSave() ? "" : "glow")}
+              ${openRunSave() ? menuButton("続きから", "continue", true, false, "framed glow") : ""}
             </div>
             <div class="title-sub-actions">
               ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play", false, false, "", titleIcon(iphonePlay ? "monitor" : "phone"))}
@@ -20049,6 +20118,8 @@
       };
       for (const [name, data] of Object.entries(CARDS)) push(name, data, "基本");
       for (const [name, data] of Object.entries(WARRIOR)) push(name, data, "戦士");
+      for (const [name, data] of Object.entries(DEMON)) push(name, data, "戦士");
+      for (const [name, data] of Object.entries(KNIGHT)) push(name, data, "騎士");
       for (const [name, data] of Object.entries(COMMON)) push(name, data, "共通");
       for (const foe of ENEMIES) {
         for (const card of foe.pattern || []) {
@@ -20288,7 +20359,7 @@
     function renderAlbum() {
       if (albumTab === "初期デッキ") albumTab = "all";
       const catalog = albumCatalog();
-      const tabOrder = ["基本", "共通", "戦士", "敵", "装備", "祝福"].filter((name) =>
+      const tabOrder = ["基本", "共通", "戦士", "騎士", "敵", "装備", "祝福"].filter((name) =>
         catalog.some((card) => card.klass === name),
       );
       if (!tabOrder.includes(albumTab) && albumTab !== "all" && albumTab !== "未採用") albumTab = "all";
@@ -22128,7 +22199,7 @@
     }
 
     function cardDef(name) {
-      return CARDS[name] || WARRIOR[name] || COMMON[name] || FOE_ONLY[name] || gearCardByName(name) || null;
+      return CARDS[name] || WARRIOR[name] || KNIGHT[name] || DEMON[name] || COMMON[name] || FOE_ONLY[name] || gearCardByName(name) || null;
     }
 
     // 名前だけ、またはコスト0・本文なしで保存された札は、データベースの同名行で埋める。
