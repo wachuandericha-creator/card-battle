@@ -699,6 +699,7 @@
       max-height: 252px;
       max-width: 66%;
       transform: translateY(56px);
+      cursor: pointer;
     }
     .duel-mid .card.preview {
       width: auto;
@@ -1713,6 +1714,37 @@
       max-width: none;
       align-self: stretch;
       z-index: 8;
+      padding: 10px 14px 10px 18px;
+      border: 1px solid var(--gold-line);
+      border-radius: 12px;
+      background:
+        radial-gradient(120% 90% at 0% 0%, rgba(255, 232, 180, 0.08), transparent 55%),
+        linear-gradient(180deg, rgba(28, 22, 16, 0.98), rgba(8, 6, 5, 0.99));
+      box-shadow:
+        0 0 0 3px rgba(8, 6, 5, 0.95),
+        0 0 0 4px rgba(212, 168, 74, 0.4),
+        0 14px 24px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 232, 180, 0.14),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.65);
+    }
+    .foe-stack .trait-note::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #fff2d0 0%, #c89848 30%, #c89848 70%, rgba(0, 0, 0, 0.45) 100%);
+      box-shadow: 0 0 8px rgba(212, 168, 74, 0.35);
+    }
+    .foe-stack .trait-note::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 9px;
+      border: 1px solid rgba(212, 168, 74, 0.16);
+      pointer-events: none;
     }
     .trait-note.staged { opacity: 0; }
     .trait-note .trait-label { color: var(--gold); font-size: 13px; letter-spacing: 0.14em; }
@@ -1816,11 +1848,25 @@
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
     .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
+    .reward-extra .reward-pick { cursor: pointer; }
     .reward-extra .gift-show .card.preview { width: min(250px, 24cqw); height: auto; }
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 1px rgba(255, 244, 210, 0.9), 0 0 36px rgba(240, 195, 106, 0.62), 0 22px 36px rgba(0, 0, 0, 0.55); }
-    .overlay.victory .panel.wide.reward-panel { width: min(1240px, calc(100cqw - 40px)); padding: 36px 48px 32px; }
-    .reward-lead { font-size: 22px; font-weight: 800; color: #fff1c8; letter-spacing: 0.06em; }
-    .reward-lead.drop { font-size: 40px; letter-spacing: 0.08em; }
+    .overlay.victory .panel.wide.reward-panel {
+      width: min(1240px, calc(100cqw - 40px));
+      padding: 36px 48px 32px;
+      align-items: stretch;
+      text-align: left;
+    }
+    .reward-lead {
+      align-self: stretch;
+      margin: 12px 0 18px;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff1c8;
+      letter-spacing: 0.06em;
+    }
+    .reward-lead.drop { font-size: 40px; letter-spacing: 0.08em; text-align: center; }
     .reward-pick.gear-pick { width: min(250px, 24cqw); padding: 0; border: 0; background: none; color: var(--cream); }
     .gear-offer { width: min(250px, 24cqw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .gear-offer-card { width: min(240px, 100%); }
@@ -1872,6 +1918,80 @@
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
     .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 1.05s; }
     .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-hot; animation-duration: 1.28s; }
+    /* カード報酬のレアリティ演出。★★は銀の枠、★★★以上は金の枠。光ったあとも枠は残す */
+    .reward-pick.rare-2 .card.preview,
+    .gift-show.rare-2 .card.preview,
+    .gift-btn.rare-2 .card.preview,
+    .reward-pick.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview,
+    .gift-show.rare-3 .card.preview,
+    .gift-show.rare-4 .card.preview,
+    .gift-show.rare-5 .card.preview,
+    .gift-btn.rare-3 .card.preview,
+    .gift-btn.rare-4 .card.preview,
+    .gift-btn.rare-5 .card.preview {
+      animation-name: rare-frame;
+      animation-duration: 0.7s;
+    }
+    .reward-pick.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview,
+    .gift-show.rare-3 .card.preview,
+    .gift-show.rare-4 .card.preview,
+    .gift-show.rare-5 .card.preview,
+    .gift-btn.rare-3 .card.preview,
+    .gift-btn.rare-4 .card.preview,
+    .gift-btn.rare-5 .card.preview { animation-duration: 0.95s; }
+    .reward-pick.rare-2 .card.preview,
+    .gift-show.rare-2 .card.preview,
+    .gift-btn.rare-2 .card.preview {
+      box-shadow:
+        0 0 0 5px #f4f7fb,
+        0 0 0 9px #748294,
+        0 0 20px rgba(214, 226, 240, 0.9),
+        0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .reward-pick.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview,
+    .gift-show.rare-3 .card.preview,
+    .gift-show.rare-4 .card.preview,
+    .gift-show.rare-5 .card.preview,
+    .gift-btn.rare-3 .card.preview,
+    .gift-btn.rare-4 .card.preview,
+    .gift-btn.rare-5 .card.preview {
+      box-shadow:
+        0 0 0 5px #ffe9b0,
+        0 0 0 9px #a67a22,
+        0 0 24px rgba(255, 196, 70, 0.95),
+        0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .reward-pick.rare-2:hover .card.preview,
+    .gift-btn.rare-2:hover .card.preview {
+      box-shadow:
+        0 0 0 5px #ffffff,
+        0 0 0 9px #8ea0b4,
+        0 0 28px rgba(230, 238, 248, 1),
+        0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .reward-pick.rare-3:hover .card.preview,
+    .reward-pick.rare-4:hover .card.preview,
+    .reward-pick.rare-5:hover .card.preview,
+    .gift-btn.rare-3:hover .card.preview,
+    .gift-btn.rare-4:hover .card.preview,
+    .gift-btn.rare-5:hover .card.preview {
+      box-shadow:
+        0 0 0 5px #fff4cc,
+        0 0 0 9px #c4922e,
+        0 0 32px rgba(255, 210, 90, 1),
+        0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    @keyframes rare-frame {
+      0% { transform: scale(0.84); filter: brightness(2.4); box-shadow: 0 0 0 0 transparent; }
+      35% { transform: scale(1.08); filter: brightness(1.7); }
+      100% { transform: none; filter: none; }
+    }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
       18% { transform: scale(1.1); filter: brightness(1.9) drop-shadow(0 0 22px #fff) drop-shadow(0 0 46px var(--rare)); }
@@ -3559,7 +3679,7 @@
     @keyframes anger-aura {
       0% { opacity: 0; transform: scale(0.7); }
       32% { opacity: 1; transform: scale(1.06); }
-      100% { opacity: 0.2; transform: scale(1.18); }
+      100% { opacity: 0; transform: scale(1.18); }
     }
     .dmg-pop {
       position: absolute;
@@ -4368,6 +4488,16 @@
     .mana-read b span {
       display: block;
       transform: translateY(-1px);
+      color: #fffef8;
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      -webkit-text-stroke: 8px #120a06;
+      paint-order: stroke fill;
+      text-shadow:
+        0 4px 0 #120a06,
+        0 0 2px #120a06;
     }
     .mana-read.on {
       filter:
@@ -5582,11 +5712,18 @@
         1px -1px 0 #0a0806,
         -1px -1px 0 #0a0806;
     }
-    .card .fx.note .kw-line,
-    .card .fx.kw .kw-line { display: block; text-align: center; }
-    .card .fx.kw { display: block; width: 100%; }
-    .card .fx.note .kw-line + .kw-line,
-    .card .fx.kw .kw-line + .kw-line { margin-top: 0.12em; }
+    .card .fx.note .kw-line { display: block; text-align: center; }
+    .card .fx.note .kw-line + .kw-line { margin-top: 0.12em; }
+    .card .fx.kw {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+      align-items: baseline;
+      column-gap: 0.7em;
+      row-gap: 0.12em;
+      width: 100%;
+    }
+    .card .fx.kw .kw-line { display: inline; width: auto; max-width: 100%; min-width: 0; text-align: center; }
     .card .fx-row { display: flex; align-items: center; justify-content: center; gap: clamp(2px, 0.7cqw, 5px); width: 100%; }
     .card .text.has-kw { justify-content: flex-start; }
     /* レアリティの装飾枠。★★銀・★★★金は見せてもらった唐草をそのまま。差し色だけジャンル */
@@ -5658,6 +5795,7 @@
     .card .text .hint[data-word="フラッシュ"],
     .card .text .hint[data-word="バースト"] { color: #a67c00; }
     .card .text .hint[data-word="アイテム"] { color: #2f7a45; }
+    .card .text .hint[data-word="悪魔化"] { color: #9b1b3a; }
     /* 注釈の本文はカードの中には出さない（カードの外の .kw-tip に写す） */
     .hint i { display: none; }
     .kw-tip {
@@ -5897,38 +6035,54 @@
       paint-order: normal;
       /* 縁は文字の影を円く重ねる。輪郭線だと「血」の右下のような鋭い角から棘が出る */
       text-shadow:
-        0.045em 0.000em 0.02em #0a0806,
-        0.042em 0.017em 0.02em #0a0806,
-        0.032em 0.032em 0.02em #0a0806,
-        0.017em 0.042em 0.02em #0a0806,
-        0.000em 0.045em 0.02em #0a0806,
-        -0.017em 0.042em 0.02em #0a0806,
-        -0.032em 0.032em 0.02em #0a0806,
-        -0.042em 0.017em 0.02em #0a0806,
-        -0.045em 0.000em 0.02em #0a0806,
-        -0.042em -0.017em 0.02em #0a0806,
-        -0.032em -0.032em 0.02em #0a0806,
-        -0.017em -0.042em 0.02em #0a0806,
-        -0.000em -0.045em 0.02em #0a0806,
-        0.017em -0.042em 0.02em #0a0806,
-        0.032em -0.032em 0.02em #0a0806,
-        0.042em -0.017em 0.02em #0a0806,
-        0.090em 0.000em 0.02em #0a0806,
-        0.083em 0.034em 0.02em #0a0806,
-        0.064em 0.064em 0.02em #0a0806,
-        0.034em 0.083em 0.02em #0a0806,
-        0.000em 0.090em 0.02em #0a0806,
-        -0.034em 0.083em 0.02em #0a0806,
-        -0.064em 0.064em 0.02em #0a0806,
-        -0.083em 0.034em 0.02em #0a0806,
-        -0.090em 0.000em 0.02em #0a0806,
-        -0.083em -0.034em 0.02em #0a0806,
-        -0.064em -0.064em 0.02em #0a0806,
-        -0.034em -0.083em 0.02em #0a0806,
-        -0.000em -0.090em 0.02em #0a0806,
-        0.034em -0.083em 0.02em #0a0806,
-        0.064em -0.064em 0.02em #0a0806,
-        0.083em -0.034em 0.02em #0a0806;
+        0.040em 0.000em 0.02em #0a0806,
+        0.037em 0.015em 0.02em #0a0806,
+        0.028em 0.028em 0.02em #0a0806,
+        0.015em 0.037em 0.02em #0a0806,
+        0.000em 0.040em 0.02em #0a0806,
+        -0.015em 0.037em 0.02em #0a0806,
+        -0.028em 0.028em 0.02em #0a0806,
+        -0.037em 0.015em 0.02em #0a0806,
+        -0.040em 0.000em 0.02em #0a0806,
+        -0.037em -0.015em 0.02em #0a0806,
+        -0.028em -0.028em 0.02em #0a0806,
+        -0.015em -0.037em 0.02em #0a0806,
+        -0.000em -0.040em 0.02em #0a0806,
+        0.015em -0.037em 0.02em #0a0806,
+        0.028em -0.028em 0.02em #0a0806,
+        0.037em -0.015em 0.02em #0a0806,
+        0.080em 0.000em 0.02em #0a0806,
+        0.074em 0.031em 0.02em #0a0806,
+        0.057em 0.057em 0.02em #0a0806,
+        0.031em 0.074em 0.02em #0a0806,
+        0.000em 0.080em 0.02em #0a0806,
+        -0.031em 0.074em 0.02em #0a0806,
+        -0.057em 0.057em 0.02em #0a0806,
+        -0.074em 0.031em 0.02em #0a0806,
+        -0.080em 0.000em 0.02em #0a0806,
+        -0.074em -0.031em 0.02em #0a0806,
+        -0.057em -0.057em 0.02em #0a0806,
+        -0.031em -0.074em 0.02em #0a0806,
+        -0.000em -0.080em 0.02em #0a0806,
+        0.031em -0.074em 0.02em #0a0806,
+        0.057em -0.057em 0.02em #0a0806,
+        0.074em -0.031em 0.02em #0a0806,
+        0.120em 0.000em 0.02em #0a0806,
+        0.111em 0.046em 0.02em #0a0806,
+        0.085em 0.085em 0.02em #0a0806,
+        0.046em 0.111em 0.02em #0a0806,
+        0.000em 0.120em 0.02em #0a0806,
+        -0.046em 0.111em 0.02em #0a0806,
+        -0.085em 0.085em 0.02em #0a0806,
+        -0.111em 0.046em 0.02em #0a0806,
+        -0.120em 0.000em 0.02em #0a0806,
+        -0.111em -0.046em 0.02em #0a0806,
+        -0.085em -0.085em 0.02em #0a0806,
+        -0.046em -0.111em 0.02em #0a0806,
+        -0.000em -0.120em 0.02em #0a0806,
+        0.046em -0.111em 0.02em #0a0806,
+        0.085em -0.085em 0.02em #0a0806,
+        0.111em -0.046em 0.02em #0a0806;
     }
     .card .card-fit .text {
       position: absolute;
@@ -6475,7 +6629,8 @@
     }
     .ending-lose .ending-banner { color: #ffd2c4; text-shadow: 0 3px 0 #4a0c08, 0 0 18px rgba(0, 0, 0, 0.85); }
     .ending-lose {
-      grid-template-columns: minmax(220px, 28%) minmax(0, 1fr);
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
     }
     .ending-lose .ending-art {
       background:
@@ -6485,25 +6640,74 @@
     .ending-lose .ending-art .ending-pose {
       object-fit: contain;
       object-position: center center;
-      padding: 64px 16px 20px;
+      padding: 0;
       box-sizing: border-box;
     }
     .ending-lose .ending-banner {
-      font-size: clamp(28px, 3vw, 48px);
-      letter-spacing: 0.22em;
+      top: 8%;
+      font-size: clamp(42px, 6vw, 76px);
+      letter-spacing: 0.28em;
     }
     .ending-lose .ending-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      padding: 18px 28px 18px;
+      border-left: 0;
+      border-top: 2px solid #c45a48;
+    }
+    .ending-lose .ending-sheet {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       column-gap: 28px;
       align-content: start;
-      padding: 28px 32px 32px;
+    }
+    .ending-lose .ending-actions {
+      flex: none;
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .ending-lose .ending-actions button {
+      flex: 1 1 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-width: 0;
+      min-height: 88px;
+      padding: 14px 16px;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.3;
+      border-radius: 22px;
+      border: 1px solid rgba(240, 195, 106, 0.55);
+      background: rgba(14, 9, 6, 0.72);
+      color: #fff1d2;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+    .ending-lose .ending-actions button:hover {
+      border-color: #ffe6a8;
+      background: rgba(60, 38, 16, 0.78);
+      transform: translateY(-1px);
+    }
+    .ending-lose .ending-actions .btn-ico {
+      width: 1.05em;
+      height: 1.05em;
+      flex: none;
+      display: block;
     }
     .ending-lose .ending-lead,
     .ending-lose .end-chips,
     .ending-lose .ending-note,
-    .ending-lose .gear-offer-actions,
-    .ending-lose .ending-card > .end-block:last-of-type {
+    .ending-lose .ending-sheet > .end-block:last-of-type {
       grid-column: 1 / -1;
     }
     .ending-lose .ending-lead { font-size: 26px; }
@@ -6584,13 +6788,9 @@
     @media (max-width: 800px) {
       .ending { grid-template-columns: 1fr; grid-template-rows: 36vh minmax(0, 1fr); }
       .ending-card { border-left: 0; border-top: 2px solid #e4b15a; }
-      .ending-lose { grid-template-rows: 22vh minmax(0, 1fr); }
-      .ending-lose .ending-art .ending-pose { padding: 36px 8px 8px; }
-      .ending-lose .ending-card {
-        grid-template-columns: 1fr;
-        border-left: 0;
-        border-top: 2px solid #c45a48;
-      }
+      .ending-lose { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+      .ending-lose .ending-sheet { grid-template-columns: 1fr; }
+      .ending-lose .ending-actions button { min-height: 64px; font-size: 18px; padding: 10px 8px; gap: 8px; }
       .ending-lose .end-floors { columns: 1; }
     }
     .reward-top {
@@ -6724,14 +6924,26 @@
       max-height: calc(100cqh - 16px);
       padding: 22px 28px 24px;
     }
-    .overlay.paths h2 {
-      margin: 0 0 4px;
+    .overlay.paths h2.fade-sandwich {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+      margin: 0 0 8px;
       font-size: 52px;
-      letter-spacing: 0.2em;
       color: #ffe7a8;
     }
+    .overlay.paths h2.fade-sandwich > .fade-line {
+      flex: 1 1 40px;
+      width: auto;
+      max-width: 140px;
+      height: 2px;
+    }
+    .overlay.paths h2 .path-title { flex: 0 0 auto; letter-spacing: 0.2em; }
     .overlay.paths p { font-size: 22px; margin-bottom: 12px; }
     .overlay.paths .path-list { flex-wrap: nowrap; align-items: stretch; }
+    .overlay.paths .path-list:has(.path-route) { align-items: flex-end; }
     .overlay.paths .path-list button {
       container-type: inline-size;
       display: flex;
@@ -6759,8 +6971,66 @@
     .overlay.paths .path-list button.path-straight,
     .overlay.paths .path-list button.path-boss,
     .overlay.paths .path-list button.path-elite { --path-line: #e02020; }
-    .overlay.paths .path-list button.path-route { width: min(26cqw, 320px); }
-    .route-step { display: block; font-size: 16px; line-height: 1.35; }
+    .overlay.paths .path-list button.path-route {
+      width: min(28cqw, 300px);
+      aspect-ratio: auto;
+      height: auto;
+      max-height: none;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+      gap: 8px;
+    }
+    .route-letter {
+      flex: 0 0 auto;
+      color: #ffe7a8;
+      font-size: clamp(22px, 2cqw, 32px);
+      letter-spacing: 0.16em;
+      text-align: center;
+    }
+    .route-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .route-step {
+      --path-line: #e4b15a;
+      display: flex;
+      flex-direction: column;
+      border: 4px solid var(--path-line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #14110e;
+    }
+    .route-step.path-camp { --path-line: #1a6fe8; }
+    .route-step.path-straight,
+    .route-step.path-boss,
+    .route-step.path-elite { --path-line: #e02020; }
+    .route-step .route-floor {
+      padding: 4px 0 2px;
+      color: #ffe7a8;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+    .overlay.paths .path-list button.path-route .route-step .path-art {
+      flex: none;
+      height: 11cqh;
+      min-height: 64px;
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .route-step .route-name {
+      padding: 4px 6px 6px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+    }
     .overlay.paths .path-list button + button { margin-top: 0; }
     .overlay.paths .path-list button .path-name {
       flex: 0 0 auto;
@@ -6827,8 +7097,8 @@
       font-size: 0.92em;
       font-weight: 700;
     }
-    html.phone .overlay.paths .path-list button,
-    html.iphone-play .overlay.paths .path-list button {
+    html.phone .overlay.paths .path-list button:not(.path-route),
+    html.iphone-play .overlay.paths .path-list button:not(.path-route) {
       width: min(31%, 168px);
       border-width: 4px;
     }
@@ -7911,9 +8181,10 @@
       line-height: 1;
     }
     .overlay.paths .path-now {
-      margin: 8px 0 16px;
+      display: block;
+      margin: 4px 0 14px;
       width: 100%;
-      justify-content: center;
+      text-align: center;
     }
     .event-floor-call {
       position: fixed;
@@ -9037,6 +9308,18 @@
       filter: brightness(0.72);
       animation: depart-zoom 2.6s ease forwards;
     }
+    /* イベントや戦闘のあと、次の画面へ行くときの黒フェード */
+    .scene-fade {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: #000;
+      opacity: 0;
+      pointer-events: auto;
+      transition: opacity 0.26s ease;
+    }
+    .scene-fade.in { opacity: 1; }
+    .scene-fade.out { opacity: 0; transition-duration: 0.42s; }
     .depart-name {
       position: relative;
       z-index: 2;
@@ -11139,6 +11422,7 @@
     }
     html.phone .mana-read { width: 84px; height: 84px; }
     html.phone .mana-read b { width: 76px; height: 76px; font-size: 32px; }
+    html.phone .mana-read b span { font-size: 44px; -webkit-text-stroke-width: 5px; }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     html.phone .forecast { font-size: 11px; padding: 3px 7px; gap: 3px; margin: 0 3px; }
     html.phone .forecast b { font-size: 16px; }
@@ -11215,6 +11499,7 @@
     }
     html.phone.land .mana-read { width: 64px; height: 64px; }
     html.phone.land .mana-read b { width: 58px; height: 58px; font-size: 26px; }
+    html.phone.land .mana-read b span { font-size: 36px; -webkit-text-stroke-width: 4px; }
     html.phone.land .mana-orb { width: 28px; height: 100%; max-height: 40px; margin: 0; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
@@ -11271,10 +11556,11 @@
   <script>
     // 戦士の初期デッキ。共通の抽選は COMMON。
     const CARD_POOL = [
-      ["アタック", 4],
+      ["アタック", 3],
       ["ブロック", 4],
       ["チャージアタック", 1],
       ["パリィ", 1],
+      ["悪魔の剣", 1],
     ];
     const CARD_ART = {
       アタック: "card-attack-aura.jpg?v=2",
@@ -11344,18 +11630,20 @@
       ブロック: { cost: 1, text: "ブロック4", block: 4 },
     };
     const WARRIOR = {
-      パリィ: { cost: 2, stars: 1, text: "パリィ+1を獲得", parry: true, kind: "block", note: "敵からのダメージを1回だけ無効にする。重ねがけ可。ターン終了で消える。パリィ中はシールドを増やせず、持っているシールドはすべて消える。" },
+      パリィ: { cost: 2, stars: 1, text: "パリィ+1", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
+      ラッキーパリィ: { cost: 1, stars: 1, text: "パリィ+1", parry: true, kind: "block", flash: true, note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
       捨て身の一撃: { cost: 1, stars: 1, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
-      パリィスラッシュ: { cost: 3, stars: 2, text: "14ダメージ\nパリィ+1を獲得", damage: 14, parry: true, kind: "attack" },
+      見切り斬り: { cost: 1, stars: 1, text: "5ダメージ\n前のターンにダメージを受けていないなら追加で3ダメージ", damage: 5, kind: "attack", safeBonus: 3 },
+      パリィスラッシュ: { cost: 3, stars: 2, text: "14ダメージ\nパリィ+1", damage: 14, parry: true, kind: "attack" },
       臆病者の構え: { cost: 1, stars: 2, text: "ブロック4\nこの戦闘中、パリィ中でもシールドを獲得", block: 4, kind: "skill", coward: true },
-      致命の一撃: { cost: 4, stars: 3, text: "30ダメージ\nこの戦闘中、パリィに成功するたびコスト-1", damage: 30, kind: "attack", finisher: true },
-      ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1を獲得\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 3, stars: 3, text: "パリィ+3を獲得", kind: "block", parryAdd: 3 },
+      致命の一撃: { cost: 4, stars: 3, text: "30ダメージ\nこの戦闘中、パリィに成功するたびコスト-1\n0まで下がる", damage: 30, kind: "attack", finisher: true },
+      ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
+      超集中: { cost: 3, stars: 3, text: "パリィ+3\nこのターン、パリィに成功するたびATK+1＆DEF+1", kind: "block", parryAdd: 3, focusTurn: true },
       諸刃の剣: { cost: 2, stars: 2, text: "28ダメージ\n次に受けるダメージが2倍", damage: 28, kind: "attack", doubleNext: true },
-      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1を獲得", heal: 10, kind: "skill", masterOnce: true, flash: true },
-      魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中、状態異常にならない", kind: "skill", flash: true, magicParry: true },
+      達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1", heal: 10, kind: "skill", masterOnce: true, flash: true },
+      魔法のパリィ: { cost: 1, stars: 1, text: "この戦闘中、パリィ中は状態異常にならない", kind: "skill", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
-      自信過剰: { cost: 2, stars: 3, text: "パリィに成功するたび、ATK+1", kind: "skill", flash: true, pride: true },
+      自信過剰: { cost: 2, stars: 3, text: "この戦闘中、パリィに成功するたびATK+1", kind: "skill", flash: true, pride: true },
     };
     const DEMON = {
       悪魔の剣: { cost: 1, stars: 1, text: "悪魔化1\n6ダメージ\nこの戦闘中、すべての悪魔の剣のダメージ+3", damage: 6, kind: "attack" },
@@ -11373,7 +11661,7 @@
     };
     const KNIGHT = {
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
-      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る", kind: "skill", guardBreak: true },
+      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る\n割った数と同じダメージ\nATKは乗らない", kind: "skill", guardBreak: true },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
@@ -11387,6 +11675,7 @@
       魔法のパリィ: "パリィ",
       クイックステップ: "パリィ",
       自信過剰: "パリィ",
+      ラッキーパリィ: "パリィ",
       悪魔の剣: "悪魔剣",
       "悪魔剣・双斬": "悪魔剣",
       魔剣封印: "悪魔剣",
@@ -11655,6 +11944,24 @@
       (stageFloat || document.body).appendChild(node);
     }
 
+    function blackFade(run) {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce || document.querySelector(".depart") || document.querySelector(".scene-fade")) {
+        run();
+        return;
+      }
+      const veil = document.createElement("div");
+      veil.className = "scene-fade";
+      veil.setAttribute("aria-hidden", "true");
+      document.body.appendChild(veil);
+      requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
+      setTimeout(() => {
+        run();
+        requestAnimationFrame(() => veil.classList.add("out"));
+        setTimeout(() => { if (veil.parentNode) veil.remove(); }, 440);
+      }, 280);
+    }
+
     function placeAnchored(el, anchor, opt = {}) {
       const bounds = stageBox();
       const frame = anchor instanceof Element ? stageFrameOf(anchor) : stageFrameFromRect(anchor);
@@ -11696,13 +12003,14 @@
     let foeDiscard = [];
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
-    const PARRY_NOTE = "敵からのダメージを1回だけ無効にする。重ねがけ可。ターン終了で消える。パリィ中はシールドを増やせず、持っているシールドはすべて消える。";
+    const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。";
     const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。";
     const FLASH_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。戦闘終了時にデッキに戻る。戦闘中1回。";
     const BURST_NOTE = "プレイエリアに置かずに即座に処理する。効果処理後デッキから削除。";
     const QUICK_NOTE = "プレイエリアに置かずに即座に処理する。";
     const KEEP_NOTE = "使わなかったとき、手札に残る。使ったらプレイエリアに置く。";
     const ITEM_NOTE = "使わなかったときは手札に残る。使ったらすぐ処理し、デッキから削除する。キープであり、バースト。";
+    const demonizeNote = (n) => `悪魔に体力を${n}捧げる。`;
     let phase = "player";
     let encounter = false;
     let floorCall = false;
@@ -12498,8 +12806,10 @@
 
     function routeTypePool(floor) {
       const pool = ["straight", "search", "beggar", "camp", "train", "lost", "unknown"];
-      if (!shopLockedFloor(floor)) pool.push("shop", "smith");
-      if (eliteNames().length) pool.push("elite");
+      if (!shopLockedFloor(floor)) {
+        pool.push("shop", "smith");
+        if (eliteNames().length) pool.push("elite");
+      }
       return pool;
     }
 
@@ -12608,7 +12918,16 @@
       return fadeSandwichMarkup(`<span class="event-floor-num">${floorGlyph(floorNo())}</span>`, { tag: "small", className: "event-floor-mark" });
     }
     function pathFloorNowHtml() {
-      return fadeSandwichMarkup(`<span class="event-floor-num">${floorGlyph(nextFloorNumber())}</span>`, { tag: "p", className: "path-now" });
+      const now = floorNo();
+      let dest = [];
+      if (routeOffers.some((row) => row.length > 1) && routeOfferFloors.length) {
+        dest = routeOfferFloors.map((at) => (floorAt[at] != null ? Number(floorAt[at]) : null)).filter((n) => n != null);
+      }
+      if (!dest.length) dest = [nextFloorNumber()];
+      const first = dest[0];
+      const last = dest[dest.length - 1];
+      const go = first === last ? `${floorGlyph(first)}へ` : `${floorGlyph(first)}から${floorGlyph(last)}へ`;
+      return `<p class="path-now">現在${floorGlyph(now)}　${go}</p>`;
     }
     function eventFloorFlashHtml() {
       return `<div class="event-floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>現在 ${floorGlyph(floorNo())}</b>`, { tag: "div" })}</div>`;
@@ -12628,12 +12947,14 @@
     }
 
     function openBattleIntro() {
-      const eventFight = isEventBattle();
-      floorCall = !eventFight;
-      encounter = eventFight;
-      intentShown = false;
-      render();
-      timer = setTimeout(eventFight ? beginEncounter : showEncounter, eventFight ? 1600 : 1400);
+      blackFade(() => {
+        const eventFight = isEventBattle();
+        floorCall = !eventFight;
+        encounter = eventFight;
+        intentShown = false;
+        render();
+        timer = setTimeout(eventFight ? beginEncounter : showEncounter, eventFight ? 1600 : 1400);
+      });
     }
     function insertAhead(node) {
       const at = Math.min(Math.max(battleIndex + 1, 0), route.length);
@@ -12691,11 +13012,8 @@
       const blessing = route[0] === "出来事:祝福";
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const visited = state !== "ahead";
         const slotFixed = roadFixed(node, i);
-        const known = node
-          ? (visited || slotFixed || roadPlacedAhead(i))
-          : slotFixed;
+        const known = Boolean(node) || slotFixed;
         const face = known
           ? (node ? roadFace(node) : { src: "path-fight.jpg?v=5", label: "戦闘" })
           : { label: "" };
@@ -12714,7 +13032,7 @@
         const here = state === "now"
           ? `<span class="road-here-mark" aria-label="現在地"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.7 2 6 4.8 6 8.2c0 4.5 6 13.8 6 13.8s6-9.3 6-13.8C18 4.8 15.3 2 12 2zm0 5.4a2.7 2.7 0 1 1 0 5.4 2.7 2.7 0 0 1 0-5.4z" fill="currentColor"/></svg><b>現在地</b></span>`
           : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}">${here}${icon}${lock}<span class="road-cap">${capFloor}${name}</span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}" data-road="${i}">${here}${icon}${lock}<span class="road-cap">${capFloor}${name}</span></li>`;
       }).join("");
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
       return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol><button type="button" class="road-back" data-action="road-home" hidden>現在地に戻る</button></section>`;
@@ -12722,13 +13040,23 @@
 
     let roadHold = null;
     let roadGlide = false;
-    const PATH_FLY_MS = 1600;
+    const PATH_FLY_MS = 1100;
+    const PATH_SLIDE_MS = 2000;
+    let pathFlightFloors = [];
     let roadMotion = 0;
     let roadMotionToken = 0;
 
+    function roadAnchor(now) {
+      let prev = now.nextElementSibling;
+      while (prev && prev.classList.contains("pad")) prev = prev.nextElementSibling;
+      if (prev && prev.classList.contains("road-node")) return prev;
+      return now;
+    }
+
     function roadHomeTop(ol, now) {
+      const anchor = roadAnchor(now);
       const max = Math.max(0, ol.scrollHeight - ol.clientHeight);
-      const top = now.offsetTop + now.offsetHeight - ol.clientHeight;
+      const top = anchor.offsetTop + anchor.offsetHeight - ol.clientHeight;
       return Math.max(0, Math.min(max, top));
     }
 
@@ -12804,7 +13132,7 @@
         if (glide) {
           const from = roadHold && Number.isFinite(roadHold.top) ? roadHold.top : ol.scrollTop;
           setRoadScroll(ol, from);
-          glideRoad(ol, home);
+          glideRoad(ol, home, PATH_SLIDE_MS);
           return;
         }
         const same = roadHold && roadHold.index === battleIndex;
@@ -12928,7 +13256,7 @@
       { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 3, atk: 5, ignoreTrait: true, effect: "★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=8" },
       { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、カードを1枚引く", image: "gear-hunter-dagger.jpg?v=1" },
       { id: "rapier", name: "レイピア", slot: "sword", stars: 1, atk: 1, firstAttack: 3, effect: "★　ATK+1。毎ターン、最初に使うアタックのダメージ+3", image: "gear-rapier.jpg?v=1" },
-      { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=1" },
+      { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=2" },
       { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "gear-gale-sword.jpg?v=1" },
       { id: "tyrant-sword", name: "覇王の大剣", slot: "sword", stars: 3, atk: 6, oneAttack: true, attackBoost: true, effect: "★★★　ATK+6。1ターンにアタックは1枚。アタックのダメージは1.5倍（切り上げ）", image: "gear-tyrant-sword.jpg?v=1" },
       { id: "demon-sword", name: "悪魔の剣", slot: "sword", stars: 3, atk: 7, turnHpLoss: 3, effect: "★★★　ATK+7。自分のターン開始時、HPを3失う", image: "gear-demon-sword.jpg?v=1" },
@@ -12937,25 +13265,25 @@
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを獲得。", image: "gear-battle-counter.jpg?v=8" },
       { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 3, def: 5, statLock: true, effect: "★★★　DEF+5。ステータスが減少しない。炎上はDEFを下げるので無効。毒は入る", image: "gear-eagle-shield.jpg?v=7" },
-      { id: "sturdy-body", name: "頑強なボディ", slot: "shield", stars: 1, def: 0, sturdy: true, effect: "★　このターンに防御を使わなかったとき、自分のターン終了時にブロック7を得る", image: "" },
-      { id: "brother-shield", name: "弟印の盾", slot: "shield", stars: 2, def: 2, brother: 4, effect: "★★　DEF+2。HPダメージを受けたとき、HPを4回復", image: "" },
-      { id: "castle-shield", name: "キャッスルシールド", slot: "shield", stars: 3, def: 4, castle: true, effect: "★★★　DEF+4。自分のシールドが消えるとき、残りの半分（切り捨て）を残す", image: "" },
-      { id: "tyrant-shield", name: "覇王の盾", slot: "shield", stars: 3, def: 6, oneBlock: true, blockBoost: true, effect: "★★★　DEF+6。1ターンに防御は1枚。得るブロックは1.5倍（切り上げ）", image: "" },
-      { id: "aegis", name: "イージスシールド", slot: "shield", stars: 3, def: 4, aegis: true, effect: "★★★　DEF+4。各戦闘で、最初のHPダメージを1回だけ0にする", image: "" },
+      { id: "sturdy-body", name: "強靭な肉体", slot: "shield", stars: 1, def: 0, sturdy: true, effect: "★　このターンに防御を使わなかったとき、自分のターン終了時にブロック7を得る", image: "gear-sturdy-body.jpg?v=1" },
+      { id: "brother-shield", name: "弟印の盾", slot: "shield", stars: 2, def: 2, brother: 4, effect: "★★　DEF+2。HPダメージを受けたとき、HPを4回復", image: "gear-brother-shield.jpg?v=1" },
+      { id: "castle-shield", name: "キャッスルシールド", slot: "shield", stars: 3, def: 4, castle: true, effect: "★★★　DEF+4。自分のシールドが消えるとき、残りの半分（切り捨て）を残す", image: "gear-castle-shield.jpg?v=1" },
+      { id: "tyrant-shield", name: "覇王の盾", slot: "shield", stars: 3, def: 6, oneBlock: true, blockBoost: true, effect: "★★★　DEF+6。1ターンに防御は1枚。得るブロックは1.5倍（切り上げ）", image: "gear-tyrant-shield.jpg?v=1" },
+      { id: "aegis", name: "イージスシールド", slot: "shield", stars: 3, def: 4, aegis: true, effect: "★★★　DEF+4。各戦闘で、最初のHPダメージを1回だけ0にする", image: "gear-aegis.jpg?v=1" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 3, atk: 2, def: 2, atkInTrait: true, effect: "★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=6" },
       { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=9" },
       { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=8" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 2, effect: "★★　アクセサリー。ATK+2", image: "gear-power-bracelet.jpg?v=7" },
       { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=10" },
       { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=8" },
-      { id: "poison-ward", name: "毒無効の腕輪", slot: "braceletAny", stars: 1, poisonImmune: true, effect: "★　毒にならない", image: "" },
-      { id: "burn-ward", name: "炎上無効の腕輪", slot: "braceletAny", stars: 1, burnImmune: true, effect: "★　炎上にならない", image: "" },
-      { id: "charge-bracelet", name: "溜めの腕輪", slot: "braceletAny", stars: 1, charge: true, effect: "★　ターン終了時、余ったマナ1につき次のターンATK+2", image: "" },
-      { id: "vital-bracelet", name: "体力の腕輪", slot: "braceletAny", stars: 2, vital: true, effect: "★★　最大HP+20%（レベルと祝福のあと。切り上げ。1本につき）", image: "" },
-      { id: "cursed-bracelet", name: "呪われた腕輪", slot: "braceletAny", stars: 2, cursed: true, locked: true, effect: "★★　外せない。戦闘勝利時の最大HP上昇が無効。毎ターン開始時、ATK+1とDEF+1（その戦闘のあいだ残る）", image: "" },
-      { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "" },
+      { id: "poison-ward", name: "毒無効の腕輪", slot: "braceletAny", stars: 1, poisonImmune: true, effect: "★　毒にならない", image: "gear-poison-ward.jpg?v=1" },
+      { id: "burn-ward", name: "炎上無効の腕輪", slot: "braceletAny", stars: 1, burnImmune: true, effect: "★　炎上にならない", image: "gear-burn-ward.jpg?v=1" },
+      { id: "charge-bracelet", name: "溜めの腕輪", slot: "braceletAny", stars: 1, charge: true, effect: "★　ターン終了時、余ったマナ1につき次のターンATK+2", image: "gear-charge-bracelet.jpg?v=1" },
+      { id: "vital-bracelet", name: "体力の腕輪", slot: "braceletAny", stars: 2, vital: true, effect: "★★　最大HP+20%（レベルと祝福のあと。切り上げ。1本につき）", image: "gear-vital-bracelet.jpg?v=1" },
+      { id: "cursed-bracelet", name: "呪われた腕輪", slot: "braceletAny", stars: 2, cursed: true, locked: true, effect: "★★　外せない。戦闘勝利時の最大HP上昇が無効。毎ターン開始時、ATK+1とDEF+1（その戦闘のあいだ残る）", image: "gear-cursed-bracelet.jpg?v=1" },
+      { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "gear-demon-bracelet.jpg?v=1" },
       { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, pure: true, effect: "★★　プレイエリアのジャンルが揃っているとき、そのカードに書かれた数字を1.5倍（切り上げ）。クイックは関係ない", image: "" },
-      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはドロー+2、マナ+1", image: "" },
+      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはドロー+2、マナ+1", image: "gear-empty-bracelet.jpg?v=1" },
       { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　状態異常にならない", image: "" },
       { id: "tyrant-bracelet", name: "覇王の腕輪", slot: "braceletAny", stars: 3, twice: true, effect: "★★★　プレイエリアのカードが1枚だけのとき、その効果は2回。毒、回復、ドローも含む", image: "" },
       { id: "chain-bracelet", name: "連続の腕輪", slot: "braceletAny", stars: 3, tripleSecond: true, effect: "★★★　プレイエリアの1枠目と2枠目が同じカードなら、2枚目の効果は3倍。毒、回復、ドローも含む", image: "" },
@@ -13189,6 +13517,15 @@
       if (!gear.shield) return "shield";
       if (gear.dual === "shield" && !gear.shield2) return "shield2";
       return "shield";
+    }
+
+    function gearLandKey(item) {
+      if (!item || !gear || item.picture) return "";
+      if (item.dual || isAccessorySlot(item.slot)) return freeBraceletSlot() || "";
+      if (item.slot === "sword") return swordKeyForNew() || "";
+      if (item.slot === "shield") return shieldKeyForNew() || "";
+      if (item.slot === "relic" || item.loot) return "relic";
+      return item.slot || "";
     }
 
     function giveGear(item) {
@@ -13538,10 +13875,14 @@
       const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=6";
       const medalName = (gear && gear.medal && gear.medal.name) || "戦利品";
       const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
+      const relics = heldRelics().map((item) => {
+        const picture = item.image ? `<img src="${esc(item.image)}" alt="">` : `<span class="gear-mark">${medalIcon()}</span>`;
+        return `<button type="button" class="gear-slot filled" data-land="relic" data-relic="${esc(item.id)}" aria-label="${esc(item.name || "戦利品")}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item.name || "戦利品")}</span></button>`;
+      }).join("");
       const bootN = runSpdBonus();
       const boot = blessBootItem();
       const boots = Array.from({ length: bootN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "boot" ? (gearOpen === "boot" ? " open" : " hot") : ""}" data-gear="boot" aria-label="${esc(boot.name)}"><span class="gear-frame"><img src="${esc(boot.image)}" alt=""></span><span class="gear-label">${esc(boot.name)}</span></button>`).join("");
-      return `<div class="gear-board">${sword}${sword2}${shield}${shield2}${left}${right}${medals}${boots}</div>`;
+      return `<div class="gear-board">${sword}${sword2}${shield}${shield2}${left}${right}${medals}${relics}${boots}</div>`;
     }
 
     function gearSlotLabel(slotId) {
@@ -14386,6 +14727,7 @@
       player.parryHitThis = false;
       player.parryLast = false;
       player.knifeReflect = false;
+      player.focusTurn = 0;
       player.doubleNext = false;
       player.magicParry = false;
       player.pride = false;
@@ -14531,6 +14873,16 @@
         syncGearStats();
         fxBuff = true;
         log(`自信過剰。ATK${signed(player.atk)}。`);
+      }
+      const focusN = Math.max(0, Number(player.focusTurn) || 0);
+      if (focusN) {
+        player.atkMod = (Number(player.atkMod) || 0) + focusN;
+        if (!hasStatLock()) player.defMod = (Number(player.defMod) || 0) + focusN;
+        noteStatCard("atk", "超集中");
+        noteStatCard("def", "超集中");
+        syncGearStats();
+        fxBuff = true;
+        log(`超集中。ATK${signed(player.atk)}、DEF${signed(player.def)}。`);
       }
       if (player.shave && enemy) {
         enemy.defCut = (Number(enemy.defCut) || 0) + Number(player.shave);
@@ -15077,7 +15429,12 @@
       if (card.guardBreak) {
         const had = Math.max(0, Number(enemy.block) || 0);
         enemy.block = 0;
-        log(had ? `${heroName()}は${card.name}。${enemy.name}のシールド${had}をすべて割った。` : `${heroName()}は${card.name}。${enemy.name}にシールドは無かった。`, card);
+        if (!had) {
+          log(`${heroName()}は${card.name}。${enemy.name}にシールドは無かった。`, card);
+          return;
+        }
+        log(`${heroName()}は${card.name}。${enemy.name}のシールド${had}をすべて割った。`, card);
+        strike(card, had);
         return;
       }
       if (card.finisher) {
@@ -15086,6 +15443,10 @@
       }
       if (card.parryAdd) {
         gainParry(card, card.parryAdd);
+        if (card.focusTurn) {
+          player.focusTurn = (Number(player.focusTurn) || 0) + 1;
+          log(`${heroName()}は${card.name}。このターン、パリィに成功するたびATK+1、DEF+1。`, card);
+        }
         return;
       }
       if (card.knife) {
@@ -15612,40 +15973,18 @@
       });
     }
 
-    function playBuff(sprite) {
-      if (!sprite) return;
-      sprite.classList.remove("anger");
-      const old = sprite.querySelector(".anger-aura");
-      if (old) old.remove();
-      void sprite.offsetWidth;
-      sprite.classList.add("anger");
-      const aura = document.createElement("span");
-      aura.className = "anger-aura";
-      sprite.appendChild(aura);
-    }
-
-    function pulseFoeAnger() {
-      if (!foeAngerShow) return;
-      foeAngerShow = false;
-      playBuff(document.querySelector(".duel-side.foe .sprite"));
-    }
-
     function showFoePlay(play, gen) {
       if (gen != null && gen !== foeArriveGen) return;
       const wrap = play && play.closest(".play-card");
       if (wrap) wrap.classList.remove("await-draw");
-      const cards = [...document.querySelectorAll(".play-side.foe .play-card")];
-      const index = wrap ? cards.indexOf(wrap) : -1;
       const more = document.querySelector(".play-side.foe .play-card.await-draw");
       if (!more) foeArriveHide = false;
-      if (!more || (index >= 0 && foePlan[index] && foePlan[index].anger)) pulseFoeAnger();
     }
 
     function revealAllFoePlays(gen) {
       if (gen != null && gen !== foeArriveGen) return;
       document.querySelectorAll(".play-side.foe .play-card.await-draw").forEach((wrap) => wrap.classList.remove("await-draw"));
       foeArriveHide = false;
-      pulseFoeAnger();
     }
 
     function flyNextFoeCard() {
@@ -16386,7 +16725,7 @@
       const usedBlock = (player.blocksPlayed || 0) > 0 || inPlay.some((card) => cardKind(card) === "block");
       if (!poisoned && !usedBlock && anyShield("sturdy")) {
         gainBlock(7);
-        log(`${heroName()}は頑強なボディ。防御カードを使わなかったので、シールドを得た。`);
+        log(`${heroName()}は強靭な肉体。防御カードを使わなかったので、シールドを得た。`);
       }
       turnCall = "player";
       if (poisoned) {
@@ -16431,6 +16770,7 @@
       player.parryHitsThis = 0;
       player.parryHitThis = false;
       player.knifeReflect = false;
+      player.focusTurn = 0;
       if (parryCount(player) > 0) {
         player.parry = 0;
         log(`${heroName()}のパリィが、ターンの終わりに消失した。`);
@@ -16536,8 +16876,7 @@
         closeFightStep("lose");
         defeatSnap = captureDefeat();
         endRun(false);
-        screen = "defeat";
-        render();
+        blackFade(() => { screen = "defeat"; render(); });
         return;
       }
       if (kind === "win") {
@@ -16549,8 +16888,9 @@
         if (slain && runSlain.indexOf(slain) < 0) runSlain.push(slain);
         prepareReward();
         persistSave(true);
+        if (cleared) return;
       }
-      render();
+      blackFade(() => render());
     }
 
     function scheduleFinish(kind) {
@@ -16562,12 +16902,12 @@
       phase = "end";
       const guardKind = fxGuard;
       const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
-      const fatal = kind === "lose" && (fxFatal || fatalHold);
-      if (fatal) {
+      if (kind === "lose") {
         fxFatal = true;
         fatalHold = true;
       }
-      const fatalWait = fatal ? 3600 : 0;
+      const fatal = kind === "lose";
+      const fatalWait = fatal ? 11000 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       const wait = Math.max(720, drainMs(), playerNumber ? (fatal ? 3200 : 1850) : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, fatalWait, poisonWait);
       clearTimer();
@@ -17130,6 +17470,7 @@
         player.doubleNext = !!player.doubleNext;
         player.magicParry = !!player.magicParry;
         player.pride = !!player.pride;
+        player.focusTurn = Math.max(0, Number(player.focusTurn) || 0);
         player.spite = !!player.spite;
         player.shave = Math.max(0, Number(player.shave) || 0);
         player.masterOnce = !!player.masterOnce;
@@ -17302,7 +17643,7 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, spite: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -17879,9 +18220,11 @@
     }
 
     function enterFloorScreen() {
-      screen = "floor";
-      render();
-      if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+      blackFade(() => {
+        screen = "floor";
+        render();
+        if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+      });
     }
 
     function emptyRunSheet() {
@@ -18171,16 +18514,15 @@
       const after = win
         ? `最終★${finalStars}は、この攻略の記録だけ。次の攻略は★0から。`
         : `最終★${finalStars}は、この攻略の記録だけ。初期デッキに戻った。装備を失った。次の攻略は★0から。`;
+      const actions = win
+        ? `<div class="gear-offer-actions">${menuButton("カードリスト", "album")}${menuButton("キャラクター選択へ", "character", true)}</div>`
+        : `<div class="ending-actions">${menuButton("カードリスト", "album", false, false, "", titleIcon("cards"))}${menuButton("キャラクター選択", "character", false, false, "", titleIcon("cast"))}${menuButton("タイトルへ", "title", false, false, "", titleIcon("home"))}</div>`;
+      const body = win
+        ? `${runSheetHtml(win)}<p class="ending-note">${esc(after)}</p>${actions}`
+        : `<div class="ending-sheet">${runSheetHtml(false)}<p class="ending-note">${esc(after)}</p></div>${actions}`;
       return `<div class="ending ${win ? "ending-win" : "ending-lose"}">
         <div class="ending-art"><img class="ending-pose" src="${esc(art)}" alt=""><p class="ending-banner">${banner}</p></div>
-        <div class="ending-card">
-          ${runSheetHtml(win)}
-          <p class="ending-note">${esc(after)}</p>
-          <div class="gear-offer-actions">
-            ${menuButton("カードリスト", "album")}
-            ${menuButton("キャラクター選択へ", "character", true)}
-          </div>
-        </div>
+        <div class="ending-card">${body}</div>
       </div>`;
     }
 
@@ -18238,7 +18580,6 @@
       } else if (kind === "未知") {
         if (Math.random() < ENCOUNTER_BEGGAR) {
           floorKind = "物乞いに遭遇";
-          beggarGift = [];
           floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
           floorPrompt = "カードを削除できる。";
         } else {
@@ -18258,7 +18599,6 @@
         if (!trainPicks.length) floorPhase = "show";
       } else if (kind === "物乞い") {
         floorKind = "物乞いに遭遇";
-        beggarGift = [];
         beggarPick = -1;
         floorNote = "フードの物乞いが道をふさぎ、高価なカードを要求している。差し出した手は震え、目はこちらの札をうかがっている。腰には、きらりと光るものがある。";
         floorPrompt = "カードを削除できる。";
@@ -18471,7 +18811,7 @@
         cardMastery = Array.isArray(cardMastery) ? cardMastery : [];
       }
       const maxHp = runMaxHp();
-      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, spite: false, shave: 0, masterOnce: false };
+      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
       syncGearStats();
       floorHp = maxHp;
     }
@@ -18511,12 +18851,11 @@
       const gift = keepCard(card);
       removed.push(gift);
       beggarCut = true;
+      beggarGift = (beggarGift || []).concat(gift);
       if ((Number(card.stars) || 1) <= 2) {
-        beggarGift = [gift];
         beginBeggarFight();
         return;
       }
-      beggarGift = [];
       floorNote = "物乞いはカードを受け取ると、道を開けた。";
       floorPrompt = "";
       finishEvent();
@@ -18524,7 +18863,6 @@
 
     function skipBeggar() {
       if (floorKind !== "物乞いに遭遇") return;
-      beggarGift = [];
       beggarCut = true;
       finishEvent();
     }
@@ -18855,6 +19193,8 @@
       if (kind === "expand") return svg(`<path fill="currentColor" d="M3 3h7v2.6H5.6V10H3V3zm11 0h7v7h-2.6V5.6H14V3zM3 14h2.6v4.4H10V21H3v-7zm16 0h2v7h-7v-2.6h4.4V14z"/>`);
       if (kind === "key") return svg(`<circle cx="8" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 12h9.2M16.2 12v3.2M19.2 12v2.2"/>`);
       if (kind === "cards") return svg(`<rect x="8" y="3" width="12" height="16" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="6" width="12" height="16" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/>`);
+      if (kind === "cast") return svg(`<circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5.5 19.2c1.2-3.2 3.5-4.8 6.5-4.8s5.3 1.6 6.5 4.8"/>`);
+      if (kind === "home") return svg(`<path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 11.2 12 4l8 7.2V20H4z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M10 20v-6h4v6"/>`);
       if (kind === "foe") return svg(`<circle cx="12" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8.2 10.2v1.4M15.8 10.2v1.4M9 14.4c.8.9 1.8 1.3 3 1.3s2.2-.4 3-1.3"/><path fill="currentColor" d="M8 5.2 9.4 2.4 11 5.4zM16 5.2 14.6 2.4 13 5.4z"/>`);
       if (kind === "frame") return svg(`<rect x="3" y="4" width="18" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="9" r="1.3" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 15.5 8 11l3 2.6 3.5-4.2L21 16"/>`);
       if (kind === "dice") return svg(`<rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.35" fill="currentColor"/><circle cx="12" cy="12" r="1.35" fill="currentColor"/><circle cx="16" cy="16" r="1.35" fill="currentColor"/>`);
@@ -19954,6 +20294,29 @@
       return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview foe">${cardFace(card, false, true)}</div></button>`).join("");
     }
 
+    function hidePlayZoom() {
+      const pop = root.querySelector(".cast-card-pop.play-zoom");
+      if (pop) pop.remove();
+    }
+
+    function showFoePlayZoom(play) {
+      const cards = [...document.querySelectorAll(".play-side.foe .play-card")];
+      const key = String(cards.indexOf(play));
+      const old = root.querySelector(".cast-card-pop.play-zoom");
+      if (old && old.dataset.playZoom === key) {
+        old.remove();
+        return;
+      }
+      if (old) old.remove();
+      const face = play.querySelector(".card");
+      if (!face) return;
+      const pop = document.createElement("div");
+      pop.className = "cast-card-pop cast-card-pop--enlarge play-zoom";
+      pop.dataset.playZoom = key;
+      pop.appendChild(face.cloneNode(true));
+      root.appendChild(pop);
+    }
+
     function showFoeStarterCard(button) {
       const key = button.dataset.deckI || "";
       const old = root.querySelector(".cast-card-pop");
@@ -20278,6 +20641,8 @@
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front-v2.png?v=1", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-demon-half.png?v=2", "半悪魔化", "cut-ref")}
+              ${sheetFig("girl-demon-full.png?v=2", "完全悪魔化", "cut-ref")}
+              ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
@@ -20555,24 +20920,24 @@
       return esc(path.text);
     }
 
-    function pathChoiceTitle() {
-      return routeOffers.some((row) => row.length > 1) ? "3階分の道を選ぶ" : "道を選ぶ";
+    function pathHeadHtml() {
+      return fadeSandwichMarkup(`<span class="path-title">道を選べ</span>`, { tag: "h2" });
     }
 
     function pathButtonsHtml() {
       if (routeOffers.some((row) => row.length > 1)) {
+        const letters = ["A", "B", "C"];
         return routeOffers.map((cells, index) => {
           const first = cells[0];
-          const path = PATHS[first];
-          if (!path) return "";
-          const picture = path.image ? `<img src="${path.image}" alt="">` : "";
-          const lines = cells.map((id, step) => {
+          if (!PATHS[first]) return "";
+          const steps = cells.map((id, step) => {
             const face = PATHS[id];
             const at = routeOfferFloors[step];
-            const floor = at != null && floorAt[at] != null ? floorAt[at] : at;
-            return `<span class="route-step">${floor ? `${floor}F ` : ""}${esc(face ? face.name : id)}</span>`;
-          }).join("");
-          return `<button type="button" class="path-route path-${first}" data-action="reward-path" data-route="${index}" data-path="${first}"><b class="path-name">ルート</b><span class="path-art">${picture}</span><span class="path-text">${lines}</span></button>`;
+            const floor = at != null && floorAt[at] != null ? Number(floorAt[at]) : "";
+            const picture = face && face.image ? `<img src="${face.image}" alt="">` : "";
+            return `<span class="route-step path-${id}"><span class="route-floor">${floor !== "" ? floorGlyph(floor) : ""}</span><span class="path-art">${picture}</span><span class="route-name">${esc(face ? face.name : id)}</span></span>`;
+          }).reverse().join("");
+          return `<button type="button" class="path-route" data-action="reward-path" data-route="${index}" data-path="${first}"><b class="route-letter">ルート${letters[index] || index + 1}</b><span class="route-stack">${steps}</span></button>`;
         }).join("");
       }
       const ids = rewardPaths || [];
@@ -20605,7 +20970,7 @@
     function renderFloor() {
       if (floorPhase === "paths") {
         if (player && enemy) renderBattle();
-        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide"><h2>${pathChoiceTitle()}</h2>${pathFloorNowHtml()}${pathListHtml()}</div></div></div>`);
+        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathFloorNowHtml()}${pathListHtml()}</div></div></div>`);
         runEntrance = false;
         return;
       }
@@ -20947,6 +21312,7 @@
           const limitBot = rect.bottom - padBot + 1;
           return [...box.querySelectorAll(".fx, .fx-row, .ico, b, .nobr")].some((el) => {
             const r = el.getBoundingClientRect();
+            if (r.height >= 1 && el.scrollWidth > el.clientWidth + 1) return true;
             return r.height >= 1 && (r.top < limitTop || r.bottom > limitBot);
           });
         };
@@ -21369,7 +21735,20 @@
       const kwLine = (word, note, key) => `<span class="kw-line hint" data-word="${esc(key || word)}">${word}<i>${esc(note)}</i></span>`;
       const keywords = [];
       const item = isItemCard(card);
-      let noteText = cardNoteHtml(rawNote);
+      let body = rawNote;
+      const bodyLines = body.split("\n");
+      const head = (bodyLines[0] || "").trim();
+      const demonFixed = /^悪魔化(\d+)$/u.exec(head);
+      const demonHalf = head === "悪魔化は最大HPの半分（切り捨て）";
+      let demonKw = "";
+      if (demonFixed || demonHalf) {
+        const label = demonHalf ? head : `悪魔化${demonFixed[1]}`;
+        const note = demonHalf ? "その分、悪魔に体力を捧げる。" : demonizeNote(demonFixed[1]);
+        demonKw = kwLine(label, note, "悪魔化");
+        bodyLines.shift();
+        body = bodyLines.join("\n");
+      }
+      let noteText = cardNoteHtml(body);
       const hintWord = (text, word, note) => {
         if (!word || !note || !text.includes(word)) return text;
         return text.replaceAll(word, `<span class="hint" data-word="${esc(word)}">${word}<i>${esc(note)}</i></span>`);
@@ -21379,14 +21758,16 @@
       noteText = hintWord(noteText, "毒", POISON_NOTE);
       noteText = hintWord(noteText, "炎上", BURN_NOTE);
       noteText = noteText.replace(/クリティカル\d+%/g, (word) => `<span class="hint" data-word="クリティカル">${word}<i>${esc(CRIT_NOTE)}</i></span>`);
+      noteText = noteText.replace(/悪魔化(\d+)/gu, (word, n) => `<span class="hint" data-word="悪魔化">${word}<i>${esc(demonizeNote(n))}</i></span>`);
       if (cardKind(card) === "boon" && !/エンチャント/.test(String(card.name || ""))) noteText = effectChipHtml(noteText, false);
       noteText = colorStatWords(noteText);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
-      if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
-      if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
+      if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
+      if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
+      if (demonKw) keywords.push(demonKw);
       const icons = [
         showAttack ? `<span class="fx attack">${swordIcon()}<b>${shown}</b></span>` : "",
         showBlock ? `<span class="fx block">${shieldIcon()}<b>${shownBlock}</b></span>` : "",
@@ -21589,7 +21970,9 @@
         return;
       }
       if (card.guardBreak) {
+        const had = Math.max(0, Number(foe.block) || 0);
         foe.block = 0;
+        if (had) scratchStrike(foe, give, had);
         return;
       }
       if (card.finisher) {
@@ -21796,7 +22179,7 @@
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "deal") calls.push(`<div class="turn-call player" aria-hidden="true"><b>${Math.max(1, Number(turn) || 1)}ターン目！</b></div>`);
       else if (turnNow === "player" || turnNow === "enemy") calls.push(`<div class="turn-call ${turnNow}" aria-hidden="true"><b>${turnNow === "player" ? "自分のターン" : "敵のターン"}</b></div>`);
-      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">止め</div>`);
+      if (fatalNow) calls.push(`<div class="fatal-call" aria-hidden="true">You are Dead</div>`);
       if (!calls.length) return "";
       return `<div class="stage-fx">${calls.join("")}</div>`;
     }
@@ -22202,6 +22585,24 @@
       return CARDS[name] || WARRIOR[name] || KNIGHT[name] || DEMON[name] || COMMON[name] || FOE_ONLY[name] || gearCardByName(name) || null;
     }
 
+    function fillItemFlags(card, known) {
+      if (!card || !known) return card;
+      if (card.manaNow == null && known.manaNow) card.manaNow = known.manaNow;
+      if (card.areaNow == null && known.areaNow) card.areaNow = known.areaNow;
+      if (card.flatBlock == null && known.flatBlock) card.flatBlock = known.flatBlock;
+      if (card.battleAtk == null && known.battleAtk) card.battleAtk = known.battleAtk;
+      if (card.battleDef == null && known.battleDef) card.battleDef = known.battleDef;
+      if (!card.cleanse && known.cleanse) card.cleanse = true;
+      if (!card.smoke && known.smoke) card.smoke = true;
+      if (!card.itemHit && known.itemHit) card.itemHit = true;
+      if (!card.pierce && known.pierce) card.pierce = true;
+      if (!card.curseDoll && known.curseDoll) card.curseDoll = true;
+      if (!card.mirror && known.mirror) card.mirror = true;
+      if (!card.starDouble && known.starDouble) card.starDouble = true;
+      if (!card.transmute && known.transmute) card.transmute = true;
+      return card;
+    }
+
     // 名前だけ、またはコスト0・本文なしで保存された札は、データベースの同名行で埋める。
     // 本文がある0コスト（クイックステップ、怒り、さぼる）と、コストがある空本文（ツインアタック）はそのまま。
     function completeCard(card) {
@@ -22215,7 +22616,10 @@
       const text = String(card.text || "");
       const costMissing = card.cost == null || card.cost === "";
       const stripped = !text && (costMissing || (Number(card.cost) === 0 && Number(known.cost) > 0));
-      if (!stripped) return name === card.name ? card : { ...card, name };
+      if (!stripped) {
+        fillItemFlags(card, known);
+        return name === card.name ? card : { ...card, name };
+      }
       const keep = {};
       for (const key of ["source", "copyNth", "enchant", "mastered", "fused", "boss", "image"]) {
         if (card[key] != null && card[key] !== "") keep[key] = card[key];
@@ -22297,6 +22701,19 @@
       if (card.boss) next.boss = true;
       if (card.legion) next.legion = true;
       if (card.starter) next.starter = true;
+      if (card.cleanse) next.cleanse = true;
+      if (card.flatBlock) next.flatBlock = card.flatBlock;
+      if (card.smoke) next.smoke = true;
+      if (card.itemHit) next.itemHit = true;
+      if (card.pierce) next.pierce = true;
+      if (card.curseDoll) next.curseDoll = true;
+      if (card.battleAtk) next.battleAtk = card.battleAtk;
+      if (card.battleDef) next.battleDef = card.battleDef;
+      if (card.manaNow) next.manaNow = card.manaNow;
+      if (card.areaNow) next.areaNow = card.areaNow;
+      if (card.mirror) next.mirror = true;
+      if (card.starDouble) next.starDouble = true;
+      if (card.transmute) next.transmute = true;
       next.stars = card.unrated || basicCardName(card.name) ? 0 : (card.stars || 1);
       return next;
     }
@@ -22530,7 +22947,7 @@
         screen = "floor";
       }
       persistSave(true);
-      render();
+      blackFade(() => render());
       return true;
     }
 
@@ -22935,13 +23352,18 @@
       return `${head}<div class="shop-row">${slots}</div>`;
     }
 
-    function flyRewardCardToDeck(made) {
+    function flyRewardHome(made, land, relicId) {
       if (!made || !made.ghost) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         made.ghost.remove();
         return;
       }
-      const dest = document.querySelector('[data-pile="deck"] .pile-card');
+      let dest = null;
+      if (land === "deck") dest = document.querySelector('[data-pile="deck"] .pile-card');
+      else if (land === "relic" && relicId) {
+        const id = window.CSS && CSS.escape ? CSS.escape(relicId) : relicId;
+        dest = document.querySelector(`[data-land="relic"][data-relic="${id}"]`);
+      } else if (land) dest = document.querySelector(`[data-gear="${land}"]`);
       if (!dest) {
         made.ghost.remove();
         return;
@@ -22973,6 +23395,10 @@
       });
       ghost.addEventListener("transitionend", finish, { once: true });
       setTimeout(finish, 700);
+    }
+
+    function flyRewardCardToDeck(made) {
+      flyRewardHome(made, "deck");
     }
 
     function captureRewardCardFlight(selector) {
@@ -23024,28 +23450,52 @@
       return !!(victoryGear || victoryItem || (victoryEnchant && victoryEnchant.elem));
     }
 
+    function placeVictoryGear(item) {
+      if (!item || item.picture) return { land: "", relicId: "" };
+      if (!gear) gear = emptyGear();
+      const land = gearLandKey(item);
+      const relicId = land === "relic" ? item.id : "";
+      const pendingDual = gearDualOffer;
+      const placed = giveGear(item);
+      if (isRelic(item)) noteLootSeen(item.id);
+      if (!placed || (gearDualOffer && gearDualOffer !== pendingDual)) return { land: "", relicId: "" };
+      return { land, relicId };
+    }
+
     function grantHeldExtra() {
-      if (victoryGear && !victoryGear.picture) {
-        if (!gear) gear = emptyGear();
-        giveGear(victoryGear);
-        if (isRelic(victoryGear)) noteLootSeen(victoryGear.id);
-      }
+      if (victoryGear && !victoryGear.picture) placeVictoryGear(victoryGear);
       if (victoryItem) stolen.push(victoryItem);
       victoryGear = null;
       victoryItem = null;
     }
 
-    function takeVictoryExtra() {
-      if (rewardStep !== "extra") return;
-      if (victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
-        victoryEnchant.name = "";
-        enchantPop = "victory";
+    function collectHeldFlights() {
+      const flights = [];
+      if (victoryGear) {
+        const flight = captureRewardCardFlight('[data-extra="gear"] .card');
+        const placed = placeVictoryGear(victoryGear);
+        victoryGear = null;
+        flights.push({ flight, land: placed.land, relicId: placed.relicId });
+      }
+      if (victoryItem) {
+        const flight = captureRewardCardFlight('[data-extra="item"] .card');
+        stolen.push(victoryItem);
+        victoryItem = null;
+        flights.push({ flight, land: "deck", relicId: "" });
+      }
+      return flights;
+    }
+
+    function playExtraFlights(flights) {
+      (flights || []).forEach((row) => flyRewardHome(row.flight, row.land, row.relicId));
+    }
+
+    function finishVictoryExtra() {
+      if (hasVictoryExtra()) {
         persistSave(true);
         render();
         return;
       }
-      grantHeldExtra();
-      victoryEnchant = null;
       dropLine = "";
       if (lootChoice) {
         lootChoice.after = "victory";
@@ -23059,6 +23509,48 @@
         return;
       }
       offerPathsOrAdvance();
+    }
+
+    function takeVictoryExtraKind(kind) {
+      if (rewardStep !== "extra") return;
+      if (kind === "enchant") {
+        if (victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+          victoryEnchant.name = "";
+          enchantPop = "victory";
+          persistSave(true);
+          render();
+        }
+        return;
+      }
+      const flights = [];
+      if (kind === "gear" && victoryGear) {
+        const flight = captureRewardCardFlight('[data-extra="gear"] .card');
+        const placed = placeVictoryGear(victoryGear);
+        victoryGear = null;
+        flights.push({ flight, land: placed.land, relicId: placed.relicId });
+      } else if (kind === "item" && victoryItem) {
+        const flight = captureRewardCardFlight('[data-extra="item"] .card');
+        stolen.push(victoryItem);
+        victoryItem = null;
+        flights.push({ flight, land: "deck", relicId: "" });
+      } else return;
+      finishVictoryExtra();
+      playExtraFlights(flights);
+    }
+
+    function takeVictoryExtra() {
+      if (rewardStep !== "extra") return;
+      if (!(victoryGear || victoryItem) && victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+        takeVictoryExtraKind("enchant");
+        return;
+      }
+      const flights = collectHeldFlights();
+      if (victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+        victoryEnchant.name = "";
+        enchantPop = "victory";
+      }
+      finishVictoryExtra();
+      playExtraFlights(flights);
     }
 
     function confirmVictoryEnchant() {
@@ -23072,7 +23564,7 @@
       const face = enchantFace(elem);
       const added = word ? `　${word}` : "";
       log(`${heroName()}は${name}に${face.name}を付けた。${face.sub}${added}。`);
-      grantHeldExtra();
+      const flights = collectHeldFlights();
       victoryEnchant = null;
       dropLine = "";
       enchantPop = "";
@@ -23080,15 +23572,18 @@
         lootChoice.after = "victory";
         persistSave(true);
         render();
+        playExtraFlights(flights);
         return;
       }
       if (masteryOffer && masteryOffer.source === "relic") {
         persistSave(true);
         render();
+        playExtraFlights(flights);
         return;
       }
       persistSave(true);
       offerPathsOrAdvance();
+      playExtraFlights(flights);
     }
 
     function skipVictoryExtra() {
@@ -23117,7 +23612,7 @@
       cleared = true;
       endRun(true);
       screen = "clear";
-      render();
+      blackFade(() => render());
     }
 
     // 最後のボスより先は階を足さない。袋の残りや補充で30Fが続かない。
@@ -23170,12 +23665,20 @@
         screen = "floor";
       }
       persistSave(true);
-      render();
+      blackFade(() => render());
     }
 
     function takeRoute(index) {
       const cells = (routeOffers[index] || []).slice();
       if (!cells.length || rewardStep !== "paths") return;
+      const floors = routeOfferFloors.slice();
+      pathFlightFloors = floors.slice();
+      cells.forEach((id, at) => {
+        if (at === 0) return;
+        const slot = floors[at];
+        if (slot == null || route[slot]) return;
+        route[slot] = pathPreviewNode(id);
+      });
       pendingRoute = cells.slice(1);
       pathFlightKey = String(index);
       routeOffers = [];
@@ -23211,7 +23714,7 @@
         screen = "floor";
       }
       persistSave(true);
-      render();
+      blackFade(() => render());
     }
 
     function finishEvent() {
@@ -23232,7 +23735,7 @@
         cleared = true;
         endRun(true);
         screen = "clear";
-        render();
+        blackFade(() => render());
         return;
       }
       battleIndex = next;
@@ -23323,29 +23826,71 @@
 
     function commitPath(place, step) {
       rewardStep = "done";
+      roadGlide = true;
       if (place) place();
       advance(step);
       schedulePlaceRoad();
+    }
+
+    function pathPreviewNode(id) {
+      const named = pathNode(id);
+      if (named) return named;
+      if (id === "boss") return DUNGEON.boss;
+      if (id === "elite") return "強敵:";
+      if (id === "unknown" || id === "lost") return "出来事:未知";
+      return "戦闘";
+    }
+
+    function pathToneOf(id) {
+      if (id === "camp") return "rest";
+      if (id === "straight" || id === "boss" || id === "elite") return "fight";
+      return "other";
     }
 
     function capturePathShot(id) {
       const button = pathFlightKey
         ? document.querySelector(`[data-action="reward-path"][data-route="${pathFlightKey}"]`)
         : document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
-      const img = button && button.querySelector("img");
       if (button) {
         document.querySelectorAll(".overlay.paths .path-list button").forEach((el) => {
           el.classList.toggle("path-chosen", el === button);
           el.classList.toggle("path-dismiss", el !== button);
         });
       }
-      if (!img) return null;
-      return { frame: stageFrameOf(img), src: img.getAttribute("src") || "" };
+      const steps = button ? [...button.querySelectorAll(".route-step")] : [];
+      if (steps.length > 1) {
+        return steps.map((step, domIndex) => {
+          const cell = steps.length - 1 - domIndex;
+          const img = step.querySelector("img");
+          const pathId = ([...step.classList].find((name) => name.startsWith("path-")) || "").slice(5);
+          const name = step.querySelector(".route-name");
+          return {
+            frame: stageFrameOf(img || step),
+            src: img ? img.getAttribute("src") || "" : "",
+            label: name ? name.textContent : "",
+            roadIndex: pathFlightFloors[cell],
+            tone: pathToneOf(pathId),
+          };
+        }).filter((shot) => shot.src && shot.roadIndex != null);
+      }
+      const img = button && button.querySelector("img");
+      if (!img) return [];
+      return [{
+        frame: stageFrameOf(img),
+        src: img.getAttribute("src") || "",
+        label: PATHS[id] ? PATHS[id].name : "",
+        roadIndex: battleIndex + 1,
+        tone: pathToneOf(id),
+      }];
+    }
+
+    function visibleRoadMap() {
+      const maps = [...document.querySelectorAll(".road-map")];
+      return maps.find((el) => el.offsetWidth > 0 && el.offsetHeight > 0) || maps[0] || null;
     }
 
     function pathLandNode() {
-      const maps = [...document.querySelectorAll(".road-map")];
-      const map = maps.find((el) => el.offsetWidth > 0 && el.offsetHeight > 0) || maps[0];
+      const map = visibleRoadMap();
       if (!map) return null;
       const now = map.querySelector(".road-node.now");
       if (!now) return null;
@@ -23400,10 +23945,16 @@
       setTimeout(finish, 780);
     }
 
-    function flyPathIntoMap(shot, done, onLand) {
+    function roadNodeAt(index) {
+      const map = visibleRoadMap();
+      if (!map || index == null) return null;
+      return map.querySelector(`[data-road="${index}"]`);
+    }
+
+    function flyOnePath(shot, done) {
       let settled = false;
       let ghost = null;
-      let dest = null;
+      const dest = roadNodeAt(shot.roadIndex) || pathLandNode();
       const finish = () => {
         if (settled) return;
         settled = true;
@@ -23414,13 +23965,10 @@
             dest.classList.add(`tone-${shot.tone}`);
           }
         }
-        if (onLand && dest) onLand(dest);
         if (dest) dest.classList.remove("path-inbound");
         if (ghost && ghost.parentNode) ghost.remove();
         done();
       };
-      placeRoad("instant");
-      dest = pathLandNode();
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || !shot || !shot.frame || !dest || !("animate" in Element.prototype)) {
         finish();
@@ -23434,10 +23982,6 @@
         return;
       }
       dest.classList.add("path-inbound");
-      const shift = glidePathRoads(dest, PATH_FLY_MS);
-      const land = stageRotated()
-        ? { ...to, cx: to.cx + shift, left: to.left + shift }
-        : { ...to, cy: to.cy + shift, top: to.top + shift };
       ghost = document.createElement("div");
       ghost.className = "path-flyer";
       ghost.setAttribute("aria-hidden", "true");
@@ -23450,18 +23994,31 @@
       ghost.style.width = `${from.w}px`;
       ghost.style.height = `${from.h}px`;
       mountFloat(ghost);
-      const dx = land.cx - from.cx;
-      const dy = land.cy - from.cy;
-      const arc = Math.max(56, Math.min(170, Math.abs(dx) * 0.2 + 48));
+      const dx = to.cx - from.cx;
+      const dy = to.cy - from.cy;
+      const arc = Math.max(36, Math.min(120, Math.abs(dx) * 0.16 + 28));
       const sx = Math.max(0.16, to.w / from.w);
       const sy = Math.max(0.16, to.h / from.h);
       const anim = ghost.animate([
-        { transform: "translate(-50%, -50%) scale(1.06)", opacity: 1, offset: 0 },
-        { transform: `translate(calc(-50% + ${dx * 0.34}px), calc(-50% + ${dy * 0.18 - arc}px)) scale(0.74)`, opacity: 1, offset: 0.46 },
+        { transform: "translate(-50%, -50%) scale(1.04)", opacity: 1, offset: 0 },
+        { transform: `translate(calc(-50% + ${dx * 0.55}px), calc(-50% + ${dy * 0.4 - arc}px)) scale(0.72)`, opacity: 1, offset: 0.55 },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${sx}, ${sy})`, opacity: 1, offset: 1 },
-      ], { duration: PATH_FLY_MS, easing: "cubic-bezier(0.18, 0.74, 0.16, 1)", fill: "forwards" });
+      ], { duration: PATH_FLY_MS, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "forwards" });
       anim.onfinish = finish;
-      setTimeout(finish, PATH_FLY_MS + 120);
+      setTimeout(finish, PATH_FLY_MS + 80);
+    }
+
+    function flyPathIntoMap(shots, done) {
+      const list = (Array.isArray(shots) ? shots : shots ? [shots] : []).filter((shot) => shot && shot.src);
+      if (!list.length) {
+        done();
+        return;
+      }
+      let left = list.length;
+      list.forEach((shot) => flyOnePath(shot, () => {
+        left -= 1;
+        if (left <= 0) done();
+      }));
     }
 
     function fadePathBoard(done) {
@@ -23488,9 +24045,9 @@
     }
 
     function beginPathFlight(id, place, step, extra) {
-      const shot = capturePathShot(id);
+      const shots = capturePathShot(id);
+      pathFlightFloors = [];
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const onLand = extra && extra.onLand;
       const afterLand = extra && extra.afterLand;
       rewardStep = "lifting";
       const go = () => {
@@ -23498,16 +24055,10 @@
           ? document.querySelector(`[data-action="reward-path"][data-route="${pathFlightKey}"]`)
           : document.querySelector(`[data-action="reward-path"][data-path="${id}"]`);
         pathFlightKey = "";
-        const img = button && button.querySelector("img");
-        const named = PATHS[id];
-        const tone = id === "camp" ? "rest" : (id === "straight" || id === "boss" || id === "elite" ? "fight" : "other");
-        const live = img
-          ? { frame: stageFrameOf(img), src: img.getAttribute("src") || "", label: named ? named.name : "", tone }
-          : (shot ? { ...shot, label: named ? named.name : "", tone } : shot);
         if (button) button.style.visibility = "hidden";
         rewardStep = "flying";
         requestAnimationFrame(() => requestAnimationFrame(() => {
-          flyPathIntoMap(live, () => {
+          flyPathIntoMap(shots, () => {
             const next = () => {
               fadePathBoard(() => {
                 commitPath(place, step);
@@ -23515,10 +24066,10 @@
             };
             if (afterLand && !reduce) afterLand(next);
             else next();
-          }, onLand);
+          });
         }));
       };
-      if (shot && !reduce) setTimeout(go, 280);
+      if (shots.length && !reduce) setTimeout(go, 180);
       else go();
     }
 
@@ -23709,22 +24260,40 @@
 
     function victoryLead() {
       const n = Math.max(1, Number(rewardStars) || 1);
-      return `勝利報酬として${"★".repeat(n)}とカードを獲得。`;
+      return `報酬として★x${n}とカードを獲得!!`;
+    }
+
+    function victoryDropWord(item) {
+      if (!item) return "";
+      if (item.picture || isRelic(item)) return "戦利品";
+      return gearSlotLabel(item.slot);
+    }
+
+    function victoryDropLine() {
+      const words = [];
+      if (victoryGear) words.push(victoryDropWord(victoryGear));
+      if (victoryItem) words.push("アイテム");
+      if (victoryEnchant && victoryEnchant.elem) words.push("エンチャント");
+      const named = words.filter(Boolean);
+      const body = named.length > 1 ? named.join("と") : (named[0] || "アイテム");
+      return `敵が${body}をドロップした!!`;
     }
 
     function victoryExtraHtml(hot) {
       const bits = [];
-      if (victoryGear) bits.push(giftMarkup({ kind: "gear", gear: victoryGear }, true, hot));
-      if (victoryItem) bits.push(giftMarkup({ kind: "card", card: victoryItem }, true, hot));
-      if (victoryEnchant && victoryEnchant.elem) bits.push(`<button type="button" class="reward-pick gear-pick" data-action="reward-extra-next">${giftMarkup(victoryEnchant, true, hot)}</button>`);
+      const pick = (kind, inner) => `<button type="button" class="reward-pick gear-pick" data-action="reward-extra-take" data-extra="${kind}">${inner}</button>`;
+      if (victoryGear) bits.push(pick("gear", giftMarkup({ kind: "gear", gear: victoryGear }, true, hot)));
+      if (victoryItem) bits.push(pick("item", giftMarkup({ kind: "card", card: victoryItem }, true, hot)));
+      if (victoryEnchant && victoryEnchant.elem) bits.push(pick("enchant", giftMarkup(victoryEnchant, true, hot)));
       if (!bits.length) return "";
-      return `<p class="reward-lead drop">敵がアイテムをドロップした!!</p><div class="reward-extra">${bits.join("")}</div>`;
+      return `<p class="reward-lead drop">${esc(victoryDropLine())}</p><div class="reward-extra">${bits.join("")}</div>`;
     }
 
     function rewardPickButtons(list, action) {
       const ordered = list.map((card, i) => ({ card, i })).sort((a, b) => Number(a.card.source === "敵") - Number(b.card.source === "敵"));
       return ordered.map(({ card, i }) => {
-        return `<button type="button" class="reward-pick" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
+        const lv = rareLevel(card);
+        return `<button type="button" class="reward-pick${rareClass(lv)}" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
       }).join("");
     }
 
@@ -23877,7 +24446,7 @@
 
     function rewardOverlay() {
       if (choosingPath()) {
-        return `<div class="overlay paths"><div class="panel wide"><h2>${pathChoiceTitle()}</h2>${pathFloorNowHtml()}${pathListHtml()}</div></div>`;
+        return `<div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathFloorNowHtml()}${pathListHtml()}</div></div>`;
       }
       if (outcome !== "win") return "";
       if (masteryOffer || lootChoice) return "";
@@ -23893,7 +24462,8 @@
         const ordered = bossPicks.map((pick, i) => ({ pick, i })).sort((a, b) => Number(a.pick.kind === "card" && a.pick.card && a.pick.card.source === "敵") - Number(b.pick.kind === "card" && b.pick.card && b.pick.card.source === "敵"));
         const picks = ordered.map(({ pick, i }) => {
           if (pick.kind === "card" && pick.card) {
-            return `<button type="button" class="reward-pick" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
+            const lv = rareLevel(pick.card);
+            return `<button type="button" class="reward-pick${rareClass(lv)}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
@@ -24246,6 +24816,7 @@
       const rightGap = field.clientWidth - foeVisRight;
       let place = Math.round(rightGap - leftGap);
       if (stature === "small") place = Math.round(place * 0.35);
+      if (foeSrc.includes("enemy-minotaur")) place += 48;
       main.style.marginLeft = `${place}px`;
       if (body) {
         body.style.transformOrigin = "";
@@ -24525,6 +25096,13 @@
     root.addEventListener("click", (event) => {
       const el = event.target instanceof Element ? event.target : event.target.parentElement;
       if (!el) return;
+      const foePlay = el.closest(".battle-screen .play-side.foe .play-card");
+      if (foePlay && !foePlay.classList.contains("await-draw")) {
+        event.stopPropagation();
+        showFoePlayZoom(foePlay);
+        return;
+      }
+      if (root.querySelector(".cast-card-pop.play-zoom")) hidePlayZoom();
       if (el.classList.contains("foe-starter")) { closeFoeStarter(); return; }
       const action = el.closest("[data-action]");
       if (action) {
@@ -24825,6 +25403,7 @@
         if (name === "reward-boss") takeBossPick(Number(action.dataset.reward));
         if (name === "reward-skip") skipReward();
         if (name === "reward-extra-next") takeVictoryExtra();
+        if (name === "reward-extra-take") takeVictoryExtraKind(action.dataset.extra || "");
         if (name === "reward-extra-skip") skipVictoryExtra();
         if (name === "reward-path") {
           action.classList.add("path-picked");
