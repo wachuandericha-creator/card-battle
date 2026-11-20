@@ -449,21 +449,6 @@
       gap: 6px;
       width: max-content;
     }
-    .status-stars {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
-      color: var(--gold);
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-align: center;
-      white-space: nowrap;
-      line-height: 1;
-      pointer-events: none;
-    }
     .hud-actions {
       grid-column: 3;
       display: flex;
@@ -815,7 +800,7 @@
       z-index: 6;
       box-sizing: border-box;
       width: min(340px, 46%);
-      padding: 10px 14px 10px 18px;
+      padding: 10px 14px 0 18px;
       border-radius: 12px;
       border: 1px solid var(--gold-line);
       background:
@@ -1051,6 +1036,46 @@
       letter-spacing: 0.22em;
       color: #e4eef8;
       text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.9);
+    }
+    .battle-plate .demon-row {
+      position: relative;
+      height: 14px;
+      margin-top: 5px;
+      border-radius: 6px;
+      background: rgba(40, 12, 16, 0.72);
+      box-shadow: inset 0 0 0 1px rgba(196, 64, 56, 0.45);
+    }
+    .battle-plate .demon-row .meter.demon {
+      height: 100%;
+      border-radius: 6px;
+      background: transparent;
+      overflow: hidden;
+    }
+    .battle-plate .meter.demon > span {
+      display: block;
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #ffb0a4 0%, #c4382c 42%, #6e1410 100%);
+      box-shadow: 0 0 8px rgba(196, 48, 36, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+    .battle-plate .demon-line {
+      position: absolute;
+      inset: 0 6px 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #ffe8e4;
+      text-shadow: 0 1px 2px #000, 0 0 6px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+    .battle-plate .demon-line b {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
     }
     /* シールド：板の右上。青鋼のヒーター盾 */
     .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 10, 14, 0.95), 0 0 0 4px rgba(140, 178, 214, 0.62), 0 0 16px rgba(100, 150, 200, 0.28), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(200, 220, 240, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
@@ -1305,7 +1330,7 @@
     .battle-plate .plate-split .hp-line:nth-child(odd) {
       border-right: 1px solid rgba(212, 168, 74, 0.45);
     }
-    .battle-plate .plate-split .hp-line:nth-last-child(-n + 2) { border-bottom: 0; }
+    .battle-plate .plate-split .hp-line:nth-last-child(-n + 2) { border-bottom: 0; padding-bottom: 0; }
     .battle-plate .plate-split .hp-line .lbl,
     .battle-plate .plate-split .hp-line .num { width: auto; }
     .battle-plate .plate-split .hp-line b { font-size: 22px; }
@@ -1329,7 +1354,7 @@
       overflow: hidden;
     }
     html.stage-fit .battle-plate .plate-stats,
-    .fx-lab-preview .battle-plate .plate-stats { min-height: 99px; }
+    .fx-lab-preview .battle-plate .plate-stats { min-height: 0; }
     /* 状態のアイコン札：丸い暗地に色つきアイコン。重なるものは右に数字 */
     .status-chip {
       position: relative;
@@ -5521,6 +5546,7 @@
     .card.skill { --genre-line: #e4b15a; }
     .card.power { --genre-line: #2f7a45; }
     .card.foe { --genre-line: #6a3d86; }
+    .card.loot { --genre-line: #6a2830; }
     .card:hover:not(:disabled) {
       transform: translateY(calc(var(--drop, 0px) - 16px)) rotate(var(--fan, 0deg));
       z-index: 8;
@@ -5686,6 +5712,7 @@
     .card.skill .genre { background: #e4b15a; color: #2a2118; }
     .card.power .genre { background: #2f7a45; color: #f4fff6; }
     .card.foe .genre { background: #6a3d86; color: #fbf6ff; }
+    .card.loot .genre { background: #6a2830; color: #fff7f4; }
     .card .rarity {
       position: absolute;
       right: 4cqw;
@@ -5846,7 +5873,7 @@
     .card .fx.note .stat-word.def { color: #1d6fd4; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
     /* カードスタイル。★は銅、★★は銀、★★★は金。ジャンルの札は枠に描かない。ボスは赤の四隅 */
-    .card.attack, .card.block, .card.skill, .card.power, .card.gear, .card.boon, .card.foe {
+    .card.attack, .card.block, .card.skill, .card.power, .card.gear, .card.boon, .card.loot, .card.foe {
       border-width: 0;
       border-radius: 0;
       background: #0c0a08;
@@ -5865,57 +5892,62 @@
       background: var(--frame-img) center / 100% 100% no-repeat;
     }
     .card .card-fit .frame::before, .card .card-fit .frame::after { content: none; }
-    .card .card-fit.k-attack.r0 { --frame-img: url("frame-basic-attack.png?v=20"); }
-    .card .card-fit.k-block.r0 { --frame-img: url("frame-basic-block.png?v=20"); }
-    .card .card-fit.k-skill.r0 { --frame-img: url("frame-basic-skill.png?v=4"); }
-    .card .card-fit.k-power.r0 { --frame-img: url("frame-basic-item.png?v=2"); }
-    .card .card-fit.k-foe.r0 { --frame-img: url("frame-basic-foe.png?v=20"); }
-    .card .card-fit.k-attack.r1 { --frame-img: url("frame-red-over-copper.png?v=20"); }
-    .card .card-fit.k-attack.r2 { --frame-img: url("frame-red-over-silver.png?v=20"); }
-    .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=20"); }
-    .card .card-fit.k-block.r1 { --frame-img: url("frame-blue-over-copper.png?v=20"); }
-    .card .card-fit.k-block.r2 { --frame-img: url("frame-blue-over-silver.png?v=20"); }
-    .card .card-fit.k-block.r3 { --frame-img: url("frame-blue-over-gold.png?v=20"); }
-    .card .card-fit.k-skill.r1 { --frame-img: url("frame-yellow-over-copper.png?v=3"); }
-    .card .card-fit.k-skill.r2 { --frame-img: url("frame-yellow-over-silver.png?v=2"); }
-    .card .card-fit.k-skill.r3 { --frame-img: url("frame-yellow-over-gold.png?v=5"); }
-    .card .card-fit.k-power.r1 { --frame-img: url("frame-green-over-copper.png?v=3"); }
-    .card .card-fit.k-power.r2 { --frame-img: url("frame-green-over-silver.png?v=2"); }
-    .card .card-fit.k-power.r3 { --frame-img: url("frame-green-over-gold.png?v=5"); }
-    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=20"); }
+    .card .card-fit.k-attack.r0 { --frame-img: url("frame-basic-attack.png?v=21"); }
+    .card .card-fit.k-block.r0 { --frame-img: url("frame-basic-block.png?v=21"); }
+    .card .card-fit.k-skill.r0 { --frame-img: url("frame-basic-skill.png?v=21"); }
+    .card .card-fit.k-power.r0 { --frame-img: url("frame-basic-item.png?v=21"); }
+    .card .card-fit.k-foe.r0 { --frame-img: url("frame-basic-foe.png?v=21"); }
+    .card .card-fit.k-attack.r1 { --frame-img: url("frame-red-over-copper.png?v=21"); }
+    .card .card-fit.k-attack.r2 { --frame-img: url("frame-red-over-silver.png?v=21"); }
+    .card .card-fit.k-attack.r3 { --frame-img: url("frame-red-over-gold.png?v=21"); }
+    .card .card-fit.k-block.r1 { --frame-img: url("frame-blue-over-copper.png?v=21"); }
+    .card .card-fit.k-block.r2 { --frame-img: url("frame-blue-over-silver.png?v=21"); }
+    .card .card-fit.k-block.r3 { --frame-img: url("frame-blue-over-gold.png?v=21"); }
+    .card .card-fit.k-skill.r1 { --frame-img: url("frame-yellow-over-copper.png?v=21"); }
+    .card .card-fit.k-skill.r2 { --frame-img: url("frame-yellow-over-silver.png?v=21"); }
+    .card .card-fit.k-skill.r3 { --frame-img: url("frame-yellow-over-gold.png?v=21"); }
+    .card .card-fit.k-power.r1 { --frame-img: url("frame-green-over-copper.png?v=21"); }
+    .card .card-fit.k-power.r2 { --frame-img: url("frame-green-over-silver.png?v=21"); }
+    .card .card-fit.k-power.r3 { --frame-img: url("frame-green-over-gold.png?v=21"); }
+    .card .card-fit.k-attack.rboss { --frame-img: url("frame-attack-boss.png?v=21"); }
     .card .card-fit.k-block.rboss { --frame-img: url("frame-block-boss.png?v=20"); }
     .card .card-fit.k-skill.rboss { --frame-img: url("frame-skill-boss.png?v=3"); }
     .card .card-fit.k-power.rboss { --frame-img: url("frame-power-boss.png?v=3"); }
-    .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=20"); }
-    .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=20"); }
-    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=20"); }
+    .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=21"); }
+    .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=21"); }
+    .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=21"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=20"); }
     /* 敵カードの葡萄枠（カードリスト・敵の初期デッキ・拡大。戦闘は紺のまま） */
     .album-screen .card .card-fit.k-foe.r0,
     .foe-starter-deck .card .card-fit.k-foe.r0,
-    .cast-card-pop .card .card-fit.k-foe.r0 { --frame-img: url("frame-plum-basic.png?v=1"); }
+    .cast-card-pop .card .card-fit.k-foe.r0 { --frame-img: url("frame-plum-basic.png?v=21"); }
     .album-screen .card .card-fit.k-foe.r1,
     .foe-starter-deck .card .card-fit.k-foe.r1,
-    .cast-card-pop .card .card-fit.k-foe.r1 { --frame-img: url("frame-plum-copper.png?v=1"); }
+    .cast-card-pop .card .card-fit.k-foe.r1 { --frame-img: url("frame-plum-copper.png?v=21"); }
     .album-screen .card .card-fit.k-foe.r2,
     .foe-starter-deck .card .card-fit.k-foe.r2,
-    .cast-card-pop .card .card-fit.k-foe.r2 { --frame-img: url("frame-plum-silver.png?v=2"); }
+    .cast-card-pop .card .card-fit.k-foe.r2 { --frame-img: url("frame-plum-silver.png?v=21"); }
     .album-screen .card .card-fit.k-foe.r3,
     .foe-starter-deck .card .card-fit.k-foe.r3,
-    .cast-card-pop .card .card-fit.k-foe.r3 { --frame-img: url("frame-plum-gold.png?v=1"); }
+    .cast-card-pop .card .card-fit.k-foe.r3 { --frame-img: url("frame-plum-gold.png?v=21"); }
     .album-screen .card .card-fit.k-foe.rboss,
     .foe-starter-deck .card .card-fit.k-foe.rboss,
-    .cast-card-pop .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=2"); }
+    .cast-card-pop .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=21"); }
     .card .card-fit.k-gear.r0,
     .card .card-fit.k-gear.r1,
     .card .card-fit.k-boon.r0,
-    .card .card-fit.k-boon.r1 { --frame-img: url("frame-silver-over-copper.png?v=1"); }
+    .card .card-fit.k-boon.r1 { --frame-img: url("frame-silver-over-copper.png?v=21"); }
     .card .card-fit.k-gear.r2,
-    .card .card-fit.k-boon.r2 { --frame-img: url("frame-silver-over-silver.png?v=1"); }
+    .card .card-fit.k-boon.r2 { --frame-img: url("frame-silver-over-silver.png?v=21"); }
     .card .card-fit.k-gear.r3,
-    .card .card-fit.k-boon.r3 { --frame-img: url("frame-silver-over-gold.png?v=1"); }
+    .card .card-fit.k-boon.r3 { --frame-img: url("frame-silver-over-gold.png?v=21"); }
     .card .card-fit.k-gear.rboss,
-    .card .card-fit.k-boon.rboss { --frame-img: url("frame-silver-over-black.png?v=1"); }
+    .card .card-fit.k-boon.rboss { --frame-img: url("frame-silver-over-black.png?v=21"); }
+    .card .card-fit.k-loot.r0 { --frame-img: url("frame-basic-shakudo.png?v=1"); }
+    .card .card-fit.k-loot.r1 { --frame-img: url("frame-shakudo-over-copper.png?v=1"); }
+    .card .card-fit.k-loot.r2 { --frame-img: url("frame-shakudo-over-silver.png?v=1"); }
+    .card .card-fit.k-loot.r3 { --frame-img: url("frame-shakudo-over-gold.png?v=1"); }
+    .card .card-fit.k-loot.rboss { --frame-img: url("frame-shakudo-over-black.png?v=1"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
       position: absolute;
@@ -6116,8 +6148,10 @@
     .card .card-fit .fx.note .nobr + .nobr { margin-top: 1.1cqw; }
     /* 装備と祝福の報酬は、文ごとの改行が <br> になり折り返しより一段空く。折り返しと同じ行間に揃える */
     .card .card-fit.k-gear .fx.note br,
+    .card .card-fit.k-loot .fx.note br,
     .card .card-fit.k-boon .fx.note br { display: none; }
     .card .card-fit.k-gear .fx.note .nobr:not(:first-child),
+    .card .card-fit.k-loot .fx.note .nobr:not(:first-child),
     .card .card-fit.k-boon .fx.note .nobr:not(:first-child) { margin-top: 1.1cqw; }
     .card .card-fit .fx.note,
     .card .card-fit .fx.kw { width: 100%; text-align: center; line-break: strict; word-break: keep-all; text-wrap: balance; }
@@ -9308,18 +9342,23 @@
       filter: brightness(0.72);
       animation: depart-zoom 2.6s ease forwards;
     }
-    /* イベントや戦闘のあと、次の画面へ行くときの黒フェード */
+    /* イベントや戦闘のあと。黒は戦闘画面と手札だけ。マップ・ログ・上のダンジョン名は残す */
     .scene-fade {
       position: fixed;
       inset: 0;
       z-index: 90;
+      background: transparent;
+      pointer-events: auto;
+    }
+    .scene-fade i {
+      position: fixed;
       background: #000;
       opacity: 0;
-      pointer-events: auto;
+      pointer-events: none;
       transition: opacity 0.26s ease;
     }
-    .scene-fade.in { opacity: 1; }
-    .scene-fade.out { opacity: 0; transition-duration: 0.42s; }
+    .scene-fade.in i { opacity: 1; }
+    .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
     .depart-name {
       position: relative;
       z-index: 2;
@@ -11371,21 +11410,19 @@
     html.phone .battle-screen.log-open .battle-log { display: block; }
     html.phone .hud-top {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas: "dungeon stars" "actions actions";
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "dungeon" "actions";
       padding: 6px 8px;
       column-gap: 6px;
       row-gap: 4px;
     }
     html.phone .dungeon { grid-area: dungeon; }
-    html.phone .status-stars { grid-area: stars; position: absolute; left: 50%; top: 8px; transform: translateX(-50%); }
     html.phone .hud-top { overflow: visible; }
     html.phone .hud-actions { grid-area: actions; width: 100%; flex-wrap: nowrap; gap: 4px; }
     html.phone .small-btn { font-size: 12px; padding: 5px 8px; }
     html.phone .dungeon { gap: 8px; }
     html.phone .dungeon-name { font-size: 28px; letter-spacing: 0.06em; }
     html.phone .dungeon-progress { font-size: 20px; }
-    html.phone .status-stars { font-size: 18px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
     html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
     html.phone .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
@@ -11461,7 +11498,6 @@
     html.phone.land .dungeon { gap: 6px; }
     html.phone.land .dungeon-name { font-size: 16px; letter-spacing: 0.06em; }
     html.phone.land .dungeon-progress { font-size: 22px; }
-    html.phone.land .status-stars { font-size: 14px; }
     html.phone.land .hud-actions {
       width: auto;
       margin-left: auto;
@@ -11646,18 +11682,18 @@
       自信過剰: { cost: 2, stars: 3, text: "この戦闘中、パリィに成功するたびATK+1", kind: "skill", flash: true, pride: true },
     };
     const DEMON = {
-      悪魔の剣: { cost: 1, stars: 1, text: "悪魔化1\n6ダメージ\nこの戦闘中、すべての悪魔の剣のダメージ+3", damage: 6, kind: "attack" },
-      "悪魔剣・双斬": { cost: 2, stars: 2, text: "悪魔化2\n現在の悪魔の剣のダメージで2回攻撃する", kind: "attack" },
-      魔剣封印: { cost: 1, stars: 1, text: "手札の悪魔の剣1枚を戦闘中除外する\nそのダメージ+4のシールドを得る", kind: "block" },
-      血の呼び声: { cost: 1, stars: 1, text: "悪魔化1\n捨て札からカードを1枚手札に加える\nそれが悪魔の剣なら、このターンそのコスト-1", kind: "skill" },
-      鮮血の塗布: { cost: 0, stars: 1, text: "悪魔化3\nこの戦闘中、すべての悪魔の剣のダメージ+3", kind: "skill", quick: true },
-      血の饗宴: { cost: 2, stars: 2, text: "このターン、悪魔の剣で与えたダメージ分、HPを回復する", kind: "skill", flash: true },
-      血の契約: { cost: 1, stars: 2, text: "悪魔化3\n山札と捨て札から悪魔の剣を最大2枚まで手札に加える", kind: "skill" },
-      血の味: { cost: 0, stars: 3, text: "このターン悪魔の剣で敵を倒したとき\nデッキ内の悪魔の剣1枚の基本ダメージが永続で+2", kind: "skill", flash: true },
-      魔剣招来: { cost: 0, stars: 3, text: "悪魔化は最大HPの半分（切り捨て）\n山札と捨て札の悪魔の剣をすべて手札に加える\nこのターンそれらのコストを0にし、バーストを付与する", kind: "skill" },
-      呪われた鞘: { cost: 2, stars: 2, text: "悪魔の剣を使用したとき、捨て札ではなく山札の一番上に置く", kind: "skill" },
-      魔剣増殖: { cost: 2, stars: 3, text: "ターン開始時、手札に悪魔の剣を1枚生成する\nコスト0・フラッシュ", kind: "skill" },
-      悪魔二刀流: { cost: 2, stars: 3, text: "悪魔の剣を使うたび、追加で悪魔化1\n同じ対象にそのダメージをもう1回与える", kind: "skill" },
+      悪魔の剣: { cost: 1, stars: 1, text: "悪魔化1\n6ダメージ\nこの戦闘中、すべての悪魔の剣のダメージ+3", damage: 6, kind: "attack", demon: 1, demonSword: true, demonAura: 3 },
+      "悪魔剣・双斬": { cost: 2, stars: 2, text: "悪魔化2\n現在の悪魔の剣のダメージで2回攻撃する", kind: "attack", demon: 2, twinSword: true },
+      魔剣封印: { cost: 1, stars: 1, text: "手札の悪魔の剣1枚を戦闘中除外する\nそのダメージ+4のシールドを得る", kind: "block", sealSword: true },
+      血の呼び声: { cost: 1, stars: 1, text: "悪魔化1\n捨て札からカードを1枚手札に加える\nそれが悪魔の剣なら、このターンそのコスト-1", kind: "skill", demon: 1, callBlood: true },
+      鮮血の塗布: { cost: 0, stars: 1, text: "悪魔化3\nこの戦闘中、すべての悪魔の剣のダメージ+3", kind: "skill", quick: true, demon: 3, demonAura: 3 },
+      血の饗宴: { cost: 2, stars: 2, text: "このターン、悪魔の剣で与えたダメージ分、HPを回復する", kind: "skill", flash: true, bloodFeast: true },
+      血の契約: { cost: 1, stars: 2, text: "悪魔化3\n山札と捨て札から悪魔の剣を最大2枚まで手札に加える", kind: "skill", demon: 3, pact: true },
+      血の味: { cost: 0, stars: 3, text: "このターン、悪魔の剣で敵を倒したとき\n山札・捨て札・手札・除外の悪魔の剣を1枚選ぶ\nその基本ダメージが永続で+2", kind: "skill", flash: true, bloodTaste: true },
+      魔剣招来: { cost: 0, stars: 3, text: "悪魔化は最大HPの半分（切り捨て）\n山札と捨て札の悪魔の剣をすべて手札に加える\nこのターンそれらのコストを0にし、バーストを付与する", kind: "skill", summonSwords: true, demonHalf: true },
+      呪われた鞘: { cost: 2, stars: 2, text: "悪魔の剣を使用したとき、捨て札ではなく山札の一番上に置く", kind: "skill", sheath: true },
+      魔剣増殖: { cost: 2, stars: 3, text: "ターン開始時、手札に悪魔の剣を1枚生成する\nコスト0・フラッシュ", kind: "skill", proliferate: true },
+      悪魔二刀流: { cost: 2, stars: 3, text: "悪魔の剣を使うたび、追加で悪魔化1\n同じ対象にそのダメージをもう1回与える", kind: "skill", dualSword: true },
     };
     const KNIGHT = {
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
@@ -11944,6 +11980,20 @@
       (stageFloat || document.body).appendChild(node);
     }
 
+    function fadePlayBox() {
+      const play = document.querySelector(".battle-screen .battle-bands, .battle-screen .event-stage");
+      const hand = document.querySelector(".battle-screen .handbar");
+      const nodes = [play, hand].filter(Boolean);
+      if (!nodes.length) return null;
+      const rects = nodes.map((el) => el.getBoundingClientRect());
+      const left = Math.min(...rects.map((r) => r.left));
+      const top = Math.min(...rects.map((r) => r.top));
+      const right = Math.max(...rects.map((r) => r.right));
+      const bottom = Math.max(...rects.map((r) => r.bottom));
+      if (right - left < 8 || bottom - top < 8) return null;
+      return { left, top, width: right - left, height: bottom - top };
+    }
+
     function blackFade(run) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce || document.querySelector(".depart") || document.querySelector(".scene-fade")) {
@@ -11953,6 +12003,17 @@
       const veil = document.createElement("div");
       veil.className = "scene-fade";
       veil.setAttribute("aria-hidden", "true");
+      const pane = document.createElement("i");
+      const box = fadePlayBox();
+      if (box) {
+        pane.style.left = `${box.left}px`;
+        pane.style.top = `${box.top}px`;
+        pane.style.width = `${box.width}px`;
+        pane.style.height = `${box.height}px`;
+      } else {
+        pane.style.inset = "0";
+      }
+      veil.appendChild(pane);
       document.body.appendChild(veil);
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
@@ -12183,10 +12244,6 @@
     function shownStarCount() {
       return Math.max(0, (Number(meta.stars) || 0) - pendingStars);
     }
-    function starCountHtml(n) {
-      const count = Math.max(0, Number(n) || 0);
-      return `<div class="status-stars" data-star-count aria-label="スター ${count}">★${count}</div>`;
-    }
     let rewardPicks = [];
     let rewardPaths = [];
     let pathBag = null;
@@ -12201,6 +12258,8 @@
     let runEnchants = {};
     let runEnchantWords = {};
     let cardAlters = [];
+    let demonGauge = 0;
+    let swordPlus = {};
     let smithUsed = false;
     let lootSeen = [];
     let cardMastery = [];
@@ -13382,17 +13441,24 @@
       "minotaur-medal": "体力が半分以下の時、ATK+2",
       "minotaur-bracelet": "ターン開始時に体力が半分以下ならマナ+1",
     };
+    function lootItem(item) {
+      return !!(item && (item.loot || item.slot === "relic" || item.slot === "medal"));
+    }
     function gearCardList() {
-      return GEAR_ITEMS.concat(BOSS_GEAR).map((item) => ({
-        name: item.name,
-        cost: Number(item.stars) || 1,
-        stars: item.stars || 1,
-        boss: !!item.boss,
-        kind: "gear",
-        gear: true,
-        image: item.image || "",
-        text: GEAR_CARD_TEXT[item.id] || item.effect || "",
-      }));
+      return GEAR_ITEMS.concat(BOSS_GEAR).map((item) => {
+        const loot = lootItem(item);
+        return {
+          name: item.name,
+          cost: Number(item.stars) || 1,
+          stars: item.stars || 1,
+          boss: !!item.boss,
+          kind: loot ? "loot" : "gear",
+          gear: !loot,
+          loot,
+          image: item.image || "",
+          text: GEAR_CARD_TEXT[item.id] || item.effect || "",
+        };
+      });
     }
     function gearCardByName(name) {
       return gearCardList().find((card) => card.name === name) || null;
@@ -13414,13 +13480,15 @@
       if (Number(item.def) > 0) lines.push(`DEF+${item.def}`);
       const special = String(gearSpecialText(item) || "").replace(/。+$/u, "");
       if (special && !lines.includes(special)) lines.push(special);
+      const loot = lootItem(item);
       return {
-        name: item.name || "装備",
+        name: item.name || (loot ? "戦利品" : "装備"),
         cost: Number(item.stars) || 1,
         stars: Number(item.stars) || 1,
         boss: !!item.boss,
-        kind: "gear",
-        gear: true,
+        kind: loot ? "loot" : "gear",
+        gear: !loot,
+        loot,
         image: item.image || "",
         text: lines.filter(Boolean).join("\n"),
       };
@@ -14427,7 +14495,7 @@
       }
     }
 
-    function applyDamage(target, amount, fromThorns) {
+    function applyDamage(target, amount, fromThorns, own) {
       if (target === player && player.smoke) amount = 0;
       const hadHp = target.hp > 0;
       const hpBefore = target.hp;
@@ -14441,6 +14509,7 @@
         log(`${heroName()}はイージスシールド。最初のHPダメージを0にした。`);
       }
       target.hp = Math.max(0, target.hp - hpLoss);
+      if (target === player && own && hpLoss > 0) demonGauge += hpLoss;
       target.hit = true;
       if (target === player && hpLoss > 0 && anyShield("brother")) restoreHp(4);
       if (target === player && hpLoss > 0 && hasRelic("bandage") && player && !player.bandageUsed) {
@@ -14733,6 +14802,13 @@
       player.pride = false;
       player.shave = 0;
       player.masterOnce = false;
+      player.demonAura = 0;
+      player.sheath = false;
+      player.proliferate = false;
+      player.dualSword = false;
+      player.bloodFeast = false;
+      player.bloodTaste = false;
+      player.tasteQueued = false;
       syncGearStats();
     }
 
@@ -15065,6 +15141,13 @@
         if (kind === "light") next.cost = Math.max(0, (Number(next.cost) || 0) - 1);
         if (kind === "dark") applyDarkWord(next, runEnchantWords[card.name]);
         if (kind) next.enchant = kind;
+        if (next.name === "悪魔の剣" && !next.token) {
+          const plus = Math.max(0, Number(swordPlus[String(nth)]) || 0);
+          if (plus) {
+            next.swordPlus = plus;
+            next.damage = (Number(next.damage) || 0) + plus;
+          }
+        }
         if (hasRelic("rookie") && card.starter) {
           if (next.damage) next.damage = (Number(next.damage) || 0) + 3;
           if (next.block) next.block = (Number(next.block) || 0) + 3;
@@ -15217,7 +15300,18 @@
         addBurn(enemy, burnHit);
         log(`${gear.sword.name}の炎。${enemy.name}は炎上+${enemy.burn}。`, card);
       }
-      if (phase !== "resolve" && enemy && enemy.hp <= 0 && !outcome) scheduleFinish("win");
+      if (player && player.bloodFeast && card && card.name === "悪魔の剣" && dealt > 0) {
+        const gain = restoreHp(dealt);
+        if (gain) log(`${heroName()}は血の饗宴。HP+${gain}。`, card);
+      }
+      if (phase !== "resolve" && enemy && enemy.hp <= 0 && !outcome) {
+        if (player && player.bloodTaste && card && card.name === "悪魔の剣" && !player.tasteQueued) {
+          player.tasteQueued = true;
+          openTastePick();
+          return;
+        }
+        scheduleFinish("win");
+      }
     }
 
     // クリティカル。critChance は百分率。当たると、その1回のダメージを1.5倍し、端数は切り上げ。
@@ -15394,6 +15488,223 @@
       return false;
     }
 
+    function demonPiles() {
+      return [hand, deck, discard, inPlay, battleExile].filter(Boolean);
+    }
+
+    function pullCardFrom(piles, card) {
+      for (const pile of piles) {
+        const at = (pile || []).findIndex((row) => row === card || (card && card.uid != null && row && row.uid === card.uid));
+        if (at >= 0) return pile.splice(at, 1)[0];
+      }
+      return null;
+    }
+
+    function liveDemonSwords() {
+      const out = [];
+      for (const pile of demonPiles()) {
+        for (const card of pile) {
+          if (card && card.name === "悪魔の剣" && !card.token && card.copyNth != null) out.push(card);
+        }
+      }
+      return out;
+    }
+
+    function offerDemon(n) {
+      const want = Math.max(0, Math.floor(Number(n) || 0));
+      if (!player || want <= 0) return 0;
+      const room = Math.max(0, (Number(player.hp) || 0) - 1);
+      const lost = Math.min(want, room);
+      if (lost) player.hp -= lost;
+      demonGauge += lost;
+      const stop = lost < want ? "HPは1で止めた。" : "";
+      log(`${heroName()}は悪魔に体力を捧げた。HP-${lost}。${stop}悪魔化${demonGauge}。`);
+      return lost;
+    }
+
+    function auraNow() {
+      return Math.max(0, Number(player && player.demonAura) || 0);
+    }
+
+    function swordSwing(card) {
+      return Math.max(0, Number(card && card.damage) || 0) + auraNow() + (Number(player && player.atk) || 0);
+    }
+
+    function bestSwordSwing() {
+      let best = 6;
+      for (const card of liveDemonSwords()) best = Math.max(best, Number(card.damage) || 0);
+      return best + auraNow() + (Number(player && player.atk) || 0);
+    }
+
+    function addSwordAura(card) {
+      const add = Math.max(0, Number(card && card.demonAura) || 0);
+      if (!add || !player) return;
+      player.demonAura = auraNow() + add;
+      log(`${heroName()}は${card.name}。悪魔の剣のダメージ+${add}。いま+${player.demonAura}。`, card);
+    }
+
+    function makeDemonToken() {
+      const known = cardDef("悪魔の剣") || {};
+      const card = keepCard({ name: "悪魔の剣", ...known, cost: 0, flash: true, starter: false });
+      card.token = true;
+      card.fightCopy = true;
+      card.uid = uid++;
+      return card;
+    }
+
+    function growSword(card) {
+      if (!card || card.copyNth == null) return;
+      const key = String(card.copyNth);
+      swordPlus[key] = (Number(swordPlus[key]) || 0) + 2;
+      card.swordPlus = (Number(card.swordPlus) || 0) + 2;
+      card.damage = (Number(card.damage) || 6) + 2;
+      log(`${heroName()}は血の味。悪魔の剣の基本ダメージ+2。いま${card.damage}。`);
+    }
+
+    function takeDemonSwords(cards, burst) {
+      cards.forEach((card) => {
+        const got = pullCardFrom([deck, discard], card) || card;
+        if (burst) {
+          got.burst = true;
+          got.cost = 0;
+        }
+        hand.push(got);
+      });
+    }
+
+    function openDemonPick(kind, cards, max) {
+      lootChoice = { kind, after: "battle", max, picked: [], cards };
+      return true;
+    }
+
+    function finishTasteOrWin() {
+      if (player) player.tasteQueued = false;
+      if (enemy && enemy.hp <= 0 && !outcome) scheduleFinish("win");
+    }
+
+    function openTastePick() {
+      const cards = liveDemonSwords();
+      if (cards.length <= 1) {
+        if (cards.length === 1) growSword(cards[0]);
+        finishTasteOrWin();
+        return;
+      }
+      openDemonPick("taste", cards, 1);
+      render();
+    }
+
+    function playDemonSword(card) {
+      if (card.demon) offerDemon(card.demon);
+      const amount = swordSwing(card);
+      if (enemy && enemy.hp > 0) strike(card, amount);
+      if (player.dualSword && enemy && enemy.hp > 0 && !outcome) {
+        offerDemon(1);
+        strike(card, amount);
+      }
+      addSwordAura(card);
+    }
+
+    function resolveDemonCard(card) {
+      if (!card || !player) return false;
+      if (card.demonSword) {
+        playDemonSword(card);
+        return true;
+      }
+      if (card.twinSword) {
+        if (card.demon) offerDemon(card.demon);
+        const amount = bestSwordSwing();
+        if (enemy && enemy.hp > 0) strike(card, amount);
+        if (enemy && enemy.hp > 0 && !outcome) strike(card, amount);
+        return true;
+      }
+      if (card.sealSword) {
+        const cards = (hand || []).filter((row) => row && row.name === "悪魔の剣");
+        if (!cards.length) {
+          log(`${heroName()}は魔剣封印。手札に悪魔の剣は無い。`, card);
+          return true;
+        }
+        if (cards.length === 1) {
+          const picked = pullCardFrom([hand], cards[0]);
+          battleExile.push(picked);
+          gainBlock(Math.max(0, Number(picked.damage) || 0) + auraNow() + 4, card);
+          log(`${heroName()}は魔剣封印。悪魔の剣を戦闘中除外した。`, card);
+          return true;
+        }
+        openDemonPick("seal", cards, 1);
+        return true;
+      }
+      if (card.callBlood) {
+        if (card.demon) offerDemon(card.demon);
+        const cards = (discard || []).filter((row) => row && row.name);
+        if (!cards.length) {
+          log(`${heroName()}は血の呼び声。捨て札は空。`, card);
+          return true;
+        }
+        if (cards.length === 1) {
+          const picked = pullCardFrom([discard], cards[0]);
+          if (picked.name === "悪魔の剣") picked.cheapTurn = true;
+          hand.push(picked);
+          log(`${heroName()}は血の呼び声。${picked.name}を手札へ。${picked.cheapTurn ? "このターン、コスト-1。" : ""}`, card);
+          return true;
+        }
+        openDemonPick("call", cards, 1);
+        return true;
+      }
+      if (card.demonAura && !card.demonSword) {
+        if (card.demon) offerDemon(card.demon);
+        addSwordAura(card);
+        return true;
+      }
+      if (card.bloodFeast) {
+        player.bloodFeast = true;
+        log(`${heroName()}は血の饗宴。このターン、悪魔の剣で与えたダメージだけ回復する。`, card);
+        return true;
+      }
+      if (card.pact) {
+        if (card.demon) offerDemon(card.demon);
+        const cards = (deck || []).concat(discard || []).filter((row) => row && row.name === "悪魔の剣");
+        if (!cards.length) {
+          log(`${heroName()}は血の契約。山札にも捨て札にも悪魔の剣は無い。`, card);
+          return true;
+        }
+        if (cards.length <= 2) {
+          takeDemonSwords(cards, false);
+          log(`${heroName()}は血の契約。悪魔の剣を${cards.length}枚、手札へ。`, card);
+          return true;
+        }
+        openDemonPick("pact", cards, 2);
+        return true;
+      }
+      if (card.bloodTaste) {
+        player.bloodTaste = true;
+        log(`${heroName()}は血の味。このターン、悪魔の剣で倒すと基本ダメージが永続で+2。`, card);
+        return true;
+      }
+      if (card.summonSwords) {
+        offerDemon(Math.floor((Number(player.maxHp) || 0) / 2));
+        const cards = (deck || []).concat(discard || []).filter((row) => row && row.name === "悪魔の剣");
+        takeDemonSwords(cards, true);
+        log(cards.length ? `${heroName()}は魔剣招来。悪魔の剣${cards.length}枚を手札へ。このターンはコスト0、バースト。` : `${heroName()}は魔剣招来。山札と捨て札に悪魔の剣は無い。`, card);
+        return true;
+      }
+      if (card.sheath) {
+        player.sheath = true;
+        log(`${heroName()}は呪われた鞘。この戦闘、捨て札に行く悪魔の剣は山札の一番上へ。`, card);
+        return true;
+      }
+      if (card.proliferate) {
+        player.proliferate = true;
+        log(`${heroName()}は魔剣増殖。次のターンから、手札に悪魔の剣が1枚出る。`, card);
+        return true;
+      }
+      if (card.dualSword) {
+        player.dualSword = true;
+        log(`${heroName()}は悪魔二刀流。この戦闘、悪魔の剣を使うたびに悪魔化1と、もう1撃。`, card);
+        return true;
+      }
+      return false;
+    }
+
     function resolveCard(card) {
       card = scaledResolvedCard(card);
       if (card && (card.chapel || card.name === "礼拝堂")) {
@@ -15402,6 +15713,7 @@
         return;
       }
       if (resolveItemExtras(card)) return;
+      if (resolveDemonCard(card)) return;
       syncGearStats();
       if (card.thorns) {
         const now = gainThorns(player, card.thorns);
@@ -15931,7 +16243,10 @@
       }
       if (pile === "exile") battleExile.push(card);
       else if (pile === "burst") removed.push(card);
-      else discard.push(card);
+      else if (player && player.sheath && card.name === "悪魔の剣") {
+        deck.unshift(card);
+        log(`${heroName()}は呪われた鞘。悪魔の剣を山札の一番上へ。`);
+      } else discard.push(card);
       return pile;
     }
 
@@ -16312,7 +16627,10 @@
         const card = inPlay.shift();
         const pile = afterUsePile(card);
         if (pile === "exile" || pile === "burst") placeUsedCard(card);
-        else discard.push(card);
+        else if (player && player.sheath && card.name === "悪魔の剣") {
+          deck.unshift(card);
+          log(`${heroName()}は呪われた鞘。悪魔の剣を山札の一番上へ。`);
+        } else discard.push(card);
       }
       resolveAt = 0;
     }
@@ -16771,6 +17089,8 @@
       player.parryHitThis = false;
       player.knifeReflect = false;
       player.focusTurn = 0;
+      player.bloodFeast = false;
+      player.bloodTaste = false;
       if (parryCount(player) > 0) {
         player.parry = 0;
         log(`${heroName()}のパリィが、ターンの終わりに消失した。`);
@@ -16791,18 +17111,23 @@
       }
       const turnLoss = swordsWorn().reduce((sum, item) => sum + (Number(item.turnHpLoss) || 0), 0);
       if (turnLoss > 0 && !hasStatLock()) {
+        const beforeHp = player.hp;
         player.hp = Math.max(0, player.hp - turnLoss);
-        log(`${heroName()}は悪魔の剣。ターン開始でHP-${turnLoss}。`);
+        const lost = beforeHp - player.hp;
+        if (lost) demonGauge += lost;
+        log(`${heroName()}は悪魔の剣。ターン開始でHP-${lost}。${lost ? `悪魔化+${lost}。` : ""}`);
         if (player.hp <= 0 && !tryPhoenixRevive()) {
           scheduleFinish("lose");
           return;
         }
       }
       if (anyBracelet("demonTurn")) {
-        applyDamage(player, 5);
+        const beforeGauge = demonGauge;
+        applyDamage(player, 5, false, true);
+        const gained = demonGauge - beforeGauge;
         if (player.hp > 0) {
           restoreHp(7);
-          log(`${heroName()}は悪魔の腕輪。5ダメージを受け、HP+7。`);
+          log(`${heroName()}は悪魔の腕輪。5ダメージを受け、HP+7。${gained ? `悪魔化+${gained}。` : ""}`);
         }
         if (player.hp <= 0) {
           scheduleFinish("lose");
@@ -16847,6 +17172,12 @@
       }
       settleKeptHand();
       draw(DRAW_PER_TURN + (Number(player.spdMod) || 0) + extra);
+      if (player.proliferate) {
+        if (hand.length < HAND_CAP) {
+          hand.push(makeDemonToken());
+          log(`${heroName()}は魔剣増殖。手札に悪魔の剣。コスト0、フラッシュ。`);
+        } else log(`${heroName()}は魔剣増殖。手札がいっぱいなので出ない。`);
+      }
       if (turn === 1 && anySword("openingDraw")) draw(1);
       if (turn === 1 && hasRelic("openDraw")) draw(2);
       if (turn === 2 && hasRelic("feather")) draw(2);
@@ -17316,6 +17647,8 @@
         runEnchants,
         runEnchantWords,
         cardAlters,
+        demonGauge,
+        swordPlus,
         smithUsed,
         lootSeen,
         cardMastery,
@@ -17575,6 +17908,8 @@
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
       runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
+      demonGauge = Math.max(0, Number(data.demonGauge) || 0);
+      swordPlus = data.swordPlus && typeof data.swordPlus === "object" ? data.swordPlus : {};
       smithUsed = !!data.smithUsed;
       lootSeen = Array.isArray(data.lootSeen) ? data.lootSeen.map((id) => String(id)) : [];
       BOSS_GEAR.forEach((item) => { if (hasGear(item.id)) noteLootSeen(item.id); });
@@ -18934,6 +19269,8 @@
       eventBattleSeen = false;
       runEnchantWords = {};
       cardAlters = [];
+      demonGauge = 0;
+      swordPlus = {};
       smithUsed = false;
       lootSeen = [];
       cardMastery = [];
@@ -19075,7 +19412,7 @@
       return true;
     }
 
-    function meters(who, hp, maxHp, block, threat) {
+    function meters(who, hp, maxHp, block, threat, demon) {
       const cap = Math.max(1, maxHp);
       const span = threatSpan(hp, cap, threat);
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
@@ -19083,7 +19420,12 @@
       const threatHtml = span.loss > 0 ? `<i class="hp-threat" style="left:${span.stayPct}%;width:${span.lossPct}%"></i>` : "";
       const aria = span.loss > 0 ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(span.loss)}減る` : `HP ${Math.round(hp)}/${Math.round(cap)}`;
       const threatHp = Math.max(0, Number(threat) || 0);
-      return `<div class="meters">${shield}<div class="meter hp" data-threat="${threatHp}" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${Math.max(0, Math.min(100, (hp / cap) * 100))}%"></span>${threatHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div></div>`;
+      const demonHtml = demon == null ? "" : (() => {
+        const n = Math.max(0, Math.round(Number(demon) || 0));
+        const pct = Math.max(0, Math.min(100, n));
+        return `<div class="demon-row" aria-label="悪魔化 ${n}"><div class="meter demon" style="width:${pct}%"><span></span></div><span class="demon-line">悪魔化<b>${n}</b></span></div>`;
+      })();
+      return `<div class="meters">${shield}<div class="meter hp" data-threat="${threatHp}" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${Math.max(0, Math.min(100, (hp / cap) * 100))}%"></span>${threatHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>${demonHtml}</div>`;
     }
 
     function heroPlateProgress() {
@@ -19136,7 +19478,7 @@
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${badges}${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}</h2>
-        ${meters(who, shownHp, maxHp, block, extra && extra.threat)}
+        ${meters(who, shownHp, maxHp, block, extra && extra.threat, extra && Object.prototype.hasOwnProperty.call(extra, "demon") ? extra.demon : null)}
         <div class="plate-stats">${stats}${extra && extra.tail ? extra.tail : ""}</div>
       </section>`;
     }
@@ -19436,7 +19778,7 @@
     function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
       const shake = shellCls.includes("shake") ? " shake" : "";
       const fatal = shellCls.includes("fatal") ? " fatal" : "";
-      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div>${starCountHtml(3)}<div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
+      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div><div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
     }
 
     function fxLabMineCards(count) {
@@ -20199,7 +20541,25 @@
     }
 
     function foeStarterCards(foe) {
-      return (foe.pattern || []).map((card) => applyEnemyHidden(card, foe)).filter((card) => card && card.name);
+      return (foe.pattern || []).map((card) => foeStatusCard(applyEnemyHidden(card, foe), foe)).filter((card) => card && card.name);
+    }
+
+    function foeStatusCard(card, foe) {
+      if (!card) return card;
+      const atk = foeBaseAtk(foe);
+      const def = foeBaseDef(foe);
+      const next = { ...card, statShown: true };
+      const attack = !!(card.damage || card.name === "アタック" || card.name === "アタック+");
+      const block = !!(card.block || card.name === "ブロック" || card.name === "ブロック+");
+      if (attack) next.damage = printedDamage(card) + atk;
+      if (block) next.block = printedBlock(card) + def;
+      if (!next.text || (!attack && !block)) return next;
+      let text = String(next.text);
+      if (attack && card.hits > 1) text = text.replace(/\d+ダメージを\d+回/u, `${next.damage}ダメージを${card.hits}回`);
+      else if (attack) text = text.replace(/\d+ダメージ/u, `${next.damage}ダメージ`);
+      if (block) text = text.replace(/ブロック\d+/u, `ブロック${next.block}`);
+      next.text = text;
+      return next;
     }
 
     function foeBaseAtk(foe) {
@@ -20964,7 +21324,7 @@
       const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
       const logHtml = logLinesHtml(logLines);
       const worn = opt && opt.gear === false ? "" : `<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside>`;
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div>${starCountHtml(shownStarCount())}<div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}${worn}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}${worn}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
     }
 
     function renderFloor() {
@@ -21389,6 +21749,7 @@
       if (!card) return "skill";
       if (card.kind === "foe") return "foe";
       if (card.kind === "boon") return "boon";
+      if (card.kind === "loot" || card.loot) return "loot";
       if (card.kind === "gear" || card.gear) return "gear";
       if (card.kind === "power" || card.power) return "power";
       if (card.kind === "attack" || card.kind === "block" || card.kind === "skill") return card.kind;
@@ -21408,46 +21769,52 @@
         skill: "スキル",
         power: "アイテム",
         gear: "装備",
+        loot: "戦利品",
         boon: "祝福",
         foe: "敵",
       })[kind] || "スキル";
     }
 
     const CARD_STYLE = [
-      ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=20"],
-      ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=20"],
-      ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=4"],
-      ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=2"],
-      ["style-basic-power", "パワー 基本", "frame-basic-power.png?v=1"],
-      ["style-orange-over-copper", "パワー ★", "frame-orange-over-copper.png?v=1"],
-      ["style-orange-over-silver", "パワー ★★", "frame-orange-over-silver.png?v=1"],
-      ["style-orange-over-gold", "パワー ★★★", "frame-orange-over-gold.png?v=1"],
-      ["style-orange-over-black", "パワー ボス", "frame-orange-over-black.png?v=1"],
-      ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=20"],
-      ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=20"],
-      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=20"],
-      ["style-over-black", "ブロック ボス", "frame-blue-over-black.png?v=20"],
-      ["style-red-over-copper", "アタック ★", "frame-red-over-copper.png?v=20"],
-      ["style-red-over-silver", "アタック ★★", "frame-red-over-silver.png?v=20"],
-      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=20"],
-      ["style-red-over-black", "アタック ボス", "frame-red-over-black.png?v=20"],
-      ["style-yellow-over-copper", "スキル ★", "frame-yellow-over-copper.png?v=3"],
-      ["style-yellow-over-silver", "スキル ★★", "frame-yellow-over-silver.png?v=2"],
-      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=5"],
-      ["style-yellow-over-black", "スキル ボス", "frame-yellow-over-black.png?v=2"],
-      ["style-green-over-copper", "アイテム ★", "frame-green-over-copper.png?v=3"],
-      ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=2"],
-      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=5"],
-      ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=2"],
-      ["style-gear-copper", "装備 銅", "frame-silver-over-copper.png?v=1"],
-      ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=1"],
-      ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=1"],
-      ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=1"],
-      ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=1"],
-      ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=1"],
-      ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=2"],
-      ["style-plum-gold", "敵 ★★★", "frame-plum-gold.png?v=1"],
-      ["style-plum-black", "敵 ボス", "frame-plum-black.png?v=2"],
+      ["style-basic-attack", "アタック 基本", "frame-basic-attack.png?v=21"],
+      ["style-basic-block", "ブロック 基本", "frame-basic-block.png?v=21"],
+      ["style-basic-skill", "スキル 基本", "frame-basic-skill.png?v=21"],
+      ["style-basic-item", "アイテム 基本", "frame-basic-item.png?v=21"],
+      ["style-basic-power", "パワー 基本", "frame-basic-power.png?v=21"],
+      ["style-orange-over-copper", "パワー ★", "frame-orange-over-copper.png?v=21"],
+      ["style-orange-over-silver", "パワー ★★", "frame-orange-over-silver.png?v=21"],
+      ["style-orange-over-gold", "パワー ★★★", "frame-orange-over-gold.png?v=21"],
+      ["style-orange-over-black", "パワー ボス", "frame-orange-over-black.png?v=21"],
+      ["style-over-copper", "ブロック ★", "frame-blue-over-copper.png?v=21"],
+      ["style-over-silver", "ブロック ★★", "frame-blue-over-silver.png?v=21"],
+      ["style-over-gold", "ブロック ★★★", "frame-blue-over-gold.png?v=21"],
+      ["style-over-black", "ブロック ボス", "frame-blue-over-black.png?v=21"],
+      ["style-red-over-copper", "アタック ★", "frame-red-over-copper.png?v=21"],
+      ["style-red-over-silver", "アタック ★★", "frame-red-over-silver.png?v=21"],
+      ["style-red-over-gold", "アタック ★★★", "frame-red-over-gold.png?v=21"],
+      ["style-red-over-black", "アタック ボス", "frame-red-over-black.png?v=21"],
+      ["style-yellow-over-copper", "スキル ★", "frame-yellow-over-copper.png?v=21"],
+      ["style-yellow-over-silver", "スキル ★★", "frame-yellow-over-silver.png?v=21"],
+      ["style-yellow-over-gold", "スキル ★★★", "frame-yellow-over-gold.png?v=21"],
+      ["style-yellow-over-black", "スキル ボス", "frame-yellow-over-black.png?v=21"],
+      ["style-green-over-copper", "アイテム ★", "frame-green-over-copper.png?v=21"],
+      ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=21"],
+      ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=21"],
+      ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=21"],
+      ["style-gear-copper", "装備 銅", "frame-silver-over-copper.png?v=21"],
+      ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=21"],
+      ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=21"],
+      ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=21"],
+      ["style-basic-shakudo", "戦利品 基本", "frame-basic-shakudo.png?v=1"],
+      ["style-shakudo-copper", "戦利品 ★", "frame-shakudo-over-copper.png?v=1"],
+      ["style-shakudo-silver", "戦利品 ★★", "frame-shakudo-over-silver.png?v=1"],
+      ["style-shakudo-gold", "戦利品 ★★★", "frame-shakudo-over-gold.png?v=1"],
+      ["style-shakudo-black", "戦利品 ボス", "frame-shakudo-over-black.png?v=1"],
+      ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=21"],
+      ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=21"],
+      ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=21"],
+      ["style-plum-gold", "敵 ★★★", "frame-plum-gold.png?v=21"],
+      ["style-plum-black", "敵 ボス", "frame-plum-black.png?v=21"],
     ];
     function styleLabel(id, name) {
       return name;
@@ -21474,6 +21841,7 @@
       ["パワー", ["style-basic-power", "style-orange-over-copper", "style-orange-over-silver", "style-orange-over-gold", "style-orange-over-black"]],
       ["敵", ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"]],
       ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
+      ["戦利品", ["style-basic-shakudo", "style-shakudo-copper", "style-shakudo-silver", "style-shakudo-gold", "style-shakudo-black"]],
     ];
     function enchantTrySheet() {
       const kinds = [["fire", "火"], ["water", "水"], ["light", "光"], ["dark", "闇"]];
@@ -21503,12 +21871,14 @@
 
     function printedDamage(card) {
       if (!card) return 0;
+      if (card.statShown) return Number(card.damage) || 0;
       if (!card.enchantPreview && (card.name === "アタック" || card.name === "アタック+")) return CARDS.アタック.damage || 4;
       return Number(card.damage) || 0;
     }
 
     function printedBlock(card) {
       if (!card) return 0;
+      if (card.statShown) return Number(card.block) || 0;
       if (!card.enchantPreview && (card.name === "ブロック" || card.name === "ブロック+")) return CARDS.ブロック.block || 4;
       return Number(card.block) || 0;
     }
@@ -21537,6 +21907,7 @@
     }
 
     function expectedHits(card, fromHand, foe) {
+      if (card && card.twinSword && !foe) return [bestSwordSwing(), bestSwordSwing()];
       if (!card || !usesStrike(card)) return null;
       const atk = actingAtk(card, foe);
       const focus = foe ? 0 : focusLeftFor(card, fromHand);
@@ -21570,6 +21941,7 @@
           if (card.fullBonus && player && player.hp >= player.maxHp) bonus += textScale(card.fullBonus, fromHand);
           if (card.safeBonus && player && !player.hurtLast) bonus += textScale(card.safeBonus, fromHand);
           if (card.kick && enemy && enemy.block > 0) bonus += textScale(card.kick, fromHand);
+          if (card.demonSword && player) bonus += auraNow();
         } else if (foe) {
           if (card.fullBonus && enemy && enemy.hp >= enemy.maxHp) bonus += card.fullBonus;
           if (card.kick && player && player.block > 0) bonus += card.kick;
@@ -21661,6 +22033,7 @@
     function liveCardText(card, fromHand, foe) {
       let text = String(card.text || "");
       const hits = expectedHits(card, fromHand, foe);
+      if (card.twinSword && hits && hits.length) text = text.replace(/現在の悪魔の剣のダメージで2回攻撃する/u, `${hits[0]}ダメージを2回`);
       const dmg = expectedDamageLabel(card, fromHand, foe);
       const blk = expectedBlockValue(card, fromHand, foe);
       if (dmg) {
@@ -22714,6 +23087,24 @@
       if (card.mirror) next.mirror = true;
       if (card.starDouble) next.starDouble = true;
       if (card.transmute) next.transmute = true;
+      if (card.demon) next.demon = Number(card.demon) || 0;
+      if (card.demonHalf) next.demonHalf = true;
+      if (card.demonSword) next.demonSword = true;
+      if (card.demonAura) next.demonAura = Number(card.demonAura) || 0;
+      if (card.twinSword) next.twinSword = true;
+      if (card.sealSword) next.sealSword = true;
+      if (card.callBlood) next.callBlood = true;
+      if (card.bloodFeast) next.bloodFeast = true;
+      if (card.pact) next.pact = true;
+      if (card.bloodTaste) next.bloodTaste = true;
+      if (card.summonSwords) next.summonSwords = true;
+      if (card.sheath) next.sheath = true;
+      if (card.proliferate) next.proliferate = true;
+      if (card.dualSword) next.dualSword = true;
+      if (card.token) next.token = true;
+      if (card.swordPlus) next.swordPlus = Number(card.swordPlus) || 0;
+      if (card.copyNth != null) next.copyNth = card.copyNth;
+      if (card.fightCopy) next.fightCopy = true;
       next.stars = card.unrated || basicCardName(card.name) ? 0 : (card.stars || 1);
       return next;
     }
@@ -24391,10 +24782,36 @@
       } else if (choice.kind === "shelf") {
         chosen.forEach((card) => stolen.push(keepCard(card)));
         log(`${heroName()}は無限の書架。${chosen[0].name}を受け取った。`);
+      } else if (choice.kind === "call") {
+        const card = chosen[0];
+        if (!card) return;
+        const picked = pullCardFrom([discard], card) || card;
+        if (picked.name === "悪魔の剣") picked.cheapTurn = true;
+        hand.push(picked);
+        log(`${heroName()}は血の呼び声。${picked.name}を手札へ。${picked.cheapTurn ? "このターン、コスト-1。" : ""}`);
+      } else if (choice.kind === "seal") {
+        const card = chosen[0];
+        if (!card) return;
+        const picked = pullCardFrom([hand], card) || card;
+        battleExile.push(picked);
+        gainBlock(Math.max(0, Number(picked.damage) || 0) + auraNow() + 4, { name: "魔剣封印" });
+        log(`${heroName()}は魔剣封印。悪魔の剣を戦闘中除外した。`);
+      } else if (choice.kind === "pact") {
+        if (!chosen.length) return;
+        takeDemonSwords(chosen, false);
+        log(`${heroName()}は血の契約。悪魔の剣を${chosen.length}枚、手札へ。`);
+      } else if (choice.kind === "taste") {
+        if (!chosen.length) return;
+        growSword(chosen[0]);
       }
       const after = choice.after;
+      const taste = choice.kind === "taste";
       lootChoice = null;
       persistSave(true);
+      if (taste) {
+        finishTasteOrWin();
+        return;
+      }
       if (after === "victory") {
         offerPathsOrAdvance();
         return;
@@ -24410,13 +24827,17 @@
         shelf: "★★★のカードを1枚選ぶ",
         chapel: "消すカードを4枚まで選ぶ",
         mirror: "コピーするカードを1枚選ぶ",
+        call: "捨て札から1枚選ぶ",
+        seal: "除外する悪魔の剣を1枚選ぶ",
+        pact: "手札へ加える悪魔の剣を2枚まで選ぶ",
+        taste: "基本ダメージ+2にする悪魔の剣を1枚選ぶ",
       };
       const choice = lootChoice;
       const faces = choice.cards.map((card, index) => {
         const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
         return `<button type="button" class="reward-pick${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`;
       }).join("");
-      const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror") && !choice.picked.length;
+      const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "pact" || choice.kind === "taste") && !choice.picked.length;
       return `<div class="overlay loot-ask"><div class="panel wide"><h2>${esc(titles[choice.kind] || "選ぶ")}</h2><div class="reward-row">${faces || `<p>選べるカードは無い。</p>`}</div><div class="gear-offer-actions">${menuButton("きめる", "loot-ok", true, need)}</div></div></div>`;
     }
 
@@ -24628,7 +25049,6 @@
               <h1 class="dungeon-name">${esc(dungeonName)}</h1>
               <div class="dungeon-progress">${floorLabel()}</div>
             </div>
-            ${starCountHtml(shownStarCount())}
             <div class="hud-actions">
               <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
@@ -24640,7 +25060,7 @@
           <div class="stage">
             <div class="enemy-field">
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), demon: demonGauge, tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
             <div class="foe-stack">
