@@ -225,11 +225,6 @@
     }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
-    .road-node.fixed:not(.now) {
-      box-shadow: 0 0 0 5px #ff2a18, 0 0 22px 6px rgba(255, 36, 20, 0.95);
-    }
-    .road-node.fixed:not(.now) > img,
-    .road-node.fixed:not(.now) > i { box-shadow: inset 0 0 0 16px #ff2a18; }
     .road-node.tone-rest img,
     .road-node.tone-rest i { box-shadow: inset 0 0 0 6px #6aa4e0; }
     .road-node.tone-other img,
@@ -256,20 +251,6 @@
     .road-node.now.tone-other > i {
       box-shadow: none;
     }
-    .road-lock {
-      position: absolute;
-      z-index: 5;
-      top: 8px;
-      right: 8px;
-      width: 46px;
-      height: 46px;
-      display: grid;
-      place-items: center;
-      color: #ffe7a4;
-      filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgba(0, 0, 0, 0.9));
-      pointer-events: none;
-    }
-    .road-lock svg { width: 40px; height: 40px; display: block; }
     .road-back {
       position: absolute;
       z-index: 6;
@@ -726,6 +707,12 @@
       line-height: 1;
       letter-spacing: 0;
     }
+    .forecast.lethal .skull {
+      filter:
+        drop-shadow(0 0 3px #fff8f0)
+        drop-shadow(0 0 8px rgba(255, 128, 48, 1))
+        drop-shadow(0 0 18px rgba(255, 42, 16, 0.95));
+    }
     .duel-mid .forecasts {
       position: absolute;
       left: 50%;
@@ -835,7 +822,7 @@
       pointer-events: none;
     }
     .battle-plate.hero-plate { --plate-accent: var(--gold); }
-    .battle-plate.foe-plate { --plate-accent: #c89848; }
+    .battle-plate.foe-plate { --plate-accent: #c89848; padding-bottom: 10px; }
     .battle-plate .hint { pointer-events: auto; }
     .enemy-field > .foe-plate,
     .foe-stack {
@@ -1077,6 +1064,8 @@
       letter-spacing: 0.04em;
       font-variant-numeric: tabular-nums;
     }
+    /* 悪魔化したときだけゲージが足る。その分、板の下を広げてステータスが枠に切れないようにする */
+    .battle-plate.has-demon { padding-bottom: 12px; }
     /* シールド：板の右上。青鋼のヒーター盾 */
     .battle-plate.shielded { box-shadow: 0 0 0 3px rgba(8, 10, 14, 0.95), 0 0 0 4px rgba(140, 178, 214, 0.62), 0 0 16px rgba(100, 150, 200, 0.28), 0 14px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(200, 220, 240, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.6); }
     /* パリィ中：金の光で無敵感を出す（次の攻撃を受けない） */
@@ -1818,15 +1807,15 @@
       padding: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 2px;
     }
     .mana-read b {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       flex: 0 0 auto;
       display: block;
       border-radius: 50%;
-      background: url("mana-orb.png?v=1") center / contain no-repeat;
+      background: url("mana-orb.png?v=1") center / 132% no-repeat;
       box-shadow: none;
     }
     .reward-pick {
@@ -1940,79 +1929,105 @@
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
     .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 1.05s; }
     .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-hot; animation-duration: 1.28s; }
-    /* カード報酬のレアリティ演出。★★は銀の枠、★★★以上は金の枠。光ったあとも枠は残す */
+    /* 報酬カードは、手札で強くなるときの脈打ち。色だけレアリティ */
+    .reward-pick.rare-1,
+    .gift-show.rare-1,
+    .gift-btn.rare-1 {
+      --lit-line: #fff;
+      --lit-hot: #fff;
+      --lit-near: rgba(255, 255, 255, 0.55);
+      --lit-near-hot: rgba(255, 255, 255, 0.9);
+      --lit-far: rgba(255, 255, 255, 0.28);
+      --lit-far-hot: rgba(255, 255, 255, 0.5);
+    }
+    .reward-pick.rare-2,
+    .gift-show.rare-2,
+    .gift-btn.rare-2 {
+      --lit-line: #e7eef8;
+      --lit-hot: #ffffff;
+      --lit-near: rgba(210, 224, 242, 0.75);
+      --lit-near-hot: rgba(232, 242, 255, 0.98);
+      --lit-far: rgba(168, 188, 214, 0.42);
+      --lit-far-hot: rgba(190, 210, 235, 0.7);
+    }
+    .reward-pick.rare-3,
+    .reward-pick.rare-4,
+    .reward-pick.rare-5,
+    .gift-show.rare-3,
+    .gift-show.rare-4,
+    .gift-show.rare-5,
+    .gift-btn.rare-3,
+    .gift-btn.rare-4,
+    .gift-btn.rare-5 {
+      --lit-line: #ffe6a4;
+      --lit-hot: #fff1c2;
+      --lit-near: rgba(255, 214, 90, 0.7);
+      --lit-near-hot: rgba(255, 214, 90, 0.95);
+      --lit-far: rgba(255, 168, 40, 0.45);
+      --lit-far-hot: rgba(255, 168, 40, 0.62);
+    }
+    .reward-pick.rare-boss,
+    .gift-show.rare-boss,
+    .gift-btn.rare-boss {
+      --lit-line: #ffb0a0;
+      --lit-hot: #ffe0d8;
+      --lit-near: rgba(255, 80, 50, 0.75);
+      --lit-near-hot: rgba(255, 70, 40, 0.95);
+      --lit-far: rgba(180, 24, 12, 0.45);
+      --lit-far-hot: rgba(255, 48, 28, 0.62);
+    }
+    .reward-pick.rare-1 .card.preview,
     .reward-pick.rare-2 .card.preview,
+    .reward-pick.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview,
+    .reward-pick.rare-boss .card.preview,
+    .gift-show.rare-1 .card.preview,
     .gift-show.rare-2 .card.preview,
+    .gift-show.rare-3 .card.preview,
+    .gift-show.rare-4 .card.preview,
+    .gift-show.rare-5 .card.preview,
+    .gift-show.rare-boss .card.preview,
+    .gift-btn.rare-1 .card.preview,
     .gift-btn.rare-2 .card.preview,
-    .reward-pick.rare-3 .card.preview,
-    .reward-pick.rare-4 .card.preview,
-    .reward-pick.rare-5 .card.preview,
-    .gift-show.rare-3 .card.preview,
-    .gift-show.rare-4 .card.preview,
-    .gift-show.rare-5 .card.preview,
     .gift-btn.rare-3 .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview {
-      animation-name: rare-frame;
-      animation-duration: 0.7s;
+    .gift-btn.rare-5 .card.preview,
+    .gift-btn.rare-boss .card.preview {
+      animation:
+        rare-pop 0.62s cubic-bezier(0.16, 0.84, 0.28, 1) both,
+        reward-lit 1.15s ease-in-out infinite;
     }
+    .reward-pick.rare-1 .card.preview,
+    .gift-show.rare-1 .card.preview,
+    .gift-btn.rare-1 .card.preview { animation-duration: 0.38s, 1.15s; }
     .reward-pick.rare-3 .card.preview,
+    .gift-show.rare-3 .card.preview,
+    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 0.82s, 1.15s; }
     .reward-pick.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview,
-    .gift-show.rare-3 .card.preview,
+    .reward-pick.rare-boss .card.preview,
     .gift-show.rare-4 .card.preview,
     .gift-show.rare-5 .card.preview,
-    .gift-btn.rare-3 .card.preview,
+    .gift-show.rare-boss .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview { animation-duration: 0.95s; }
-    .reward-pick.rare-2 .card.preview,
-    .gift-show.rare-2 .card.preview,
-    .gift-btn.rare-2 .card.preview {
-      box-shadow:
-        0 0 0 2px #ffffff,
-        0 0 0 4px #d7e4f2,
-        0 0 18px 3px rgba(220, 234, 255, 0.98),
-        0 22px 36px rgba(0, 0, 0, 0.55);
-    }
-    .reward-pick.rare-3 .card.preview,
-    .reward-pick.rare-4 .card.preview,
-    .reward-pick.rare-5 .card.preview,
-    .gift-show.rare-3 .card.preview,
-    .gift-show.rare-4 .card.preview,
-    .gift-show.rare-5 .card.preview,
-    .gift-btn.rare-3 .card.preview,
-    .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview {
-      box-shadow:
-        0 0 0 4px #ffe9b0,
-        0 0 0 14px #c4922e,
-        0 0 32px 6px rgba(255, 196, 70, 0.95),
-        0 22px 36px rgba(0, 0, 0, 0.55);
-    }
-    .reward-pick.rare-2:hover .card.preview,
-    .gift-btn.rare-2:hover .card.preview {
-      box-shadow:
-        0 0 0 2px #ffffff,
-        0 0 0 4px #eef5fc,
-        0 0 22px 4px rgba(236, 244, 255, 1),
-        0 22px 36px rgba(0, 0, 0, 0.55);
-    }
-    .reward-pick.rare-3:hover .card.preview,
-    .reward-pick.rare-4:hover .card.preview,
-    .reward-pick.rare-5:hover .card.preview,
-    .gift-btn.rare-3:hover .card.preview,
-    .gift-btn.rare-4:hover .card.preview,
-    .gift-btn.rare-5:hover .card.preview {
-      box-shadow:
-        0 0 0 4px #fff4cc,
-        0 0 0 14px #e0b24a,
-        0 0 40px 8px rgba(255, 210, 90, 1),
-        0 22px 36px rgba(0, 0, 0, 0.55);
-    }
-    @keyframes rare-frame {
-      0% { transform: scale(0.84); filter: brightness(2.4); box-shadow: 0 0 0 0 transparent; }
-      35% { transform: scale(1.08); filter: brightness(1.7); }
-      100% { transform: none; filter: none; }
+    .gift-btn.rare-5 .card.preview,
+    .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 1.05s, 1.15s; }
+    @keyframes reward-lit {
+      0%, 100% {
+        box-shadow:
+          inset 0 0 0 2px var(--lit-line),
+          0 0 6px 1px var(--lit-near),
+          0 0 10px 2px var(--lit-far),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
+      50% {
+        box-shadow:
+          inset 0 0 0 3px var(--lit-hot),
+          0 0 18px 4px var(--lit-near-hot),
+          0 0 34px 8px var(--lit-far-hot),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
     }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
@@ -2394,7 +2409,13 @@
     .overlay.enchant-pick .panel {
       align-items: stretch;
       width: min(1480px, calc(100cqw - 20px));
+    }
+    .overlay.enchant-pick.smith-fuse .panel {
       height: min(920px, calc(100cqh - 16px));
+    }
+    .overlay.enchant-pick:not(.smith-fuse) .panel {
+      height: auto;
+      max-height: calc(100cqh - 16px);
     }
     .enchant-pick .enchant-body {
       flex: 1 1 auto;
@@ -2420,6 +2441,30 @@
       letter-spacing: 0.06em;
       color: #ffe7a8;
     }
+    .enchant-pick:not(.smith-fuse) .enchant-body {
+      flex: 1 1 auto;
+      grid-template-columns: minmax(0, 1fr) minmax(440px, 48%);
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 0;
+      overflow: hidden;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-main {
+      height: auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-main > h2,
+    .enchant-pick:not(.smith-fuse) .enchant-got,
+    .enchant-pick:not(.smith-fuse) .deck-lead,
+    .enchant-pick:not(.smith-fuse) .enchant-actions {
+      flex: 0 0 auto;
+    }
+    .enchant-pick:not(.smith-fuse) .deck-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
     .enchant-pick .enchant-compare {
       min-width: 0;
       min-height: 0;
@@ -2427,6 +2472,16 @@
       align-content: start;
       grid-template-rows: auto auto auto;
       gap: 6px;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-compare {
+      height: auto;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      align-content: stretch;
+      gap: 8px;
     }
     .enchant-pick .compare-arrow {
       display: flex;
@@ -2459,6 +2514,12 @@
       letter-spacing: 0.08em;
       color: #ffe7a8;
     }
+    .enchant-pick:not(.smith-fuse) .compare-slot {
+      flex: 1 1 0;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+    }
     .enchant-pick .compare-face {
       flex: 0 0 auto;
       min-height: 0;
@@ -2467,11 +2528,30 @@
       align-items: center;
       justify-content: center;
     }
+    .enchant-pick:not(.smith-fuse) .compare-face {
+      flex: 1 1 auto;
+      min-height: 0;
+      container-type: size;
+    }
+    .enchant-pick:not(.smith-fuse) .compare-well {
+      width: min(100cqw, calc(100cqh * 0.75));
+      height: min(100cqh, calc(100cqw * 4 / 3));
+      background: #14110e;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 2px rgba(228, 194, 122, 0.75);
+      overflow: hidden;
+    }
     .enchant-pick .compare-face .card.preview {
       width: 168px;
       max-width: 100%;
       height: auto;
       max-height: 100%;
+    }
+    .enchant-pick:not(.smith-fuse) .compare-well .card.preview {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
     }
     .enchant-pick .enchant-card {
       padding: 0;
@@ -4486,51 +4566,51 @@
       height: auto;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 2px;
       padding: 0;
       border: 0;
       background: none;
       filter: none;
     }
     .mana-read b {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       flex: 0 0 auto;
       display: block;
       border-radius: 50%;
-      background: url("mana-orb.png?v=1") center / contain no-repeat;
+      background: url("mana-orb.png?v=1") center / 132% no-repeat;
       box-shadow: none;
     }
     .mana-read b.live {
-      filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55));
+      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
     }
     .mana-read.on b.live:not(.carry) {
       animation: mana-glow 1.35s ease-in-out infinite;
     }
     .mana-read b.carry {
       filter:
-        drop-shadow(0 6px 8px rgba(0, 0, 0, 0.55))
-        drop-shadow(0 0 6px rgba(140, 190, 255, 0.95));
+        drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35))
+        drop-shadow(0 0 4px rgba(140, 190, 255, 0.5));
     }
     .mana-read b.spent {
       background: none;
       box-shadow:
-        inset 0 0 0 6px #f0d078,
-        inset 0 0 0 8px #6a4410;
+        inset 0 0 0 4px #f0d078,
+        inset 0 0 0 6px #6a4410;
       filter: none;
     }
     @keyframes mana-glow {
       0%, 100% {
         filter:
-          drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55))
-          drop-shadow(0 0 4px #ffe14a)
-          drop-shadow(0 0 10px rgba(255, 176, 40, 0.7));
+          drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4))
+          drop-shadow(0 0 2px rgba(255, 225, 74, 0.45))
+          drop-shadow(0 0 6px rgba(255, 176, 40, 0.32));
       }
       50% {
         filter:
-          drop-shadow(0 8px 10px rgba(0, 0, 0, 0.55))
-          drop-shadow(0 0 8px #fff6c8)
-          drop-shadow(0 0 18px rgba(255, 210, 70, 0.95));
+          drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4))
+          drop-shadow(0 0 3px rgba(255, 246, 200, 0.6))
+          drop-shadow(0 0 9px rgba(255, 200, 70, 0.42));
       }
     }
     .handbar {
@@ -5411,7 +5491,7 @@
       max-height: 100%;
       width: auto;
       max-width: none;
-      margin-inline: calc(var(--overlap, 33px) * -0.5);
+      margin-inline: calc(var(--overlap, 56px) * -0.5);
       z-index: var(--hand-z, 1);
     }
     /* 枚数が多いときは重ねる。見た目だけ扇の中心から外側へ（端は斜め。傾きは保つ）。判定は元のカードのまま */
@@ -5474,7 +5554,16 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-burst, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot, .reward-altar .reward-rays, .reward-altar .reward-pick, .mastery-rays, .mastery-stage .card.preview, .mana-read.on, .mana-read b { animation: none; transition: none; }
+      .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-burst, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot, .reward-altar .reward-rays, .reward-altar .reward-pick, .mastery-rays, .mastery-stage .card.preview, .mastery-choice, .mana-read.on, .mana-read b { animation: none; transition: none; }
+      .reward-pick[class*="rare-"] .card.preview,
+      .gift-show[class*="rare-"] .card.preview,
+      .gift-btn[class*="rare-"] .card.preview {
+        animation: none;
+        box-shadow:
+          inset 0 0 0 3px var(--lit-hot, #fff1c2),
+          0 0 16px var(--lit-near-hot, rgba(255, 214, 90, 0.85)),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
       .victory-flash { display: none; }
       .hero-hit.fatal .flash, .hero-hit.fatal .ring, .dmg-pop.me.fatal { animation-duration: 0.01s; }
       .fly-star {
@@ -5886,7 +5975,7 @@
     .card .card-fit.k-foe.r1 { --frame-img: url("frame-navy-over-copper.png?v=22"); }
     .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=22"); }
     .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=22"); }
-    .card .card-fit.k-foe.rboss { --frame-img: url("frame-foe-boss.png?v=20"); }
+    .card .card-fit.k-foe.rboss { --frame-img: url("frame-navy-over-black.png?v=22"); }
     /* 敵カードの葡萄枠（カードリスト・敵の初期デッキ・拡大。戦闘は紺のまま） */
     .album-screen .card .card-fit.k-foe.r0,
     .foe-starter-deck .card .card-fit.k-foe.r0,
@@ -5999,6 +6088,7 @@
       pointer-events: none;
       box-shadow: none;
     }
+    .card .enchant-note { display: none; }
     .card .card-fit .enchant-gem img {
       width: 100%;
       height: 100%;
@@ -6133,11 +6223,10 @@
     .card .card-fit .fx.note .nobr { display: block; line-height: 1.22; }
     .card .fx.note .nobr.step i,
     .gear-effect-body .nobr.step i { font-style: normal; padding: 0 0.42em; }
-    .card .card-fit .fx.note .nobr + .nobr { margin-top: 1.1cqw; }
-    /* 装備と祝福の報酬は、文ごとの改行が <br> になり折り返しより一段空く。折り返しと同じ行間に揃える */
-    .card .card-fit.k-gear .fx.note br,
-    .card .card-fit.k-loot .fx.note br,
-    .card .card-fit.k-boon .fx.note br { display: none; }
+    .card .card-fit .fx.note .nobr + .nobr,
+    .card .card-fit .fx.note .nobr:not(:first-child) { margin-top: 1.1cqw; }
+    /* 行は .nobr が block なので、文ごとの <br> は空行になる。折り返しと同じ行間にする */
+    .card .card-fit .fx.note br { display: none; }
     .card .card-fit.k-gear .fx.note .nobr:not(:first-child),
     .card .card-fit.k-loot .fx.note .nobr:not(:first-child),
     .card .card-fit.k-boon .fx.note .nobr:not(:first-child) { margin-top: 1.1cqw; }
@@ -6442,23 +6531,12 @@
       z-index: 1;
       width: min(220px, 46cqw);
       height: auto;
-      border-color: #ffe7a0;
-      animation: reward-rise 0.55s cubic-bezier(0.16, 0.9, 0.24, 1) both, mastery-blink 0.36s linear infinite;
-    }
-    @keyframes mastery-blink {
-      0%, 46% {
-        border-color: #fff6d2;
-        box-shadow:
-          0 0 0 4px #ffe7a0,
-          0 0 16px 3px rgba(255, 226, 130, 1),
-          0 0 38px 8px rgba(255, 168, 40, 0.9);
-        filter: brightness(1.7) saturate(1.2);
-      }
-      54%, 100% {
-        border-color: #5c4314;
-        box-shadow: 0 0 0 2px rgba(110, 82, 28, 0.4);
-        filter: brightness(0.72);
-      }
+      box-shadow:
+        inset 0 0 0 2px #ffe6a4,
+        0 0 6px 1px rgba(255, 214, 90, 0.7),
+        0 0 10px 2px rgba(255, 168, 40, 0.45),
+        0 10px 24px rgba(0, 0, 0, 0.28);
+      animation: reward-rise 0.55s cubic-bezier(0.16, 0.9, 0.24, 1) both, hand-lit 1.15s ease-in-out infinite;
     }
     .mastery-choices {
       display: flex;
@@ -6485,12 +6563,46 @@
     .mastery-choice.power {
       border: 2px solid #e24b3a;
       background: linear-gradient(180deg, rgba(132, 32, 22, 0.96), rgba(42, 12, 8, 0.96));
-      box-shadow: 0 0 22px rgba(226, 75, 58, 0.38), inset 0 1px 0 rgba(255, 220, 190, 0.28);
+      box-shadow:
+        0 0 8px 1px rgba(226, 75, 58, 0.55),
+        inset 0 1px 0 rgba(255, 220, 190, 0.28);
+      animation: mastery-power-glow 1.15s ease-in-out infinite;
     }
     .mastery-choice.light {
       border: 2px solid #8ec0ff;
       background: linear-gradient(180deg, rgba(28, 58, 112, 0.96), rgba(10, 16, 36, 0.96));
-      box-shadow: 0 0 22px rgba(126, 182, 255, 0.32), inset 0 1px 0 rgba(220, 236, 255, 0.28);
+      box-shadow:
+        0 0 8px 1px rgba(126, 182, 255, 0.5),
+        inset 0 1px 0 rgba(220, 236, 255, 0.28);
+      animation: mastery-light-glow 1.15s ease-in-out infinite;
+    }
+    @keyframes mastery-power-glow {
+      0%, 100% {
+        box-shadow:
+          0 0 8px 1px rgba(226, 75, 58, 0.55),
+          0 0 14px 2px rgba(255, 120, 70, 0.28),
+          inset 0 1px 0 rgba(255, 220, 190, 0.28);
+      }
+      50% {
+        box-shadow:
+          0 0 22px 4px rgba(226, 75, 58, 0.9),
+          0 0 40px 8px rgba(255, 120, 70, 0.55),
+          inset 0 1px 0 rgba(255, 220, 190, 0.28);
+      }
+    }
+    @keyframes mastery-light-glow {
+      0%, 100% {
+        box-shadow:
+          0 0 8px 1px rgba(126, 182, 255, 0.5),
+          0 0 14px 2px rgba(186, 220, 255, 0.26),
+          inset 0 1px 0 rgba(220, 236, 255, 0.28);
+      }
+      50% {
+        box-shadow:
+          0 0 22px 4px rgba(126, 182, 255, 0.88),
+          0 0 40px 8px rgba(186, 220, 255, 0.5),
+          inset 0 1px 0 rgba(220, 236, 255, 0.28);
+      }
     }
     .mastery-choice:hover { filter: brightness(1.08); }
     .leave-ask .panel { gap: 8px; min-width: min(420px, calc(100cqw - 32px)); }
@@ -6963,7 +7075,21 @@
     .overlay.paths h2 .path-title { flex: 0 0 auto; letter-spacing: 0.2em; }
     .overlay.paths p { font-size: 22px; margin-bottom: 12px; }
     .overlay.paths .path-list { flex-wrap: nowrap; align-items: stretch; }
-    .overlay.paths .path-list:has(.path-route) { align-items: stretch; gap: 16px; }
+    .overlay.paths .path-list:has(.path-route) { align-items: stretch; gap: 52px; }
+    .overlay.paths .path-list:has(> .path-route:hover) > .path-route:not(:hover) {
+      filter: brightness(0.62) saturate(0.72);
+    }
+    .overlay.paths .path-list > button.path-route:hover .route-stack {
+      box-shadow:
+        0 0 0 6px rgba(8, 6, 4, 0.45),
+        0 0 0 13px #fff6d2,
+        0 0 0 18px var(--route-line, #e4b15a),
+        0 0 28px 8px color-mix(in srgb, var(--route-line, #e4b15a) 80%, white);
+    }
+    .overlay.paths .path-list > button.path-route:hover .route-letter {
+      color: #fff8e6;
+      text-shadow: 0 0 12px var(--route-line, #ffe7a8);
+    }
     .overlay.paths .path-list button {
       container-type: inline-size;
       display: flex;
@@ -7043,7 +7169,8 @@
     }
     .route-stack {
       border: 0;
-      padding: 0;
+      padding: 6px;
+      gap: 6px;
       border-radius: 12px;
       background: transparent;
       box-shadow:
@@ -7056,101 +7183,65 @@
     .path-route.path-tone-yellow { --route-line: #e4b15a; }
     .path-route.path-tone-white { --route-line: #f7f4ee; }
     .route-step {
-      flex: 0 0 128px;
-      height: 128px;
+      flex: 0 0 168px;
+      height: 168px;
       display: flex;
       flex-direction: column;
       min-height: 0;
       border: 0;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      background: #14110e;
+      background: transparent;
     }
-    .overlay.paths .path-list button.path-route .route-step .path-art {
-      flex: 1 1 auto;
-      height: auto;
-      min-height: 0;
-      margin: 0;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    .route-step .route-name {
-      padding: 4px 6px 6px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 800;
-      text-align: center;
-    }
-    .overlay.paths .path-list button + button { margin-top: 0; }
-    .overlay.paths .path-list button .path-name {
-      flex: 0 0 auto;
-      margin: 2.6cqw 2.6cqw 0;
-      padding: 2.2cqw 3cqw;
-      border-radius: 8px;
-      border: 1px solid rgba(24, 14, 8, 0.62);
-      background: linear-gradient(180deg, #2a2622 0%, #12100e 100%);
-      box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.62), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
-      color: #fff;
-      font-family: "Source Han Serif", "源ノ明朝", "Noto Serif JP", "Yu Mincho", serif;
-      font-size: clamp(16px, 11cqw, 32px);
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      line-height: 1.2;
-      text-align: center;
-      -webkit-text-stroke: 0.7px #0a0806;
-      paint-order: stroke fill;
-    }
-    .overlay.paths .path-list button .path-art {
-      flex: 1 1 auto;
-      min-height: 0;
-      margin: 2cqw 2.6cqw 0;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #1a1410;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
-    }
-    .overlay.paths .path-list button img {
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      aspect-ratio: auto;
-      object-fit: contain;
-      border-radius: 0;
-      display: block;
-    }
-    .overlay.paths .path-list button .path-text {
-      flex: 0 0 auto;
-      min-height: 24%;
-      margin: 2cqw;
-      padding: 6cqw 3cqw 2.4cqw;
-      border-radius: 6px;
-      background: #fff;
-      color: #241910;
-      font-weight: 800;
-      font-size: clamp(12px, 7.4cqw, 18px);
-      line-height: 1.35;
-      text-align: center;
-      text-shadow: none;
+    .overlay.paths .path-node {
+      position: relative;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.2em;
+      box-sizing: border-box;
+      padding: 5px;
+      overflow: hidden;
+      border-radius: 10px;
+      isolation: isolate;
+      background: transparent;
     }
-    .overlay.paths .path-list button .path-heart {
-      color: #e02020;
+    .overlay.paths .path-list button.path-node {
+      width: 168px;
+      height: 220px;
+      aspect-ratio: auto;
+      max-height: none;
+      padding: 5px;
+      border: 0;
+      gap: 0;
+      box-shadow: none;
+    }
+    .overlay.paths .path-node > img,
+    .overlay.paths .path-node > i {
+      position: relative;
+      z-index: 0;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      object-fit: contain;
+      object-position: center;
+      background: #1a1410;
+    }
+    .overlay.paths .path-node > i {
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(228, 177, 90, 0.35);
       font-style: normal;
     }
-    .overlay.paths .path-list button .path-sub {
-      display: block;
-      margin-top: 0.15em;
-      font-size: 0.92em;
-      font-weight: 700;
-    }
-    html.phone .overlay.paths .path-list button:not(.path-route),
-    html.iphone-play .overlay.paths .path-list button:not(.path-route) {
-      width: min(31%, 168px);
-      border-width: 4px;
+    .overlay.paths .path-node.tone-rest > img,
+    .overlay.paths .path-node.tone-rest > i { box-shadow: inset 0 0 0 6px #6aa4e0; }
+    .overlay.paths .path-node.tone-other > img,
+    .overlay.paths .path-node.tone-other > i { box-shadow: inset 0 0 0 6px #e2b03a; }
+    .overlay.paths .path-list button + button { margin-top: 0; }
+    html.phone .overlay.paths .path-list button.path-node,
+    html.iphone-play .overlay.paths .path-list button.path-node {
+      border-width: 0;
     }
     .overlay button.ghost {
       background: transparent;
@@ -7521,52 +7612,6 @@
         0 0 0 11px #ffe7a8,
         0 10px 28px rgba(0, 0, 0, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.75);
-    }
-    .title-run-actions > button.glow {
-      animation: title-gold-frame 2.8s ease-in-out infinite;
-    }
-    .title-run-actions > button.primary.framed.glow {
-      animation: title-gold-frame-ring 2.8s ease-in-out infinite;
-    }
-    @keyframes title-gold-frame {
-      0%, 100% {
-        box-shadow:
-          0 0 0 3px rgba(255, 226, 160, 0.28),
-          0 0 8px 1px rgba(255, 196, 70, 0.28),
-          0 10px 28px rgba(0, 0, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      }
-      50% {
-        box-shadow:
-          0 0 0 3px rgba(255, 226, 160, 0.9),
-          0 0 22px 6px rgba(255, 196, 70, 0.95),
-          0 0 48px 14px rgba(255, 150, 30, 0.72),
-          0 10px 28px rgba(0, 0, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      }
-    }
-    @keyframes title-gold-frame-ring {
-      0%, 100% {
-        box-shadow:
-          0 0 0 4px #120c09,
-          0 0 0 8px rgba(255, 231, 168, 0.42),
-          0 0 8px 2px rgba(255, 210, 90, 0.22),
-          0 10px 28px rgba(0, 0, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      }
-      50% {
-        box-shadow:
-          0 0 0 4px #120c09,
-          0 0 0 11px #ffe7a8,
-          0 0 26px 8px rgba(255, 210, 90, 0.95),
-          0 0 56px 16px rgba(255, 160, 40, 0.75),
-          0 10px 28px rgba(0, 0, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .title-run-actions > button.glow,
-      .title-run-actions > button.primary.framed.glow { animation: none; }
     }
     .title-sub-actions {
       display: flex;
@@ -8090,6 +8135,9 @@
       gap: 0;
       overflow: hidden;
     }
+    .menu.event.train { --choice-w: 300px; }
+    .menu.event.train .event-lead { grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr); }
+    .menu.event.train .gift-row { flex-wrap: nowrap; }
     .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
     .menu.event.shop .event-choice {
       justify-content: stretch;
@@ -8280,12 +8328,12 @@
     }
     .event-floor-call b {
       flex: 0 0 auto;
-      font-size: min(16cqw, 168px);
+      font-size: min(34cqw, 420px);
       font-weight: 900;
-      letter-spacing: 0.08em;
-      color: #f0c36a;
-      text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82);
-      animation: turn-word 1.2s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      letter-spacing: 0.06em;
+      color: #ffe7a8;
+      text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 28px rgba(255, 210, 90, 0.95);
+      animation: turn-word 1.6s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
     .menu.event .event-lead {
       grid-area: lead;
@@ -10753,6 +10801,7 @@
       box-shadow:
         0 0 0 4px #120c09,
         0 0 0 11px #ffe7a8,
+        0 0 28px rgba(255, 170, 70, 0.9),
         0 12px 26px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.7),
         inset 0 -10px 18px rgba(160, 30, 0, 0.35);
@@ -11501,8 +11550,8 @@
       border-radius: 999px;
       border-width: 2px;
     }
-    html.phone .mana-read { width: auto; height: auto; gap: 6px; }
-    html.phone .mana-read b { width: 60px; height: 60px; }
+    html.phone .mana-read { width: auto; height: auto; gap: 2px; }
+    html.phone .mana-read b { width: 48px; height: 48px; }
     html.phone .mana-read b.spent { box-shadow: inset 0 0 0 4px #f0d078, inset 0 0 0 5px #6a4410; }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     html.phone .forecast { font-size: 11px; padding: 3px 7px; gap: 3px; margin: 0 3px; }
@@ -11577,8 +11626,8 @@
       height: auto;
       max-height: 58%;
     }
-    html.phone.land .mana-read { width: auto; height: auto; gap: 4px; }
-    html.phone.land .mana-read b { width: 46px; height: 46px; }
+    html.phone.land .mana-read { width: auto; height: auto; gap: 1px; }
+    html.phone.land .mana-read b { width: 36px; height: 36px; }
     html.phone.land .mana-read b.spent { box-shadow: inset 0 0 0 3px #f0d078, inset 0 0 0 4px #6a4410; }
     html.phone.land .mana-orb { width: 28px; height: 100%; max-height: 40px; margin: 0; }
     html.phone.land .hand .card,
@@ -11690,7 +11739,6 @@
       礼拝堂: "card-chapel.jpg?v=1",
       ダッシュ: "card-dash.jpg?v=1",
       スライム粘液: "card-slime-goo.jpg?v=1",
-      ミノスの一撃: "card-minos.jpg?v=1",
       タウロスアタック: "card-tauros.jpg?v=1",
       ファイアパラダイス: "card-fireparadise-v2.jpg?v=1",
       泥棒: "card-mushin.jpg?v=4",
@@ -11715,10 +11763,9 @@
       },
       泥棒: {
         cost: 1,
-        text: "5ダメージ\n相手の手札を1枚盗み、自分の山札に入れる\n戦闘終了時に返す",
-        damage: 5,
+        text: "相手の山札の一番上のカードを使用する\n使用後は、元の持ち主の捨て札へ",
         kind: "attack",
-        stealHand: true,
+        stealTop: true,
         stars: 1,
       },
     };
@@ -11805,7 +11852,7 @@
       煙玉: { cost: 1, stars: 2, text: "このターン、敵から受けるダメージをすべて0にする", smoke: true, kind: "power", power: true },
       火炎瓶: { cost: 1, stars: 1, text: "14ダメージ\n炎上+3", damage: 14, burn: 3, itemHit: true, kind: "power", power: true },
       猛毒の瓶: { cost: 1, stars: 1, text: "毒+7", poison: 7, kind: "power", power: true },
-      雷の巻物: { cost: 2, stars: 2, text: "ブロックを無視して28ダメージ", damage: 28, pierce: true, itemHit: true, kind: "power", power: true },
+      雷の巻物: { cost: 2, stars: 2, text: "ブロックを無視する", damage: 28, pierce: true, itemHit: true, kind: "power", power: true },
       呪いの人形: { cost: 1, stars: 2, text: "この戦闘中、相手のATK-2、DEF-2", curseDoll: true, kind: "power", power: true },
       魔力の小瓶: { cost: 0, stars: 1, text: "このターン、マナ+2", manaNow: 2, kind: "power", power: true },
       疾風の羽根: { cost: 0, stars: 1, text: "3枚引く", draw: 3, kind: "power", power: true },
@@ -11880,7 +11927,6 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20, stars: 3 },
           { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true, stars: 3 },
         ],
       },
@@ -12531,7 +12577,9 @@
     function foeLabel(at, list) {
       const path = list || route;
       const index = at == null ? battleIndex : at;
-      return enemyByName(routeFoeName(path[index]) || DUNGEON.boss).name;
+      const node = path === route ? bindEliteNode(path[index], index) : path[index];
+      if (String(node || "").startsWith("強敵:")) return enemyByName(routeFoeName(node)).name;
+      return enemyByName(routeFoeName(node) || DUNGEON.boss).name;
     }
 
     function hiddenAtk(foe) {
@@ -12711,10 +12759,28 @@
       return combatNames(which, false, 3).filter((name) => enemyStar(enemyByName(name)) === 3);
     }
 
+    function isEliteStar(name) {
+      const foe = ENEMIES.find((item) => item.name === enemyKey(name));
+      return !!foe && foe.name !== "ハデス" && enemyStar(foe) === 3;
+    }
+
     function rollEliteName() {
-      const names = eliteNames();
+      const names = eliteNames().filter((name) => isEliteStar(name));
       if (!names.length) return "";
       return names[Math.floor(Math.random() * names.length)];
+    }
+
+    // 名前の無い「強敵:」は、空欄のままだとボス（ハデス）に落ちる。★3だけを書く。
+    function bindEliteNode(node, index) {
+      const raw = String(node || "");
+      if (!raw.startsWith("強敵:")) return raw;
+      const who = routeFoeName(raw);
+      if (isEliteStar(who)) return `強敵:${enemyKey(who)}`;
+      const rolled = rollEliteName();
+      if (!rolled) return raw;
+      const fixed = `強敵:${rolled}`;
+      if (index != null && route[index] === node) route[index] = fixed;
+      return fixed;
     }
 
     function pathFillIds(dungeon) {
@@ -13051,7 +13117,7 @@
       return `<p class="path-now">現在${floorGlyph(now)}　${go}</p>`;
     }
     function eventFloorFlashHtml() {
-      return `<div class="event-floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>現在 ${floorGlyph(floorNo())}</b>`, { tag: "div" })}</div>`;
+      return `<div class="event-floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>${floorGlyph(floorNo())}</b>`, { tag: "div" })}</div>`;
     }
     function floorMax() { return dungeonFloors; }
     function floorLabel() { return `最大${floorMax()}Ｆ`; }
@@ -13067,14 +13133,36 @@
       return !!eventBattleKind();
     }
 
+    let floorAnnounceToken = 0;
+
+    // 入口の祝福と、階層が進まない戦闘では出さない。
+    function announceThisFloor() {
+      if (isEventBattle()) return false;
+      if (route[0] === "出来事:祝福" && battleIndex === 0) return false;
+      return true;
+    }
+
+    // 黒の切り替えが明けてから階を出す。裏で始めると、2階から3階へ進むときに見えない。
     function openBattleIntro() {
+      floorAnnounceToken += 1;
       blackFade(() => {
         const eventFight = isEventBattle();
-        floorCall = !eventFight;
+        const token = ++floorAnnounceToken;
+        floorCall = false;
         encounter = eventFight;
         intentShown = false;
         render();
-        timer = setTimeout(eventFight ? beginEncounter : showEncounter, eventFight ? 1600 : 1400);
+        if (eventFight) {
+          timer = setTimeout(beginEncounter, 1600);
+          return;
+        }
+        setTimeout(() => {
+          if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
+          floorCall = true;
+          encounter = false;
+          render();
+          timer = setTimeout(showEncounter, 1600);
+        }, 480);
       });
     }
     function insertAhead(node) {
@@ -13133,27 +13221,20 @@
       const blessing = route[0] === "出来事:祝福";
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const slotFixed = roadFixed(node, i);
-        const known = Boolean(node) || slotFixed;
-        const face = known
-          ? (node ? roadFace(node) : { src: "path-fight.jpg?v=5", label: "戦闘" })
-          : { label: "" };
+        const show = !!node && (i <= battleIndex || roadPlacedAhead(i) || node === DUNGEON.boss);
+        const face = show ? roadFace(node) : { label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i aria-hidden="true"></i>`;
         const capFloor = `<span class="road-floor">${floor}</span>`;
-        const fixed = slotFixed;
-        const tone = known ? roadTone(node) : "";
-        const name = known && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
-        const lock = fixed
-          ? `<span class="road-lock" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5.5" y="11" width="13" height="9.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8.5 11V8.6a3.5 3.5 0 0 1 7 0V11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="15.6" r="1.5" fill="currentColor"/></svg></span>`
-          : "";
+        const tone = show ? roadTone(node) : "";
+        const name = show && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
         const here = state === "now"
           ? `<span class="road-here-mark" aria-label="現在地"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.7 2 6 4.8 6 8.2c0 4.5 6 13.8 6 13.8s6-9.3 6-13.8C18 4.8 15.3 2 12 2zm0 5.4a2.7 2.7 0 1 1 0 5.4 2.7 2.7 0 0 1 0-5.4z" fill="currentColor"/></svg><b>現在地</b></span>`
           : "";
-        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${fixed ? " fixed" : ""}${tone ? ` tone-${tone}` : ""}" data-road="${i}">${here}${icon}${lock}<span class="road-cap">${capFloor}${name}</span></li>`;
+        return `<li class="road-node ${state}${face.boss ? " boss" : ""}${tone ? ` tone-${tone}` : ""}" data-road="${i}">${here}${icon}<span class="road-cap">${capFloor}${name}</span></li>`;
       }).join("");
       const pad = battleIndex === 0 && !isBlessingFloor0() ? `<li class="road-node pad" aria-hidden="true"></li>` : "";
       return `<section class="road-map" aria-label="マップ"><h2>マップ</h2><ol>${rows}${pad}</ol><button type="button" class="road-back" data-action="road-home" hidden>現在地に戻る</button></section>`;
@@ -13292,7 +13373,15 @@
         const foe = enemyByName("物乞い");
         return { ...foe, plus: 0 };
       }
-      const foe = enemyByName(routeFoeName(route[battleIndex]) || DUNGEON.boss);
+      const node = bindEliteNode(route[battleIndex], battleIndex);
+      if (String(node).startsWith("強敵:")) {
+        const who = routeFoeName(node);
+        const foe = isEliteStar(who)
+          ? enemyByName(who)
+          : ENEMIES.find((item) => isEliteStar(item.name));
+        if (foe) return { ...foe, plus: foeRepeat() };
+      }
+      const foe = enemyByName(routeFoeName(node) || DUNGEON.boss);
       return { ...foe, plus: foeRepeat() };
     }
 
@@ -13419,7 +13508,7 @@
     // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵はまだ無い。
     const LOOT_RELICS = [
       ["whetstone", "戦士の砥石", 1, "戦闘開始時、ATK+1。戦闘中ずっと。", "openAtk"],
-      ["guard-charm", "守護の護符", 1, "戦闘開始時、DEF+1。戦闘中ずっと。", "openDef"],
+      ["guard-charm", "守護の護符", 1, "戦闘開始時 DEF+1", "openDef"],
       ["travel-cloak", "旅人のマント", 1, "戦闘開始時、ブロック8を得る。", "openBlock"],
       ["duel-bell", "決闘の鐘", 1, "各戦闘の1ターン目、最初のアタックダメージ+5。", "bell"],
       ["swift-boots", "俊足のブーツ", 2, "戦闘開始時、カードを2枚引く。", "openDraw"],
@@ -15139,7 +15228,7 @@
     }
 
     const SMITH_NUM = ["damage", "block", "heal", "focus", "poison", "thorns", "draw", "parryAdd", "expose", "fullBonus", "safeBonus", "kick", "shave", "nextDraw", "redTimes", "counter", "burn", "hits", "critChance"];
-    const SMITH_FLAG = ["parry", "press", "power", "rage", "during", "flash", "spite", "burst", "headbutt", "poise", "guardBreak", "fullOnly", "finisher", "knife", "doubleNext", "masterOnce", "magicParry", "pride", "step", "coward", "instant", "quick", "permanent", "keep", "halfOnly", "burnFirst", "stealHand", "legion", "slack"];
+    const SMITH_FLAG = ["parry", "press", "power", "rage", "during", "flash", "spite", "burst", "headbutt", "poise", "guardBreak", "fullOnly", "finisher", "knife", "doubleNext", "masterOnce", "magicParry", "pride", "step", "coward", "instant", "quick", "permanent", "keep", "halfOnly", "burnFirst", "stealTop", "legion", "slack"];
 
     function mixEffectText(a, b) {
       const lines = [];
@@ -15497,6 +15586,7 @@
           addBurn(enemy, card.burn);
           log(`${heroName()}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
         }
+        if (phase !== "resolve" && enemy && enemy.hp <= 0 && !outcome) scheduleFinish("win");
         return true;
       }
       if (card.curseDoll && enemy) {
@@ -15769,6 +15859,10 @@
 
     function resolveCard(card) {
       card = scaledResolvedCard(card);
+      if (card && card.stealTop && !card.stealBusy) {
+        stealArmed = { card, caster: "player" };
+        return;
+      }
       if (card && (card.chapel || card.name === "礼拝堂")) {
         beginLootChoice("chapel");
         log(`${heroName()}は礼拝堂。いまの手札から、4枚まで消せる。`, card);
@@ -16094,6 +16188,10 @@
         placeUsedCard(card, "hand");
         note = "";
         pullFromBracelets();
+        if (outcome || phase === "end") {
+          render();
+          return true;
+        }
         if (finishIfStuck()) return true;
         render();
         return true;
@@ -16624,6 +16722,20 @@
       return maxWait;
     }
 
+    function dumpUnusedHand() {
+      captureHandDumpFlights();
+      const dumped = hand.filter((card) => card && !card.keep && !isItemCard(card));
+      if (!dumped.length) {
+        pendingHandDumpFly.forEach((item) => item.ghost.remove());
+        pendingHandDumpFly = [];
+        return 0;
+      }
+      discard.push(...dumped);
+      hand = hand.filter((card) => card && (card.keep || isItemCard(card)));
+      settleKeptHand();
+      return dumped.length;
+    }
+
     function captureHandDumpFlights() {
       pendingHandDumpFly.forEach((item) => item.ghost.remove());
       pendingHandDumpFly = [];
@@ -16784,9 +16896,8 @@
         playLegion(card);
         return;
       }
-      if (card.stealHand) {
-        takeEnemyHit((card.damage || 5) + (Number(enemy.atk) || 0), card);
-        stealOneHand();
+      if (card.stealTop && !card.stealBusy) {
+        stealArmed = { card, caster: "enemy" };
         return;
       }
       if (card.hits && card.damage) {
@@ -16831,9 +16942,7 @@
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
       if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 });
       if (who === "コボルド") return wrap({ name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "orange", flash: true, spite: true, stars: 1 });
-      if (who === "ミノタウロス") {
-        return wrap({ name: "ミノスの一撃", cost: 3, text: "30ダメージ\nクリティカル20%", damage: 30, kind: "attack", critChance: 20, stars: 3 });
-      }
+      if (who === "ミノタウロス") return null;
       if (who === "トロール") {
         return wrap({ name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true });
       }
@@ -16852,15 +16961,107 @@
       enemyUseCard(trait);
     }
 
-    function stealOneHand() {
-      if (!hand.length) return;
-      const index = Math.floor(Math.random() * hand.length);
-      const taken = hand.splice(index, 1)[0];
-      enemyLoop.push({ ...taken });
-      log(`${enemy.name}は${taken.name}を山札に入れた。戦闘が終わると戻る。`, taken, true);
+    let stealArmed = null;
+    let stealArrive = null;
+
+    function settleStealArrive() {
+      if (!stealArrive) return;
+      const arriving = stealArrive;
+      stealArrive = null;
+      if (!arriving.card) return;
+      if (arriving.owner === "player") discard.push(arriving.card);
+      else foeDiscard.push({ ...arriving.card });
+    }
+
+    function flyBetween(fromEl, play, done) {
+      const reveal = () => {
+        const wrap = play && play.closest(".play-card");
+        if (wrap) wrap.classList.remove("await-draw");
+        if (stealArrive) stealArrive.hide = false;
+      };
+      if (!play || !play.isConnected || !fromEl || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        reveal();
+        done();
+        return;
+      }
+      const from = stageFrameOf(fromEl);
+      const to = stageFrameOf(play);
+      if (!from.w || !to.w) {
+        reveal();
+        done();
+        return;
+      }
+      const ghost = play.cloneNode(true);
+      ghost.classList.add("fly-card");
+      ghost.style.visibility = "visible";
+      ghost.style.position = "fixed";
+      ghost.style.zIndex = "70";
+      ghost.style.left = `${to.left}px`;
+      ghost.style.top = `${to.top}px`;
+      ghost.style.width = `${to.w}px`;
+      ghost.style.height = `${to.h}px`;
+      ghost.style.margin = "0";
+      ghost.style.transition = "none";
+      ghost.style.transformOrigin = "center center";
+      const startScale = from.h / Math.max(1, to.h);
+      ghost.style.transform = `translate(${from.cx - to.cx}px, ${from.cy - to.cy}px) scale(${startScale})`;
+      mountFloat(ghost);
+      let landed = false;
+      const finish = () => {
+        if (landed) return;
+        landed = true;
+        ghost.remove();
+        reveal();
+        done();
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ghost.style.transition = "transform 1.05s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transform = "translate(0px, 0px) scale(1)";
+        });
+      });
+      ghost.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 1180);
+    }
+
+    function beginStealTop(casterCard, caster, done) {
+      if (caster === "enemy") {
+        if (!deck.length) {
+          log(`${enemy.name}は${casterCard.name}。相手の山札が無い。`, casterCard, true);
+          done();
+          return;
+        }
+        const taken = deck.pop();
+        stealArrive = { card: taken, owner: "player", side: "foe", hide: true };
+        log(`${enemy.name}は${casterCard.name}。${taken.name}を使う。`, casterCard, true);
+        render();
+        const play = document.querySelector(".play-side.foe .play-card.steal-arrive .card");
+        const fromEl = document.querySelector('[data-pile="deck"] .pile-card');
+        flyBetween(fromEl, play, () => {
+          enemyUseCard({ ...taken, stealBusy: true });
+          done();
+        });
+        return;
+      }
+      const taken = takeDeckCard();
+      if (!taken) {
+        log(`${heroName()}は${casterCard.name}。相手の山札が無い。`, casterCard);
+        done();
+        return;
+      }
+      stealArrive = { card: taken, owner: "enemy", side: "mine", hide: true };
+      log(`${heroName()}は${casterCard.name}。${taken.name}を使う。`, casterCard);
+      render();
+      const play = document.querySelector(".play-side.mine .play-card.steal-arrive .card");
+      const fromEl = document.querySelector(".foe-pile .pile-card");
+      flyBetween(fromEl, play, () => {
+        resolveCard({ ...taken, stealBusy: true });
+        done();
+      });
     }
 
     function leaveFoeCard() {
+      settleStealArrive();
       timer = null;
       if (outcome) return;
       captureFoeLeave();
@@ -16928,10 +17129,12 @@
     }
 
     function finishResolve() {
+      settleStealArrive();
       timer = null;
       foeTurnAnnounced = false;
       scrapPlay();
       banner = "";
+      const dumped = dumpUnusedHand();
       if (tickPoison("enemy")) {
         scheduleFinish("win");
         return;
@@ -16939,15 +17142,17 @@
       const flyWait = pendingPlayClearFly.length
         ? 560 + (pendingPlayClearFly.length - 1) * 70
         : 0;
+      const handFlyWait = dumped ? 560 + (dumped - 1) * 70 : 0;
       const foeFlyWait = pendingFoeLeaveFly.length ? 560 : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       render();
-      const wait = Math.max(flyWait, foeFlyWait, poisonWait);
+      const wait = Math.max(flyWait, handFlyWait, foeFlyWait, poisonWait);
       if (wait) timer = setTimeout(startPlayerTurn, wait);
       else startPlayerTurn();
     }
 
     function stepResolve() {
+      settleStealArrive();
       timer = null;
       const enemyIndex = inPlay.length;
       const foeEnd = enemyIndex + foePlan.length;
@@ -16973,6 +17178,34 @@
         const played = inPlay[index];
         player.effectFactor = effectFactorFor(index);
         resolveCard(played);
+        if (stealArmed && stealArmed.caster === "player") {
+          const armed = stealArmed;
+          stealArmed = null;
+          beginStealTop(armed.card, "player", () => {
+            player.effectFactor = 1;
+            if (played && played.keep) played.resolved = true;
+            noteMastery(played);
+            if (masteryOffer) {
+              persistSave(true);
+              render();
+              return;
+            }
+            if (enemy.hp <= 0) {
+              scrapPlay();
+              scheduleFinish("win");
+              return;
+            }
+            const guardKind = fxGuard;
+            const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
+            const slashCount = fxSlashes.length;
+            const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
+            const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+            render();
+            const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0);
+            timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
+          });
+          return;
+        }
         if (enemy.hp > 0 && anyBracelet("twice") && inPlay.length === 1 && index === 0) resolveCard(played);
         player.effectFactor = 1;
         if (played && played.keep) played.resolved = true;
@@ -17003,6 +17236,35 @@
           else if (step.card) {
             const live = applyEnemyHidden(step.card, enemyNow());
             enemyUseCard(live);
+            if (stealArmed && stealArmed.caster === "enemy") {
+              const armed = stealArmed;
+              stealArmed = null;
+              beginStealTop(armed.card, "enemy", () => {
+                if (!isFlashCard(live)) foeDiscard.push({ ...live });
+                if (enemy && enemy.hp <= 0) {
+                  scrapPlay();
+                  scheduleFinish("win");
+                  return;
+                }
+                if (player.hp <= 0) {
+                  scrapPlay();
+                  scheduleFinish("lose");
+                  return;
+                }
+                const guardKind = fxGuard;
+                const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
+                const slashCount = fxSlashes.length;
+                const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
+                const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+                const statusWardWait = fxStatusWard.length ? 1100 : 0;
+                const buffWait = fxFoeBuff ? 1100 : 0;
+                render();
+                const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, statusWardWait, buffWait);
+                const more = foeIndex + 1 < foePlan.length;
+                timer = setTimeout(more ? stepResolve : leaveFoeCard, wait);
+              });
+              return;
+            }
             if (!isFlashCard(live)) foeDiscard.push({ ...live });
           }
         }
@@ -17095,11 +17357,6 @@
       resolveAt = 0;
       foeTurnAnnounced = false;
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
-      captureHandDumpFlights();
-      const kept = hand.filter((card) => card.keep || isItemCard(card));
-      discard.push(...hand.filter((card) => !card.keep && !isItemCard(card)));
-      hand = kept;
-      settleKeptHand();
       note = "";
       const poisoned = tickPoison("player");
       const usedBlock = (player.blocksPlayed || 0) > 0 || inPlay.some((card) => cardKind(card) === "block");
@@ -17289,11 +17546,13 @@
     }
 
     function scheduleFinish(kind) {
+      settleStealArrive();
       if (kind === "lose" && tryPhoenixRevive()) {
         if (phase === "end") phase = "player";
         render();
         return;
       }
+      if (hand.some((card) => card && !card.keep && !isItemCard(card))) dumpUnusedHand();
       phase = "end";
       const guardKind = fxGuard;
       const playerNumber = fxHurt && fxHit && fxHit.side === "player" && fxHit.n > 0;
@@ -18174,6 +18433,16 @@
       return { name: "火のエンチャント", sub: "デッキのカード1枚にATK+2付与", image: "enchant-fire.jpg?v=2" };
     }
 
+    function enchantEffectNote(kind, card) {
+      if (kind === "water") return "DEF+2";
+      if (kind === "light") return "コスト-1。0未満にはしない";
+      if (kind === "dark") {
+        const id = (card && (card.enchantWord || runEnchantWords[card.name])) || "";
+        return id ? `${darkWordLabel(id)}を付与` : "まだ無いキーワードを一つ付与";
+      }
+      return "ATK+2";
+    }
+
     function darkWordLabel(id) {
       if (id === "keep") return "キープ";
       if (id === "flash") return "フラッシュ";
@@ -18224,9 +18493,17 @@
       }
     }
 
+    function canTakeEnchant(card, elem) {
+      if (!card || !card.name || isItemCard(card)) return false;
+      if (elem === "fire") return (Number(card.damage) || 0) > 0;
+      return true;
+    }
+
     function grantEnchant(name, kind) {
       if (!name || runEnchants[name]) return "";
       if (kind !== "fire" && kind !== "water" && kind !== "light" && kind !== "dark") return "";
+      const sample = runDeck().find((card) => card && card.name === name);
+      if (!canTakeEnchant(sample, kind)) return "";
       let word = "";
       if (kind === "dark") {
         const raw = deckCore().find((card) => card && card.name === name) || {};
@@ -18240,14 +18517,23 @@
       return word;
     }
 
-    function enchantTargets() {
+    function enchantTargets(elem) {
       const names = [];
       for (const card of runDeck()) {
         if (!card || !card.name || names.indexOf(card.name) >= 0) continue;
         if (runEnchants[card.name]) continue;
+        if (!canTakeEnchant(card, elem)) continue;
         names.push(card.name);
       }
       return names;
+    }
+
+    function rollEnchantElem() {
+      for (let n = 0; n < 12; n += 1) {
+        const elem = pickWeighted(ENCHANT_ELEMS, enchantWeight);
+        if (enchantTargets(elem).length) return elem;
+      }
+      return "";
     }
 
     function rollBlessPicks() {
@@ -18259,9 +18545,9 @@
         else if (kind === "play") picks.push({ kind, label: "皮の手袋" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
-        else if (kind === "enchant" && enchantTargets(true).length) {
-          const elem = pickWeighted(ENCHANT_ELEMS, enchantWeight);
-          picks.push({ kind, elem, label: enchantFace(elem).name });
+        else if (kind === "enchant") {
+          const elem = rollEnchantElem();
+          if (elem) picks.push({ kind, elem, label: enchantFace(elem).name });
         }
       }
       return picks;
@@ -18322,7 +18608,7 @@
           return;
         }
         if (pick.kind === "enchant") {
-          if (!enchantTargets(true).length) return;
+          if (!enchantTargets(pick.elem).length) return;
           blessEnchantAt = index;
           blessCardName = "";
           enchantPop = "bless";
@@ -18350,7 +18636,7 @@
       const pick = blessPicks[blessEnchantAt];
       const name = blessCardName;
       if (!pick || pick.kind !== "enchant" || !name) return;
-      if (runEnchants[name] || enchantTargets().indexOf(name) < 0) return;
+      if (runEnchants[name] || enchantTargets(pick.elem).indexOf(name) < 0) return;
       const word = grantEnchant(name, pick.elem);
       if (pick.elem === "dark" && !word) return;
       noteBless(blessChoiceText(pick, name, word));
@@ -18391,13 +18677,14 @@
       const before = card ? `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>` : "";
       const afterCard = card && elem ? previewEnchantCard(card, elem) : null;
       const after = afterCard ? `<div class="card preview ${cardKind(afterCard)}">${cardFace(afterCard, false)}</div>` : "";
-      return `<div class="enchant-compare" aria-label="エンチャントの前後"><div class="compare-slot"><p>エンチャント前</p><div class="compare-face">${before}</div></div><p class="compare-arrow" aria-hidden="true">→</p><div class="compare-slot"><p>エンチャント後</p><div class="compare-face">${after}</div></div></div>`;
+      const well = (inner) => `<div class="compare-face"><div class="compare-well">${inner}</div></div>`;
+      return `<div class="enchant-compare" aria-label="エンチャントの前後"><div class="compare-slot"><p>エンチャント前</p>${well(before)}</div><p class="compare-arrow" aria-hidden="true">→</p><div class="compare-slot"><p>エンチャント後</p>${well(after)}</div></div>`;
     }
 
     function enchantPickOverlay() {
       if (enchantPop !== "bless" && enchantPop !== "smith" && enchantPop !== "smith-elem" && enchantPop !== "victory") return "";
-      if (enchantPop === "smith-elem") {
-        const wired = ENCHANT_ELEMS.map((id) => {
+        if (enchantPop === "smith-elem") {
+        const wired = ENCHANT_ELEMS.filter((id) => enchantTargets(id).length).map((id) => {
           return `<button type="button" class="enchant-elem" data-action="smith-elem" data-elem="${id}">${enchantAwardHtml(id)}</button>`;
         }).join("");
         return `<div class="overlay deck-view enchant-pick"><div class="panel"><h2>エンチャント</h2><p class="deck-lead">どれを付けますか。</p><div class="elem-row">${wired}</div>${menuButton("もどる", "enchant-back")}</div></div>`;
@@ -18413,7 +18700,7 @@
       for (const card of runDeck()) {
         if (!card || !card.name || seen[card.name]) continue;
         seen[card.name] = true;
-        if (runEnchants[card.name]) blocked.push(card);
+        if (runEnchants[card.name] || !canTakeEnchant(card, elem)) blocked.push(card);
         else cards.push(card);
       }
       const pickedCard = cards.find((card) => card.name === pickedName) || null;
@@ -18619,10 +18906,20 @@
     }
 
     function enterFloorScreen() {
+      floorAnnounceToken += 1;
       blackFade(() => {
         screen = "floor";
+        const token = ++floorAnnounceToken;
+        const announce = announceThisFloor();
+        eventFloorCall = false;
         render();
         if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+        if (!announce) return;
+        setTimeout(() => {
+          if (token !== floorAnnounceToken || screen !== "floor") return;
+          eventFloorCall = true;
+          render();
+        }, 480);
       });
     }
 
@@ -19484,11 +19781,10 @@
       const threatHtml = span.loss > 0 ? `<i class="hp-threat" style="left:${span.stayPct}%;width:${span.lossPct}%"></i>` : "";
       const aria = span.loss > 0 ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(span.loss)}減る` : `HP ${Math.round(hp)}/${Math.round(cap)}`;
       const threatHp = Math.max(0, Number(threat) || 0);
-      const demonHtml = demon == null ? "" : (() => {
-        const n = Math.max(0, Math.round(Number(demon) || 0));
-        const pct = Math.max(0, Math.min(100, n));
-        return `<div class="demon-row" aria-label="悪魔化 ${n}"><div class="meter demon" style="width:${pct}%"><span></span></div><span class="demon-line">悪魔化<b>${n}</b></span></div>`;
-      })();
+      const demonN = Math.max(0, Math.round(Number(demon) || 0));
+      const demonHtml = demonN > 0
+        ? `<div class="demon-row" aria-label="悪魔化 ${demonN}"><div class="meter demon" style="width:${Math.max(0, Math.min(100, demonN))}%"><span></span></div><span class="demon-line">悪魔化<b>${demonN}</b></span></div>`
+        : "";
       return `<div class="meters">${shield}<div class="meter hp" data-threat="${threatHp}" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${Math.max(0, Math.min(100, (hp / cap) * 100))}%"></span>${threatHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>${demonHtml}</div>`;
     }
 
@@ -19521,7 +19817,8 @@
       const parryBadge = parried
         ? `<div class="shield-badge parry-badge${parryFresh ? " fresh" : ""}${extra && extra.parryFromShield ? " from-shield" : ""}" aria-label="パリィ ${parryN}">${plateShieldSvg(true)}${parryStacks ? `<b>${parryN}</b>` : ""}</div>`
         : "";
-      const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}`;
+      const demonOn = extra && Number(extra.demon) > 0 ? " has-demon" : "";
+      const mods = `${low}${block > 0 ? " shielded" : ""}${parried ? " parried" : ""}${demonOn}`;
       const invuln = parried ? ` aria-label="${esc(name)} パリィ中・次の攻撃を無効"` : "";
       const badges = `<span class="plate-badges">${extra && extra.badges ? extra.badges : ""}</span>`;
       const stars = extra && extra.stars
@@ -20139,7 +20436,7 @@
           <section class="odds-block">
             <h2>戦闘の相手</h2>
             <ul>
-              <li>戦闘マスは★と★★だけです。1Fの初戦は★だけ。階がボス階の1/3を超えると★★が混ざります。★★★は強敵の道だけです。洞窟のプールは全員（物乞いはイベント後）。古城・深淵の★と★★は未決定です。</li>
+              <li>戦闘マスは★と★★だけです。1Fの初戦は★だけ。階がボス階の1/3を超えると★★が混ざります。強敵の相手は★3だけです。ボスは出ません。洞窟のプールは全員（物乞いはイベント後）。古城・深淵の★と★★は未決定です。</li>
               <li>物乞いだけは、そのランでイベント戦闘をしたあとの道中に入ります。</li>
               <li>ボス戦の相手は固定です。ハデスは出しません。</li>
             </ul>
@@ -20562,7 +20859,7 @@
       if (slot) slot.innerHTML = shown ? dungeonClearFaces(shown.floors) : "";
       paintChallengeStart();
       const start = root.querySelector('[data-action="dungeon-enter"]');
-      if (start) start.classList.toggle("framed", !start.disabled && !openRunSave());
+      if (start) start.classList.toggle("framed", !start.disabled);
     }
 
     function bindDungeonHover() {
@@ -21391,27 +21688,41 @@
       return `<div class="path-rail" aria-hidden="true"><span class="rail-pad"></span><span class="rail-floors">${marks}</span></div>`;
     }
 
+    function pathNodeFloor(step) {
+      if (routeOfferFloors.length) {
+        const at = routeOfferFloors[step];
+        if (at != null && floorAt[at] != null) return Number(floorAt[at]);
+      }
+      return nextFloorNumber();
+    }
+
+    function pathNodeHtml(id, floorNum, key) {
+      const face = PATHS[id];
+      if (!face) return "";
+      const picture = face.image ? `<img src="${face.image}" alt="">` : `<i aria-hidden="true"></i>`;
+      const floor = floorNum !== "" && floorNum != null ? `<span class="road-floor">${floorNum}F</span>` : "";
+      const cap = `<span class="road-cap">${floor}<span class="road-name">${esc(face.name)}</span></span>`;
+      return `${picture}${cap}${key || ""}`;
+    }
+
     function pathButtonsHtml() {
       if (routeOffers.some((row) => row.length > 1)) {
         const letters = ["A", "B", "C"];
         return routeOffers.map((cells, index) => {
           const first = cells[0];
           if (!PATHS[first]) return "";
-          const steps = cells.map((id) => {
-            const face = PATHS[id];
-            const picture = face && face.image ? `<img src="${face.image}" alt="">` : "";
-            return `<span class="route-step path-${id}"><span class="path-art">${picture}</span><span class="route-name">${esc(face ? face.name : id)}</span></span>`;
+          const steps = cells.map((id, step) => {
+            return `<span class="route-step path-node path-${id} tone-${pathToneOf(id)}">${pathNodeHtml(id, pathNodeFloor(step))}</span>`;
           }).reverse().join("");
           return `<button type="button" class="path-route path-tone-${routeTone(cells)}" data-action="reward-path" data-route="${index}" data-path="${first}"><b class="route-letter">ルート${letters[index] || index + 1}</b><span class="route-stack">${steps}</span></button>`;
         }).join("");
       }
       const ids = rewardPaths || [];
       const key = pathChoiceForced() ? pathKeyMark() : "";
+      const floor = nextFloorNumber();
       return ids.map((id) => {
-        const path = PATHS[id];
-        if (!path) return "";
-        const picture = path.image ? `<img src="${path.image}" alt="">` : "";
-        return `<button type="button" class="path-${id}" data-action="reward-path" data-path="${id}"><b class="path-name">${esc(path.name)}</b><span class="path-art">${picture}</span><span class="path-text">${pathBlurb(id, path)}</span>${key}</button>`;
+        if (!PATHS[id]) return "";
+        return `<button type="button" class="path-node path-${id} tone-${pathToneOf(id)}" data-action="reward-path" data-path="${id}">${pathNodeHtml(id, floor, key)}</button>`;
       }).join("");
     }
 
@@ -21422,8 +21733,7 @@
       }
       const note = pathForcedNote();
       const line = note ? `<p class="path-fixed">${esc(note)}</p>` : "";
-      const rail = routeOffers.some((row) => row.length > 1) ? pathFloorRail() : "";
-      return `${line}<div class="path-list${pathChoiceForced() ? " forced" : ""}">${rail}${pathButtonsHtml()}</div>`;
+      return `${line}<div class="path-list${pathChoiceForced() ? " forced" : ""}">${pathButtonsHtml()}</div>`;
     }
 
     function eventShell(body, opt) {
@@ -21436,7 +21746,7 @@
     function renderFloor() {
       if (floorPhase === "paths") {
         if (player && enemy) renderBattle();
-        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathFloorNowHtml()}${pathListHtml()}</div></div></div>`);
+        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathListHtml()}</div></div></div>`);
         runEntrance = false;
         return;
       }
@@ -21507,7 +21817,7 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-stack"><div class="event-title">${title}</div><div class="event-side">${titleGap}<div class="event-copy">${note}</div>${wornInCopy}<div class="event-choice">${choiceBody}</div></div></div></div>`;
       const choiceShell = lead;
       const roadDeck = blessMidRoad() ? `<div class="event-deck">${pileMarkup("deck", runDeck().length)}</div>` : "";
-      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`, floorKind === "探索" ? { gear: false } : undefined);
+      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "修行" ? " train" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`, floorKind === "探索" ? { gear: false } : undefined);
       runEntrance = false;
     }
 
@@ -21563,46 +21873,28 @@
     }
 
     function fitPathArtToRoad() {
-      const arts = [...document.querySelectorAll(".overlay.paths .path-art")];
-      if (!arts.length) return;
+      const nodes = [...document.querySelectorAll(".overlay.paths .path-node")];
+      if (!nodes.length) return;
       const map = visibleRoadMap();
-      const sample = map && map.querySelector(".road-node:not(.pad) > img, .road-node:not(.pad) > i");
+      const sample = map && map.querySelector(".road-node:not(.pad)");
       if (!sample || sample.offsetWidth < 8 || sample.offsetHeight < 8) return;
       const w = sample.offsetWidth;
       const h = sample.offsetHeight;
-      arts.forEach((art) => {
-        art.style.flex = "none";
-        art.style.alignSelf = "center";
-        art.style.width = `${w}px`;
-        art.style.height = `${h}px`;
-        art.style.margin = "0";
+      nodes.forEach((el) => {
+        if (el.classList.contains("route-step")) {
+          el.style.width = "100%";
+          el.style.flex = `0 0 ${h}px`;
+          el.style.height = `${h}px`;
+          return;
+        }
+        el.style.width = `${w}px`;
+        el.style.height = `${h}px`;
+        el.style.flex = "0 0 auto";
+        el.style.maxHeight = "none";
+        el.style.aspectRatio = "auto";
       });
       document.querySelectorAll(".overlay.paths .path-list > button.path-route").forEach((btn) => {
         btn.style.width = `${w}px`;
-      });
-      document.querySelectorAll(".overlay.paths .path-list > button:not(.path-route)").forEach((btn) => {
-        btn.style.width = `${w}px`;
-        btn.style.aspectRatio = "auto";
-        btn.style.height = "auto";
-        btn.style.maxHeight = "none";
-      });
-      const steps = [...document.querySelectorAll(".overlay.paths .route-step")];
-      if (!steps.length) return;
-      steps.forEach((el) => {
-        el.style.height = "auto";
-        el.style.flex = "0 0 auto";
-      });
-      let stepH = 128;
-      steps.forEach((el) => {
-        stepH = Math.max(stepH, el.offsetHeight);
-      });
-      steps.forEach((el) => {
-        el.style.flex = `0 0 ${stepH}px`;
-        el.style.height = `${stepH}px`;
-      });
-      document.querySelectorAll(".overlay.paths .rail-floors > span").forEach((el) => {
-        el.style.flex = `0 0 ${stepH}px`;
-        el.style.height = `${stepH}px`;
       });
     }
 
@@ -22296,7 +22588,7 @@
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
       if (card.quick && !item) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
-      if (card.name === "弱者の意地") keywords.push(kwLine("パワー", POWER_NOTE));
+      if (cardKind(card) === "orange") keywords.push(kwLine("パワー", POWER_NOTE));
       else if (isFlashCard(card) && !item) keywords.push(kwLine("フラッシュ", FLASH_NOTE));
       if (card.burst && !item) keywords.push(kwLine("バースト", BURST_NOTE));
       if (item) keywords.push(kwLine("アイテム", ITEM_NOTE));
@@ -22319,8 +22611,10 @@
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
       const enchantKind = !foe && ["fire", "water", "light", "dark"].includes(card.enchant || runEnchants[card.name]) ? (card.enchant || runEnchants[card.name]) : "";
-      const gem = enchantKind ? `<span class="enchant-gem" aria-label="${esc(enchantFace(enchantKind).name)}"><img src="${enchantFace(enchantKind).image}" alt=""></span>` : "";
-      return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div><div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      const enchant = enchantKind ? enchantFace(enchantKind) : null;
+      const gem = enchant ? `<span class="enchant-gem" aria-label="${esc(enchant.name)}"><img src="${enchant.image}" alt=""></span>` : "";
+      const enchantHint = enchant ? `<span class="hint enchant-note" data-word="${esc(enchant.name)}">${esc(enchant.name)}<i>${esc(enchantEffectNote(enchantKind, card))}</i></span>` : "";
+      return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
@@ -22331,6 +22625,7 @@
       if (on) bits.push("on");
       if (extra && extra.held) bits.push("held");
       if (extra && extra.awaitDraw) bits.push("await-draw");
+      if (extra && extra.steal) bits.push("steal-arrive");
       const attrs = recall ? ` data-unplay="${recallIndex}" class="${bits.join(" ")}"` : ` class="${bits.join(" ")}"`;
       const label = recall
         ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す`
@@ -22392,6 +22687,9 @@
         parryHitsLast: Math.max(0, Number(player.parryHitsLast) || 0),
         masterOnce: !!player.masterOnce,
         thorns: thornCount(player),
+        demonAura: auraNow(),
+        dualSword: !!player.dualSword,
+        selfHp: 0,
       };
       const foe = {
         hp: enemy.hp,
@@ -22426,7 +22724,7 @@
       const breakShield = foeHadBlock && foe.block <= 0;
       if (foe.hp <= 0) {
         give.lethal = true;
-        return { give: forecastBag(give), take: null, breakShield, foeAtk: foe.atk };
+        return { give: forecastBag(give), take: scratchFoldSelf(null, mine), breakShield, foeAtk: foe.atk };
       }
       foe.block = 0;
       let take = null;
@@ -22456,11 +22754,29 @@
         }
         take = scratchEnemyRest(card, foe, take);
       }
+      take = scratchFoldSelf(take, mine);
       if (mine.hp <= 0) {
         if (!take) take = { raw: 0, hp: 0, show: true, lethal: true, shield: 0, status: 0 };
         else take.lethal = true;
       }
       return { give: forecastBag(give), take, breakShield, foeAtk: foe.atk };
+    }
+
+    function scratchPayDemon(mine, want) {
+      const room = Math.max(0, (Number(mine.hp) || 0) - 1);
+      const lost = Math.min(Math.max(0, Math.floor(Number(want) || 0)), room);
+      if (lost) mine.hp -= lost;
+      mine.selfHp = (Number(mine.selfHp) || 0) + lost;
+    }
+
+    function scratchFoldSelf(take, mine) {
+      const selfHp = Math.max(0, Number(mine && mine.selfHp) || 0);
+      if (!selfHp) return take;
+      if (!take) return { raw: selfHp, hp: selfHp, show: true, shield: 0, status: 0 };
+      take.hp += selfHp;
+      take.raw += selfHp;
+      take.show = true;
+      return take;
     }
 
     function forecastBag(bag) {
@@ -22487,6 +22803,7 @@
 
     function scratchPlayerCard(card, mine, foe, queue, give) {
       if (!card) return;
+      if (card.dualSword) mine.dualSword = true;
       if (card.thorns) {
         const stacks = Number(card.thorns) || 1;
         mine.thorns += stacks;
@@ -22537,6 +22854,30 @@
       if (card.parry && !card.damage && !card.block) {
         scratchGainParry(mine, 1);
         if (!card.heal && !card.burn && !card.poison && !card.draw && !card.expose && !card.thorns) return;
+      }
+      if (card.demon || card.demonHalf || card.demonSword || card.twinSword) {
+        const want = card.demonHalf ? Math.floor((Number(mine.maxHp) || 0) / 2) : (Number(card.demon) || 0);
+        if (want) scratchPayDemon(mine, want);
+        if (card.demonSword) {
+          const amount = Math.max(0, Number(card.damage) || 0) + (Number(mine.demonAura) || 0) + (Number(mine.atk) || 0);
+          scratchStrike(foe, give, amount);
+          if (mine.dualSword && foe.hp > 0) {
+            scratchPayDemon(mine, 1);
+            scratchStrike(foe, give, amount);
+          }
+          if (card.demonAura) mine.demonAura = (Number(mine.demonAura) || 0) + (Number(card.demonAura) || 0);
+          return;
+        }
+        if (card.twinSword) {
+          let best = 6;
+          for (const row of liveDemonSwords()) best = Math.max(best, Number(row.damage) || 0);
+          const amount = best + (Number(mine.demonAura) || 0) + (Number(mine.atk) || 0);
+          scratchStrike(foe, give, amount);
+          if (foe.hp > 0) scratchStrike(foe, give, amount);
+          return;
+        }
+        if (card.demonAura) mine.demonAura = (Number(mine.demonAura) || 0) + (Number(card.demonAura) || 0);
+        if (!card.damage && !card.block && !card.heal && !card.burn && !card.poison && !card.thorns) return;
       }
       if (card.press) {
         scratchStrike(foe, give, mine.block || 0);
@@ -22694,11 +23035,14 @@
         const hot = resolving && i === foeActive;
         return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !hot }) : "";
       }).join("");
+      const stealFace = stealArrive
+        ? playFace(stealArrive.card, true, true, false, null, { awaitDraw: !!stealArrive.hide, steal: true })
+        : "";
       const cast = playForecastHtml();
       return `<div class="use-board" aria-label="プレイエリア">
         <div class="use-split">
-          <div class="play-side mine use-half"><div class="play-cards">${mine}</div>${cast.give}</div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCards}</div>${cast.take}</div>
+          <div class="play-side mine use-half"><div class="play-cards">${mine}${stealArrive && stealArrive.side === "mine" ? stealFace : ""}</div>${cast.give}</div>
+          <div class="play-side foe use-half"><div class="play-cards">${foeCards}${stealArrive && stealArrive.side === "foe" ? stealFace : ""}</div>${cast.take}</div>
         </div>
         ${vsMarkup()}
       </div>`;
@@ -23651,8 +23995,8 @@
         return "";
       }
       if (kind !== "enchant") return "";
-      if (!enchantTargets().length) return "";
-      const elem = pickWeighted(ENCHANT_ELEMS, enchantWeight);
+      const elem = rollEnchantElem();
+      if (!elem) return "";
       const face = enchantFace(elem);
       victoryEnchant = { kind: "enchant", elem, name: "" };
       return face.name;
@@ -24066,7 +24410,7 @@
     function takeVictoryExtraKind(kind) {
       if (rewardStep !== "extra") return;
       if (kind === "enchant") {
-        if (victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+        if (victoryEnchant && victoryEnchant.elem && enchantTargets(victoryEnchant.elem).length) {
           victoryEnchant.name = "";
           enchantPop = "victory";
           persistSave(true);
@@ -24092,12 +24436,12 @@
 
     function takeVictoryExtra() {
       if (rewardStep !== "extra") return;
-      if (!(victoryGear || victoryItem) && victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+      if (!(victoryGear || victoryItem) && victoryEnchant && victoryEnchant.elem && enchantTargets(victoryEnchant.elem).length) {
         takeVictoryExtraKind("enchant");
         return;
       }
       const flights = collectHeldFlights();
-      if (victoryEnchant && victoryEnchant.elem && enchantTargets().length) {
+      if (victoryEnchant && victoryEnchant.elem && enchantTargets(victoryEnchant.elem).length) {
         victoryEnchant.name = "";
         enchantPop = "victory";
       }
@@ -24110,7 +24454,7 @@
       const elem = victoryEnchant && victoryEnchant.elem;
       const name = victoryEnchant && victoryEnchant.name;
       if (!elem || !name) return;
-      if (runEnchants[name] || enchantTargets().indexOf(name) < 0) return;
+      if (runEnchants[name] || enchantTargets(elem).indexOf(name) < 0) return;
       const word = grantEnchant(name, elem);
       if (elem === "dark" && !word) return;
       const face = enchantFace(elem);
@@ -24388,7 +24732,10 @@
       const named = pathNode(id);
       if (named) return named;
       if (id === "boss") return DUNGEON.boss;
-      if (id === "elite") return "強敵:";
+      if (id === "elite") {
+        const who = rollEliteName();
+        return who ? `強敵:${who}` : "強敵:";
+      }
       if (id === "unknown" || id === "lost") return "出来事:未知";
       return "戦闘";
     }
@@ -24415,7 +24762,7 @@
           const cell = steps.length - 1 - domIndex;
           const img = step.querySelector("img");
           const pathId = ([...step.classList].find((name) => name.startsWith("path-")) || "").slice(5);
-          const name = step.querySelector(".route-name");
+          const name = step.querySelector(".road-name");
           return {
             frame: stageFrameOf(img || step),
             src: img ? img.getAttribute("src") || "" : "",
@@ -24664,10 +25011,12 @@
         return;
       }
       if (id === "elite") {
-        const ready = pathAlreadyAtNext(id);
-        const foeName = ready ? "" : rollEliteName();
-        if (!ready && !foeName) return;
-        const place = ready ? null : () => placeNext(`強敵:${foeName}`);
+        const at = battleIndex + 1;
+        const current = route[at];
+        const seeded = current && String(current).startsWith("強敵:") ? current : "強敵:";
+        const named = bindEliteNode(seeded, null);
+        if (!isEliteStar(routeFoeName(named))) return;
+        const place = current === named ? null : () => placeNext(named);
         beginPathFlight(flight, place, 1);
         return;
       }
@@ -25026,7 +25375,7 @@
 
     function rewardOverlay() {
       if (choosingPath()) {
-        return `<div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathFloorNowHtml()}${pathListHtml()}</div></div>`;
+        return `<div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathListHtml()}</div></div>`;
       }
       if (outcome !== "win") return "";
       if (masteryOffer || lootChoice) return "";
@@ -25215,7 +25564,7 @@
           <div class="stage">
             <div class="enemy-field">
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), demon: demonGauge, tail: `${player.expose ? `<div class="hp-line"><span class="lbl">被ダメ</span><span class="num"><b>${player.expose}</b></span></div>` : ""}${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             <div class="plate-gear">${gearMarkup()}</div>
             </div>
             <div class="foe-stack">
@@ -25399,15 +25748,17 @@
       }
     }
 
-    // 底辺が一つの円に乗る。中央は上げず、端ほど下へ垂らす（少し切れても弧を優先）
-    function handArc(i, count, cardH) {
+    // 回転で内側の上角が持ち上がる。各カードの一番高い角を、中央の上端に揃える
+    function handArc(i, count, cardH, cardW) {
       const mid = (count - 1) / 2;
       const t = mid === 0 ? 0 : (i - mid) / mid;
       const fanMax = 16;
       const fan = Math.round(t * fanMax * 10) / 10;
-      const sag = cardH > 0 ? cardH * 0.12 : 52;
-      const arcR = sag / (1 - Math.cos((fanMax * Math.PI) / 180));
-      const drop = Math.round(arcR * (1 - Math.cos((fan * Math.PI) / 180)) * 10) / 10;
+      const h = cardH > 0 ? cardH : 240;
+      const w = cardW > 0 ? cardW : h * (204 / 300);
+      const a = Math.abs(fan) * Math.PI / 180;
+      const rise = Math.max(0, (w / 2) * Math.sin(a) - h * (1 - Math.cos(a)));
+      const drop = Math.round((rise + 2 * Math.abs(t)) * 10) / 10;
       return { fan, drop };
     }
 
@@ -25415,8 +25766,9 @@
       const cards = [...handEl.querySelectorAll(".card")];
       if (!cards.length) return;
       const cardH = cards[0].offsetHeight;
+      const cardW = cards[0].offsetWidth;
       cards.forEach((card, i) => {
-        const pose = handArc(i, cards.length, cardH);
+        const pose = handArc(i, cards.length, cardH, cardW);
         card.style.setProperty("--fan", `${pose.fan}deg`);
         card.style.setProperty("--drop", `${pose.drop}px`);
       });
@@ -25428,7 +25780,7 @@
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
       const cards = handEl.querySelectorAll(".card");
-      const base = 44 * 0.74;
+      const base = 56;
       handEl.style.setProperty("--hand-card-h", "100%");
       handEl.style.removeProperty("--hand-hang");
       const syncPiles = () => {
@@ -25874,11 +26226,12 @@
         }
         if (name === "smith-fuse-ok") fuseSmith(smithMat);
         if (name === "smith-name") {
-          smithName = action.dataset.name || "";
+          const picked = action.dataset.name || "";
+          if (enchantTargets(smithElem).indexOf(picked) >= 0) smithName = picked;
           render();
         }
         if (name === "smith-enchant-ok") {
-          if (!smithName || !smithElem || enchantTargets(false).indexOf(smithName) < 0) return;
+          if (!smithName || !smithElem || enchantTargets(smithElem).indexOf(smithName) < 0) return;
           enchantSmith(smithElem);
         }
         if (name === "enchant-back") {
@@ -25897,13 +26250,14 @@
           render();
         }
         if (name === "victory-enchant-pick") {
-          if (victoryEnchant) victoryEnchant.name = action.dataset.name || "";
+          const picked = action.dataset.name || "";
+          if (victoryEnchant && enchantTargets(victoryEnchant.elem).indexOf(picked) >= 0) victoryEnchant.name = picked;
           render();
         }
         if (name === "victory-enchant-ok") confirmVictoryEnchant();
         if (name === "smith-elem") {
           const elem = action.dataset.elem || "";
-          if (ENCHANT_ELEMS.indexOf(elem) < 0) return;
+          if (ENCHANT_ELEMS.indexOf(elem) < 0 || !enchantTargets(elem).length) return;
           smithElem = elem;
           smithName = "";
           enchantPop = "smith";
@@ -25916,7 +26270,9 @@
         if (name === "bless-pick") takeBless(Number(action.dataset.bless));
         if (name === "train-pick") takeTrain(Number(action.dataset.train));
         if (name === "bless-enchant-pick") {
-          blessCardName = action.dataset.name || "";
+          const picked = action.dataset.name || "";
+          const pick = blessPicks[blessEnchantAt];
+          if (pick && enchantTargets(pick.elem).indexOf(picked) >= 0) blessCardName = picked;
           render();
         }
         if (name === "bless-enchant-ok") confirmBlessEnchant();
