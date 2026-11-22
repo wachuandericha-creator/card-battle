@@ -178,7 +178,7 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 16px;
     }
     .road-map ol::-webkit-scrollbar {
       display: none;
@@ -190,7 +190,7 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      flex: 0 0 calc((100% - 24px) / 5 - 10px);
+      flex: 0 0 calc((100% - 64px) / 5 - 4px);
       min-height: 0;
       padding: 5px;
       overflow: hidden;
@@ -226,24 +226,14 @@
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
     .road-node.tone-fight { --road-line: #e02020; }
-    .road-node.tone-rest { --road-line: #6aa4e0; }
-    .road-node.tone-other { --road-line: #e2b03a; }
-    .road-node.tone-fight > img,
-    .road-node.tone-fight > i,
-    .road-node.tone-rest > img,
-    .road-node.tone-rest > i,
-    .road-node.tone-other > img,
-    .road-node.tone-other > i { background: var(--road-line); }
-    .road-node.tone-fight::after,
-    .road-node.tone-rest::after,
-    .road-node.tone-other::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      border-radius: inherit;
-      pointer-events: none;
-      box-shadow: inset 0 0 0 6px var(--road-line);
+    .road-node.tone-rest { --road-line: #1a6fe8; }
+    .road-node.tone-other { --road-line: #e4b15a; }
+    .road-node.tone-fight,
+    .road-node.tone-rest,
+    .road-node.tone-other {
+      padding: 6px;
+      background: var(--road-line);
+      box-shadow: 0 0 0 2px var(--road-line);
     }
     .road-node.now {
       z-index: 2;
@@ -251,23 +241,6 @@
       color: #fff6d0;
       border-radius: 10px;
       outline: none;
-      box-shadow: 0 0 16px 5px rgba(255, 214, 70, 0.82);
-      animation: here-pulse 1.1s ease-in-out infinite;
-    }
-    .road-node.now > img,
-    .road-node.now > i {
-      border-radius: 8px;
-      box-shadow: none;
-    }
-    .road-node.now::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      border-radius: inherit;
-      pointer-events: none;
-      box-shadow: inset 0 0 0 6px #e4b15a;
-      animation: here-line 1.1s ease-in-out infinite;
     }
     .road-back {
       position: absolute;
@@ -290,20 +263,6 @@
       cursor: pointer;
     }
     .road-back[hidden] { display: none; }
-    .road-node.now::before {
-      content: "";
-      position: absolute;
-      z-index: 3;
-      top: 8px;
-      left: 8px;
-      width: 22px;
-      height: 22px;
-      border-top: 4px solid #ffe766;
-      border-left: 4px solid #ffe766;
-      border-radius: 8px 0 0 0;
-      box-shadow: 0 0 12px rgba(255, 228, 100, 0.75);
-      pointer-events: none;
-    }
     .road-here-mark {
       position: absolute;
       z-index: 5;
@@ -341,14 +300,6 @@
       filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
     }
     .road-here-mark b { font-weight: 900; }
-    @keyframes here-pulse {
-      0%, 100% { box-shadow: 0 0 14px 4px rgba(255, 214, 70, 0.72); }
-      50% { box-shadow: 0 0 26px 8px rgba(255, 236, 140, 0.98); }
-    }
-    @keyframes here-line {
-      0%, 100% { box-shadow: inset 0 0 0 6px #e4b15a; }
-      50% { box-shadow: inset 0 0 0 6px #fff0a0; }
-    }
     @keyframes here-mark-pulse {
       0%, 100% {
         transform: scale(1);
@@ -360,8 +311,6 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .road-node.now,
-      .road-node.now::after,
       .road-here-mark { animation: none; }
     }
     .road-node.boss { color: #ffb0a4; }
@@ -470,6 +419,85 @@
       line-height: 1;
       letter-spacing: 0.06em;
       white-space: nowrap;
+    }
+    .hud-gear {
+      grid-column: 2;
+      justify-self: center;
+      min-width: 0;
+      max-width: min(980px, 48cqw);
+      pointer-events: auto;
+    }
+    .hud-gear .gear-board {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .hud-gear .gear-slot {
+      width: 64px;
+      flex: 0 0 64px;
+      max-width: 64px;
+    }
+    .hud-gear .gear-frame {
+      width: 64px;
+      height: 64px;
+      max-width: 64px;
+      aspect-ratio: 1;
+    }
+    .hud-gear .gear-label { display: none; }
+    .hud-menu { position: relative; display: flex; align-items: stretch; }
+    .hud-menu-btn {
+      width: 64px;
+      min-width: 64px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+    }
+    .hud-burger,
+    .hud-burger::before,
+    .hud-burger::after {
+      display: block;
+      width: 22px;
+      height: 3px;
+      border-radius: 99px;
+      background: #f6e7c4;
+    }
+    .hud-burger { position: relative; }
+    .hud-burger::before,
+    .hud-burger::after {
+      content: "";
+      position: absolute;
+      left: 0;
+    }
+    .hud-burger::before { top: -7px; }
+    .hud-burger::after { top: 7px; }
+    .hud-menu-pop {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 196px;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(228, 177, 90, 0.85);
+      background: rgba(16, 12, 10, 0.96);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5);
+    }
+    .hud-menu-pop[hidden] { display: none; }
+    .hud-menu-pop .small-btn {
+      height: auto;
+      min-height: 48px;
+      width: 100%;
     }
     h1 {
       margin: 0;
@@ -1877,13 +1905,19 @@
       100% { opacity: 1; transform: none; }
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
+    .overlay.victory .reward-row { gap: 28px; }
+    .overlay.victory .reward-pick { padding: 0; }
+    .overlay.victory .reward-altar { padding: 8px 0 0; }
+    .overlay.victory .reward-pick .card.preview,
+    .overlay.victory .reward-extra .gift-show .card.preview { width: min(540px, 31cqw); }
     .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
     .reward-extra .reward-pick { cursor: pointer; }
     .reward-extra .gift-show .card.preview { width: min(250px, 24cqw); height: auto; }
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 1px rgba(255, 244, 210, 0.9), 0 0 36px rgba(240, 195, 106, 0.62), 0 22px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel {
-      width: min(1240px, calc(100cqw - 40px));
-      padding: 36px 48px 32px;
+      width: min(1860px, calc(100cqw - 28px));
+      max-height: calc(100cqh - 20px);
+      padding: 24px 32px 20px;
       align-items: stretch;
       text-align: left;
     }
@@ -3451,6 +3485,10 @@
       pointer-events: auto;
     }
     .cast-card-pop .card.preview { width: 100%; height: auto; }
+    .cast-card-pop.shop-zoom {
+      width: min(420px, 36cqw);
+      pointer-events: none;
+    }
     .cast-plaque .cast-gear figcaption { color: #fff6e4; font-size: 16px; font-weight: 800; }
     .cast-roster {
       display: flex;
@@ -5173,6 +5211,28 @@
       aspect-ratio: 1;
     }
     .plate-gear .gear-label { display: none; }
+    .hud-top .hud-gear .gear-board {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: max-content;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .hud-top .hud-gear .gear-slot {
+      width: 64px;
+      flex: 0 0 64px;
+      max-width: 64px;
+    }
+    .hud-top .hud-gear .gear-frame {
+      width: 64px;
+      height: 64px;
+      max-width: 64px;
+    }
     .gear-effect .item-use {
       display: block;
       width: 100%;
@@ -5234,6 +5294,20 @@
         0 0 0 1px rgba(255, 236, 190, 0.95),
         0 0 0 2px #c4963a,
         0 16px 32px rgba(0, 0, 0, 0.55);
+    }
+    .gear-effect.gear-card-pop {
+      width: 168px;
+      max-width: none;
+      padding: 0;
+      border-radius: 0;
+      background: none;
+      box-shadow: none;
+      overflow: visible;
+    }
+    .gear-effect.gear-card-pop .card.preview {
+      width: 168px;
+      height: auto;
+      aspect-ratio: 3 / 4;
     }
     .gear-effect:not(.center-boon) .gear-effect-inner {
       padding: 12px;
@@ -5651,6 +5725,8 @@
       max-width: none;
       margin-inline: calc(var(--overlap, 56px) * -0.5);
       z-index: var(--hand-z, 1);
+      /* 扇の位置は処理のたびに組み直す。transition があると上下に動いて見える */
+      transition: none;
     }
     /* 枚数が多いときは重ねる。見た目だけ扇の中心から外側へ（端は斜め。傾きは保つ）。判定は元のカードのまま */
     .hand .card:hover:not(:disabled) {
@@ -6134,22 +6210,27 @@
     .card .card-fit.k-foe.r2 { --frame-img: url("frame-navy-over-silver.png?v=22"); }
     .card .card-fit.k-foe.r3 { --frame-img: url("frame-navy-over-gold.png?v=22"); }
     .card .card-fit.k-foe.rboss { --frame-img: url("frame-navy-over-black.png?v=22"); }
-    /* 敵カードの葡萄枠（カードリスト・敵の初期デッキ・拡大。戦闘は紺のまま） */
+    /* 敵カードの葡萄枠。カードリスト・初期デッキ・拡大・敵のプレイエリア。山札は紺のまま */
     .album-screen .card .card-fit.k-foe.r0,
     .foe-starter-deck .card .card-fit.k-foe.r0,
-    .cast-card-pop .card .card-fit.k-foe.r0 { --frame-img: url("frame-plum-basic.png?v=22"); }
+    .cast-card-pop .card .card-fit.k-foe.r0,
+    .play-side.foe .card .card-fit.k-foe.r0 { --frame-img: url("frame-plum-basic.png?v=22"); }
     .album-screen .card .card-fit.k-foe.r1,
     .foe-starter-deck .card .card-fit.k-foe.r1,
-    .cast-card-pop .card .card-fit.k-foe.r1 { --frame-img: url("frame-plum-copper.png?v=22"); }
+    .cast-card-pop .card .card-fit.k-foe.r1,
+    .play-side.foe .card .card-fit.k-foe.r1 { --frame-img: url("frame-plum-copper.png?v=22"); }
     .album-screen .card .card-fit.k-foe.r2,
     .foe-starter-deck .card .card-fit.k-foe.r2,
-    .cast-card-pop .card .card-fit.k-foe.r2 { --frame-img: url("frame-plum-silver.png?v=22"); }
+    .cast-card-pop .card .card-fit.k-foe.r2,
+    .play-side.foe .card .card-fit.k-foe.r2 { --frame-img: url("frame-plum-silver.png?v=22"); }
     .album-screen .card .card-fit.k-foe.r3,
     .foe-starter-deck .card .card-fit.k-foe.r3,
-    .cast-card-pop .card .card-fit.k-foe.r3 { --frame-img: url("frame-plum-gold.png?v=22"); }
+    .cast-card-pop .card .card-fit.k-foe.r3,
+    .play-side.foe .card .card-fit.k-foe.r3 { --frame-img: url("frame-plum-gold.png?v=22"); }
     .album-screen .card .card-fit.k-foe.rboss,
     .foe-starter-deck .card .card-fit.k-foe.rboss,
-    .cast-card-pop .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=22"); }
+    .cast-card-pop .card .card-fit.k-foe.rboss,
+    .play-side.foe .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=22"); }
     .card .card-fit.k-loot.r0,
     .card .card-fit.k-loot.r1,
     .card .card-fit.k-boon.r0,
@@ -7118,6 +7199,29 @@
     .records-item .record-line { display: block; margin-top: 4px; font-size: 15px; }
     .record-more { margin: 8px 0 0; font-size: 14px; line-height: 1.45; color: #fff6e4; }
     .records-screen .pass-box { margin: 0 auto 12px; }
+    .bug-head { margin: 22px 0 8px; font-size: 22px; text-align: center; color: #ffe7a8; }
+    .bug-line { display: block; margin: 0 0 4px; }
+    .bug-line b { display: inline-block; min-width: 5em; color: #e4b15a; }
+    .bug-draw b { color: #8fd0ff; }
+    .bug-loot b { color: #ffd27a; }
+    .bug-end b { color: #ff9a8a; }
+    .hud-actions .small-btn.bug-on { box-shadow: inset 0 0 0 2px #e4b15a; }
+    .overlay.bug-ask .panel { width: min(560px, calc(100% - 28px)); }
+    .overlay.bug-ask textarea {
+      width: 100%;
+      min-height: 140px;
+      margin: 8px 0 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.65);
+      background: rgba(0, 0, 0, 0.35);
+      color: #fff6e4;
+      font: inherit;
+      font-size: 18px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+    .overlay.bug-ask .bug-actions { display: flex; gap: 8px; }
     @media (max-width: 800px) {
       .ending { grid-template-columns: 1fr; grid-template-rows: 36vh minmax(0, 1fr); }
       .ending-card { border-left: 0; border-top: 2px solid #e4b15a; }
@@ -7671,9 +7775,6 @@
       height: 100%;
       object-fit: cover;
       object-position: 50% 28%;
-      animation: title-drift 26s ease-in-out infinite alternate;
-      transform: scale(1.06);
-      transform-origin: 50% 40%;
     }
     @keyframes title-drift {
       0% { transform: scale(1.06); }
@@ -8432,6 +8533,11 @@
     .menu.event.shop .shop-slot > span {
       margin: 0;
       font-size: clamp(18px, 1.5cqw, 24px);
+      color: #fff;
+    }
+    .menu.event.shop .shop-slot.hot {
+      border-color: #fff6e4;
+      box-shadow: 0 0 0 1px #5c3d12, 0 0 18px rgba(255, 236, 190, 0.55);
     }
     .menu.event.shop .shop-slot .shop-buy,
     .menu.event.shop .shop-slot .shop-sold {
@@ -8504,7 +8610,8 @@
       color: #fff3c4;
     }
     .event-drawers .deck-drawer .card.preview { width: min(132px, 100%); height: auto; }
-    .menu.event.shop .shop-have { margin: 0; width: 100%; text-align: center; font-size: clamp(22px, 2cqw, 30px); font-weight: 900; color: #ffe08a; }
+    .menu.event.shop .shop-have { margin: 0; width: 100%; text-align: center; font-size: clamp(22px, 2cqw, 30px); font-weight: 900; color: #fff; }
+    .menu.event.shop .event-play p { color: #fff; }
     .menu.event .event-title {
       grid-area: auto;
       width: 100%;
@@ -8719,12 +8826,10 @@
       border-radius: 0;
       box-shadow: none;
       box-sizing: border-box;
-      transform-origin: 50% 40%;
-      animation: title-drift 26s ease-in-out infinite alternate;
       z-index: 1;
     }
     .menu.event .event-art.rest-heal .event-picture {
-      animation: title-drift 26s ease-in-out infinite alternate, heal-glow 1.55s ease-out both;
+      animation: heal-glow 1.55s ease-out both;
     }
     .menu.event .event-art.rest-heal .hero-hit.heal {
       z-index: 2;
@@ -9685,8 +9790,8 @@
     }
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
-    .scene-fade.scene-fade-floor i { transition-duration: 0.5s; }
-    .scene-fade.scene-fade-floor.out i { transition-duration: 0.6s; }
+    .scene-fade.scene-fade-floor i { transition-duration: 0.32s; }
+    .scene-fade.scene-fade-floor.out i { transition-duration: 0.38s; }
     .scene-fade .scene-floor {
       position: fixed;
       z-index: 2;
@@ -9695,10 +9800,10 @@
       justify-content: center;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.32s ease;
     }
     .scene-fade.in .scene-floor { opacity: 1; }
-    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.6s; }
+    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.38s; }
     .scene-fade .scene-floor b {
       font-weight: 900;
       letter-spacing: 0.06em;
@@ -11757,11 +11862,20 @@
     html.phone .hud-top {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "dungeon" "actions";
+      grid-template-areas: "dungeon" "gear" "actions";
       padding: 6px 8px;
       column-gap: 6px;
       row-gap: 4px;
     }
+    html.phone .hud-gear {
+      grid-area: gear;
+      grid-column: 1;
+      max-width: 100%;
+      justify-self: stretch;
+    }
+    html.phone .hud-gear .gear-board { justify-content: flex-start; }
+    html.phone .hud-gear .gear-slot,
+    html.phone .hud-gear .gear-frame { width: 44px; height: 44px; flex-basis: 44px; max-width: 44px; }
     html.phone .dungeon { grid-area: dungeon; }
     html.phone .hud-top { overflow: visible; }
     html.phone .hud-actions { grid-area: actions; width: 100%; flex-wrap: nowrap; gap: 4px; }
@@ -11771,8 +11885,8 @@
     html.phone .dungeon-progress { font-size: 20px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
     html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
-    html.phone .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
-    html.phone .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
+    html.phone .event-gear .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
+    html.phone .event-gear .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
     html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
     html.phone .foe-stack { width: min(168px, 46%); }
     html.phone .foe-plate[data-rank="雑魚"],
@@ -11850,9 +11964,16 @@
       flex-wrap: nowrap;
       gap: 4px;
     }
+    html.phone.land .hud-gear {
+      flex: 1 1 auto;
+      max-width: none;
+      min-width: 0;
+    }
+    html.phone.land .hud-gear .gear-slot,
+    html.phone.land .hud-gear .gear-frame { width: 36px; height: 36px; flex-basis: 36px; max-width: 36px; }
     html.phone.land .hero-stack { width: min(220px, 34%); }
-    html.phone.land .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
-    html.phone.land .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
+    html.phone.land .event-gear .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
+    html.phone.land .event-gear .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
     html.phone.land .foe-stack { width: min(220px, 34%); }
     html.phone.land .foe-plate[data-rank="雑魚"],
     html.phone.land .foe-plate[data-rank="普通"],
@@ -11950,6 +12071,7 @@
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
       悪魔の剣: "card-demon-sword-b4-fit.jpg?v=4",
+      "悪魔剣・双斬": "card-demon-twin-slash-k.jpg?v=1",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
@@ -12178,10 +12300,9 @@
         loot: { low: "minotaur-medal", high: "minotaur-bracelet" },
         pattern: [
           { name: "アタック" },
-          { name: "アタック" },
-          { name: "ブロック" },
           { name: "ブロック" },
           { name: "タウロスアタック", cost: 2, text: "13ダメージ\n体力が最大の半分以下なら、ダメージが2倍", damage: 13, kind: "attack", halfDouble: true, stars: 3 },
+          { name: "踏ん張り", cost: 1, text: "ブロック6\n体力が最大の半分以下なら、ブロック12", block: 6, kind: "skill", halfBlock: true, stars: 3 },
         ],
       },
       {
@@ -12396,9 +12517,9 @@
         veil.appendChild(mark);
       }
       document.body.appendChild(veil);
-      const fadeIn = showFloor ? 520 : 280;
-      const hold = showFloor ? 1600 : 0;
-      const fadeOut = showFloor ? 620 : 440;
+      const fadeIn = showFloor ? 340 : 280;
+      const hold = showFloor ? 900 : 0;
+      const fadeOut = showFloor ? 400 : 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
         run();
@@ -12481,6 +12602,16 @@
     let banner = "";
     let outcome = null;
     let logLines = [];
+    const BUG_KEY = "card-battle-bugs-v1";
+    let bugFightId = 0;
+    let bugWatch = false;
+    let bugSavedId = "";
+    let bugNote = "";
+    let bugTrace = [];
+    let bugAsk = false;
+    let bugDraft = "";
+    let bugHint = "";
+    let bugOpen = -1;
     let timer = null;
     let departing = false;
     let departTimer = null;
@@ -12559,7 +12690,7 @@
     let fxHit = null;
     let fxPoisonApply = { player: false, enemy: false };
     let fxStatusWard = [];
-    let fxDeal = false;
+    let dealAnim = new Set();
     let fxNoMana = false;
     let turnCall = "";
     let foeTurnAnnounced = false;
@@ -12761,6 +12892,7 @@
       const text = kind === "player" ? `-${heroName()}のターン-` : "-敵のターン-";
       logLines.unshift({ kind, text, turn: Math.max(1, turn) });
       trimLog();
+      bugMark("turn", text);
     }
 
     function escapeRegex(text) {
@@ -12815,6 +12947,111 @@
         logLines.splice(at, 0, line);
       }
       trimLog();
+      bugMark(bugKindOf(msg), msg);
+    }
+
+    function bugKindOf(msg) {
+      const text = String(msg || "");
+      if (/引いた|多く引く|ドロー|枚引/.test(text)) return "draw";
+      if (/戦利品|ドロップ|手に入れた|エンチャント/.test(text)) return "loot";
+      if (/戦闘が終わ|デッキから削除|除外|廃棄|使い切り|戻る/.test(text)) return "end";
+      return "card";
+    }
+
+    function bugKindLabel(kind) {
+      return { draw: "ドロー", loot: "戦利品", end: "戦闘終了", card: "カード", turn: "ターン", note: "メモ" }[kind] || "処理";
+    }
+
+    function gearBrief() {
+      if (!gear) return "なし";
+      const bits = [];
+      ["sword", "sword2", "shield", "shield2", "braceletL", "braceletR", "medal", "boots"].forEach((id) => {
+        if (gear[id] && gear[id].name) bits.push(gear[id].name);
+      });
+      (gear.relics || []).forEach((item) => { if (item && item.name) bits.push(item.name); });
+      return bits.join("、") || "なし";
+    }
+
+    function readBugs() {
+      try {
+        const rows = JSON.parse(localStorage.getItem(BUG_KEY) || "[]");
+        return Array.isArray(rows) ? rows : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeBugs(rows) {
+      try { localStorage.setItem(BUG_KEY, JSON.stringify((rows || []).slice(-24))); } catch (error) { /* 保存できないときは、この画面のあいだだけ残す */ }
+    }
+
+    function bugSnapshot() {
+      return {
+        id: bugSavedId,
+        at: Date.now(),
+        note: bugNote,
+        foe: enemy && enemy.name || "",
+        floor: floorNo(),
+        dungeon: dungeonName,
+        turn: turn || 0,
+        gear: gearBrief(),
+        spd: player ? DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0) : DRAW_PER_TURN,
+        hand: (hand || []).map((card) => card && card.name).filter(Boolean),
+        deck: (deck || []).length,
+        discard: (discard || []).length,
+        exile: (battleExile || []).map((card) => card && card.name).filter(Boolean),
+        lines: bugTrace.slice(),
+      };
+    }
+
+    function saveBugReport() {
+      if (!bugSavedId) bugSavedId = String(Date.now());
+      const rows = readBugs().filter((row) => row && row.id !== bugSavedId);
+      rows.push(bugSnapshot());
+      writeBugs(rows);
+    }
+
+    function bugMark(kind, text) {
+      if (!bugFightId || !text) return;
+      bugTrace.push({
+        t: Date.now(),
+        turn: Math.max(0, Number(turn) || 0),
+        kind: kind || "card",
+        text: String(text),
+      });
+      if (bugTrace.length > 500) bugTrace.splice(0, bugTrace.length - 500);
+      if (bugWatch) saveBugReport();
+    }
+
+    function rememberExtraDraw(n, why) {
+      if (!player) return;
+      player.extraDraw = (Number(player.extraDraw) || 0) + n;
+      if (!player.extraWhy) player.extraWhy = [];
+      player.extraWhy.push(why);
+    }
+
+    function beginBugFight(resume) {
+      bugFightId += 1;
+      bugWatch = false;
+      bugSavedId = "";
+      bugNote = "";
+      bugTrace = [];
+      bugAsk = false;
+      bugDraft = "";
+      bugHint = "";
+      if (resume) bugMark("note", "続きから開いた。これより前の処理は記録していない。");
+    }
+
+    function bugAskHtml() {
+      if (!bugAsk) return "";
+      return `<div class="overlay bug-ask"><div class="panel"><h2>バグ報告</h2><p>この戦闘だけ記録します。なにがおかしいか書いてください。送ったあとも、この戦闘が終わるまでのカードと戦利品の処理を足します。</p><textarea id="bug-note" maxlength="400">${esc(bugDraft)}</textarea>${bugHint ? `<p class="pass-error">${esc(bugHint)}</p>` : ""}<div class="bug-actions">${menuButton("記録する", "bug-send", true)}${menuButton("やめる", "bug-close")}</div></div></div>`;
+    }
+
+    function bugWhen(at) {
+      const date = new Date(at);
+      if (!at || Number.isNaN(date.getTime())) return "";
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${date.getMonth() + 1}/${date.getDate()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
     function clearTimer() {
@@ -13842,7 +14079,7 @@
       ["endless-shelf", "無限の書架", 3, "入手時、レアリティ★★★のカード3択から1枚を選んで獲得する。", "shelf"],
     ].map(([id, name, stars, effect, relic]) => ({
       id, name, stars, effect, relic, slot: "relic", loot: true,
-      image: `loot-${id}.jpg`,
+      image: id === "whetstone" ? "loot-whetstone-fit.jpg?v=2" : `loot-${id}.jpg`,
     }));
     const GEAR_CARD_TEXT = {
       "short-sword": "ATK+1",
@@ -13884,6 +14121,7 @@
       "chain-bracelet": "1枠目と2枠目が同じカードなら、2枚目は3倍",
       "dual-bracelet": "剣2枠か盾2枠\nこの腕輪は外せない",
       "solo-ring": "腕輪がこれだけのとき、マナ+1",
+      "whetstone": "戦闘開始時\nATK+1",
       "minotaur-medal": "体力が半分以下の時、ATK+2",
       "minotaur-bracelet": "ターン開始時に体力が半分以下ならマナ+1",
     };
@@ -13927,6 +14165,7 @@
       const special = String(gearSpecialText(item) || "").replace(/。+$/u, "");
       if (special && !lines.includes(special)) lines.push(special);
       const loot = lootItem(item);
+      const written = GEAR_CARD_TEXT[item.id];
       return {
         name: item.name || (loot ? "戦利品" : "装備"),
         cost: Number(item.stars) || 1,
@@ -13936,7 +14175,7 @@
         gear: !loot,
         loot,
         image: item.image || "",
-        text: lines.filter(Boolean).join("\n"),
+        text: written || lines.filter(Boolean).join("\n"),
       };
     }
 
@@ -13979,6 +14218,12 @@
     // 2倍はATKを足したあとにかける。ATK自体は1回のまま。
     function halfDoubled(card, caster, amount) {
       if (!card || !card.halfDouble || !hpHalf(caster)) return amount;
+      return amount * 2;
+    }
+
+    // シールドは、印刷とDEFを足したあとに2倍する。DEF自体は上げない。
+    function halfBraced(card, caster, amount) {
+      if (!card || !card.halfBlock || !hpHalf(caster)) return amount;
       return amount * 2;
     }
 
@@ -14461,7 +14706,8 @@
       if (item.halfMana) return gearPunctLines("ターン開始時に体力が半分以下ならマナ+1。");
       let text = String(item.effect || "");
       text = text.replace(/★+/g, "").replace(/ボス/g, "");
-      text = text.replace(/ATK\s*[+＋]\s*\d+/g, "").replace(/DEF\s*[+＋]\s*\d+/g, "");
+      if (Number(item.atk) > 0) text = text.replace(/ATK\s*[+＋]\s*\d+/g, "");
+      if (Number(item.def) > 0) text = text.replace(/DEF\s*[+＋]\s*\d+/g, "");
       text = text.replace(/アクセサリー枠/g, "").replace(/アクセサリー/g, "");
       return gearPunctLines(text);
     }
@@ -14605,6 +14851,12 @@
       return { id: "bless-boots", name: "革靴", slot: "boot", image: face.image, effect: face.body, stars: face.stars };
     }
 
+    function gearCardPop(item) {
+      const card = gearAsCard(item);
+      if (!card) return "";
+      return `<div class="gear-effect gear-card-pop" role="tooltip">${rewardCardHtml(card)}</div>`;
+    }
+
     function gearEffectHtml(slotId) {
       if (!slotId) return "";
       if (slotId === "boot") {
@@ -14631,6 +14883,7 @@
       }
       const item = gear[slotId];
       if (!item) return "";
+      if (slotId === "shield" || slotId === "shield2" || item.slot === "shield") return gearCardPop(item);
       return gearPopShell(slotId, {
         item,
         name: item.name || gearSlotLabel(slotId),
@@ -14646,7 +14899,10 @@
       if (!slot) return;
       box.style.left = "0px";
       box.style.top = "0px";
-      placeAnchored(box, slot, { gap: 12, pad: 8, fallbackW: 288, fallbackH: 120, align: "top" });
+      const cardPop = box.classList.contains("gear-card-pop");
+      placeAnchored(box, slot, cardPop
+        ? { gap: 12, pad: 8, width: 168, height: Math.round(168 * 4 / 3), align: "top" }
+        : { gap: 12, pad: 8, fallbackW: 288, fallbackH: 120, align: "top" });
     }
 
     function paintGear() {
@@ -15285,6 +15541,7 @@
     function gainBlock(amount, card) {
       const bonus = Number(player && player.def) || 0;
       let gain = Math.max(0, (Number(amount) || 0) + bonus);
+      gain = halfBraced(card, player, gain);
       gain = anyShield("blockBoost") ? Math.ceil(gain * 1.5) : Math.floor(gain);
       if (!gain) return;
       if (parryCount(player) > 0 && !player.guardThrough) {
@@ -15654,7 +15911,7 @@
       return true;
     }
 
-    function draw(n) {
+    function draw(n, animate) {
       for (let i = 0; i < n; i++) {
         if (hand.length >= HAND_CAP) break;
         let card = null;
@@ -15665,6 +15922,7 @@
           card = next;
         }
         hand.push(card);
+        if (animate) dealAnim.add(card);
       }
     }
 
@@ -15937,7 +16195,7 @@
         const n = pile.length;
         discard.push(...pile);
         const before = hand.length;
-        draw(n);
+        draw(n, true);
         for (let i = before; i < hand.length; i++) if (hand[i]) hand[i].cheapTurn = true;
         log(`${heroName()}は変化の巻物。${n}枚捨てて、${hand.length - before}枚引いた。このターン、そのコスト-1。`, card);
         return true;
@@ -16266,7 +16524,7 @@
           return;
         }
         const before = hand.length;
-        draw(2);
+        draw(2, true);
         log(`${heroName()}は${card.name}で${hand.length - before}枚引いた。`, card);
         return;
       }
@@ -16295,7 +16553,7 @@
       }
       if (card.draw) {
         const before = hand.length;
-        draw(card.draw);
+        draw(card.draw, true);
         log(`${heroName()}は${card.name}で${hand.length - before}枚引いた。`, card);
         if (!card.damage && !card.block && !card.burn && !card.poison && !card.heal) return;
       }
@@ -16360,7 +16618,7 @@
         log(`${heroName()}は${card.name}。${enemy.name}は毒+${enemy.poison}。`, card);
       }
       if (card.nextDraw) {
-        player.extraDraw = (Number(player.extraDraw) || 0) + card.nextDraw;
+        rememberExtraDraw(card.nextDraw, `${card.name}+${card.nextDraw}`);
         log(`${heroName()}は次のターンに${card.nextDraw}枚多く引く。`, card);
       }
       if (!card.damage && !card.block && !card.expose && !card.nextDraw && !card.burn) log(`${heroName()}は${card.name}。${card.text}`, card);
@@ -16706,8 +16964,13 @@
         if (keepTo === "hand") hand.push(card);
         return pile;
       }
-      if (pile === "exile") battleExile.push(card);
-      else if (pile === "burst") removed.push(card);
+      if (pile === "exile") {
+        battleExile.push(card);
+        bugMark("end", `${card.name}を使った。戦闘中はデッキから外れ、戦闘が終わると戻る。`);
+      } else if (pile === "burst") {
+        removed.push(card);
+        bugMark("end", `${card.name}を使った。使い切りなので、デッキから消える。`);
+      }
       else if (player && player.sheath && card.name === "悪魔の剣") {
         deck.unshift(card);
         log(`${heroName()}は呪われた鞘。悪魔の剣を山札の一番上へ。`);
@@ -17225,7 +17488,7 @@
         const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0)));
         takeEnemyHit(rolled.amount, card, rolled.crit);
       } else if (card.block) {
-        const gain = Math.max(0, card.block + (Number(enemy.def) || 0));
+        const gain = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
         if (gain) {
           enemy.block += gain;
           fxShieldEnemy = true;
@@ -17623,6 +17886,7 @@
     }
 
     function endTurn() {
+      if (bugAsk) return;
       if (masteryOffer || lootChoice) return;
       if (showDeck || showFoeDeck || pileLook) return;
       if (phase !== "player" || outcome || foeRageBusy) return;
@@ -17635,7 +17899,7 @@
         player.pendingCarry = 0;
       }
       if (anyBracelet("emptyHand") && !hand.some((card) => !card.keep && !isItemCard(card))) {
-        player.extraDraw = (Number(player.extraDraw) || 0) + 2;
+        rememberExtraDraw(2, "無心の腕輪+2");
         player.nextMana = (Number(player.nextMana) || 0) + 1;
         log(`${heroName()}は無心の腕輪。次のターン、カード+2、マナ+1。`);
       }
@@ -17653,7 +17917,7 @@
         log(`${heroName()}は小さな砂時計。マナが余ったので、ブロック6。`);
       }
       if (hasRelic("glasses") && hand.filter((card) => !card.keep && !isItemCard(card)).length >= 3) {
-        player.extraDraw = (Number(player.extraDraw) || 0) + 1;
+        rememberExtraDraw(1, "戦術家の眼鏡+1");
         log(`${heroName()}は戦術家の眼鏡。次のターン、ドロー+1。`);
       }
       if (hasRelic("sage") && hpHalf(player)) {
@@ -17793,7 +18057,9 @@
       if (halfMana) log(`${heroName()}はミノタウロスの腕輪。体力が半分以下なので、このターンのマナ+1。`);
       if (carried > 0) log(`${heroName()}は持ち越したマナ${carried}（オレンジ）。`);
       const extra = Math.max(0, Number(player.extraDraw) || 0);
+      const extraWhy = (player.extraWhy || []).slice();
       player.extraDraw = 0;
+      player.extraWhy = [];
       if (player.nextSpd) {
         const bump = Math.max(0, Number(player.nextSpd) || 0);
         player.spdMod = (Number(player.spdMod) || 0) + bump;
@@ -17801,19 +18067,30 @@
         player.nextSpd = 0;
       }
       settleKeptHand();
-      draw(DRAW_PER_TURN + (Number(player.spdMod) || 0) + extra);
+      const spdNow = Math.max(0, Number(player.spdMod) || 0);
+      const parts = [`基本${DRAW_PER_TURN}`];
+      if (spdNow) parts.push(`SPD+${spdNow}`);
+      if (extra) parts.push(extraWhy.length ? extraWhy.join("、") : `前ターンの追加+${extra}`);
+      const want = DRAW_PER_TURN + spdNow + extra;
+      const beforeHand = hand.length;
+      draw(want);
+      bugMark("draw", `${Math.max(1, turn)}ターン目の基本ドロー。予定${want}枚（${parts.join("、")}）。手札は${beforeHand}枚から${hand.length}枚。山札${deck.length}枚、捨て札${discard.length}枚。`);
       if (player.proliferate) {
         if (hand.length < HAND_CAP) {
           hand.push(makeDemonToken());
           log(`${heroName()}は魔剣増殖。手札に悪魔の剣。コスト0、フラッシュ。`);
         } else log(`${heroName()}は魔剣増殖。手札がいっぱいなので出ない。`);
       }
-      if (turn === 1 && anySword("openingDraw")) draw(1);
-      if (turn === 1 && hasRelic("openDraw")) draw(2);
-      if (turn === 2 && hasRelic("feather")) draw(2);
-      if (turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("pen")) draw(2);
+      const bugDrawExtra = (label, n) => {
+        const before = hand.length;
+        draw(n);
+        bugMark("draw", `${label}で追加${n}枚。手札は${before}枚から${hand.length}枚。山札${deck.length}枚。`);
+      };
+      if (turn === 1 && anySword("openingDraw")) bugDrawExtra("狩人の短剣", 1);
+      if (turn === 1 && hasRelic("openDraw")) bugDrawExtra("俊足のブーツ", 2);
+      if (turn === 2 && hasRelic("feather")) bugDrawExtra("追い風の羽", 2);
+      if (turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("pen")) bugDrawExtra("知恵の羽根ペン", 2);
       pullFromBracelets();
-      fxDeal = true;
       slashSeq = 0;
       if (turn > 1) turnCall = "deal";
       phase = "player";
@@ -17833,6 +18110,8 @@
       fatalHold = false;
       fxFatal = false;
       log(kind === "win" ? `${heroName()}は${enemy.name}を倒した。` : `${heroName()}は倒された。`);
+      const back = (battleExile || []).map((card) => card && card.name).filter(Boolean);
+      bugMark("end", back.length ? `戦闘終了。除外から戻るカード: ${back.join("、")}。` : "戦闘終了。除外から戻すカードは無い。");
       if (kind === "lose") {
         closeFightStep("lose");
         defeatSnap = captureDefeat();
@@ -18597,10 +18876,12 @@
       settleKeptHand();
       saveNote = "";
       bindShown();
+      if (enemy && resumeScreen === "battle") beginBugFight(true);
     }
 
     function startBattle(keepHp) {
       clearTimer();
+      beginBugFight();
       invalidateFoeAct();
       clearReward();
       victoryStarDouble = false;
@@ -18629,9 +18910,10 @@
       outcome = null;
       askLeave = false;
       logLines = [];
-      if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
       saveNote = "";
       buildDeck();
+      bugMark("note", `戦闘開始。相手は${enemy.name}。${floorNo()}F ${dungeonName}。表示SPDは${DRAW_PER_TURN}+革靴など${runSpdBonus()}。装備 ${gearBrief()}。山札${deck.length}枚。`);
+      if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
       openBattleIntro();
     }
 
@@ -20237,6 +20519,12 @@
       return `<button type="button" class="small-btn pc-only" data-action="fullscreen">全画面</button>`;
     }
 
+    function hudMenuHtml(opt) {
+      const titleAction = opt && opt.titleAction ? opt.titleAction : "title";
+      const titleDisabled = opt && opt.titleDisabled ? " disabled" : "";
+      return `<div class="hud-menu"><button type="button" class="small-btn hud-menu-btn" data-action="hud-menu" aria-label="メニュー" aria-expanded="false"><span class="hud-burger" aria-hidden="true"></span></button><div class="hud-menu-pop" hidden><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="${titleAction}"${titleDisabled}>タイトルへ</button>${gameFullscreenButton()}</div></div>`;
+    }
+
     function toggleFullscreen() {
       const leave = fullscreenActive();
       const target = document.documentElement;
@@ -20405,7 +20693,7 @@
         def: hiddenDef(foe),
         spd: Number(foe.spd) > 0 ? Number(foe.spd) : 1,
       });
-      return `<div class="hero-stack">${hero}<div class="plate-gear">${gearMarkup()}</div></div>${foePlate}`;
+      return `<div class="hero-stack">${hero}</div>${foePlate}`;
     }
 
     function fxLabPiles(name) {
@@ -20435,7 +20723,7 @@
       const cards = fxLabHandList();
       const dealNow = id === "deal";
       const html = cards.map((card, i) => {
-        const pose = handArc(i, cards.length, 0);
+        const pose = handArc(i, cards.length, handArcSize.h, handArcSize.w);
         const label = `${card.cost} ${card.name} ${String(card.text || "").replace(/\n/g, " ")}`;
         return `<button type="button" class="card ${cardKind(card)}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${pose.fan}deg;--drop:${pose.drop}px;--deal:${i};--hand-z:${i + 1}">${cardFace(card, true)}</button>`;
       }).join("");
@@ -20453,7 +20741,7 @@
     function fxLabPlayMarkup(arenaHtml, handHtml, shellCls) {
       const shake = shellCls.includes("shake") ? " shake" : "";
       const fatal = shellCls.includes("fatal") ? " fatal" : "";
-      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top" aria-hidden="true"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div><div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
+      return `<div class="fx-view${shellCls}" data-play="${fxLabTick}"><div class="battle-screen fx-lab-play${shake}${fatal}"><div class="game"><header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">洞窟</h1><div class="dungeon-progress">3Ｆ</div></div><div class="hud-gear plate-gear">${gearMarkup()}</div><div class="hud-actions"></div></header><div class="battle-bands" style="--dungeon-art: url('${dungeonArt("洞窟")}')">${arenaHtml}</div><div class="handbar fx-lab-hand">${handHtml || ""}</div></div>${fxLabFoeRail()}</div></div>`;
     }
 
     function fxLabMineCards(count) {
@@ -21333,6 +21621,54 @@
       if (pop) pop.remove();
     }
 
+    function hideShopZoom() {
+      const pop = root.querySelector(".cast-card-pop.shop-zoom");
+      if (pop) pop.remove();
+      root.querySelectorAll(".shop-slot.hot").forEach((slot) => slot.classList.remove("hot"));
+    }
+
+    function showShopZoom(slot) {
+      const face = slot.querySelector(".card");
+      if (!face) return;
+      const key = slot.dataset.shop || "";
+      let pop = root.querySelector(".cast-card-pop.shop-zoom");
+      if (!pop || pop.dataset.shop !== key) {
+        if (pop) pop.remove();
+        pop = document.createElement("div");
+        pop.className = "cast-card-pop shop-zoom";
+        pop.dataset.shop = key;
+        pop.appendChild(face.cloneNode(true));
+        root.appendChild(pop);
+      }
+      root.querySelectorAll(".shop-slot").forEach((el) => el.classList.toggle("hot", el === slot));
+      const w = pop.offsetWidth || Math.min(420, Math.round((root.clientWidth || 1200) * 0.36));
+      placeAnchored(pop, face, {
+        prefer: "left",
+        gap: 16,
+        pad: 12,
+        width: w,
+        height: Math.round(w * 4 / 3),
+        align: "top",
+      });
+    }
+
+    function bindShopHover() {
+      root.querySelectorAll(".shop-row").forEach((row) => {
+        if (row.dataset.shopZoom === "1") return;
+        row.dataset.shopZoom = "1";
+        row.addEventListener("pointerover", (event) => {
+          const slot = event.target instanceof Element ? event.target.closest(".shop-slot") : null;
+          if (!slot || !row.contains(slot)) return;
+          showShopZoom(slot);
+        });
+        row.addEventListener("pointerleave", (event) => {
+          const related = event.relatedTarget;
+          if (related instanceof Element && related.closest(".shop-zoom")) return;
+          hideShopZoom();
+        });
+      });
+    }
+
     function showFoePlayZoom(play) {
       const cards = [...document.querySelectorAll(".play-side.foe .play-card")];
       const key = String(cards.indexOf(play));
@@ -21679,7 +22015,7 @@
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front-v2.png?v=1", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-demon-half.png?v=2", "半悪魔化", "cut-ref")}
-              ${sheetFig("girl-demon-full.png?v=2", "完全悪魔化", "cut-ref")}
+              ${sheetFig("girl-demon-full.png?v=3", "完全悪魔化", "cut-ref")}
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
             </div>
@@ -21846,7 +22182,14 @@
       const gate = CLEAR_INBOX_URL && !shared
         ? `<p>管理の言葉を入れると、ほかの記録も開きます。</p><div class="pass-box"><input id="record-word" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">${recordNote ? `<p class="pass-error">${esc(recordNote)}</p>` : ""}${recordBusy ? `<p>開いています。</p>` : menuButton("開く", "records-ok", true)}</div>`
         : "";
-      const body = `${gate}<div class="records-list">${shared ? `<p>みんなの記録です。</p>` : ""}${rows || `<p>まだ記録はありません。</p>`}</div>`;
+      const bugs = readBugs().slice().reverse();
+      const bugRows = bugs.map((row, index) => {
+        const open = bugOpen === index;
+        const lines = (row.lines || []).map((line) => `<span class="bug-line bug-${esc(line.kind)}"><b>${esc(bugKindLabel(line.kind))}</b>${line.turn ? `${line.turn}T ` : ""}${esc(line.text)}</span>`).join("");
+        const more = open ? `<div class="record-more">相手 ${esc(row.foe || "なし")}　${esc(row.dungeon || "")} ${Number(row.floor) || 0}F　${Number(row.turn) || 0}ターン目まで<br>装備 ${esc(row.gear || "なし")}<br>そのときのSPD ${Number(row.spd) || 0}　手札 ${esc((row.hand || []).join("、") || "なし")}　山札${Number(row.deck) || 0}　捨て札${Number(row.discard) || 0}<br>除外 ${esc((row.exile || []).join("、") || "なし")}<br>気になったこと<br>${esc(row.note || "なし")}<br>処理<br>${lines || "なし"}</div>` : "";
+        return `<button type="button" class="records-item" data-action="bug-open" data-index="${index}"><span class="record-name">${esc(row.foe || "相手なし")}</span><span class="record-line">${esc(bugWhen(row.at))}　${esc(row.dungeon || "")} ${Number(row.floor) || 0}F　${esc(row.note || "")}</span>${more}</button>`;
+      }).join("");
+      const body = `${gate}<div class="records-list">${shared ? `<p>みんなの記録です。</p>` : ""}${rows || `<p>まだ記録はありません。</p>`}</div><h2 class="bug-head">バグ報告</h2><div class="records-list">${bugRows || `<p>まだありません。戦闘中のバグ報告で残ります。</p>`}</div>`;
       root.innerHTML = `
         <div class="menu records-screen">
           <h1>統計</h1>
@@ -22046,7 +22389,7 @@
     }
 
     function eventShell(body, opt) {
-      const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>${gameFullscreenButton()}`;
+      const buttons = hudMenuHtml();
       const logHtml = logLinesHtml(logLines);
       const worn = opt && opt.gear === false ? "" : `<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside>`;
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}${worn}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
@@ -22257,6 +22600,7 @@
         bindGearHover();
         paintGear();
       }
+      bindShopHover();
       requestAnimationFrame(() => {
         placeRoad();
         fitPathArtToRoad();
@@ -22671,6 +23015,7 @@
     }
 
     function expectedHits(card, fromHand, foe) {
+      if (foe && card && card.halfDouble && card.previewSwing != null) return [Math.max(0, Number(card.previewSwing) || 0)];
       if (card && card.twinSword && !foe) return [bestSwordSwing(), bestSwordSwing()];
       if (!card || !usesStrike(card)) return null;
       const atk = actingAtk(card, foe);
@@ -22736,10 +23081,11 @@
       if (!card) return null;
       const base = foe ? (Number(card.block) || 0) : printedBlock(card);
       if (!base && !card.block && card.name !== "ブロック" && card.name !== "ブロック+") return null;
-      if (foe) return Math.max(0, base + (Number(enemy && enemy.def) || 0));
+      if (foe) return halfBraced(card, enemy, Math.max(0, base + (Number(enemy && enemy.def) || 0)));
       const printed = textScale(base, fromHand);
       const gain = Math.max(0, printed + focusLeftFor(card, fromHand) + (Number(player && player.def) || 0));
-      return anyShield("blockBoost") ? Math.ceil(gain * 1.5) : gain;
+      const braced = halfBraced(card, player, gain);
+      return anyShield("blockBoost") ? Math.ceil(braced * 1.5) : braced;
     }
 
     // 句点・読点のあと、または意味の切れ目でのみ改行する。行頭に句読点や助詞を出さない。
@@ -22969,8 +23315,9 @@
       who.parry += Math.max(1, Number(add) || 1);
     }
 
-    function scratchGainBlock(who, amount) {
-      const gain = Math.max(0, Math.floor((Number(amount) || 0) + (Number(who.def) || 0)));
+    function scratchGainBlock(who, amount, card) {
+      let gain = Math.max(0, Math.floor((Number(amount) || 0) + (Number(who.def) || 0)));
+      gain = Math.floor(halfBraced(card, who, gain));
       if (!gain || (who.parry > 0 && !who.guardThrough)) return;
       who.block += gain;
     }
@@ -23064,16 +23411,20 @@
       }
       foe.block = 0;
       let take = null;
+      const foeSwings = [];
       for (const step of foePlan) {
         if (step.anger) {
+          foeSwings.push(null);
           foe.atk = (Number(foe.atk) || 0) + 2;
           foe.def = (Number(foe.def) || 0) - 2;
           continue;
         }
         let card = step.card;
         const times = Math.max(1, Number(card.hits) || 1);
+        let swing = null;
         for (let n = 0; n < times; n += 1) {
           const blow = scratchEnemyBlow(card, mine, foe);
+          if (blow && blow.swing != null) swing = (swing || 0) + blow.swing;
           if (!blow) continue;
           if (!take) take = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0 };
           take.raw += blow.raw;
@@ -23089,6 +23440,7 @@
           }
         }
         take = scratchEnemyRest(card, foe, take);
+        foeSwings.push(swing);
       }
       take = scratchFoldSelf(take, mine);
       if (poisonTake) {
@@ -23111,7 +23463,7 @@
         if (!take) take = { raw: 0, hp: 0, show: true, lethal: true, shield: 0, status: 0 };
         else take.lethal = true;
       }
-      return { give: forecastBag(give), take, breakShield, foeAtk: foe.atk };
+      return { give: forecastBag(give), take, breakShield, foeAtk: foe.atk, foeSwings };
     }
 
     function scratchPayDemon(mine, want) {
@@ -23142,7 +23494,9 @@
       const thorns = card.thorns ? (Number(card.thorns) || 1) : 0;
       const burn = Number(card.burn) || 0;
       const poison = !card.damage && card.poison ? (Number(card.poison) || 0) : 0;
-      const shield = !card.damage && card.block ? Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)) : 0;
+      const shield = !card.damage && card.block
+        ? halfBraced(card, foe, Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)))
+        : 0;
       if (!thorns && !burn && !poison && !shield) return bag;
       if (!bag) bag = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0, poison: 0, burn: 0, thorns: 0 };
       bag.poison = (bag.poison || 0) + poison;
@@ -23275,7 +23629,7 @@
         if (added) mine.focus = 0;
         const base = Number(card.damage) || 0;
         for (let hit = 0; hit < card.hits; hit++) {
-          const amount = base + mine.atk + (hit === 0 ? added : 0);
+          const amount = halfDoubled(card, mine, base + mine.atk + (hit === 0 ? added : 0));
           scratchStrike(foe, give, amount);
           scratchPoisonSword(card, foe, amount);
         }
@@ -23288,7 +23642,7 @@
         if (card.fullBonus && mine.hp >= mine.maxHp) bonus += card.fullBonus;
         if (card.safeBonus && !mine.hurtLast) bonus += card.safeBonus;
         if (card.kick && foe.block > 0) bonus += card.kick;
-        const amount = (Number(card.damage) || 0) + added + mine.atk + bonus;
+        const amount = halfDoubled(card, mine, (Number(card.damage) || 0) + added + mine.atk + bonus);
         scratchStrike(foe, give, amount);
         scratchPoisonSword(card, foe, amount);
         if (card.doubleNext) mine.doubleNext = true;
@@ -23298,7 +23652,7 @@
       if (card.parry && card.damage) scratchGainParry(mine, 1);
       if (card.block) {
         const before = mine.block;
-        scratchGainBlock(mine, (Number(card.block) || 0) + added);
+        scratchGainBlock(mine, (Number(card.block) || 0) + added, card);
         give.shield += Math.max(0, mine.block - before);
       }
       if (card.parry && card.block && !card.damage) scratchGainParry(mine, 1);
@@ -23322,14 +23676,22 @@
       if (step.anger) return step.card;
       const base = Number(enemy && enemy.atk) || 0;
       let pending = 0;
-      if (phase === "player" && enemy && enemy.spiteOn) {
+      let previewSwing = null;
+      if (phase === "player" && enemy) {
         const cast = forecastTurn();
-        const end = cast && cast.foeAtk != null ? Number(cast.foeAtk) : base;
-        const angerInPlan = foePlan.filter((item) => item.anger).length;
-        pending = end - base - angerInPlan * 2;
+        if (enemy.spiteOn) {
+          const end = cast && cast.foeAtk != null ? Number(cast.foeAtk) : base;
+          const angerInPlan = foePlan.filter((item) => item.anger).length;
+          pending = end - base - angerInPlan * 2;
+        }
+        if (step.card && step.card.halfDouble && cast && cast.foeSwings && cast.foeSwings[index] != null) {
+          previewSwing = cast.foeSwings[index];
+        }
       }
       const atk = base + Math.max(0, pending) + angerAhead * 2;
-      return { ...step.card, previewAtk: atk };
+      const face = { ...step.card, previewAtk: atk };
+      if (previewSwing != null) face.previewSwing = previewSwing;
+      return face;
     }
 
     function shownFoeCard() {
@@ -23357,12 +23719,12 @@
         if (mine.knifeReflect && swing > 0 && foe.hp > 0) {
           reflect = scratchApply(foe, swing).hpLoss;
         }
-        return { raw: swing, hp: 0, parry: true, show: swing > 0, reflect };
+        return { raw: swing, hp: 0, parry: true, show: swing > 0, reflect, swing };
       }
       const dealt = swing + (mine.expose || 0);
       if (!dealt) return null;
       const hit = scratchApply(mine, dealt);
-      return { raw: dealt, hp: hit.hpLoss, parry: false, show: true };
+      return { raw: dealt, hp: hit.hpLoss, parry: false, show: true, swing };
     }
 
     function forecastChip(kind, amount, lethal) {
@@ -23982,6 +24344,7 @@
       if (card.critChance) next.critChance = Number(card.critChance) || 0;
       if (card.halfOnly) next.halfOnly = true;
       if (card.halfDouble) next.halfDouble = true;
+      if (card.halfBlock) next.halfBlock = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
       if (card.boss) next.boss = true;
@@ -24492,6 +24855,7 @@
       if (lastBoss) {
         rewardPicks = [];
         rewardStep = "done";
+        noteBattleReward();
         finishClear();
         return;
       }
@@ -24504,11 +24868,29 @@
         bossPicks = bossChoices();
         rewardStep = "boss";
         armRare("reward");
+        noteBattleReward();
         return;
       }
       rewardPicks = rewardTrio();
       rewardStep = "cards";
       armRare("reward");
+      noteBattleReward();
+    }
+
+    function noteBattleReward() {
+      const cards = (rewardPicks || []).map((card) => card && card.name).filter(Boolean);
+      const bosses = (bossPicks || []).map((row) => {
+        if (!row) return "";
+        if (row.card && row.card.name) return row.card.name;
+        if (row.gear && row.gear.name) return row.gear.name;
+        return "";
+      }).filter(Boolean);
+      const extra = [
+        victoryGear && victoryGear.name ? `装備か戦利品 ${victoryGear.name}` : "",
+        victoryItem && victoryItem.name ? `アイテム ${victoryItem.name}` : "",
+        victoryEnchant && victoryEnchant.elem ? `エンチャント ${victoryEnchant.name || victoryEnchant.elem}` : "",
+      ].filter(Boolean).join("、");
+      bugMark("loot", `戦闘後の報酬。★${rewardStars || 0}。${dropLine || "追加の文なし"}。${extra || "追加の品なし"}。カード候補 ${cards.join("、") || "なし"}。ボス候補 ${bosses.join("、") || "なし"}。`);
     }
 
     function takeBossPick(index) {
@@ -24645,10 +25027,10 @@
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const fx = "";
         if (slot.kind === "card" && slot.card) {
-          return `<div class="shop-slot${sold}${limited}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}" data-shop="${index}">${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span>${esc(tag)}</span>${action}</div>`;
         }
         if (slot.kind === "gear" && slot.gear) {
-          return `<div class="shop-slot${sold}${limited}">${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span>${esc(tag)}</span>${action}</div>`;
+          return `<div class="shop-slot${sold}${limited}" data-shop="${index}">${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span>${esc(tag)}</span>${action}</div>`;
         }
         return "";
       }).join("");
@@ -25861,17 +26243,21 @@
 
     function renderBattle() {
       sortHand();
-      const dealNow = fxDeal;
       const pathPick = choosingPath();
       const rewarding = outcome === "win";
+      let dealOrder = 0;
       const cards = pathPick ? "" : hand.map((card, i) => {
         const pickable = phase === "player" && !outcome && !foeRageBusy;
         const poor = pickable && !cardPlayable(card);
         const lit = pickable && handConditionLit(card);
-        const pose = handArc(i, hand.length, 0);
+        const pose = handArc(i, hand.length, handArcSize.h, handArcSize.w);
+        const dealing = dealAnim.has(card);
+        const dealAt = dealing ? dealOrder++ : 0;
         const label = `${card.cost} ${card.name} ${String(card.text).replace(/\n/g, " ")}`;
-        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${lit ? " lit" : ""}${dealNow ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${pose.fan}deg;--drop:${pose.drop}px;--deal:${i};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
+        return `<button type="button" class="card ${cardKind(card)}${poor ? " unaffordable" : ""}${lit ? " lit" : ""}${dealing ? " deal" : ""}" data-card="${i}" aria-label="${esc(label)}" style="--fan:${pose.fan}deg;--drop:${pose.drop}px;--deal:${dealAt};--hand-z:${i + 1}" ${phase !== "player" ? "disabled" : ""}>${cardFace(card, true)}</button>`;
       }).join("");
+      if (!pathPick) dealAnim.clear();
+      const dealNow = dealOrder > 0;
       const overlay = `${masteryOverlay()}${lootChoiceOverlay()}${rewardOverlay()}${enchantPickOverlay()}${dualPickOverlay()}`;
       const leaveOverlay = askLeave
         ? `<div class="overlay leave-ask"><div class="panel">
@@ -25941,7 +26327,6 @@
       fxBuff = false;
       fxFoeBuff = false;
       fxHit = null;
-      fxDeal = false;
       const noManaNow = fxNoMana;
       fxNoMana = false;
       const turnNow = turnCall;
@@ -25961,12 +26346,11 @@
               <h1 class="dungeon-name">${esc(dungeonName)}</h1>
               <div class="dungeon-progress">${floorLabel()}</div>
             </div>
+            <div class="hud-gear plate-gear">${gearMarkup()}</div>
             <div class="hud-actions">
-              <button type="button" class="small-btn" data-action="deck">デッキ確認</button>
+              ${hudMenuHtml({ titleAction: "ask-title", titleDisabled: !(phase === "player" || rewardStep === "paths") })}
+              <button type="button" class="small-btn${bugWatch ? " bug-on" : ""}" data-action="bug-report">${bugWatch ? "記録中" : "バグ報告"}</button>
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
-              <button type="button" class="small-btn" data-action="settings">オプション</button>
-              <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" || rewardStep === "paths" ? "" : "disabled"}>タイトル</button>
-              ${gameFullscreenButton()}
             </div>
           </header>
           <div class="battle-bands" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
@@ -25974,7 +26358,6 @@
             <div class="enemy-field">
             <div class="hero-stack">
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
-            <div class="plate-gear">${gearMarkup()}</div>
             </div>
             <div class="foe-stack">
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
@@ -26022,6 +26405,7 @@
         ${pileLookOverlay()}
         ${foeDeckOverlay()}
         ${overlay}
+        ${bugAskHtml()}
         ${leaveOverlay}`;
       player.hit = false;
       enemy.hit = false;
@@ -26042,6 +26426,11 @@
       launchPendingPlayClearFly();
       launchPendingHandDumpFly();
       launchFoeTurnTravel();
+      const bugBox = root.querySelector("#bug-note");
+      if (bugBox) {
+        bugBox.addEventListener("input", () => { bugDraft = bugBox.value; });
+        bugBox.focus();
+      }
     }
 
     // 手札の重なりを固めてからドローを再生する（冒頭のつまり対策）
@@ -26057,6 +26446,9 @@
         fitHand();
         void handEl.offsetWidth;
         handEl.classList.remove("deal-pending");
+        requestAnimationFrame(() => {
+          if (handEl.isConnected) fitHand();
+        });
         const wait = n ? 28 + 460 + (n - 1) * 62 + 50 : 0;
         if (!wait) return;
         setTimeout(() => {
@@ -26158,7 +26550,10 @@
       }
     }
 
-    // 下辺を支点に傾けると、内側の上角だけ持ち上がる。その分を戻し、端は円弧に沿って下げる
+    // 前回測ったカードの大きさ。処理で手札を組み直しても、同じ位置から描く
+    let handArcSize = { h: 0, w: 0 };
+
+    // 下辺を支点に傾けると、内側の上角だけ持ち上がる。その分だけ下げる。中央だけ上に出さない
     function handArc(i, count, cardH, cardW) {
       const mid = (count - 1) / 2;
       const t = mid === 0 ? 0 : (i - mid) / mid;
@@ -26168,9 +26563,13 @@
       const w = cardW > 0 ? cardW : (h ? h * 204 / 300 : 0);
       if (!h || !w) return { fan, drop: 0 };
       const th = Math.abs(fan) * Math.PI / 180;
-      const lift = (w / 2) * Math.sin(th) - h * (1 - Math.cos(th));
-      const sag = h * 0.12 * (1 - Math.cos(th)) / (1 - Math.cos(fanMax * Math.PI / 180));
-      const drop = Math.max(0, lift + sag);
+      const lift = Math.max(0, (w / 2) * Math.sin(th) - h * (1 - Math.cos(th)));
+      let drop = lift;
+      // 中央だけ水平な上辺が隣より高く見える。隣の上辺の中ほどに寄せて下げる
+      if (count > 2 && Math.abs(t) < 0.001) {
+        const near = (fanMax / mid) * Math.PI / 180;
+        drop = (w / 2) * Math.sin(near);
+      }
       return { fan, drop: Math.round(drop * 10) / 10 };
     }
 
@@ -26180,6 +26579,7 @@
       if (!cards.length) return;
       const cardH = cards[0].offsetHeight;
       const cardW = cards[0].offsetWidth;
+      if (cardH >= 8 && cardW >= 8) handArcSize = { h: cardH, w: cardW };
       if ((cardH < 8 || cardW < 8) && (tries || 0) < 8) {
         requestAnimationFrame(() => applyHandArc(handEl, (tries || 0) + 1));
         return;
@@ -26221,11 +26621,20 @@
       // 見える幅は最低限に抑え、カード本体は大きく保つ（効果確認はホバー）
       const minStep = 44;
       let cw = first.offsetWidth || Math.round(fullH * ratio);
+      // 置き直した直後は幅も高さも 0 のことがある。0 を書き込むと、その後の測り直しまで手札が消える
+      if (fullH < 8 || avail < 8 || cw < 8) {
+        handEl.style.setProperty("--overlap", `${base}px`);
+        syncPiles();
+        applyHandArc(handEl);
+        return;
+      }
       const fitW = avail - (n - 1) * minStep;
       if (fitW < cw) {
         const h = Math.max(fullH, fitW / ratio);
-        handEl.style.setProperty("--hand-card-h", `${Math.round(h)}px`);
-        cw = Math.round(h * ratio);
+        if (h >= 8) {
+          handEl.style.setProperty("--hand-card-h", `${Math.round(h)}px`);
+          cw = Math.round(h * ratio);
+        }
       }
       const need = (n * cw - avail) / (n - 1);
       const overlap = Math.min(Math.max(base, need), cw - minStep);
@@ -26468,6 +26877,10 @@
     root.addEventListener("click", (event) => {
       const el = event.target instanceof Element ? event.target : event.target.parentElement;
       if (!el) return;
+      if (!el.closest("[data-action='hud-menu']")) {
+        root.querySelectorAll(".hud-menu-pop").forEach((box) => { box.hidden = true; });
+        root.querySelectorAll(".hud-menu-btn").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
+      }
       const foePlay = el.closest(".battle-screen .play-side.foe .play-card");
       if (foePlay && !foePlay.classList.contains("await-draw")) {
         event.stopPropagation();
@@ -26479,6 +26892,17 @@
       const action = el.closest("[data-action]");
       if (action) {
         const name = action.dataset.action;
+        if (name === "hud-menu") {
+          const menu = action.closest(".hud-menu");
+          const pop = menu && menu.querySelector(".hud-menu-pop");
+          if (!pop) return;
+          const willOpen = pop.hidden;
+          root.querySelectorAll(".hud-menu-pop").forEach((box) => { box.hidden = true; });
+          root.querySelectorAll(".hud-menu-btn").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
+          pop.hidden = !willOpen;
+          action.setAttribute("aria-expanded", willOpen ? "true" : "false");
+          return;
+        }
         if (name === "fullscreen") { toggleFullscreen(); return; }
         if (name === "road-home") { placeRoad("home"); return; }
         if (name === "title") goTitle();
@@ -26766,6 +27190,39 @@
           render();
           return;
         }
+        if (name === "bug-report") {
+          if (screen !== "battle" || !bugFightId) return;
+          bugAsk = true;
+          bugHint = "";
+          render();
+          return;
+        }
+        if (name === "bug-close") {
+          bugAsk = false;
+          bugHint = "";
+          render();
+          return;
+        }
+        if (name === "bug-send") {
+          const input = root.querySelector("#bug-note");
+          bugDraft = input ? input.value : bugDraft;
+          const note = bugDraft.trim();
+          if (!note) { bugHint = "なにがおかしいか書いてください。"; render(); return; }
+          bugNote = bugNote ? `${bugNote}\n${note}` : note;
+          bugDraft = "";
+          bugWatch = true;
+          bugAsk = false;
+          bugHint = "";
+          saveBugReport();
+          render();
+          return;
+        }
+        if (name === "bug-open") {
+          const index = Number(action.dataset.index);
+          bugOpen = bugOpen === index ? -1 : index;
+          render();
+          return;
+        }
         if (name === "logout") logout();
         if (name === "wipe-ask") { screen = "wipe"; render(); }
         if (name === "wipe-again") { screen = "wipe2"; render(); }
@@ -26862,6 +27319,10 @@
         return;
       }
       if (event.key === "Escape" && root.querySelector(".foe-starter")) { closeFoeStarter(); return; }
+      if (bugAsk) {
+        if (event.key === "Escape") { bugAsk = false; bugHint = ""; render(); }
+        return;
+      }
       if (screen !== "battle" || askLeave) return;
       if (showDeck || showFoeDeck || pileLook) {
         if (event.key === "Escape") { showDeck = false; showFoeDeck = false; pileLook = ""; render(); }
