@@ -6204,7 +6204,6 @@
     .card .fx.note { display: block; font-size: 7.4cqw; line-height: 1.35; text-align: center; white-space: normal; word-break: keep-all; line-break: strict; overflow-wrap: normal; }
     .card .fx.note .nobr { display: inline-block; white-space: nowrap; vertical-align: baseline; }
     .card .fx b { font-size: 5.2cqw; font-weight: 700; color: #1a120e; }
-    .fx.attack b.up { color: #2f6fbe; }
     .fx.attack b.down { color: #c0392b; }
     .hint { position: relative; text-decoration: underline; text-decoration-color: #7ec8e3; text-underline-offset: 3px; cursor: help; }
     .card .text .hint {
@@ -12198,7 +12197,7 @@
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
-      見切り斬り: "card-mikiri-2a-v4.jpg?v=1",
+      見切り斬り: "card-mikiri-2a-v5.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
@@ -12427,6 +12426,25 @@
           { name: "ブロック" },
           { name: "タウロスアタック", cost: 2, text: "13ダメージ\n体力が最大の半分以下なら、ダメージが2倍", damage: 13, kind: "attack", halfDouble: true, stars: 3 },
           { name: "踏ん張り", cost: 1, text: "ブロック6\n体力が最大の半分以下なら、ブロック12", block: 6, kind: "skill", halfBlock: true, stars: 3 },
+        ],
+      },
+      {
+        name: "デスドラゴン",
+        image: "enemy-death-dragon.png?v=5",
+        tier: 3,
+        rank: "強敵",
+        stature: "huge",
+        hp: 140,
+        atkHidden: 0,
+        spd: 2,
+        attackGrow: 2,
+        trait: "攻撃するたび、この戦闘中ATK+2。",
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "竜の怒り", cost: 0, text: "ATK+6　DEF-2", kind: "orange", rage: true, rageAtk: 6, rageDef: 2, flash: true, stars: 3 },
+          { name: "竜の怒り", cost: 0, text: "ATK+6　DEF-2", kind: "orange", rage: true, rageAtk: 6, rageDef: 2, flash: true, stars: 3 },
+          { name: "死撃", cost: 2, text: "8ダメージ\nこの戦闘中、ATK+2", damage: 8, atkGrow: 2, kind: "attack", stars: 3 },
         ],
       },
       {
@@ -13261,7 +13279,9 @@
       const anger = Math.max(0, Number(enemy.anger) || 0) * 2;
       const spite = enemy.spiteOn ? Math.max(0, Number(enemy.spite) || 0) : 0;
       const curse = Math.max(0, Number(enemy.curseAtk) || 0);
-      enemy.atk = hiddenAtk(foe) + anger + spite - curse;
+      const rageAtk = Math.max(0, Number(enemy.rageAtk) || 0);
+      const grown = Math.max(0, Number(enemy.grownAtk) || 0);
+      enemy.atk = hiddenAtk(foe) + anger + spite + rageAtk + grown - curse;
     }
 
     function hiddenDef(foe) {
@@ -13328,7 +13348,8 @@
       if (!enemy) return;
       const foe = enemyNow();
       const angerCut = Math.max(0, Number(enemy.anger) || 0) * 2;
-      enemy.def = hiddenDef(foe) - angerCut - (Number(enemy.defCut) || 0);
+      const rageCut = Math.max(0, Number(enemy.rageDef) || 0);
+      enemy.def = hiddenDef(foe) - angerCut - rageCut - (Number(enemy.defCut) || 0);
     }
 
     function enemyDef() {
@@ -13500,15 +13521,13 @@
     }
 
     function combatNames(name, withBeggar, tierCap) {
-      const star = dungeonStarCount(name);
       const cap = tierCap == null ? 99 : Number(tierCap) || 1;
       return ENEMIES.filter((foe) => {
         if (foe.name === "ハデス") return false;
         if (foe.name === "物乞い" && !withBeggar) return false;
         if (enemyStar(foe) > cap) return false;
-        if (name === "洞窟") return true;
-        if (foe.home) return foe.home === name;
-        if (enemyStar(foe) !== star) return false;
+        const homes = foe.home == null || foe.home === "" ? null : (Array.isArray(foe.home) ? foe.home : [foe.home]);
+        if (homes && homes.length) return homes.indexOf(name) >= 0;
         return true;
       }).map((foe) => foe.name);
     }
@@ -15298,6 +15317,12 @@
       return Math.max(0, enemyLoop.length - intentIndex);
     }
 
+    function rageAmounts(card) {
+      const up = card && card.rageAtk != null ? Number(card.rageAtk) || 0 : 2;
+      const down = card && card.rageDef != null ? Number(card.rageDef) || 0 : 2;
+      return { up: card && card.ultimate ? up * 2 : up, down };
+    }
+
     function gainEnemyAnger() {
       if (!enemy) return;
       enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
@@ -15365,6 +15390,31 @@
         enemy.spdBonus = (Number(enemy.spdBonus) || 0) + 1;
         log(`${enemy.name}の特性。SPD+1。`);
       }
+    }
+
+    function attackGrowAmount(card, who) {
+      const printed = Number(card && card.atkGrow) || 0;
+      if (printed) return printed;
+      if (who !== "enemy" || !card || !card.damage) return 0;
+      const foe = enemyNow();
+      return Number(foe && foe.attackGrow) || 0;
+    }
+
+    function noteAttackGrow(card, who) {
+      const gain = attackGrowAmount(card, who);
+      if (!gain) return;
+      if (who === "player") {
+        player.atkMod = (Number(player.atkMod) || 0) + gain;
+        noteStatCard("atk", card.name);
+        syncGearStats();
+        fxBuff = true;
+        log(`${heroName()}は${card.name}。この戦闘中、ATK${signed(player.atk)}。`, card);
+        return;
+      }
+      enemy.grownAtk = (Number(enemy.grownAtk) || 0) + gain;
+      syncEnemyAtk();
+      fxFoeBuff = true;
+      log(`${enemy.name}は${card.name}。この戦闘中、ATK${signed(enemy.atk)}。`, card, true);
     }
 
     function applyDamage(target, amount, fromThorns, own) {
@@ -16000,10 +16050,10 @@
         if (alter) applySmithAlter(next, alter);
         const picked = (masteryRow(card.name, nth) || {}).picked || "";
         if (picked === "power") {
-          ["damage", "block", "heal", "poison", "burn", "thorns", "kick", "parryAdd", "focus", "expose", "demonAura"].forEach((key) => {
+          ["damage", "block", "heal", "poison", "burn", "thorns", "kick", "parryAdd", "focus", "expose", "demonAura", "atkGrow"].forEach((key) => {
             if (next[key]) next[key] = roundMastery(next[key]);
           });
-          if (next.rage && next.text) next.text = String(next.text).replace("ATK+2", "ATK+4");
+          if ((next.rage || next.atkGrow) && next.text) next.text = String(next.text).replace(/ATK\+(\d+)/, (_, n) => `ATK+${Number(n) * 2}`);
           next.ultimate = true;
           next.mastered = "power";
         } else if (picked === "light") {
@@ -16186,6 +16236,7 @@
       let dealt = Math.max(0, amount);
       dealt += relicAttackBonus(card) + relicDamageBonus();
       const result = applyDamage(enemy, dealt);
+      if (card && card.atkGrow) noteAttackGrow(card, "player");
       if (dealt > 0 && (result.hpLoss || result.blocked)) {
         slashFoe();
         noteHit("enemy", result.hpLoss, dealt);
@@ -16637,8 +16688,9 @@
         if (!card.damage && !card.block && !card.heal && !card.burn && !card.poison && !card.draw) return;
       }
       if (card.rage) {
-        player.atkMod = (Number(player.atkMod) || 0) + (card.ultimate ? 4 : 2);
-        if (!hasStatLock()) player.defMod = (Number(player.defMod) || 0) - 2;
+        const rage = rageAmounts(card);
+        player.atkMod = (Number(player.atkMod) || 0) + rage.up;
+        if (!hasStatLock()) player.defMod = (Number(player.defMod) || 0) - rage.down;
         noteStatCard("atk", card.name);
         noteStatCard("def", card.name);
         syncGearStats();
@@ -17715,6 +17767,16 @@
         if (addBurn(player, card.burn)) log(`${enemy.name}は${card.name}。${heroName()}は炎上+${player.burn}。`, card, true);
         else log(`${enemy.name}は${card.name}。`, card, true);
       }
+      if (card.rage && !card.foeRage) {
+        const rage = rageAmounts(card);
+        enemy.rageAtk = (Number(enemy.rageAtk) || 0) + rage.up;
+        enemy.rageDef = (Number(enemy.rageDef) || 0) + rage.down;
+        syncEnemyAtk();
+        syncEnemyDef();
+        fxFoeBuff = true;
+        log(`${enemy.name}は${card.name}。ATK${signed(enemy.atk)}、DEF${signed(enemy.def)}。`, card, true);
+        return;
+      }
       if (card.spite) {
         enemy.spiteOn = true;
         log(`${enemy.name}は${card.name}。体力を失うたびATK+1。`, card, true);
@@ -17736,6 +17798,7 @@
           const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + atk));
           takeEnemyHit(rolled.amount, card, rolled.crit);
         }
+        noteAttackGrow(card, "enemy");
         return;
       }
       if (card.damage) {
@@ -17743,6 +17806,7 @@
         const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
         const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0)));
         takeEnemyHit(rolled.amount, card, rolled.crit);
+        noteAttackGrow(card, "enemy");
       } else if (card.block) {
         const gain = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
         if (gain) {
@@ -17769,6 +17833,7 @@
       if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true });
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
       if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 });
+      if (who === "デスドラゴン") return wrap({ name: "死撃", cost: 2, text: "8ダメージ\nこの戦闘中、ATK+2", damage: 8, atkGrow: 2, kind: "attack", stars: 3 });
       if (who === "コボルド") return wrap({ name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "orange", flash: true, spite: true, stars: 1 });
       if (who === "ミノタウロス") return null;
       if (who === "トロール") {
@@ -23533,8 +23598,7 @@
       const enchant = enchantKind ? enchantFace(enchantKind) : null;
       const gem = enchant ? `<span class="enchant-gem" aria-label="${esc(enchant.name)}"><img src="${enchant.image}" alt=""></span>` : "";
       const enchantHint = enchant ? `<span class="hint enchant-note" data-word="${esc(enchant.name)}">${esc(enchant.name)}<i>${esc(enchantEffectNote(enchantKind, card))}</i></span>` : "";
-      const masterMark = !foe && card.mastered ? "★" : "";
-      return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}${masterMark}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function playFace(card, on, live, foe, recallIndex, extra) {
@@ -23779,8 +23843,9 @@
       }
       if (card.power && card.coward) mine.guardThrough = true;
       if (card.rage) {
-        mine.atk += card.ultimate ? 4 : 2;
-        mine.def -= 2;
+        const rage = rageAmounts(card);
+        mine.atk += rage.up;
+        mine.def -= rage.down;
         return;
       }
       if (card.poise) {
@@ -24564,6 +24629,8 @@
       if (card.press) next.press = true;
       if (card.power) next.power = true;
       if (card.rage) next.rage = true;
+      if (card.rageAtk != null) next.rageAtk = Number(card.rageAtk) || 0;
+      if (card.rageDef != null) next.rageDef = Number(card.rageDef) || 0;
       if (card.during) next.during = true;
       if (card.flash) next.flash = true;
       if (card.spite) next.spite = true;
@@ -24616,6 +24683,7 @@
       if (card.smoke) next.smoke = true;
       if (card.itemHit) next.itemHit = true;
       if (card.pierce) next.pierce = true;
+      if (card.atkGrow) next.atkGrow = Number(card.atkGrow) || 0;
       if (card.curseDoll) next.curseDoll = true;
       if (card.battleAtk) next.battleAtk = card.battleAtk;
       if (card.battleDef) next.battleDef = card.battleDef;
@@ -26429,8 +26497,7 @@
         offer.choices = rollMasteryChoices(known);
       }
       const card = masteryShownCard();
-      const faceCard = card ? Object.assign({}, card, { mastered: card.mastered || "shown" }) : null;
-      const face = faceCard ? `<div class="card preview ${offerTone(card)}">${cardFace(faceCard)}</div>` : "";
+      const face = card ? `<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>` : "";
       const buttons = (offer.choices || []).map((id) => {
         const blurb = masteryBlurb(id, card);
         const tone = id === "power" ? "power" : id === "light" ? "light" : "light";
