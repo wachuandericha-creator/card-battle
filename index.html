@@ -707,11 +707,11 @@
       line-height: 1;
       letter-spacing: 0;
     }
-    .forecast.lethal .skull {
-      filter:
-        drop-shadow(0 0 3px #fff8f0)
-        drop-shadow(0 0 8px rgba(255, 128, 48, 1))
-        drop-shadow(0 0 18px rgba(255, 42, 16, 0.95));
+    .forecast.damage.lethal {
+      box-shadow:
+        inset 0 0 0 2px #ffe0b0,
+        0 0 10px rgba(255, 176, 64, 0.9),
+        0 0 22px rgba(255, 48, 18, 0.72);
     }
     .duel-mid .forecasts {
       position: absolute;
@@ -1868,16 +1868,18 @@
       align-items: stretch;
       text-align: left;
     }
-    .reward-lead {
+    .overlay.victory .reward-lead {
       align-self: stretch;
-      margin: 12px 0 18px;
+      margin: 8px 0 20px;
+      padding-left: 64px;
       text-align: left;
-      font-size: 22px;
+      font-size: 36px;
+      line-height: 1.35;
       font-weight: 800;
       color: #fff1c8;
       letter-spacing: 0.06em;
     }
-    .reward-lead.drop { font-size: 40px; letter-spacing: 0.08em; text-align: center; }
+    .overlay.victory .reward-lead.drop { padding-left: 0; font-size: 40px; letter-spacing: 0.08em; text-align: center; }
     .reward-pick.gear-pick { width: min(250px, 24cqw); padding: 0; border: 0; background: none; color: var(--cream); }
     .gear-offer { width: min(250px, 24cqw); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .gear-offer-card { width: min(240px, 100%); }
@@ -1976,6 +1978,57 @@
       --lit-far: rgba(180, 24, 12, 0.45);
       --lit-far-hot: rgba(255, 48, 28, 0.62);
     }
+    .reward-pick.rare-1,
+    .menu.event.train .gift-btn.rare-1 {
+      --lit-line: #e4b07a;
+      --lit-hot: #f6d2b0;
+      --lit-near: rgba(205, 122, 52, 0.92);
+      --lit-near-hot: rgba(224, 142, 68, 0.98);
+      --lit-far: rgba(150, 78, 28, 0.48);
+      --lit-far-hot: rgba(176, 96, 36, 0.66);
+      --lit-near-r: 3px;
+      --lit-near-s: 0px;
+      --lit-far-r: 5px;
+      --lit-far-s: 0px;
+      --lit-near-hot-r: 5px;
+      --lit-near-hot-s: 0px;
+      --lit-far-hot-r: 8px;
+      --lit-far-hot-s: 1px;
+    }
+    .reward-pick.rare-2,
+    .menu.event.train .gift-btn.rare-2 {
+      --lit-line: #e7eef6;
+      --lit-hot: #ffffff;
+      --lit-near: rgba(214, 224, 236, 0.9);
+      --lit-near-hot: rgba(238, 244, 252, 0.98);
+      --lit-far: rgba(156, 172, 192, 0.52);
+      --lit-far-hot: rgba(186, 200, 218, 0.74);
+      --lit-near-r: 6px;
+      --lit-near-s: 1px;
+      --lit-far-r: 11px;
+      --lit-far-s: 1px;
+      --lit-near-hot-r: 13px;
+      --lit-near-hot-s: 3px;
+      --lit-far-hot-r: 24px;
+      --lit-far-hot-s: 5px;
+    }
+    .reward-pick.rare-3,
+    .reward-pick.rare-4,
+    .reward-pick.rare-5,
+    .reward-pick.rare-boss,
+    .menu.event.train .gift-btn.rare-3,
+    .menu.event.train .gift-btn.rare-4,
+    .menu.event.train .gift-btn.rare-5,
+    .menu.event.train .gift-btn.rare-boss {
+      --lit-near-r: 10px;
+      --lit-near-s: 2px;
+      --lit-far-r: 18px;
+      --lit-far-s: 4px;
+      --lit-near-hot-r: 28px;
+      --lit-near-hot-s: 8px;
+      --lit-far-hot-r: 56px;
+      --lit-far-hot-s: 16px;
+    }
     .reward-pick.rare-1 .card.preview,
     .reward-pick.rare-2 .card.preview,
     .reward-pick.rare-3 .card.preview,
@@ -2017,15 +2070,15 @@
       0%, 100% {
         box-shadow:
           inset 0 0 0 2px var(--lit-line),
-          0 0 6px 1px var(--lit-near),
-          0 0 10px 2px var(--lit-far),
+          0 0 var(--lit-near-r, 6px) var(--lit-near-s, 1px) var(--lit-near),
+          0 0 var(--lit-far-r, 10px) var(--lit-far-s, 2px) var(--lit-far),
           0 22px 36px rgba(0, 0, 0, 0.55);
       }
       50% {
         box-shadow:
           inset 0 0 0 3px var(--lit-hot),
-          0 0 18px 4px var(--lit-near-hot),
-          0 0 34px 8px var(--lit-far-hot),
+          0 0 var(--lit-near-hot-r, 18px) var(--lit-near-hot-s, 4px) var(--lit-near-hot),
+          0 0 var(--lit-far-hot-r, 34px) var(--lit-far-hot-s, 8px) var(--lit-far-hot),
           0 22px 36px rgba(0, 0, 0, 0.55);
       }
     }
@@ -4595,8 +4648,8 @@
     .mana-read b.spent {
       background: none;
       box-shadow:
-        inset 0 0 0 4px #f0d078,
-        inset 0 0 0 6px #6a4410;
+        inset 0 0 0 2px #f0d078,
+        inset 0 0 0 3px #6a4410;
       filter: none;
     }
     @keyframes mana-glow {
@@ -4644,6 +4697,16 @@
       overflow: visible;
     }
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+    button.pile {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      padding: 0;
+      cursor: pointer;
+    }
+    button.pile:hover .pile-card,
+    button.pile:focus-visible .pile-card { filter: brightness(1.08); }
     .handbar .end {
       align-self: center;
       width: 220px;
@@ -4814,7 +4877,9 @@
       pointer-events: auto;
       font-family: inherit;
     }
-    .foe-pile { cursor: pointer; }
+    .foe-pile,
+    .foe-discard { cursor: pointer; }
+    .enemy-main[data-action="foe-deck"] { pointer-events: auto; cursor: pointer; }
     .foe-pile .pile-card,
     .foe-discard .pile-card { width: 118px; height: auto; max-height: none; aspect-ratio: var(--card-ratio); }
     /* 敵の裏は黒寄りの紫の本絵。数字は絵の上に白のまま */
@@ -4843,7 +4908,9 @@
     .foe-pile .pile-label,
     .foe-discard .pile-label { font-size: 16px; letter-spacing: 0.08em; white-space: nowrap; }
     .foe-pile:hover .pile-card,
-    .foe-pile:focus-visible .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
+    .foe-pile:focus-visible .pile-card,
+    .foe-discard:hover .pile-card,
+    .foe-discard:focus-visible .pile-card { box-shadow: 0 0 10px rgba(80, 60, 100, 0.45), 5px 5px 0 #0c0a09, 6px 6px 0 rgba(40, 32, 48, 0.75); }
     .overlay.foe-deck-view .deck-lead { margin: 0 0 12px; text-align: center; color: #d9c7a4; font-size: 15px; line-height: 1.45; }
     .foe-peek {
       position: absolute;
@@ -5992,21 +6059,21 @@
     .album-screen .card .card-fit.k-foe.rboss,
     .foe-starter-deck .card .card-fit.k-foe.rboss,
     .cast-card-pop .card .card-fit.k-foe.rboss { --frame-img: url("frame-plum-black.png?v=22"); }
-    .card .card-fit.k-gear.r0,
-    .card .card-fit.k-gear.r1,
+    .card .card-fit.k-loot.r0,
+    .card .card-fit.k-loot.r1,
     .card .card-fit.k-boon.r0,
     .card .card-fit.k-boon.r1 { --frame-img: url("frame-silver-over-copper.png?v=23"); }
-    .card .card-fit.k-gear.r2,
+    .card .card-fit.k-loot.r2,
     .card .card-fit.k-boon.r2 { --frame-img: url("frame-silver-over-silver.png?v=23"); }
-    .card .card-fit.k-gear.r3,
+    .card .card-fit.k-loot.r3,
     .card .card-fit.k-boon.r3 { --frame-img: url("frame-silver-over-gold.png?v=23"); }
-    .card .card-fit.k-gear.rboss,
+    .card .card-fit.k-loot.rboss,
     .card .card-fit.k-boon.rboss { --frame-img: url("frame-silver-over-black.png?v=23"); }
-    .card .card-fit.k-loot.r0 { --frame-img: url("frame-basic-shakudo.png?v=1"); }
-    .card .card-fit.k-loot.r1 { --frame-img: url("frame-shakudo-over-copper.png?v=4"); }
-    .card .card-fit.k-loot.r2 { --frame-img: url("frame-shakudo-over-silver.png?v=4"); }
-    .card .card-fit.k-loot.r3 { --frame-img: url("frame-shakudo-over-gold.png?v=4"); }
-    .card .card-fit.k-loot.rboss { --frame-img: url("frame-shakudo-over-black.png?v=4"); }
+    .card .card-fit.k-gear.r0 { --frame-img: url("frame-basic-shakudo.png?v=1"); }
+    .card .card-fit.k-gear.r1 { --frame-img: url("frame-shakudo-over-copper.png?v=4"); }
+    .card .card-fit.k-gear.r2 { --frame-img: url("frame-shakudo-over-silver.png?v=4"); }
+    .card .card-fit.k-gear.r3 { --frame-img: url("frame-shakudo-over-gold.png?v=4"); }
+    .card .card-fit.k-gear.rboss { --frame-img: url("frame-shakudo-over-black.png?v=4"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
     .card .card-fit .art {
       position: absolute;
@@ -6511,25 +6578,29 @@
       position: relative;
       width: min(980px, calc(100cqw - 32px));
     }
-    .mastery-panel h2 {
-      margin: 0 0 10px;
-      font-size: clamp(26px, 3.4cqw, 40px);
-      letter-spacing: 0.06em;
-      color: #ffe7a8;
-      text-shadow: 0 2px 0 #6a4a16;
+    .overlay .mastery-panel .mastery-title {
+      margin: 0 0 18px;
+      font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Noto Serif JP", "MS Mincho", serif;
+      font-size: clamp(28px, 2.2cqw, 36px);
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0.05em;
+      text-align: center;
+      color: #ffe08a;
+      text-shadow: none;
     }
     .mastery-stage {
       position: relative;
       display: grid;
       place-items: center;
       width: 100%;
-      min-height: 280px;
-      margin: 0 0 14px;
+      min-height: 400px;
+      margin: 0 0 18px;
     }
     .mastery-stage .card.preview {
       position: relative;
       z-index: 1;
-      width: min(220px, 46cqw);
+      width: min(280px, 70cqw);
       height: auto;
       box-shadow:
         inset 0 0 0 2px #ffe6a4,
@@ -6540,71 +6611,109 @@
     }
     .mastery-choices {
       display: flex;
-      gap: 16px;
+      flex-wrap: wrap;
+      gap: 18px;
       width: 100%;
       justify-content: center;
     }
     .mastery-choice {
-      flex: 1 1 220px;
-      max-width: 300px;
-      min-height: 104px;
+      flex: 1 1 260px;
+      max-width: 360px;
+      min-height: 92px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 14px 16px;
-      border-radius: 16px;
+      gap: 4px;
+      padding: 16px 32px;
+      border-radius: 999px;
       cursor: pointer;
-      color: #fff8e8;
+      font-weight: 900;
     }
-    .mastery-choice b { font-size: 28px; letter-spacing: 0.18em; }
-    .mastery-choice small { font-size: 15px; line-height: 1.45; font-weight: 800; color: #fff6e0; }
+    .mastery-choice b {
+      font-size: 32px;
+      line-height: 1.1;
+      letter-spacing: 0.16em;
+      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+    }
+    .mastery-choice small {
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+    }
     .mastery-choice.power {
-      border: 2px solid #e24b3a;
-      background: linear-gradient(180deg, rgba(132, 32, 22, 0.96), rgba(42, 12, 8, 0.96));
+      border: 2px solid #ffd28a;
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(180, 24, 8, 0.42) 0%, transparent 58%),
+        linear-gradient(180deg, #fff1d4 0%, #ffb067 40%, #ff6a3a 100%);
+      color: #2a1008;
       box-shadow:
-        0 0 8px 1px rgba(226, 75, 58, 0.55),
-        inset 0 1px 0 rgba(255, 220, 190, 0.28);
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 22px rgba(255, 90, 40, 0.55),
+        0 12px 26px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
       animation: mastery-power-glow 1.15s ease-in-out infinite;
     }
     .mastery-choice.light {
-      border: 2px solid #8ec0ff;
-      background: linear-gradient(180deg, rgba(28, 58, 112, 0.96), rgba(10, 16, 36, 0.96));
+      border: 2px solid #d7e8ff;
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(20, 60, 140, 0.35) 0%, transparent 58%),
+        linear-gradient(180deg, #f7fbff 0%, #b9d6ff 42%, #6aa0f0 100%);
+      color: #102040;
       box-shadow:
-        0 0 8px 1px rgba(126, 182, 255, 0.5),
-        inset 0 1px 0 rgba(220, 236, 255, 0.28);
+        0 0 0 2px rgba(8, 18, 40, 0.88),
+        0 0 22px rgba(90, 150, 255, 0.5),
+        0 12px 26px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
       animation: mastery-light-glow 1.15s ease-in-out infinite;
+    }
+    .mastery-choice.power b,
+    .mastery-choice.power small { color: #2a1008; }
+    .mastery-choice.light b,
+    .mastery-choice.light small {
+      color: #102040;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
     }
     @keyframes mastery-power-glow {
       0%, 100% {
+        filter: brightness(1);
         box-shadow:
-          0 0 8px 1px rgba(226, 75, 58, 0.55),
-          0 0 14px 2px rgba(255, 120, 70, 0.28),
-          inset 0 1px 0 rgba(255, 220, 190, 0.28);
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 16px rgba(255, 110, 50, 0.45),
+          0 12px 26px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
       }
       50% {
+        filter: brightness(1.08);
         box-shadow:
-          0 0 22px 4px rgba(226, 75, 58, 0.9),
-          0 0 40px 8px rgba(255, 120, 70, 0.55),
-          inset 0 1px 0 rgba(255, 220, 190, 0.28);
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 0 5px rgba(255, 196, 140, 0.45),
+          0 0 28px rgba(255, 120, 50, 0.75),
+          0 14px 28px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
       }
     }
     @keyframes mastery-light-glow {
       0%, 100% {
+        filter: brightness(1);
         box-shadow:
-          0 0 8px 1px rgba(126, 182, 255, 0.5),
-          0 0 14px 2px rgba(186, 220, 255, 0.26),
-          inset 0 1px 0 rgba(220, 236, 255, 0.28);
+          0 0 0 2px rgba(8, 18, 40, 0.88),
+          0 0 16px rgba(110, 170, 255, 0.4),
+          0 12px 26px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
       }
       50% {
+        filter: brightness(1.08);
         box-shadow:
-          0 0 22px 4px rgba(126, 182, 255, 0.88),
-          0 0 40px 8px rgba(186, 220, 255, 0.5),
-          inset 0 1px 0 rgba(220, 236, 255, 0.28);
+          0 0 0 2px rgba(8, 18, 40, 0.88),
+          0 0 0 5px rgba(210, 230, 255, 0.5),
+          0 0 28px rgba(120, 180, 255, 0.72),
+          0 14px 28px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.88);
       }
     }
-    .mastery-choice:hover { filter: brightness(1.08); }
+    .mastery-choice:hover { filter: brightness(1.06); }
     .leave-ask .panel { gap: 8px; min-width: min(420px, calc(100cqw - 32px)); }
     .leave-ask .leave-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .leave-ask .leave-actions button { margin: 0; }
@@ -7052,18 +7161,18 @@
     }
     .overlay.paths .panel.wide {
       width: fit-content;
-      max-width: min(1360px, calc(100cqw - 24px));
+      max-width: min(1480px, calc(100cqw - 24px));
       max-height: calc(100cqh - 16px);
-      padding: 22px 28px 24px;
+      padding: 64px 88px 72px;
     }
     .overlay.paths h2.fade-sandwich {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
+      gap: 18px;
       width: 100%;
-      margin: 0 0 8px;
-      font-size: 52px;
+      margin: 0 0 40px;
+      font-size: 72px;
       color: #ffe7a8;
     }
     .overlay.paths h2.fade-sandwich > .fade-line {
@@ -7077,18 +7186,16 @@
     .overlay.paths .path-list { flex-wrap: nowrap; align-items: stretch; }
     .overlay.paths .path-list:has(.path-route) { align-items: stretch; gap: 52px; }
     .overlay.paths .path-list:has(> .path-route:hover) > .path-route:not(:hover) {
-      filter: brightness(0.62) saturate(0.72);
+      filter: brightness(0.46) saturate(0.7);
     }
     .overlay.paths .path-list > button.path-route:hover .route-stack {
       box-shadow:
-        0 0 0 6px rgba(8, 6, 4, 0.45),
-        0 0 0 13px #fff6d2,
-        0 0 0 18px var(--route-line, #e4b15a),
-        0 0 28px 8px color-mix(in srgb, var(--route-line, #e4b15a) 80%, white);
+        0 0 0 3px #fff6d2,
+        0 0 24px 6px rgba(255, 214, 120, 0.72);
     }
     .overlay.paths .path-list > button.path-route:hover .route-letter {
       color: #fff8e6;
-      text-shadow: 0 0 12px var(--route-line, #ffe7a8);
+      text-shadow: 0 0 12px #ffe7a8;
     }
     .overlay.paths .path-list button {
       container-type: inline-size;
@@ -7169,19 +7276,12 @@
     }
     .route-stack {
       border: 0;
-      padding: 6px;
-      gap: 6px;
+      padding: 4px;
+      gap: 10px;
       border-radius: 12px;
       background: transparent;
-      box-shadow:
-        0 0 0 6px rgba(8, 6, 4, 0.2),
-        0 0 0 11px var(--route-line, #e4b15a),
-        0 0 18px 8px color-mix(in srgb, var(--route-line, #e4b15a) 70%, transparent);
+      box-shadow: none;
     }
-    .path-route.path-tone-red { --route-line: #e02020; }
-    .path-route.path-tone-blue { --route-line: #1a6fe8; }
-    .path-route.path-tone-yellow { --route-line: #e4b15a; }
-    .path-route.path-tone-white { --route-line: #f7f4ee; }
     .route-step {
       flex: 0 0 168px;
       height: 168px;
@@ -7194,16 +7294,23 @@
       background: transparent;
     }
     .overlay.paths .path-node {
+      --step-line: #e4b15a;
       position: relative;
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      padding: 5px;
+      padding: 6px;
       overflow: hidden;
       border-radius: 10px;
       isolation: isolate;
-      background: transparent;
+      background: var(--step-line);
+      box-shadow: 0 0 0 2px var(--step-line);
     }
+    .overlay.paths .path-node.path-straight,
+    .overlay.paths .path-node.path-elite,
+    .overlay.paths .path-node.path-boss { --step-line: #e02020; }
+    .overlay.paths .path-node.path-camp { --step-line: #1a6fe8; }
+    .overlay.paths .path-node.path-lost { --step-line: #9a4ad4; }
     .overlay.paths .path-list button.path-node {
       width: 168px;
       height: 220px;
@@ -7235,9 +7342,9 @@
       font-style: normal;
     }
     .overlay.paths .path-node.tone-rest > img,
-    .overlay.paths .path-node.tone-rest > i { box-shadow: inset 0 0 0 6px #6aa4e0; }
+    .overlay.paths .path-node.tone-rest > i,
     .overlay.paths .path-node.tone-other > img,
-    .overlay.paths .path-node.tone-other > i { box-shadow: inset 0 0 0 6px #e2b03a; }
+    .overlay.paths .path-node.tone-other > i { box-shadow: none; }
     .overlay.paths .path-list button + button { margin-top: 0; }
     html.phone .overlay.paths .path-list button.path-node,
     html.iphone-play .overlay.paths .path-list button.path-node {
@@ -7593,10 +7700,42 @@
       transition: transform 0.16s ease;
     }
     .title-run-actions > button.primary {
-      border: 1px solid #ffe6a8;
-      background: linear-gradient(180deg, #ffe9ae 0%, #e4b15a 48%, #b9842a 100%);
-      color: #2a1c0c;
-      box-shadow: 0 0 0 3px rgba(255, 220, 150, 0.22), 0 10px 28px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+      border: 2px solid #ffd28a;
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(255, 70, 10, 0.95) 0%, transparent 58%),
+        linear-gradient(180deg, #fff0b8 0%, #ffc45a 28%, #f07820 68%, #a02808 100%);
+      color: #2a1008;
+      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 4px rgba(255, 170, 70, 0.35),
+        0 0 28px rgba(255, 110, 30, 0.72),
+        0 12px 26px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+      animation: title-decide 1.15s ease-in-out infinite;
+    }
+    @keyframes title-decide {
+      0%, 100% {
+        filter: brightness(1);
+        box-shadow:
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 0 4px rgba(255, 170, 70, 0.28),
+          0 0 16px rgba(255, 120, 40, 0.5),
+          0 12px 26px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.7),
+          inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+      }
+      50% {
+        filter: brightness(1.12);
+        box-shadow:
+          0 0 0 2px rgba(40, 12, 6, 0.92),
+          0 0 0 6px rgba(255, 220, 140, 0.55),
+          0 0 36px rgba(255, 140, 40, 0.95),
+          0 14px 28px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8),
+          inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+      }
     }
     .title-run-actions > button:not(.primary) {
       border: 1px solid rgba(240, 195, 106, 0.55);
@@ -7605,13 +7744,54 @@
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
     }
     .title-run-actions > button:hover { transform: translateY(-2px); }
+    .title-run-actions > button.primary:hover {
+      animation: none;
+      filter: brightness(1.08);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 5px rgba(255, 190, 90, 0.5),
+        0 0 36px rgba(255, 120, 30, 0.9),
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+    }
     .title-run-actions > button.primary.framed {
       border: 3px solid #fff6d4;
+      animation-name: title-decide-framed;
+    }
+    @keyframes title-decide-framed {
+      0%, 100% {
+        filter: brightness(1);
+        box-shadow:
+          0 0 0 4px #120c09,
+          0 0 0 11px #ffe7a8,
+          0 0 18px rgba(255, 140, 40, 0.55),
+          0 12px 26px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.7),
+          inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+      }
+      50% {
+        filter: brightness(1.12);
+        box-shadow:
+          0 0 0 4px #120c09,
+          0 0 0 11px #fff6d4,
+          0 0 36px rgba(255, 170, 60, 0.95),
+          0 14px 28px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8),
+          inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+      }
+    }
+    .title-run-actions > button.primary.framed:hover {
       box-shadow:
         0 0 0 4px #120c09,
-        0 0 0 11px #ffe7a8,
-        0 10px 28px rgba(0, 0, 0, 0.6),
-        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        0 0 0 11px #fff6d4,
+        0 0 36px rgba(255, 170, 60, 0.95),
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .title-run-actions > button.primary { animation: none; }
     }
     .title-sub-actions {
       display: flex;
@@ -9451,6 +9631,27 @@
     }
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
+    .scene-fade.scene-fade-floor i { transition-duration: 0.5s; }
+    .scene-fade.scene-fade-floor.out i { transition-duration: 0.6s; }
+    .scene-fade .scene-floor {
+      position: fixed;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .scene-fade.in .scene-floor { opacity: 1; }
+    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.6s; }
+    .scene-fade .scene-floor b {
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: #ffe7a8;
+      text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 28px rgba(255, 210, 90, 0.95);
+    }
     .depart-name {
       position: relative;
       z-index: 2;
@@ -10039,7 +10240,7 @@
       width: min(360px, 52%);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
-      margin: 0 0 6px;
+      margin: 0;
       text-align: center;
       color: #f0c36a;
       font-size: 22px;
@@ -10054,10 +10255,10 @@
     .cast-screen.character-focus .cast-on-stats .hp-line {
       grid-template-columns: auto auto;
       justify-content: start;
-      padding: 8px 16px;
-      gap: 10px;
+      padding: 0;
+      gap: 0;
     }
-    .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: 20px; gap: 6px; letter-spacing: 0.02em; }
+    .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: 20px; gap: 0; letter-spacing: 0; }
     .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 28px; height: 28px; }
     .cast-screen.character-focus .cast-on-stats .hp-line .num {
       text-align: left;
@@ -10796,7 +10997,7 @@
     }
     .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed {
       filter: none;
-      animation: none;
+      animation: title-decide-framed 1.15s ease-in-out infinite;
       border: 3px solid #fff6d4;
       box-shadow:
         0 0 0 4px #120c09,
@@ -10805,6 +11006,20 @@
         0 12px 26px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.7),
         inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+    }
+    .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed:hover {
+      animation: none;
+      filter: brightness(1.08);
+      box-shadow:
+        0 0 0 4px #120c09,
+        0 0 0 11px #fff6d4,
+        0 0 36px rgba(255, 170, 60, 0.95),
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed { animation: none; }
     }
     .cast-screen.dungeon-screen .dungeon-board {
       grid-column: 2;
@@ -11488,6 +11703,13 @@
       top: 64px;
       bottom: 8px;
     }
+    html.phone .overlay.paths .panel.wide {
+      padding: 28px 18px 32px;
+    }
+    html.phone .overlay.paths h2.fade-sandwich {
+      margin-bottom: 16px;
+      font-size: 40px;
+    }
     html.phone .battle-screen .road-map { display: none; }
     html.phone .drawer-panel .road-map { display: flex; }
     html.phone .battle-log {
@@ -11552,7 +11774,7 @@
     }
     html.phone .mana-read { width: auto; height: auto; gap: 2px; }
     html.phone .mana-read b { width: 48px; height: 48px; }
-    html.phone .mana-read b.spent { box-shadow: inset 0 0 0 4px #f0d078, inset 0 0 0 5px #6a4410; }
+    html.phone .mana-read b.spent { box-shadow: inset 0 0 0 2px #f0d078, inset 0 0 0 3px #6a4410; }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     html.phone .forecast { font-size: 11px; padding: 3px 7px; gap: 3px; margin: 0 3px; }
     html.phone .forecast b { font-size: 16px; }
@@ -11628,7 +11850,7 @@
     }
     html.phone.land .mana-read { width: auto; height: auto; gap: 1px; }
     html.phone.land .mana-read b { width: 36px; height: 36px; }
-    html.phone.land .mana-read b.spent { box-shadow: inset 0 0 0 3px #f0d078, inset 0 0 0 4px #6a4410; }
+    html.phone.land .mana-read b.spent { box-shadow: inset 0 0 0 1px #f0d078, inset 0 0 0 2px #6a4410; }
     html.phone.land .mana-orb { width: 28px; height: 100%; max-height: 40px; margin: 0; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
@@ -11780,15 +12002,15 @@
       捨て身の一撃: { cost: 1, stars: 1, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
       見切り斬り: { cost: 1, stars: 1, text: "5ダメージ\n前のターンにダメージを受けていないなら追加で3ダメージ", damage: 5, kind: "attack", safeBonus: 3 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "14ダメージ\nパリィ+1", damage: 14, parry: true, kind: "attack" },
-      臆病者の構え: { cost: 1, stars: 2, text: "ブロック4\nこの戦闘中、パリィ中でもシールドを獲得", block: 4, kind: "orange", coward: true },
+      臆病者の構え: { cost: 1, stars: 2, text: "ブロック4\nパリィ中でもシールドを獲得", block: 4, kind: "orange", coward: true },
       致命の一撃: { cost: 4, stars: 3, text: "30ダメージ\nこの戦闘中、パリィに成功するたびコスト-1\n0まで下がる", damage: 30, kind: "attack", finisher: true },
       ナイフパリィ: { cost: 3, stars: 3, text: "パリィ+1\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       超集中: { cost: 3, stars: 3, text: "パリィ+3\nこのターン、パリィに成功するたびATK+1＆DEF+1", kind: "block", parryAdd: 3, focusTurn: true },
       諸刃の剣: { cost: 2, stars: 2, text: "28ダメージ\n次に受けるダメージが2倍", damage: 28, kind: "attack", doubleNext: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を10回復\nパリィ+1", heal: 10, kind: "skill", masterOnce: true, flash: true },
-      魔法のパリィ: { cost: 1, stars: 1, text: "この戦闘中、パリィ中は状態異常にならない", kind: "orange", flash: true, magicParry: true },
+      魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中は\n状態異常にならない", kind: "orange", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
-      自信過剰: { cost: 2, stars: 3, text: "この戦闘中、パリィに成功するたびATK+1", kind: "orange", flash: true, pride: true },
+      自信過剰: { cost: 2, stars: 3, text: "パリィに成功するたびATK+1", kind: "orange", flash: true, pride: true },
     };
     const DEMON = {
       悪魔の剣: { cost: 1, stars: 1, text: "悪魔化1\n6ダメージ\nこの戦闘中全ての\n悪魔の剣のダメージ+3", damage: 6, kind: "attack", demon: 1, demonSword: true, demonAura: 3 },
@@ -12101,33 +12323,61 @@
       return { left, top, width: right - left, height: bottom - top };
     }
 
-    function blackFade(run) {
+    function blackFade(run, opt) {
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const after = opt && opt.after;
+      const floor = opt && opt.floor;
+      const showFloor = floor != null && floor !== "";
       if (reduce || document.querySelector(".depart") || document.querySelector(".scene-fade")) {
         run();
+        if (after) after();
         return;
       }
       const veil = document.createElement("div");
-      veil.className = "scene-fade";
+      veil.className = showFloor ? "scene-fade scene-fade-floor" : "scene-fade";
       veil.setAttribute("aria-hidden", "true");
       const pane = document.createElement("i");
       const box = fadePlayBox();
-      if (box) {
-        pane.style.left = `${box.left}px`;
-        pane.style.top = `${box.top}px`;
-        pane.style.width = `${box.width}px`;
-        pane.style.height = `${box.height}px`;
-      } else {
-        pane.style.inset = "0";
-      }
+      const place = (el) => {
+        if (box) {
+          el.style.left = `${box.left}px`;
+          el.style.top = `${box.top}px`;
+          el.style.width = `${box.width}px`;
+          el.style.height = `${box.height}px`;
+        } else {
+          el.style.inset = "0";
+        }
+      };
+      place(pane);
       veil.appendChild(pane);
+      if (showFloor) {
+        const mark = document.createElement("div");
+        mark.className = "scene-floor";
+        place(mark);
+        const glyph = document.createElement("b");
+        glyph.innerHTML = floorGlyph(floor);
+        const size = box
+          ? Math.max(96, Math.round(Math.min(box.width * 0.42, box.height * 0.42)))
+          : 280;
+        glyph.style.fontSize = `${size}px`;
+        mark.appendChild(glyph);
+        veil.appendChild(mark);
+      }
       document.body.appendChild(veil);
+      const fadeIn = showFloor ? 520 : 280;
+      const hold = showFloor ? 1600 : 0;
+      const fadeOut = showFloor ? 620 : 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
         run();
-        requestAnimationFrame(() => veil.classList.add("out"));
-        setTimeout(() => { if (veil.parentNode) veil.remove(); }, 440);
-      }, 280);
+        setTimeout(() => {
+          veil.classList.add("out");
+          setTimeout(() => {
+            if (veil.parentNode) veil.remove();
+            if (after) after();
+          }, fadeOut);
+        }, hold);
+      }, fadeIn);
     }
 
     function placeAnchored(el, anchor, opt = {}) {
@@ -12183,6 +12433,7 @@
     let phase = "player";
     let encounter = false;
     let floorCall = false;
+    let floorOnFade = false;
     let intentShown = true;
     let intentArrive = false;
     let pendingFoeLeaveFly = [];
@@ -12227,6 +12478,7 @@
     let fxLabTick = 0;
     let askLeave = false;
     let showDeck = false;
+    let pileLook = "";
     let deckOrder = "hand";
     let eventMapOpen = false;
     let eventDeckOpen = false;
@@ -13142,27 +13394,29 @@
       return true;
     }
 
-    // 黒の切り替えが明けてから階を出す。裏で始めると、2階から3階へ進むときに見えない。
+    // 階層が進む黒フェードを長くして、そのあいだに階を出す。明けてから敵が現れる。
     function openBattleIntro() {
-      floorAnnounceToken += 1;
+      const token = ++floorAnnounceToken;
+      const eventFight = isEventBattle();
+      const announce = !eventFight && announceThisFloor();
+      floorOnFade = announce;
       blackFade(() => {
-        const eventFight = isEventBattle();
-        const token = ++floorAnnounceToken;
-        floorCall = false;
+        if (token !== floorAnnounceToken) return;
+        floorCall = announce;
         encounter = eventFight;
         intentShown = false;
         render();
-        if (eventFight) {
-          timer = setTimeout(beginEncounter, 1600);
-          return;
-        }
-        setTimeout(() => {
+      }, {
+        floor: announce ? floorNo() : null,
+        after: () => {
+          floorOnFade = false;
           if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
-          floorCall = true;
-          encounter = false;
-          render();
-          timer = setTimeout(showEncounter, 1600);
-        }, 480);
+          if (eventFight) {
+            timer = setTimeout(beginEncounter, 1600);
+            return;
+          }
+          showEncounter();
+        },
       });
     }
     function insertAhead(node) {
@@ -13258,7 +13512,13 @@
     function roadHomeTop(ol, now) {
       const anchor = roadAnchor(now);
       const max = Math.max(0, ol.scrollHeight - ol.clientHeight);
-      const top = anchor.offsetTop + anchor.offsetHeight - ol.clientHeight;
+      if (!anchor || !ol.clientHeight) return 0;
+      const style = getComputedStyle(ol);
+      const padBottom = parseFloat(style.paddingBottom) || 0;
+      const borderBottom = parseFloat(style.borderBottomWidth) || 0;
+      const viewBottom = ol.getBoundingClientRect().bottom - borderBottom - padBottom;
+      const anchorBottom = anchor.getBoundingClientRect().bottom;
+      const top = ol.scrollTop + (anchorBottom - viewBottom);
       return Math.max(0, Math.min(max, top));
     }
 
@@ -13302,7 +13562,7 @@
       const btn = map && map.querySelector(".road-back");
       const now = ol.querySelector(".road-node.now");
       if (!btn || !now) return;
-      const leftView = now.offsetTop >= ol.scrollTop + ol.clientHeight - 1;
+      const leftView = now.getBoundingClientRect().top >= ol.getBoundingClientRect().bottom - 1;
       btn.hidden = !leftView;
     }
 
@@ -13507,13 +13767,13 @@
     ];
     // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵はまだ無い。
     const LOOT_RELICS = [
-      ["whetstone", "戦士の砥石", 1, "戦闘開始時、ATK+1。戦闘中ずっと。", "openAtk"],
+      ["whetstone", "戦士の砥石", 1, "戦闘開始時 ATK+1", "openAtk"],
       ["guard-charm", "守護の護符", 1, "戦闘開始時 DEF+1", "openDef"],
       ["travel-cloak", "旅人のマント", 1, "戦闘開始時、ブロック8を得る。", "openBlock"],
       ["duel-bell", "決闘の鐘", 1, "各戦闘の1ターン目、最初のアタックダメージ+5。", "bell"],
       ["swift-boots", "俊足のブーツ", 2, "戦闘開始時、カードを2枚引く。", "openDraw"],
       ["old-watch", "古びた懐中時計", 2, "各戦闘の1ターン目だけ、マナ+1。", "clock"],
-      ["war-horn", "指揮官の角笛", 3, "戦闘開始時、ATK+2、DEF+2。戦闘中ずっと。", "horn"],
+      ["war-horn", "指揮官の角笛", 3, "戦闘開始時 ATK+2、DEF+2", "horn"],
       ["small-hourglass", "小さな砂時計", 1, "ターン終了時にマナが余っていた場合、ブロック6を得る。", "hourglass"],
       ["tailwind", "追い風の羽", 2, "2ターン目開始時、カードを2枚引く。", "feather"],
       ["mana-shard", "魔力の欠片", 2, "3・6・9ターン目開始時、マナ+1。", "shard"],
@@ -14523,6 +14783,7 @@
     }
 
     function recycleDiscardToDeck() {
+      foeDiscard = foeDiscard.filter((card) => card && !card.foeRage);
       if (!foeDiscard.length) return false;
       const foe = enemyNow();
       enemyLoop = shuffle(foeDiscard.map((card) => applyEnemyHidden(card, foe)));
@@ -14532,22 +14793,25 @@
       return true;
     }
 
-    // SPDの枠を埋める。山札が切れて引けない枠は、切れるたびに怒りが入る。処理後の怒りは山札にも捨て札にも戻らない。入ったあとに捨て札を山札へ戻し、残りの枠を引く。
+    // 切れ目につき怒りは1枚。処理後は山札にも捨て札にも戻さない。戻した山札から、残りの枠だけ引く。
     function buildFoePlan() {
       foePlan = [];
-      const need = foeSpd();
+      const need = Math.max(1, foeSpd());
       let guard = 0;
-      while (foePlan.length < need && guard < need + 4) {
+      let anger = 0;
+      while (foePlan.length < need && guard < need + 2) {
         guard += 1;
         const card = takeDeckCard();
-        if (card) {
-          foePlan.push({ anger: false, card });
+        if (card && !card.foeRage) {
+          foePlan.push({ anger: false, card, shown: false, gone: false });
           continue;
         }
-        foePlan.push({ anger: true, card: foeAngerCard() });
+        if (anger >= 1) break;
+        anger += 1;
+        foePlan.push({ anger: true, card: foeAngerCard(), shown: false, gone: false });
         if (!recycleDiscardToDeck()) break;
       }
-      foeAngerShow = foePlan.some((step) => step.anger);
+      foeAngerShow = anger > 0;
     }
 
     // 戦闘をまたいで残った怒り演出を切る。山札を使い切る前の怒りは出さない。
@@ -16128,7 +16392,7 @@
 
     function playCard(index) {
       if (masteryOffer || lootChoice) return false;
-      if (showDeck || showFoeDeck) return false;
+      if (showDeck || showFoeDeck || pileLook) return false;
       if (phase !== "player" || outcome) return false;
       const card = hand[index];
       if (!card) return false;
@@ -16463,12 +16727,16 @@
     }
 
     function flyNextFoeCard() {
-      const wrap = document.querySelector(".play-side.foe .play-card.await-draw");
+      const wrap = document.querySelector(".play-side.foe .play-card.await-draw:not([data-flew])");
       const play = wrap && wrap.querySelector(".card");
-      if (!play) {
+      if (!wrap || !play) {
         foeArriveHide = false;
+        foePlan.forEach((step) => { step.shown = true; });
         return;
       }
+      wrap.dataset.flew = "1";
+      const index = [...document.querySelectorAll(".play-side.foe .play-card")].indexOf(wrap);
+      if (foePlan[index]) foePlan[index].shown = true;
       flyFoeFromDeck(play, flyNextFoeCard);
     }
 
@@ -17232,15 +17500,17 @@
         }
         const step = foePlan[foeIndex];
         if (player.hp > 0 && step) {
-          if (step.anger) gainEnemyAnger();
-          else if (step.card) {
+          if (step.anger) {
+            gainEnemyAnger();
+            step.gone = true;
+          } else if (step.card) {
             const live = applyEnemyHidden(step.card, enemyNow());
             enemyUseCard(live);
             if (stealArmed && stealArmed.caster === "enemy") {
               const armed = stealArmed;
               stealArmed = null;
               beginStealTop(armed.card, "enemy", () => {
-                if (!isFlashCard(live)) foeDiscard.push({ ...live });
+                if (!isFlashCard(live) && !live.foeRage) foeDiscard.push({ ...live });
                 if (enemy && enemy.hp <= 0) {
                   scrapPlay();
                   scheduleFinish("win");
@@ -17265,7 +17535,7 @@
               });
               return;
             }
-            if (!isFlashCard(live)) foeDiscard.push({ ...live });
+            if (!isFlashCard(live) && !live.foeRage) foeDiscard.push({ ...live });
           }
         }
         if (enemy && enemy.hp <= 0) {
@@ -17313,7 +17583,7 @@
 
     function endTurn() {
       if (masteryOffer || lootChoice) return;
-      if (showDeck || showFoeDeck) return;
+      if (showDeck || showFoeDeck || pileLook) return;
       if (phase !== "player" || outcome || foeRageBusy) return;
       clearTimer();
       if (hasReuseBracelet()) {
@@ -18907,20 +19177,13 @@
 
     function enterFloorScreen() {
       floorAnnounceToken += 1;
+      const announce = announceThisFloor();
       blackFade(() => {
         screen = "floor";
-        const token = ++floorAnnounceToken;
-        const announce = announceThisFloor();
         eventFloorCall = false;
         render();
         if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
-        if (!announce) return;
-        setTimeout(() => {
-          if (token !== floorAnnounceToken || screen !== "floor") return;
-          eventFloorCall = true;
-          render();
-        }, 480);
-      });
+      }, { floor: announce ? floorNo() : null });
     }
 
     function emptyRunSheet() {
@@ -19568,9 +19831,8 @@
       const got = takeGift(floorGift);
       if (!got) return;
       noteSearchResult(got.replace(/。$/, ""));
-      floorPrompt = got;
-      floorPhase = "show";
-      render();
+      log(got);
+      finishEvent();
     }
 
     function skipSearchGear() {
@@ -20628,7 +20890,7 @@
         <div class="cast-on-stats">
           <p class="cast-stat-caption">初期ステータス</p>
           <div class="cast-stat-board cast-vitals" aria-label="初期ステータス">
-            <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>30</b></span></div>
+            <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>50</b></span></div>
             <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>0</b></span></div>
             <div class="hp-line stat-def"><span class="lbl">${shieldIcon()}DEF</span><span class="num"><b>0</b></span></div>
             <div class="hp-line stat-spd"><span class="lbl">${bootIcon()}SPD</span><span class="num"><b>${DRAW_PER_TURN}</b></span></div>
@@ -20660,10 +20922,9 @@
             <h2>パリィ</h2>
             <p class="lead">敵からのダメージを、1回だけ無効にできる。</p>
             <ul class="cast-key-points">
-              <li>重ねがけできる。ターン終了で消える。</li>
-              <li>パリィ中はシールドを得られない（いまのシールドも消える）。</li>
+              <li>ターン終了で消える。</li>
+              <li>パリィ中はシールドを得られない（所持中のシールドも消える）。</li>
             </ul>
-            <p class="tail">見極めた戦士には、盾よりパリィが足りる。</p>
           </section>
         </aside>`;
     }
@@ -21433,7 +21694,7 @@
             <h3>裏面</h3>
             <div class="ref-grid sheet-backs">${sheetBackFaces()}</div>
             <h3>カードスタイル</h3>
-            <p class="album-meta">アタックほかは基本・★・★★・★★★・ボス。装備は銅・銀・金・ボス。</p>
+            <p class="album-meta">アタックほかは基本・★・★★・★★★・ボス。装備も同じ。戦利品は銅・銀・金・ボス。</p>
             ${enchantTrySheet()}
             ${cardStyleColumns("sheet")}
           </div>
@@ -21798,7 +22059,10 @@
         : [];
       const bless = blessButtons.length ? `<div class="gift-row${rareJack(blessLevels)}">${blessButtons.join("")}</div>` : "";
       const train = floorKind === "修行" && floorPhase === "train"
-        ? `<div class="gift-row">${trainPicks.map((card, i) => `<button type="button" class="gift-btn" data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false)}</button>`).join("")}</div>`
+        ? `<div class="gift-row">${trainPicks.map((card, i) => {
+          const lv = rareLevel(card);
+          return `<button type="button" class="gift-btn${rareClass(lv)}" data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false)}</button>`;
+        }).join("")}</div>`
         : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0, floorKind === "探索") : "";
@@ -22186,7 +22450,8 @@
       const empty = count === 0;
       const stack = count > 1 ? " stack" : "";
       const look = empty ? "empty" : kind === "deck" ? "back" : "back discard";
-      return `<div class="pile" data-pile="${kind}" aria-label="${label} ${count}">${overlay || ""}<div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></div>`;
+      const open = pileLook === kind;
+      return `<button type="button" class="pile${open ? " open" : ""}" data-pile="${kind}" data-action="pile-look" data-which="${kind}" aria-label="${label} ${count}枚" aria-pressed="${open ? "true" : "false"}">${overlay || ""}<div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></button>`;
     }
 
     function cardKind(card) {
@@ -22252,15 +22517,15 @@
       ["style-green-over-silver", "アイテム ★★", "frame-green-over-silver.png?v=22"],
       ["style-green-over-gold", "アイテム ★★★", "frame-green-over-gold.png?v=22"],
       ["style-green-over-black", "アイテム ボス", "frame-green-over-black.png?v=22"],
-      ["style-gear-copper", "装備 銅", "frame-silver-over-copper.png?v=23"],
-      ["style-gear-silver", "装備 銀", "frame-silver-over-silver.png?v=23"],
-      ["style-gear-gold", "装備 金", "frame-silver-over-gold.png?v=23"],
-      ["style-gear-boss", "装備 ボス", "frame-silver-over-black.png?v=23"],
-      ["style-basic-shakudo", "戦利品 基本", "frame-basic-shakudo.png?v=1"],
-      ["style-shakudo-copper", "戦利品 ★", "frame-shakudo-over-copper.png?v=4"],
-      ["style-shakudo-silver", "戦利品 ★★", "frame-shakudo-over-silver.png?v=4"],
-      ["style-shakudo-gold", "戦利品 ★★★", "frame-shakudo-over-gold.png?v=4"],
-      ["style-shakudo-black", "戦利品 ボス", "frame-shakudo-over-black.png?v=4"],
+      ["style-basic-shakudo", "装備 基本", "frame-basic-shakudo.png?v=1"],
+      ["style-gear-copper", "装備 ★", "frame-shakudo-over-copper.png?v=4"],
+      ["style-gear-silver", "装備 ★★", "frame-shakudo-over-silver.png?v=4"],
+      ["style-gear-gold", "装備 ★★★", "frame-shakudo-over-gold.png?v=4"],
+      ["style-gear-boss", "装備 ボス", "frame-shakudo-over-black.png?v=4"],
+      ["style-shakudo-copper", "戦利品 銅", "frame-silver-over-copper.png?v=23"],
+      ["style-shakudo-silver", "戦利品 銀", "frame-silver-over-silver.png?v=23"],
+      ["style-shakudo-gold", "戦利品 金", "frame-silver-over-gold.png?v=23"],
+      ["style-shakudo-black", "戦利品 ボス", "frame-silver-over-black.png?v=23"],
       ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=22"],
       ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=22"],
       ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=22"],
@@ -22291,8 +22556,8 @@
       ["アイテム", ["style-basic-item", "style-green-over-copper", "style-green-over-silver", "style-green-over-gold", "style-green-over-black"]],
       ["パワー", ["style-basic-power", "style-orange-over-copper", "style-orange-over-silver", "style-orange-over-gold", "style-orange-over-black"]],
       ["敵", ["style-plum-basic", "style-plum-copper", "style-plum-silver", "style-plum-gold", "style-plum-black"]],
-      ["装備", ["style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
-      ["戦利品", ["style-basic-shakudo", "style-shakudo-copper", "style-shakudo-silver", "style-shakudo-gold", "style-shakudo-black"]],
+      ["装備", ["style-basic-shakudo", "style-gear-copper", "style-gear-silver", "style-gear-gold", "style-gear-boss"]],
+      ["戦利品", ["style-shakudo-copper", "style-shakudo-silver", "style-shakudo-gold", "style-shakudo-black"]],
     ];
     function enchantTrySheet() {
       const kinds = [["fire", "火"], ["water", "水"], ["light", "光"], ["dark", "闇"]];
@@ -22669,6 +22934,19 @@
       if (hit.raw > 0) give.show = true;
     }
 
+    function scratchPoisonFoe(foe, give, amount) {
+      const n = Math.max(0, Number(amount) || 0);
+      if (!n) return;
+      foe.poison = (Number(foe.poison) || 0) + n;
+      give.status += n;
+    }
+
+    function scratchPoisonSword(card, foe, amount) {
+      if (!card || foe.hp <= 0 || !(Number(amount) > 0) || cardKind(card) !== "attack") return;
+      const poisonHit = gear && gear.sword && Number(gear.sword.poisonHit) || 0;
+      if (poisonHit > 0) foe.poison = (Number(foe.poison) || 0) + poisonHit;
+    }
+
     // ターン終了と同じ順。毒 → 置いたカード → 敵のシールド消滅 → 敵の次の札。状態はコピーだけ。
     function forecastTurn() {
       if (phase !== "player" || outcome || !player || !enemy) return { give: null, take: null };
@@ -22699,20 +22977,23 @@
         thorns: Math.max(0, Number(enemy.thorns) || 0),
         atk: Number(enemy.atk) || 0,
         spiteOn: !!enemy.spiteOn,
+        poison: Math.max(0, Number(enemy.poison) || 0),
       };
       mine.spiteOn = !!player.spite;
       mine.opp = foe;
       foe.opp = mine;
       const foeHadBlock = foe.block > 0;
       const poison = Math.max(0, Number(player.poison) || 0);
+      let poisonTake = null;
       if (poison) {
         let amount = poison;
         if (mine.expose) {
           amount += mine.expose;
           mine.expose = 0;
         }
-        scratchApply(mine, amount);
-        if (mine.hp <= 0) return { give: null, take: { raw: amount, hp: amount, show: true, lethal: true, shield: 0, status: 0 }, breakShield: false };
+        const hit = scratchApply(mine, amount);
+        if (hit.raw > 0) poisonTake = { raw: hit.raw, hp: hit.hpLoss };
+        if (mine.hp <= 0) return { give: null, take: { raw: hit.raw, hp: hit.hpLoss, show: true, lethal: true, shield: 0, status: 0 }, breakShield: false };
       }
       const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
       const queue = inPlay || [];
@@ -22724,7 +23005,14 @@
       const breakShield = foeHadBlock && foe.block <= 0;
       if (foe.hp <= 0) {
         give.lethal = true;
-        return { give: forecastBag(give), take: scratchFoldSelf(null, mine), breakShield, foeAtk: foe.atk };
+        let taken = scratchFoldSelf(null, mine);
+        if (poisonTake) {
+          if (!taken) taken = { raw: 0, hp: 0, show: true, shield: 0, status: 0 };
+          taken.raw += poisonTake.raw;
+          taken.hp += poisonTake.hp;
+          taken.show = true;
+        }
+        return { give: forecastBag(give), take: taken, breakShield, foeAtk: foe.atk };
       }
       foe.block = 0;
       let take = null;
@@ -22755,6 +23043,22 @@
         take = scratchEnemyRest(card, foe, take);
       }
       take = scratchFoldSelf(take, mine);
+      if (poisonTake) {
+        if (!take) take = { raw: 0, hp: 0, show: true, shield: 0, status: 0 };
+        take.raw += poisonTake.raw;
+        take.hp += poisonTake.hp;
+        take.show = true;
+      }
+      const foePoison = Math.max(0, Number(foe.poison) || 0);
+      if (foePoison && foe.hp > 0) {
+        const hit = scratchApply(foe, foePoison);
+        if (hit.raw > 0) {
+          give.raw += hit.raw;
+          give.hp += hit.hpLoss;
+          give.show = true;
+        }
+        if (foe.hp <= 0) give.lethal = true;
+      }
       if (mine.hp <= 0) {
         if (!take) take = { raw: 0, hp: 0, show: true, lethal: true, shield: 0, status: 0 };
         else take.lethal = true;
@@ -22798,6 +23102,7 @@
       bag.thorns = (bag.thorns || 0) + thorns;
       bag.status += poison + burn + thorns;
       bag.shield += shield;
+      if (shield) foe.block = (Number(foe.block) || 0) + shield;
       return bag;
     }
 
@@ -22822,11 +23127,16 @@
       if (card.guardBreak) {
         const had = Math.max(0, Number(foe.block) || 0);
         foe.block = 0;
-        if (had) scratchStrike(foe, give, had);
+        if (had) {
+          scratchStrike(foe, give, had);
+          scratchPoisonSword(card, foe, had);
+        }
         return;
       }
       if (card.finisher) {
-        scratchStrike(foe, give, 30 + (Number(mine.atk) || 0));
+        const amount = 30 + (Number(mine.atk) || 0);
+        scratchStrike(foe, give, amount);
+        scratchPoisonSword(card, foe, amount);
         return;
       }
       if (card.parryAdd) {
@@ -22861,9 +23171,11 @@
         if (card.demonSword) {
           const amount = Math.max(0, Number(card.damage) || 0) + (Number(mine.demonAura) || 0) + (Number(mine.atk) || 0);
           scratchStrike(foe, give, amount);
+          scratchPoisonSword(card, foe, amount);
           if (mine.dualSword && foe.hp > 0) {
             scratchPayDemon(mine, 1);
             scratchStrike(foe, give, amount);
+            scratchPoisonSword(card, foe, amount);
           }
           if (card.demonAura) mine.demonAura = (Number(mine.demonAura) || 0) + (Number(card.demonAura) || 0);
           return;
@@ -22873,36 +23185,52 @@
           for (const row of liveDemonSwords()) best = Math.max(best, Number(row.damage) || 0);
           const amount = best + (Number(mine.demonAura) || 0) + (Number(mine.atk) || 0);
           scratchStrike(foe, give, amount);
-          if (foe.hp > 0) scratchStrike(foe, give, amount);
+          scratchPoisonSword(card, foe, amount);
+          if (foe.hp > 0) {
+            scratchStrike(foe, give, amount);
+            scratchPoisonSword(card, foe, amount);
+          }
           return;
         }
         if (card.demonAura) mine.demonAura = (Number(mine.demonAura) || 0) + (Number(card.demonAura) || 0);
         if (!card.damage && !card.block && !card.heal && !card.burn && !card.poison && !card.thorns) return;
       }
       if (card.press) {
-        scratchStrike(foe, give, mine.block || 0);
+        const amount = mine.block || 0;
+        scratchStrike(foe, give, amount);
+        scratchPoisonSword(card, foe, amount);
         return;
       }
-      if (card.poison && !card.damage && !card.block && !card.heal && !card.draw) give.status += Number(card.poison) || 0;
+      if (card.poison && !card.damage && !card.block && !card.heal && !card.draw) scratchPoisonFoe(foe, give, card.poison);
       if (card.heal) scratchHeal(mine, card.heal);
       if (!card.damage && !card.block && !card.burn && (card.heal || card.draw || (card.poison && !card.parry))) return;
       if (card.redTimes) {
         const reds = queue.filter((item) => cardKind(item) === "attack").length;
         const added = mine.focus || 0;
         if (added) mine.focus = 0;
-        scratchStrike(foe, give, reds * card.redTimes + mine.atk + added);
+        const amount = reds * card.redTimes + mine.atk + added;
+        scratchStrike(foe, give, amount);
+        scratchPoisonSword(card, foe, amount);
         return;
       }
       if (card.counter) {
         const reds = queue.filter((item) => cardKind(item) === "attack").length;
-        if (!reds) scratchStrike(foe, give, card.counter + (Number(mine.atk) || 0));
+        if (!reds) {
+          const amount = card.counter + (Number(mine.atk) || 0);
+          scratchStrike(foe, give, amount);
+          scratchPoisonSword(card, foe, amount);
+        }
         return;
       }
       if (card.hits) {
         const added = mine.focus || 0;
         if (added) mine.focus = 0;
         const base = Number(card.damage) || 0;
-        for (let hit = 0; hit < card.hits; hit++) scratchStrike(foe, give, base + mine.atk + (hit === 0 ? added : 0));
+        for (let hit = 0; hit < card.hits; hit++) {
+          const amount = base + mine.atk + (hit === 0 ? added : 0);
+          scratchStrike(foe, give, amount);
+          scratchPoisonSword(card, foe, amount);
+        }
         return;
       }
       const added = mine.focus && (card.damage || card.block) ? mine.focus : 0;
@@ -22912,7 +23240,9 @@
         if (card.fullBonus && mine.hp >= mine.maxHp) bonus += card.fullBonus;
         if (card.safeBonus && !mine.hurtLast) bonus += card.safeBonus;
         if (card.kick && foe.block > 0) bonus += card.kick;
-        scratchStrike(foe, give, (Number(card.damage) || 0) + added + mine.atk + bonus);
+        const amount = (Number(card.damage) || 0) + added + mine.atk + bonus;
+        scratchStrike(foe, give, amount);
+        scratchPoisonSword(card, foe, amount);
         if (card.doubleNext) mine.doubleNext = true;
       }
       if (card.burn) give.status += Number(card.burn) || 0;
@@ -22924,7 +23254,7 @@
         give.shield += Math.max(0, mine.block - before);
       }
       if (card.parry && card.block && !card.damage) scratchGainParry(mine, 1);
-      if (card.poison && (card.damage || card.block)) give.status += Number(card.poison) || 0;
+      if (card.poison && (card.damage || card.block)) scratchPoisonFoe(foe, give, card.poison);
     }
 
     function previewFoeAtk() {
@@ -23031,9 +23361,10 @@
       }).join("");
       const foeActive = active - inPlay.length;
       const foeCards = phase === "intro" ? "" : foePlan.map((step, i) => {
+        if (step.gone) return "";
         const face = planCardFace(i);
         const hot = resolving && i === foeActive;
-        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !hot }) : "";
+        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !step.shown && !hot }) : "";
       }).join("");
       const stealFace = stealArrive
         ? playFace(stealArrive.card, true, true, false, null, { awaitDraw: !!stealArrive.hide, steal: true })
@@ -23051,7 +23382,7 @@
     function stageFxMarkup(encounterNow, turnNow, fatalNow, hurtNow, hitNow, hitPow, noManaNow) {
       const calls = [];
       if (noManaNow) calls.push(`<div class="turn-call player mana-call" aria-hidden="true"><b>マナが足りない</b></div>`);
-      if (floorCall) calls.push(`<div class="turn-call floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>${floorGlyph(floorNo())}</b>`, { tag: "div" })}</div>`);
+      if (floorCall && !floorOnFade) calls.push(`<div class="turn-call floor-call" aria-hidden="true">${fadeSandwichMarkup(`<b>${floorGlyph(floorNo())}</b>`, { tag: "div" })}</div>`);
       else if (encounterNow) calls.push(`<div class="turn-call enemy encounter-call" aria-hidden="true"><b>${esc(appearLine())}</b><span class="encounter-stars ${starToneClass(foeStarText())}">${esc(foeStarText())}</span></div>`);
       if (turnNow === "start") calls.push(`<div class="turn-call start" aria-hidden="true"><b>戦闘開始!!</b></div>`);
       else if (turnNow === "deal") calls.push(`<div class="turn-call player" aria-hidden="true"><b>${Math.max(1, Number(turn) || 1)}ターン目！</b></div>`);
@@ -23062,6 +23393,7 @@
     }
 
     function vsMarkup() {
+      if (phase === "intro") return "";
       const live = phase === "player" && !foeRageBusy && !outcome;
       const spent = live && (Number(player.energy) || 0) <= 0 && (Number(player.maxEnergy) || 0) > 0;
       return `<button type="button" class="vs-mark${spent ? " spent" : ""}" data-end aria-label="ターン終了"${live ? "" : " disabled"}>VS</button>`;
@@ -23334,9 +23666,12 @@
       return cards.slice().sort(compareCardListOrder);
     }
 
-    function deckOrdered(cards) {
+    function deckOrdered(cards, conceal) {
       const list = cards.slice();
-      if (deckOrder === "got") return list;
+      if (deckOrder === "got") {
+        if (!conceal) return list;
+        return list.sort((a, b) => String(a.name).localeCompare(String(b.name), "ja"));
+      }
       if (deckOrder === "cost") {
         return list.sort((a, b) =>
           (Number(a.cost) || 0) - (Number(b.cost) || 0)
@@ -23360,9 +23695,10 @@
       return `<div class="deck-sort" role="group" aria-label="並び替え">${buttons}</div>`;
     }
 
-    function deckGroup(label, cards) {
-      const faces = deckOrdered(cards).map((card) =>
-        `<div class="card preview ${cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card)}</div>`
+    function deckGroup(label, cards, opt) {
+      const foe = !!(opt && opt.foe);
+      const faces = deckOrdered(cards, !!(opt && opt.conceal)).map((card) =>
+        `<div class="card preview ${foe ? faceTone(card, true) : cardKind(card)}" aria-label="${card.cost} ${esc(card.name)}">${cardFace(card, false, foe)}</div>`
       ).join("");
       const heading = label ? `${label} ${cards.length}` : `${cards.length}枚`;
       return `<section class="deck-group"><h3>${heading}</h3><div class="deck-cards">${faces || `<p class="deck-empty">なし</p>`}</div></section>`;
@@ -23407,7 +23743,29 @@
     function foePileMarkup() {
       const left = foeDeckRemain();
       const dumped = foeDiscard.length;
-      return `<div class="foe-piles"><button type="button" class="foe-pile${showFoeDeck ? " open" : ""}" data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る" aria-pressed="${showFoeDeck ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><div class="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></div></div>`;
+      const deckOpen = pileLook === "foe-deck";
+      const dumpOpen = pileLook === "foe-discard";
+      return `<div class="foe-piles"><button type="button" class="foe-pile${deckOpen ? " open" : ""}" data-action="pile-look" data-which="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚" aria-pressed="${deckOpen ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><button type="button" class="foe-discard${dumpOpen ? " open" : ""}" data-action="pile-look" data-which="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚" aria-pressed="${dumpOpen ? "true" : "false"}">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></button></div>`;
+    }
+
+    function pileLookCards(which) {
+      if (which === "deck") return (deck || []).slice();
+      if (which === "discard") return (discard || []).slice();
+      if (which === "foe-deck") return enemyLoop.slice(intentIndex).map((card) => ({ ...card }));
+      if (which === "foe-discard") return (foeDiscard || []).slice();
+      return [];
+    }
+
+    function pileLookOverlay() {
+      if (!pileLook || askLeave) return "";
+      if (outcome && outcome !== "win" && !choosingPath()) return "";
+      const foe = pileLook === "foe-deck" || pileLook === "foe-discard";
+      if (foe && !enemy) return "";
+      const title = pileLook === "discard" || pileLook === "foe-discard"
+        ? (foe ? `${enemy.name}の捨て札` : "捨て札")
+        : (foe ? `${enemy.name}の山札` : "山札");
+      const cards = pileLookCards(pileLook);
+      return `<div class="overlay deck-view my-deck pile-look"><div class="panel"><h2>${esc(title)}</h2>${deckSortBar()}<div class="deck-scroll">${deckGroup("", cards, { foe, conceal: true })}</div><button type="button" data-action="close-pile">閉じる</button></div></div>`;
     }
 
     function clearFoeDeckPop() {
@@ -25355,7 +25713,7 @@
       const card = masteryShownCard();
       const face = card ? `<div class="card preview ${offerTone(card)}">${cardFace(card)}</div>` : "";
       const power = masteryPowerCaption(card);
-      return `<div class="overlay mastery-ask"><div class="panel mastery-panel"><h2>${esc(offer.name)}をマスターした！！</h2><div class="mastery-stage">${face}</div><div class="mastery-choices"><button type="button" class="mastery-choice power" data-action="mastery-power"><b>究極化</b>${power ? `<small>${esc(power)}</small>` : ""}</button><button type="button" class="mastery-choice light" data-action="mastery-light"><b>効率化</b><small>コスト-1</small></button></div></div></div>`;
+      return `<div class="overlay mastery-ask"><div class="panel mastery-panel"><h2 class="mastery-title">${esc(offer.name)}をマスターした！！</h2><div class="mastery-stage">${face}</div><div class="mastery-choices"><button type="button" class="mastery-choice power" data-action="mastery-power"><b>究極化</b>${power ? `<small>${esc(power)}</small>` : ""}</button><button type="button" class="mastery-choice light" data-action="mastery-light"><b>効率化</b><small>コスト-1</small></button></div></div></div>`;
     }
 
     function victoryStars() {
@@ -25583,7 +25941,7 @@
               ${useZoneMarkup()}
             </div>
             <div class="duel-side foe">
-              <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}">
+              <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}"${floorCall || encounter ? "" : ` data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る"`}>
               <div class="foe-body">
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${foeBuffNow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">${slashNow ? foeHitWash(enemy.image) : ""}` : `<span class="foe-blank" aria-hidden="true"></span>`}
@@ -25610,6 +25968,7 @@
         ${showLog ? `<aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml}</div></aside>` : ""}
         </div>
         ${deckOverlay()}
+        ${pileLookOverlay()}
         ${foeDeckOverlay()}
         ${overlay}
         ${leaveOverlay}`;
@@ -25748,25 +26107,37 @@
       }
     }
 
-    // 回転で内側の上角が持ち上がる。各カードの一番高い角を、中央の上端に揃える
+    // 回転で内側の上角が持ち上がる。画面の上下で、その角が中央の上端より上に出ないよう下げる
     function handArc(i, count, cardH, cardW) {
       const mid = (count - 1) / 2;
       const t = mid === 0 ? 0 : (i - mid) / mid;
-      const fanMax = 16;
-      const fan = Math.round(t * fanMax * 10) / 10;
-      const h = cardH > 0 ? cardH : 240;
-      const w = cardW > 0 ? cardW : h * (204 / 300);
-      const a = Math.abs(fan) * Math.PI / 180;
-      const rise = Math.max(0, (w / 2) * Math.sin(a) - h * (1 - Math.cos(a)));
-      const drop = Math.round((rise + 2 * Math.abs(t)) * 10) / 10;
-      return { fan, drop };
+      const fan = Math.round(t * 12 * 10) / 10;
+      const h = cardH > 0 ? cardH : 0;
+      const w = cardW > 0 ? cardW : 0;
+      if (!h || !w) return { fan, drop: 0 };
+      const th = fan * Math.PI / 180;
+      const c = Math.cos(th) || 1;
+      const s = Math.sin(th);
+      let minY = 0;
+      for (const [x, y] of [[-w / 2, -h], [w / 2, -h]]) {
+        const y1 = x * s + y * c;
+        if (y1 < minY) minY = y1;
+      }
+      const sag = 6 * t * t;
+      const drop = Math.max(0, (-h + sag - minY) / c);
+      return { fan, drop: Math.round(drop * 10) / 10 };
     }
 
-    function applyHandArc(handEl) {
+    function applyHandArc(handEl, tries) {
+      if (!handEl || !handEl.isConnected) return;
       const cards = [...handEl.querySelectorAll(".card")];
       if (!cards.length) return;
       const cardH = cards[0].offsetHeight;
       const cardW = cards[0].offsetWidth;
+      if ((cardH < 8 || cardW < 8) && (tries || 0) < 8) {
+        requestAnimationFrame(() => applyHandArc(handEl, (tries || 0) + 1));
+        return;
+      }
       cards.forEach((card, i) => {
         const pose = handArc(i, cards.length, cardH, cardW);
         card.style.setProperty("--fan", `${pose.fan}deg`);
@@ -26065,17 +26436,26 @@
         if (name === "fullscreen") { toggleFullscreen(); return; }
         if (name === "road-home") { placeRoad("home"); return; }
         if (name === "title") goTitle();
-        if (name === "ask-title") { askLeave = true; showDeck = false; showFoeDeck = false; render(); }
+        if (name === "ask-title") { askLeave = true; showDeck = false; showFoeDeck = false; pileLook = ""; render(); }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
         if (name === "toggle-deck") { eventDeckOpen = !eventDeckOpen; render(); }
-        if (name === "deck") { showFoeDeck = false; showDeck = true; deckOrder = "hand"; render(); }
+        if (name === "deck") { showFoeDeck = false; pileLook = ""; showDeck = true; deckOrder = "hand"; render(); }
         if (name === "deck-sort") {
           const order = action.dataset.order;
           if (order === "hand" || order === "got" || order === "cost" || order === "genre") deckOrder = order;
           render();
         }
         if (name === "close-deck") { showDeck = false; render(); }
-        if (name === "foe-deck") { showDeck = false; showFoeDeck = true; render(); }
+        if (name === "pile-look") {
+          const which = action.dataset.which || "";
+          showDeck = false;
+          showFoeDeck = false;
+          pileLook = pileLook === which ? "" : which;
+          if (pileLook) deckOrder = "hand";
+          render();
+        }
+        if (name === "close-pile") { pileLook = ""; render(); }
+        if (name === "foe-deck") { showDeck = false; pileLook = ""; showFoeDeck = true; render(); }
         if (name === "close-foe-deck") { showFoeDeck = false; render(); }
         if (name === "foe-starter") { openFoeStarter(action.dataset.foe || ""); return; }
         if (name === "close-foe-starter") { closeFoeStarter(); return; }
@@ -26437,8 +26817,8 @@
       }
       if (event.key === "Escape" && root.querySelector(".foe-starter")) { closeFoeStarter(); return; }
       if (screen !== "battle" || askLeave) return;
-      if (showDeck || showFoeDeck) {
-        if (event.key === "Escape") { showDeck = false; showFoeDeck = false; render(); }
+      if (showDeck || showFoeDeck || pileLook) {
+        if (event.key === "Escape") { showDeck = false; showFoeDeck = false; pileLook = ""; render(); }
         return;
       }
       if (event.key === "Enter") endTurn();
