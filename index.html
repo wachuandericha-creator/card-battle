@@ -225,17 +225,33 @@
     }
     .road-node.pad { visibility: hidden; }
     .road-node.done { color: #f0e4cc; }
-    .road-node.tone-rest img,
-    .road-node.tone-rest i { box-shadow: inset 0 0 0 6px #6aa4e0; }
-    .road-node.tone-other img,
-    .road-node.tone-other i { box-shadow: inset 0 0 0 6px #e2b03a; }
+    .road-node.tone-fight { --road-line: #e02020; }
+    .road-node.tone-rest { --road-line: #6aa4e0; }
+    .road-node.tone-other { --road-line: #e2b03a; }
+    .road-node.tone-fight > img,
+    .road-node.tone-fight > i,
+    .road-node.tone-rest > img,
+    .road-node.tone-rest > i,
+    .road-node.tone-other > img,
+    .road-node.tone-other > i { background: var(--road-line); }
+    .road-node.tone-fight::after,
+    .road-node.tone-rest::after,
+    .road-node.tone-other::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 6px var(--road-line);
+    }
     .road-node.now {
       z-index: 2;
       overflow: visible;
       color: #fff6d0;
       border-radius: 10px;
       outline: none;
-      box-shadow: inset 0 0 0 6px #e4b15a, 0 0 16px 5px rgba(255, 214, 70, 0.82);
+      box-shadow: 0 0 16px 5px rgba(255, 214, 70, 0.82);
       animation: here-pulse 1.1s ease-in-out infinite;
     }
     .road-node.now > img,
@@ -243,13 +259,15 @@
       border-radius: 8px;
       box-shadow: none;
     }
-    .road-node.now.tone-fight > img,
-    .road-node.now.tone-fight > i,
-    .road-node.now.tone-rest > img,
-    .road-node.now.tone-rest > i,
-    .road-node.now.tone-other > img,
-    .road-node.now.tone-other > i {
-      box-shadow: none;
+    .road-node.now::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 6px #e4b15a;
+      animation: here-line 1.1s ease-in-out infinite;
     }
     .road-back {
       position: absolute;
@@ -324,12 +342,12 @@
     }
     .road-here-mark b { font-weight: 900; }
     @keyframes here-pulse {
-      0%, 100% {
-        box-shadow: inset 0 0 0 6px #e4b15a, 0 0 14px 4px rgba(255, 214, 70, 0.72);
-      }
-      50% {
-        box-shadow: inset 0 0 0 6px #fff0a0, 0 0 26px 8px rgba(255, 236, 140, 0.98);
-      }
+      0%, 100% { box-shadow: 0 0 14px 4px rgba(255, 214, 70, 0.72); }
+      50% { box-shadow: 0 0 26px 8px rgba(255, 236, 140, 0.98); }
+    }
+    @keyframes here-line {
+      0%, 100% { box-shadow: inset 0 0 0 6px #e4b15a; }
+      50% { box-shadow: inset 0 0 0 6px #fff0a0; }
     }
     @keyframes here-mark-pulse {
       0%, 100% {
@@ -343,6 +361,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .road-node.now,
+      .road-node.now::after,
       .road-here-mark { animation: none; }
     }
     .road-node.boss { color: #ffb0a4; }
@@ -2056,15 +2075,15 @@
     .gift-btn.rare-1 .card.preview { animation-duration: 0.38s, 1.15s; }
     .reward-pick.rare-3 .card.preview,
     .gift-show.rare-3 .card.preview,
-    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 0.82s, 1.15s; }
+    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 0.82s, 0.85s; }
     .reward-pick.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview,
-    .reward-pick.rare-boss .card.preview,
     .gift-show.rare-4 .card.preview,
     .gift-show.rare-5 .card.preview,
-    .gift-show.rare-boss .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview,
+    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 1.05s, 0.78s; }
+    .reward-pick.rare-boss .card.preview,
+    .gift-show.rare-boss .card.preview,
     .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 1.05s, 1.15s; }
     @keyframes reward-lit {
       0%, 100% {
@@ -2081,6 +2100,78 @@
           0 0 var(--lit-far-hot-r, 34px) var(--lit-far-hot-s, 8px) var(--lit-far-hot),
           0 22px 36px rgba(0, 0, 0, 0.55);
       }
+    }
+    @keyframes reward-lit-gold {
+      0%, 100% {
+        box-shadow:
+          inset 0 0 0 2px var(--lit-line),
+          0 0 var(--lit-near-r, 12px) var(--lit-near-s, 3px) var(--lit-near),
+          0 0 var(--lit-far-r, 28px) var(--lit-far-s, 8px) var(--lit-far),
+          0 0 var(--lit-halo-r, 54px) var(--lit-halo-s, 14px) var(--lit-halo),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
+      50% {
+        box-shadow:
+          inset 0 0 0 4px var(--lit-hot),
+          0 0 var(--lit-near-hot-r, 28px) var(--lit-near-hot-s, 10px) var(--lit-near-hot),
+          0 0 var(--lit-far-hot-r, 72px) var(--lit-far-hot-s, 22px) var(--lit-far-hot),
+          0 0 var(--lit-halo-hot-r, 120px) var(--lit-halo-hot-s, 36px) var(--lit-halo-hot),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
+    }
+    .reward-pick.rare-3,
+    .reward-pick.rare-4,
+    .reward-pick.rare-5,
+    .gift-show.rare-3,
+    .gift-show.rare-4,
+    .gift-show.rare-5,
+    .gift-btn.rare-3,
+    .gift-btn.rare-4,
+    .gift-btn.rare-5,
+    .menu.event.train .gift-btn.rare-3,
+    .menu.event.train .gift-btn.rare-4,
+    .menu.event.train .gift-btn.rare-5 {
+      --lit-line: #ffe7a0;
+      --lit-hot: #fff8dc;
+      --lit-near: rgba(255, 226, 130, 0.96);
+      --lit-near-hot: rgba(255, 248, 210, 1);
+      --lit-far: rgba(255, 176, 40, 0.78);
+      --lit-far-hot: rgba(255, 190, 48, 0.98);
+      --lit-halo: rgba(255, 132, 16, 0.42);
+      --lit-halo-hot: rgba(255, 168, 24, 0.86);
+      --lit-near-r: 14px;
+      --lit-near-s: 4px;
+      --lit-far-r: 32px;
+      --lit-far-s: 10px;
+      --lit-halo-r: 58px;
+      --lit-halo-s: 16px;
+      --lit-near-hot-r: 32px;
+      --lit-near-hot-s: 12px;
+      --lit-far-hot-r: 78px;
+      --lit-far-hot-s: 24px;
+      --lit-halo-hot-r: 128px;
+      --lit-halo-hot-s: 38px;
+    }
+    .reward-pick.rare-4,
+    .reward-pick.rare-5,
+    .gift-show.rare-4,
+    .gift-show.rare-5,
+    .gift-btn.rare-4,
+    .gift-btn.rare-5,
+    .menu.event.train .gift-btn.rare-4,
+    .menu.event.train .gift-btn.rare-5 {
+      --lit-near-r: 16px;
+      --lit-near-s: 5px;
+      --lit-far-r: 40px;
+      --lit-far-s: 12px;
+      --lit-halo-r: 72px;
+      --lit-halo-s: 20px;
+      --lit-near-hot-r: 38px;
+      --lit-near-hot-s: 14px;
+      --lit-far-hot-r: 96px;
+      --lit-far-hot-s: 30px;
+      --lit-halo-hot-r: 156px;
+      --lit-halo-hot-s: 46px;
     }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
@@ -6414,13 +6505,14 @@
       100% { opacity: 1; transform: none; }
     }
     .overlay.paths .path-fixed {
-      margin: 0 0 8px;
+      margin: 0 0 18px;
       font-family: var(--log-serif);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 0.06em;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
       text-align: center;
-      color: #ffe7a8;
+      color: #fff6d4;
+      text-shadow: 0 0 14px rgba(255, 176, 48, 0.75);
     }
     .overlay.paths .path-list button { position: relative; }
     .overlay.paths .path-key {
@@ -7253,6 +7345,17 @@
       letter-spacing: 0.16em;
       text-align: center;
     }
+    .overlay.paths .path-route.path-forced .route-letter {
+      flex-basis: auto;
+      height: auto;
+      min-height: 52px;
+      line-height: 1.1;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: 0.32em;
+      color: #fff6d4;
+      text-shadow: 0 0 16px rgba(255, 176, 48, 0.9);
+    }
     .rail-floors,
     .route-stack {
       flex: 0 0 auto;
@@ -7697,7 +7800,7 @@
       letter-spacing: 0.18em;
       border-radius: 999px;
       cursor: pointer;
-      transition: transform 0.16s ease;
+      transition: transform 0.16s ease, filter 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
     }
     .title-run-actions > button.primary {
       border: 2px solid #ffd28a;
@@ -7713,29 +7816,7 @@
         0 12px 26px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.7),
         inset 0 -10px 18px rgba(160, 30, 0, 0.35);
-      animation: title-decide 1.15s ease-in-out infinite;
-    }
-    @keyframes title-decide {
-      0%, 100% {
-        filter: brightness(1);
-        box-shadow:
-          0 0 0 2px rgba(40, 12, 6, 0.92),
-          0 0 0 4px rgba(255, 170, 70, 0.28),
-          0 0 16px rgba(255, 120, 40, 0.5),
-          0 12px 26px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.7),
-          inset 0 -10px 18px rgba(160, 30, 0, 0.35);
-      }
-      50% {
-        filter: brightness(1.12);
-        box-shadow:
-          0 0 0 2px rgba(40, 12, 6, 0.92),
-          0 0 0 6px rgba(255, 220, 140, 0.55),
-          0 0 36px rgba(255, 140, 40, 0.95),
-          0 14px 28px rgba(0, 0, 0, 0.55),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8),
-          inset 0 -10px 18px rgba(160, 30, 0, 0.4);
-      }
+      animation: decide-glow 1.15s ease-in-out infinite;
     }
     .title-run-actions > button:not(.primary) {
       border: 1px solid rgba(240, 195, 106, 0.55);
@@ -7743,52 +7824,25 @@
       color: #fff1d2;
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
     }
-    .title-run-actions > button:hover { transform: translateY(-2px); }
+    .title-run-actions > button:not(.primary):hover {
+      border-color: #ffe6a8;
+      background: rgba(60, 38, 16, 0.88);
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 0 2px rgba(255, 214, 140, 0.85),
+        0 14px 28px rgba(0, 0, 0, 0.5);
+    }
     .title-run-actions > button.primary:hover {
       animation: none;
-      filter: brightness(1.08);
+      filter: brightness(1.22);
+      transform: translateY(-3px);
       box-shadow:
         0 0 0 2px rgba(40, 12, 6, 0.92),
-        0 0 0 5px rgba(255, 190, 90, 0.5),
-        0 0 36px rgba(255, 120, 30, 0.9),
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
-    }
-    .title-run-actions > button.primary.framed {
-      border: 3px solid #fff6d4;
-      animation-name: title-decide-framed;
-    }
-    @keyframes title-decide-framed {
-      0%, 100% {
-        filter: brightness(1);
-        box-shadow:
-          0 0 0 4px #120c09,
-          0 0 0 11px #ffe7a8,
-          0 0 18px rgba(255, 140, 40, 0.55),
-          0 12px 26px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.7),
-          inset 0 -10px 18px rgba(160, 30, 0, 0.35);
-      }
-      50% {
-        filter: brightness(1.12);
-        box-shadow:
-          0 0 0 4px #120c09,
-          0 0 0 11px #fff6d4,
-          0 0 36px rgba(255, 170, 60, 0.95),
-          0 14px 28px rgba(0, 0, 0, 0.55),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8),
-          inset 0 -10px 18px rgba(160, 30, 0, 0.4);
-      }
-    }
-    .title-run-actions > button.primary.framed:hover {
-      box-shadow:
-        0 0 0 4px #120c09,
-        0 0 0 11px #fff6d4,
-        0 0 36px rgba(255, 170, 60, 0.95),
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
+        0 0 0 6px rgba(255, 236, 180, 0.95),
+        0 0 42px rgba(255, 170, 60, 1),
+        0 16px 30px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.28);
     }
     @media (prefers-reduced-motion: reduce) {
       .title-run-actions > button.primary { animation: none; }
@@ -10995,31 +11049,8 @@
       flex: 1.35 1 0;
       letter-spacing: 0.14em;
     }
-    .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed {
-      filter: none;
-      animation: title-decide-framed 1.15s ease-in-out infinite;
-      border: 3px solid #fff6d4;
-      box-shadow:
-        0 0 0 4px #120c09,
-        0 0 0 11px #ffe7a8,
-        0 0 28px rgba(255, 170, 70, 0.9),
-        0 12px 26px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.7),
-        inset 0 -10px 18px rgba(160, 30, 0, 0.35);
-    }
-    .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed:hover {
-      animation: none;
-      filter: brightness(1.08);
-      box-shadow:
-        0 0 0 4px #120c09,
-        0 0 0 11px #fff6d4,
-        0 0 36px rgba(255, 170, 60, 0.95),
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8),
-        inset 0 -10px 18px rgba(160, 30, 0, 0.4);
-    }
     @media (prefers-reduced-motion: reduce) {
-      .cast-screen.dungeon-screen .cast-actions > button.cast-start.framed { animation: none; }
+      .cast-screen.dungeon-screen .cast-actions > button.cast-start.lit { animation: none; }
     }
     .cast-screen.dungeon-screen .dungeon-board {
       grid-column: 2;
@@ -11922,6 +11953,7 @@
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
+      見切り斬り: "card-mikiri-2a-v3.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
@@ -12140,7 +12172,7 @@
         rank: "強敵",
         stature: "huge",
         hp: 130,
-        atkHidden: 8,
+        atkHidden: 4,
         trait: "体力が最大の半分以下になったとき、SPD+1する。",
         halfSpd: true,
         loot: { low: "minotaur-medal", high: "minotaur-bracelet" },
@@ -12149,7 +12181,7 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "ブロック" },
-          { name: "タウロスアタック", cost: 2, text: "30ダメージ\n体力が最大の半分以下のときだけ使える", damage: 30, kind: "attack", halfOnly: true, stars: 3 },
+          { name: "タウロスアタック", cost: 2, text: "13ダメージ\n体力が最大の半分以下なら、ダメージが2倍", damage: 13, kind: "attack", halfDouble: true, stars: 3 },
         ],
       },
       {
@@ -13765,7 +13797,7 @@
       { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=6", halfAtk: 2 },
       { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 3, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=6", halfMana: 1 },
     ];
-    // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵はまだ無い。
+    // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵は loot-{id}.jpg。
     const LOOT_RELICS = [
       ["whetstone", "戦士の砥石", 1, "戦闘開始時 ATK+1", "openAtk"],
       ["guard-charm", "守護の護符", 1, "戦闘開始時 DEF+1", "openDef"],
@@ -13808,7 +13840,10 @@
       ["royal-crest", "王家の紋章", 2, "レアリティ★★★のカードを使うたび、ブロック6を得る。", "crest"],
       ["master-book", "熟練の教本", 3, "入手したとき、デッキ内のランダムなカード1枚の熟練度をマックスにする。", "master"],
       ["endless-shelf", "無限の書架", 3, "入手時、レアリティ★★★のカード3択から1枚を選んで獲得する。", "shelf"],
-    ].map(([id, name, stars, effect, relic]) => ({ id, name, stars, effect, relic, slot: "relic", loot: true, image: "" }));
+    ].map(([id, name, stars, effect, relic]) => ({
+      id, name, stars, effect, relic, slot: "relic", loot: true,
+      image: `loot-${id}.jpg`,
+    }));
     const GEAR_CARD_TEXT = {
       "short-sword": "ATK+1",
       "long-sword": "ATK+2",
@@ -13939,6 +13974,12 @@
 
     function hpHalf(target) {
       return !!target && target.hp <= target.maxHp / 2;
+    }
+
+    // 2倍はATKを足したあとにかける。ATK自体は1回のまま。
+    function halfDoubled(card, caster, amount) {
+      if (!card || !card.halfDouble || !hpHalf(caster)) return amount;
+      return amount * 2;
     }
 
     function swordIgnoresTrait() {
@@ -16296,7 +16337,7 @@
         if (card.safeBonus && !player.hurtLast) bonus += card.safeBonus;
         if (card.kick && enemy.block > 0) bonus += card.kick;
         const atk = player.atk || 0;
-        const rolled = rollCrit(card, card.damage + added + atk + bonus);
+        const rolled = rollCrit(card, halfDoubled(card, player, card.damage + added + atk + bonus));
         strike(card, rolled.amount, rolled.crit);
         if (card.doubleNext) {
           player.doubleNext = scaledPrinted(2);
@@ -17173,7 +17214,7 @@
         const atk = Number(enemy.atk) || 0;
         for (let n = 0; n < times; n += 1) {
           if (player.hp <= 0) break;
-          const rolled = rollCrit(card, card.damage + atk);
+          const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + atk));
           takeEnemyHit(rolled.amount, card, rolled.crit);
         }
         return;
@@ -17181,7 +17222,7 @@
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
-        const rolled = rollCrit(card, card.damage + kick + full + (Number(enemy.atk) || 0));
+        const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0)));
         takeEnemyHit(rolled.amount, card, rolled.crit);
       } else if (card.block) {
         const gain = Math.max(0, card.block + (Number(enemy.def) || 0));
@@ -20192,6 +20233,10 @@
       return "全画面";
     }
 
+    function gameFullscreenButton() {
+      return `<button type="button" class="small-btn pc-only" data-action="fullscreen">全画面</button>`;
+    }
+
     function toggleFullscreen() {
       const leave = fullscreenActive();
       const target = document.documentElement;
@@ -20504,7 +20549,7 @@
             <div class="title-actions">
             <div class="title-run-actions">
               ${menuButton("攻略開始", "new", !openRunSave(), false, openRunSave() ? "" : "glow")}
-              ${openRunSave() ? menuButton("続きから", "continue", true, false, "framed") : ""}
+              ${openRunSave() ? menuButton("続きから", "continue", true) : ""}
             </div>
             <div class="title-sub-actions">
               ${menuButton(iphonePlay ? "通常の画面" : "iPhoneで遊ぶ", "iphone-play", false, false, "", titleIcon(iphonePlay ? "monitor" : "phone"))}
@@ -21120,7 +21165,7 @@
       if (slot) slot.innerHTML = shown ? dungeonClearFaces(shown.floors) : "";
       paintChallengeStart();
       const start = root.querySelector('[data-action="dungeon-enter"]');
-      if (start) start.classList.toggle("framed", !start.disabled);
+      if (start) start.classList.toggle("lit", !start.disabled);
     }
 
     function bindDungeonHover() {
@@ -21966,25 +22011,27 @@
       return `${picture}${cap}${key || ""}`;
     }
 
+    function pathRouteButton(cells, index, opt) {
+      const first = cells[0];
+      if (!PATHS[first]) return "";
+      const letters = ["A", "B", "C"];
+      const forced = !!(opt && opt.forced);
+      const title = forced ? "強制" : `ルート${letters[index] || index + 1}`;
+      const routeAttr = opt && opt.route ? ` data-route="${index}"` : "";
+      const steps = cells.map((id, step) => {
+        const floor = routeOfferFloors.length ? pathNodeFloor(step) : nextFloorNumber();
+        return `<span class="route-step path-node path-${id} tone-${pathToneOf(id)}">${pathNodeHtml(id, floor)}</span>`;
+      }).reverse().join("");
+      return `<button type="button" class="path-route path-tone-${routeTone(cells)}${forced ? " path-forced" : ""}" data-action="reward-path"${routeAttr} data-path="${first}"><b class="route-letter">${esc(title)}</b><span class="route-stack">${steps}</span></button>`;
+    }
+
     function pathButtonsHtml() {
-      if (routeOffers.some((row) => row.length > 1)) {
-        const letters = ["A", "B", "C"];
-        return routeOffers.map((cells, index) => {
-          const first = cells[0];
-          if (!PATHS[first]) return "";
-          const steps = cells.map((id, step) => {
-            return `<span class="route-step path-node path-${id} tone-${pathToneOf(id)}">${pathNodeHtml(id, pathNodeFloor(step))}</span>`;
-          }).reverse().join("");
-          return `<button type="button" class="path-route path-tone-${routeTone(cells)}" data-action="reward-path" data-route="${index}" data-path="${first}"><b class="route-letter">ルート${letters[index] || index + 1}</b><span class="route-stack">${steps}</span></button>`;
-        }).join("");
+      if (routeOffers.some((row) => row.length)) {
+        return routeOffers.map((cells, index) => pathRouteButton(cells, index, { route: true })).join("");
       }
-      const ids = rewardPaths || [];
-      const key = pathChoiceForced() ? pathKeyMark() : "";
-      const floor = nextFloorNumber();
-      return ids.map((id) => {
-        if (!PATHS[id]) return "";
-        return `<button type="button" class="path-node path-${id} tone-${pathToneOf(id)}" data-action="reward-path" data-path="${id}">${pathNodeHtml(id, floor, key)}</button>`;
-      }).join("");
+      const ids = (rewardPaths || []).filter((id) => PATHS[id]);
+      const forced = pathChoiceForced() && ids.length === 1;
+      return ids.map((id, index) => pathRouteButton([id], index, { forced })).join("");
     }
 
     function pathListHtml() {
@@ -21992,13 +22039,14 @@
       if (next === DUNGEON.boss && rewardPaths && rewardPaths.length === 1 && rewardPaths[0] === "straight") {
         rewardPaths = ["boss"];
       }
+      const forced = pathChoiceForced();
       const note = pathForcedNote();
-      const line = note ? `<p class="path-fixed">${esc(note)}</p>` : "";
-      return `${line}<div class="path-list${pathChoiceForced() ? " forced" : ""}">${pathButtonsHtml()}</div>`;
+      const line = forced ? `<p class="path-fixed">この道しかない${note ? `。${note}` : ""}</p>` : "";
+      return `${line}<div class="path-list${forced ? " forced" : ""}">${pathButtonsHtml()}</div>`;
     }
 
     function eventShell(body, opt) {
-      const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>`;
+      const buttons = `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="title">タイトル</button>${gameFullscreenButton()}`;
       const logHtml = logLinesHtml(logLines);
       const worn = opt && opt.gear === false ? "" : `<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside>`;
       return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}${worn}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
@@ -22648,7 +22696,7 @@
         const per = atk;
         const count = textScale(card.hits, fromHand);
         const each = textScale(printedDamage(card), fromHand);
-        for (let n = 0; n < count; n++) hits.push(Math.max(0, each + per + (n === 0 ? focus : 0)));
+        for (let n = 0; n < count; n++) hits.push(halfDoubled(card, foe ? enemy : player, Math.max(0, each + per + (n === 0 ? focus : 0))));
         return hits;
       }
       if (card.damage) {
@@ -22663,7 +22711,7 @@
           if (card.kick && player && player.block > 0) bonus += card.kick;
         }
         const base = textScale(printedDamage(card), fromHand);
-        return [Math.max(0, base + atk + focus + bonus)];
+        return [halfDoubled(card, foe ? enemy : player, Math.max(0, base + atk + focus + bonus))];
       }
       return null;
     }
@@ -23296,6 +23344,7 @@
       let swing = Math.max(0, (Number(card.damage) || 0) + (Number(foe.atk) || 0));
       if (card.kick && mine.block > 0) swing += Number(card.kick) || 0;
       if (card.fullBonus && foe.hp >= foe.maxHp) swing += Number(card.fullBonus) || 0;
+      swing = halfDoubled(card, foe, swing);
       if (mine.doubleNext) {
         const mul = mine.doubleNext === true ? 2 : Math.max(2, Number(mine.doubleNext) || 2);
         mine.doubleNext = false;
@@ -23707,7 +23756,7 @@
     function eventToolsHtml() {
       const map = `<aside class="event-map${eventMapOpen ? " on" : ""}">${roadMapHtml()}</aside>`;
       const label = eventMapOpen ? "MAP:ON" : "MAP:OFF";
-      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button><button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
+      return `${map}<div class="event-hud"><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="title">タイトル</button>${gameFullscreenButton()}<button type="button" class="small-btn${eventMapOpen ? " on" : ""}" data-action="toggle-map">${label}</button></div>`;
     }
 
     function deckOverlay() {
@@ -23932,6 +23981,7 @@
       if (card.draw) next.draw = card.draw;
       if (card.critChance) next.critChance = Number(card.critChance) || 0;
       if (card.halfOnly) next.halfOnly = true;
+      if (card.halfDouble) next.halfDouble = true;
       if (card.burn) next.burn = card.burn;
       if (card.burnFirst) next.burnFirst = true;
       if (card.boss) next.boss = true;
@@ -25916,6 +25966,7 @@
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
               <button type="button" class="small-btn" data-action="settings">オプション</button>
               <button type="button" class="small-btn" data-action="ask-title" ${phase === "player" || rewardStep === "paths" ? "" : "disabled"}>タイトル</button>
+              ${gameFullscreenButton()}
             </div>
           </header>
           <div class="battle-bands" style="--dungeon-art: url('${dungeonArt(dungeonName)}')">
@@ -26107,24 +26158,19 @@
       }
     }
 
-    // 回転で内側の上角が持ち上がる。画面の上下で、その角が中央の上端より上に出ないよう下げる
+    // 下辺を支点に傾けると、内側の上角だけ持ち上がる。その分を戻し、端は円弧に沿って下げる
     function handArc(i, count, cardH, cardW) {
       const mid = (count - 1) / 2;
       const t = mid === 0 ? 0 : (i - mid) / mid;
-      const fan = Math.round(t * 12 * 10) / 10;
+      const fanMax = 13;
+      const fan = Math.round(t * fanMax * 10) / 10;
       const h = cardH > 0 ? cardH : 0;
-      const w = cardW > 0 ? cardW : 0;
+      const w = cardW > 0 ? cardW : (h ? h * 204 / 300 : 0);
       if (!h || !w) return { fan, drop: 0 };
-      const th = fan * Math.PI / 180;
-      const c = Math.cos(th) || 1;
-      const s = Math.sin(th);
-      let minY = 0;
-      for (const [x, y] of [[-w / 2, -h], [w / 2, -h]]) {
-        const y1 = x * s + y * c;
-        if (y1 < minY) minY = y1;
-      }
-      const sag = 6 * t * t;
-      const drop = Math.max(0, (-h + sag - minY) / c);
+      const th = Math.abs(fan) * Math.PI / 180;
+      const lift = (w / 2) * Math.sin(th) - h * (1 - Math.cos(th));
+      const sag = h * 0.12 * (1 - Math.cos(th)) / (1 - Math.cos(fanMax * Math.PI / 180));
+      const drop = Math.max(0, lift + sag);
       return { fan, drop: Math.round(drop * 10) / 10 };
     }
 
