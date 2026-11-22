@@ -241,6 +241,37 @@
       color: #fff6d0;
       border-radius: 10px;
       outline: none;
+      box-shadow: 0 0 16px 5px rgba(255, 214, 70, 0.82);
+      animation: here-pulse 1.1s ease-in-out infinite;
+    }
+    .road-node.now > img,
+    .road-node.now > i {
+      border-radius: 8px;
+      box-shadow: none;
+    }
+    .road-node.now::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 6px #e4b15a;
+      animation: here-line 1.1s ease-in-out infinite;
+    }
+    .road-node.now::before {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      top: 8px;
+      left: 8px;
+      width: 22px;
+      height: 22px;
+      border-top: 4px solid #ffe766;
+      border-left: 4px solid #ffe766;
+      border-radius: 8px 0 0 0;
+      box-shadow: 0 0 12px rgba(255, 228, 100, 0.75);
+      pointer-events: none;
     }
     .road-back {
       position: absolute;
@@ -300,6 +331,14 @@
       filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4));
     }
     .road-here-mark b { font-weight: 900; }
+    @keyframes here-pulse {
+      0%, 100% { box-shadow: 0 0 14px 4px rgba(255, 214, 70, 0.72); }
+      50% { box-shadow: 0 0 26px 8px rgba(255, 236, 140, 0.98); }
+    }
+    @keyframes here-line {
+      0%, 100% { box-shadow: inset 0 0 0 6px #e4b15a; }
+      50% { box-shadow: inset 0 0 0 6px #fff0a0; }
+    }
     @keyframes here-mark-pulse {
       0%, 100% {
         transform: scale(1);
@@ -311,6 +350,8 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
+      .road-node.now,
+      .road-node.now::after,
       .road-here-mark { animation: none; }
     }
     .road-node.boss { color: #ffb0a4; }
@@ -1905,14 +1946,32 @@
       100% { opacity: 1; transform: none; }
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
-    .overlay.victory .reward-row { gap: 28px; }
+    .overlay.victory .reward-row { gap: 56px; }
     .overlay.victory .reward-pick { padding: 0; }
     .overlay.victory .reward-altar { padding: 8px 0 0; }
     .overlay.victory .reward-pick .card.preview,
-    .overlay.victory .reward-extra .gift-show .card.preview { width: min(540px, 31cqw); }
+    .overlay.victory .reward-extra .gift-show .card.preview {
+      width: min(420px, 24cqw);
+      max-width: none;
+    }
+    .overlay.victory .reward-pick.reward-foe .card.preview,
+    .overlay.victory .reward-pick.reward-foe:hover .card.preview {
+      box-shadow:
+        0 0 0 2px #d7b4ff,
+        0 0 22px 8px rgba(150, 70, 220, 0.78),
+        0 22px 36px rgba(0, 0, 0, 0.55);
+    }
     .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
     .reward-extra .reward-pick { cursor: pointer; }
-    .reward-extra .gift-show .card.preview { width: min(250px, 24cqw); height: auto; }
+    .overlay.victory .reward-extra .reward-pick.gear-pick { width: auto; max-width: none; }
+    .overlay.victory .reward-extra .gift-show {
+      width: max-content;
+      max-width: none;
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+    }
     .reward-pick:hover .card.preview { box-shadow: 0 0 0 1px rgba(255, 244, 210, 0.9), 0 0 36px rgba(240, 195, 106, 0.62), 0 22px 36px rgba(0, 0, 0, 0.55); }
     .overlay.victory .panel.wide.reward-panel {
       width: min(1860px, calc(100cqw - 28px));
@@ -2109,13 +2168,13 @@
     .gift-btn.rare-1 .card.preview { animation-duration: 0.38s, 1.15s; }
     .reward-pick.rare-3 .card.preview,
     .gift-show.rare-3 .card.preview,
-    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 0.82s, 0.85s; }
+    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 0.82s, 1.15s; }
     .reward-pick.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview,
     .gift-show.rare-4 .card.preview,
     .gift-show.rare-5 .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 1.05s, 0.78s; }
+    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 1.05s, 1.15s; }
     .reward-pick.rare-boss .card.preview,
     .gift-show.rare-boss .card.preview,
     .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 1.05s, 1.15s; }
@@ -2395,7 +2454,7 @@
     .foe-starter-id { display: flex; flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 8px 10px; }
     .foe-starter-id .plate-stars { font-size: 22px; font-weight: 800; letter-spacing: 0.06em; line-height: 1; }
     .foe-starter-block .dossier-plate { position: static; width: 100%; z-index: auto; }
-    .foe-phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .foe-phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px; }
     .foe-phase {
       padding: 8px 6px;
       border-radius: 10px;
@@ -2403,7 +2462,7 @@
       background: rgba(8, 6, 4, 0.94);
       text-align: center;
     }
-    .foe-phase b { display: block; color: #f0c36a; font-size: 14px; letter-spacing: 0.14em; }
+    .foe-phase b { display: block; color: #fff8e8; font-size: 16px; letter-spacing: 0.12em; }
     .foe-phase p { margin: 4px 0 0; color: #fff8e8; font-size: 16px; font-weight: 800; line-height: 1.4; }
     .foe-phase-note { margin: 8px 0 0; color: #d9c39a; font-size: 14px; font-weight: 800; text-align: center; }
     .overlay.foe-starter .foe-starter-rank {
@@ -5725,6 +5784,8 @@
       max-width: none;
       margin-inline: calc(var(--overlap, 56px) * -0.5);
       z-index: var(--hand-z, 1);
+      /* カードの中心を円の上に置く。傾きの支点も真ん中 */
+      transform-origin: center center;
       /* 扇の位置は処理のたびに組み直す。transition があると上下に動いて見える */
       transition: none;
     }
@@ -8674,7 +8735,7 @@
       letter-spacing: 0.06em;
       color: #ffe7a8;
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 28px rgba(255, 210, 90, 0.95);
-      animation: turn-word 1.6s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      animation: turn-word 0.72s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
     .menu.event .event-lead {
       grid-area: lead;
@@ -9790,8 +9851,8 @@
     }
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
-    .scene-fade.scene-fade-floor i { transition-duration: 0.32s; }
-    .scene-fade.scene-fade-floor.out i { transition-duration: 0.38s; }
+    .scene-fade.scene-fade-floor i { transition-duration: 0.14s; }
+    .scene-fade.scene-fade-floor.out i { transition-duration: 0.16s; }
     .scene-fade .scene-floor {
       position: fixed;
       z-index: 2;
@@ -9800,10 +9861,10 @@
       justify-content: center;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.32s ease;
+      transition: opacity 0.14s ease;
     }
     .scene-fade.in .scene-floor { opacity: 1; }
-    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.38s; }
+    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.16s; }
     .scene-fade .scene-floor b {
       font-weight: 900;
       letter-spacing: 0.06em;
@@ -10013,8 +10074,8 @@
       object-fit: cover;
       object-position: center top;
       filter: none;
-      transform-origin: 50% 40%;
-      animation: title-drift 26s ease-in-out infinite alternate;
+      transform: none;
+      animation: none;
     }
     .cast-screen.character-focus .cast-side {
       position: relative;
@@ -10394,38 +10455,56 @@
       pointer-events: none;
     }
     .cast-screen.character-focus .cast-on-stats {
-      top: 14px;
-      left: 14px;
-      width: min(360px, 52%);
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: max-content;
+      max-width: calc(100% - 20px);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
-      margin: 0;
+      margin: 0 0 2px;
+      width: max-content;
+      align-self: center;
+      box-sizing: border-box;
+      padding: 0 8px;
       text-align: center;
+      white-space: nowrap;
       color: #f0c36a;
-      font-size: 22px;
+      font-size: 16px;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-board.cast-vitals {
-      width: 100%;
+      width: auto;
+      min-width: 100%;
+      align-self: stretch;
+      overflow: visible;
       background: linear-gradient(180deg, rgba(28, 20, 14, 0.92), rgba(10, 8, 6, 0.9));
     }
     .cast-screen.character-focus .cast-on-stats .hp-line {
       grid-template-columns: auto auto;
       justify-content: start;
-      padding: 0;
+      box-sizing: content-box;
+      height: auto;
+      padding: 4px 10px;
       gap: 0;
+      white-space: nowrap;
     }
-    .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: 20px; gap: 0; letter-spacing: 0; }
-    .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 28px; height: 28px; }
+    .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: 16px; gap: 2px; letter-spacing: 0; line-height: 1; }
+    .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 18px; height: 18px; }
     .cast-screen.character-focus .cast-on-stats .hp-line .num {
       text-align: left;
       justify-self: start;
       letter-spacing: 0;
+      line-height: 1;
     }
     .cast-screen.character-focus .cast-on-stats .hp-line b {
-      font-size: 32px;
+      font-size: 20px;
+      line-height: 1;
       letter-spacing: 0;
     }
     .cast-screen.character-focus .cast-on-blurb {
@@ -11635,7 +11714,7 @@
     }
     /* 道を選んだあとの階表示は、画面をフェードアウトしない */
     .turn-call.floor-call {
-      animation: turn-wash 1.6s ease-out forwards;
+      animation: turn-wash 0.72s ease-out forwards;
       background:
         radial-gradient(circle at 50% 50%, rgba(255, 214, 120, 0.62), transparent 46%),
         rgba(86, 54, 12, 0.28);
@@ -11647,7 +11726,7 @@
       letter-spacing: 0.06em;
       color: #ffe7a8;
       text-shadow: 0 8px 0 rgba(24, 12, 8, 0.82), 0 0 28px rgba(255, 210, 90, 0.95);
-      animation: turn-word 1.6s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
+      animation: turn-word 0.72s cubic-bezier(0.16, 0.8, 0.24, 1) forwards;
     }
     .encounter-stars {
       font-size: min(6cqw, 48px);
@@ -12071,12 +12150,13 @@
       ブロック: "card-block-f.jpg?v=12",
       パリィ: "card-parry.jpg?v=16",
       ラッキーパリィ: "card-lucky-parry-b.jpg?v=1",
-      悪魔の剣: "card-demon-sword-b4-fit.jpg?v=4",
+      悪魔の剣: "card-demon-sword-b6.jpg?v=1",
+      鮮血の塗布: "card-blood-coat-f.jpg?v=1",
       "悪魔剣・双斬": "card-demon-twin-slash-k.jpg?v=1",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
-      見切り斬り: "card-mikiri-2a-v3.jpg?v=1",
+      見切り斬り: "card-mikiri-2a-v4.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
       ガードブレイク: "card-guard-break.jpg?v=1",
       致命の一撃: "card-finisher.jpg?v=2",
@@ -12518,9 +12598,9 @@
         veil.appendChild(mark);
       }
       document.body.appendChild(veil);
-      const fadeIn = showFloor ? 340 : 280;
-      const hold = showFloor ? 900 : 0;
-      const fadeOut = showFloor ? 400 : 440;
+      const fadeIn = showFloor ? 160 : 280;
+      const hold = showFloor ? 380 : 0;
+      const fadeOut = showFloor ? 180 : 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
         run();
@@ -13664,7 +13744,7 @@
       return true;
     }
 
-    // 階層が進む黒フェードを長くして、そのあいだに階を出す。明けてから敵が現れる。
+    // 階層が進む黒は短く、そのあいだに階を出す。明けてから敵が現れる。
     function openBattleIntro() {
       const token = ++floorAnnounceToken;
       const eventFight = isEventBattle();
@@ -13772,9 +13852,20 @@
     let roadMotion = 0;
     let roadMotionToken = 0;
 
+    function roadFloorNum(node) {
+      const text = node && node.querySelector(".road-floor");
+      const n = parseInt(text && text.textContent, 10);
+      return Number.isFinite(n) ? n : null;
+    }
+
     function roadAnchor(now) {
       let prev = now.nextElementSibling;
       while (prev && prev.classList.contains("pad")) prev = prev.nextElementSibling;
+      // 祝福の0Fは底にしない。開始時は1Fが一番下
+      if (prev && roadFloorNum(prev) === 0) {
+        prev = prev.nextElementSibling;
+        while (prev && prev.classList.contains("pad")) prev = prev.nextElementSibling;
+      }
       if (prev && prev.classList.contains("road-node")) return prev;
       return now;
     }
@@ -13783,12 +13874,13 @@
       const anchor = roadAnchor(now);
       const max = Math.max(0, ol.scrollHeight - ol.clientHeight);
       if (!anchor || !ol.clientHeight) return 0;
+      const scale = stageScale() || 1;
       const style = getComputedStyle(ol);
       const padBottom = parseFloat(style.paddingBottom) || 0;
       const borderBottom = parseFloat(style.borderBottomWidth) || 0;
-      const viewBottom = ol.getBoundingClientRect().bottom - borderBottom - padBottom;
+      const viewBottom = ol.getBoundingClientRect().bottom - (borderBottom + padBottom) * scale;
       const anchorBottom = anchor.getBoundingClientRect().bottom;
-      const top = ol.scrollTop + (anchorBottom - viewBottom);
+      const top = ol.scrollTop + (anchorBottom - viewBottom) / scale;
       return Math.max(0, Math.min(max, top));
     }
 
@@ -14852,46 +14944,25 @@
       return { id: "bless-boots", name: "革靴", slot: "boot", image: face.image, effect: face.body, stars: face.stars };
     }
 
-    function gearCardPop(item) {
-      const card = gearAsCard(item);
-      if (!card) return "";
-      return `<div class="gear-effect gear-card-pop" role="tooltip">${rewardCardHtml(card)}</div>`;
+    function gearCardPop(item, card) {
+      const face = card || gearAsCard(item);
+      if (!face) return "";
+      return `<div class="gear-effect gear-card-pop" role="tooltip">${rewardCardHtml(face)}</div>`;
     }
 
     function gearEffectHtml(slotId) {
       if (!slotId) return "";
       if (slotId === "boot") {
         if (runSpdBonus() <= 0) return "";
-        const look = blessBootItem();
-        return gearPopShell(slotId, {
-          item: look,
-          name: look.name,
-          image: look.image || "",
-          kind: "祝福",
-          rarity: gearRarityText(look),
-          body: esc(gearSpecialText(look)),
-        });
+        return gearCardPop(null, boonAsCard("spd"));
       }
       if (slotId === "medal" && !gear.medal) {
         const look = (Number(gear.medals) || 0) > 0 ? GEAR_ITEMS.find((item) => item.id === "minotaur-medal") : null;
-        return gearPopShell(slotId, look ? {
-          item: look,
-          name: look.name,
-          image: look.image || "",
-          rarity: gearRarityText(look),
-          body: esc(gearSpecialText(look)),
-        } : "");
+        return look ? gearCardPop(look) : "";
       }
       const item = gear[slotId];
       if (!item) return "";
-      if (slotId === "shield" || slotId === "shield2" || item.slot === "shield") return gearCardPop(item);
-      return gearPopShell(slotId, {
-        item,
-        name: item.name || gearSlotLabel(slotId),
-        image: item.image || "",
-        rarity: gearRarityText(item),
-        body: esc(gearSpecialText(item)),
-      });
+      return gearCardPop(item);
     }
 
     function placeGearEffect(box, slotId) {
@@ -14947,6 +15018,8 @@
         }
       }
       placeGearEffect(box, shown);
+      fitCardNames();
+      fitCardEffects();
     }
 
     function bindGearHover() {
@@ -18098,6 +18171,7 @@
       intentShown = false;
       foeAngerShow = false;
       if (finishIfStuck()) return;
+      hand.forEach((card) => { if (card) dealAnim.add(card); });
       render();
       timer = setTimeout(presentNextFoeCard, 1150);
     }
@@ -20523,7 +20597,10 @@
     function hudMenuHtml(opt) {
       const titleAction = opt && opt.titleAction ? opt.titleAction : "title";
       const titleDisabled = opt && opt.titleDisabled ? " disabled" : "";
-      return `<div class="hud-menu"><button type="button" class="small-btn hud-menu-btn" data-action="hud-menu" aria-label="メニュー" aria-expanded="false"><span class="hud-burger" aria-hidden="true"></span></button><div class="hud-menu-pop" hidden><button type="button" class="small-btn" data-action="deck">デッキ確認</button><button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="${titleAction}"${titleDisabled}>タイトルへ</button>${gameFullscreenButton()}</div></div>`;
+      const bug = screen === "battle"
+        ? `<button type="button" class="small-btn${bugWatch ? " bug-on" : ""}" data-action="bug-report">${bugWatch ? "記録中" : "バグ報告"}</button>`
+        : "";
+      return `<button type="button" class="small-btn" data-action="deck">デッキ確認</button><div class="hud-menu"><button type="button" class="small-btn hud-menu-btn" data-action="hud-menu" aria-label="メニュー" aria-expanded="false"><span class="hud-burger" aria-hidden="true"></span></button><div class="hud-menu-pop" hidden>${bug}<button type="button" class="small-btn" data-action="settings">オプション</button><button type="button" class="small-btn" data-action="${titleAction}"${titleDisabled}>タイトルへ</button>${gameFullscreenButton()}</div></div>`;
     }
 
     function toggleFullscreen() {
@@ -21181,18 +21258,14 @@
       const old = root.querySelector(".gear-effect.cast-pop");
       if (old) old.remove();
       if (!item) return;
-      root.insertAdjacentHTML("beforeend", gearPopShell(item.slot || "sword", {
-        item,
-        name: item.name,
-        image: item.image || "",
-        rarity: gearRarityText(item),
-        body: esc(gearSpecialText(item)),
-      }).replace('class="gear-effect', 'class="gear-effect cast-pop'));
+      root.insertAdjacentHTML("beforeend", gearCardPop(item).replace('class="gear-effect gear-card-pop"', 'class="gear-effect gear-card-pop cast-pop"'));
       const box = root.querySelector(".gear-effect.cast-pop");
       if (!box) return;
       box.style.left = "0px";
       box.style.top = "0px";
-      placeAnchored(box, button, { gap: 12, pad: 8, fallbackW: 288, fallbackH: 120, align: "top" });
+      placeAnchored(box, button, { gap: 12, pad: 8, width: 168, height: Math.round(168 * 4 / 3), align: "top" });
+      fitCardNames();
+      fitCardEffects();
     }
 
     function hideCastGear() {
@@ -21579,36 +21652,18 @@
       return `<div class="battle-plate foe-plate dossier-plate" aria-label="ステータス">${meters("look", hp, hp, 0)}<div class="plate-stats">${stats}</div></div>`;
     }
 
-    function foePhaseOf(floor, floors) {
-      const p = Math.max(1, Number(floor) || 1) / Math.max(1, Number(floors) || 1);
-      if (p <= 1 / 3) return "序盤";
-      if (p <= 2 / 3) return "中盤";
-      return "終盤";
-    }
-
     function foeAppearHtml(foe) {
-      const bands = { 序盤: [], 中盤: [], 終盤: [] };
+      const names = [];
       let note = "";
       if (foe && foe.name === "ハデス") {
         DUNGEON_LIST.forEach((dungeon) => {
-          const seen = new Set();
-          bossStops(dungeon.name, dungeon.floors).forEach((floor) => {
-            const phase = foePhaseOf(floor, dungeon.floors);
-            if (seen.has(phase)) return;
-            seen.add(phase);
-            bands[phase].push(dungeon.name);
-          });
+          if (bossStops(dungeon.name, dungeon.floors).length) names.push(dungeon.name);
         });
       } else if (foe) {
-        const tier = enemyStar(foe);
-        const phases = tier <= 1 ? ["序盤", "中盤", "終盤"] : tier === 2 ? ["中盤", "終盤"] : ["終盤"];
-        phases.forEach((phase) => bands[phase].push("洞窟"));
+        names.push("洞窟");
         note = foe.name === "物乞い" ? "洞窟の初戦には出ない。古城・深淵は未定。" : "古城・深淵は未定。";
       }
-      const cols = ["序盤", "中盤", "終盤"].map((phase) => {
-        const names = bands[phase];
-        return `<div class="foe-phase"><b>${phase}</b><p>${esc(names.length ? names.join("、") : "なし")}</p></div>`;
-      }).join("");
+      const cols = names.map((name) => `<div class="foe-phase"><b>${esc(name)}</b></div>`).join("");
       const foot = note ? `<p class="foe-phase-note">${esc(note)}</p>` : "";
       return `<div class="foe-phases">${cols}</div>${foot}`;
     }
@@ -22016,6 +22071,7 @@
             <div class="ref-grid pose-grid">
               ${sheetFig("girl-front-v2.png?v=1", "キャラデザ", "cut-ref")}
               ${sheetFig("girl-demon-half.png?v=2", "半悪魔化", "cut-ref")}
+              ${sheetFig("girl-demon-half-battle.png?v=1", "半悪魔化の戦闘", "cut-ref")}
               ${sheetFig("girl-demon-full.png?v=3", "完全悪魔化", "cut-ref")}
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
@@ -22389,11 +22445,10 @@
       return `${line}<div class="path-list${forced ? " forced" : ""}">${pathButtonsHtml()}</div>`;
     }
 
-    function eventShell(body, opt) {
+    function eventShell(body) {
       const buttons = hudMenuHtml();
       const logHtml = logLinesHtml(logLines);
-      const worn = opt && opt.gear === false ? "" : `<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside>`;
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}${worn}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
+      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-gear plate-gear">${gearMarkup()}</div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
     }
 
     function renderFloor() {
@@ -22468,12 +22523,11 @@
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art${restFx ? " rest-heal" : ""}">${art}${restFx}</div>` : "";
       const choiceBody = `${rareFlash}${shop}${smith}${gift}${searchActions}${beggar}${next}${bless}${train}`;
-      const wornInCopy = floorKind === "探索" ? `<aside class="event-gear" aria-label="現在の装備"><h2>装備</h2><div class="plate-gear">${gearMarkup()}</div></aside>` : "";
       const titleGap = `<div class="event-title-gap" aria-hidden="true"></div>`;
-      const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-stack"><div class="event-title">${title}</div><div class="event-side">${titleGap}<div class="event-copy">${note}</div>${wornInCopy}<div class="event-choice">${choiceBody}</div></div></div></div>`;
+      const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-stack"><div class="event-title">${title}</div><div class="event-side">${titleGap}<div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div></div>`;
       const choiceShell = lead;
       const roadDeck = blessMidRoad() ? `<div class="event-deck">${pileMarkup("deck", runDeck().length)}</div>` : "";
-      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "修行" ? " train" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`, floorKind === "探索" ? { gear: false } : undefined);
+      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "修行" ? " train" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`);
       runEntrance = false;
     }
 
@@ -22597,7 +22651,7 @@
       paintTitleNav();
       paintFullscreenLabels();
       fitPathArtToRoad();
-      if (root.querySelector(".event-gear")) {
+      if (root.querySelector(".hud-gear")) {
         bindGearHover();
         paintGear();
       }
@@ -25983,7 +26037,8 @@
       const ordered = list.map((card, i) => ({ card, i })).sort((a, b) => Number(a.card.source === "敵") - Number(b.card.source === "敵"));
       return ordered.map(({ card, i }) => {
         const lv = rareLevel(card);
-        return `<button type="button" class="reward-pick${rareClass(lv)}" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
+        const foe = card.source === "敵" ? " reward-foe" : "";
+        return `<button type="button" class="reward-pick${foe}${rareClass(lv)}" data-action="${action}" data-reward="${i}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div>${rareCaption(card)}</button>`;
       }).join("");
     }
 
@@ -26183,7 +26238,8 @@
         const picks = ordered.map(({ pick, i }) => {
           if (pick.kind === "card" && pick.card) {
             const lv = rareLevel(pick.card);
-            return `<button type="button" class="reward-pick${rareClass(lv)}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
+            const foe = pick.card.source === "敵" ? " reward-foe" : "";
+            return `<button type="button" class="reward-pick${foe}${rareClass(lv)}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${offerTone(pick.card)}">${cardFace(pick.card)}</div>${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
@@ -26350,7 +26406,6 @@
             <div class="hud-gear plate-gear">${gearMarkup()}</div>
             <div class="hud-actions">
               ${hudMenuHtml({ titleAction: "ask-title", titleDisabled: !(phase === "player" || rewardStep === "paths") })}
-              <button type="button" class="small-btn${bugWatch ? " bug-on" : ""}" data-action="bug-report">${bugWatch ? "記録中" : "バグ報告"}</button>
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
             </div>
           </header>
@@ -26554,23 +26609,18 @@
     // 前回測ったカードの大きさ。処理で手札を組み直しても、同じ位置から描く
     let handArcSize = { h: 0, w: 0 };
 
-    // 下辺を支点に傾けると、内側の上角だけ持ち上がる。その分だけ下げる。中央だけ上に出さない
-    function handArc(i, count, cardH, cardW) {
+    // スレスパと同じく、下辺の中心が一つの円の上に乗る。端を下の基準にして、中央を円の分だけ上げる
+    function handArc(i, count, cardH) {
       const mid = (count - 1) / 2;
-      const t = mid === 0 ? 0 : (i - mid) / mid;
-      const fanMax = 13;
-      const fan = Math.round(t * fanMax * 10) / 10;
+      if (count <= 1 || mid === 0) return { fan: 0, drop: 0 };
+      const half = Math.min(10, (count - 1) * 2.2);
+      const fan = Math.round((i - mid) * (half / mid) * 10) / 10;
       const h = cardH > 0 ? cardH : 0;
-      const w = cardW > 0 ? cardW : (h ? h * 204 / 300 : 0);
-      if (!h || !w) return { fan, drop: 0 };
-      const th = Math.abs(fan) * Math.PI / 180;
-      const lift = Math.max(0, (w / 2) * Math.sin(th) - h * (1 - Math.cos(th)));
-      let drop = lift;
-      // 中央だけ水平な上辺が隣より高く見える。隣の上辺の中ほどに寄せて下げる
-      if (count > 2 && Math.abs(t) < 0.001) {
-        const near = (fanMax / mid) * Math.PI / 180;
-        drop = (w / 2) * Math.sin(near);
-      }
+      if (!h) return { fan, drop: 0 };
+      const edge = half * Math.PI / 180;
+      const th = fan * Math.PI / 180;
+      const radius = h * 16;
+      const drop = radius * (Math.cos(edge) - Math.cos(th));
       return { fan, drop: Math.round(drop * 10) / 10 };
     }
 
