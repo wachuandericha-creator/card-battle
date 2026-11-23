@@ -4677,6 +4677,16 @@
       box-shadow: 0 0 0 4px #e24b3a, 0 16px 22px rgba(0, 0, 0, 0.45);
     }
     .play-card.await-draw .card.preview { visibility: hidden; }
+    .card > .song-chain {
+      position: absolute;
+      left: 4%;
+      width: 92%;
+      top: 36%;
+      height: auto;
+      z-index: 6;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+    }
     @keyframes intent-place {
       0% { opacity: 0; transform: translateY(-48px) scale(0.86); }
       100% { opacity: 1; transform: none; }
@@ -12194,6 +12204,8 @@
       魔剣招来: "card-summon-swords-d-aura.jpg?v=1",
       魔剣増殖: "card-demon-multiply-d-omen.jpg?v=1",
       魔剣封印: "card-demon-seal-g.jpg?v=1",
+      血の呼び声: "card-blood-call-c.jpg?v=1",
+      血の契約: "card-blood-pact-d.jpg?v=1",
       "悪魔剣・双斬": "card-demon-twin-slash-k.jpg?v=1",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
@@ -12412,6 +12424,20 @@
         ],
       },
       {
+        name: "河童",
+        image: "enemy-kappa.png?v=1",
+        tier: 1,
+        rank: "雑魚",
+        stature: "small",
+        hp: 40,
+        atkHidden: 2,
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "きゅうりかじり", cost: 1, text: "体力を6回復", heal: 6, kind: "skill", flash: true, stars: 1 },
+        ],
+      },
+      {
         name: "ミノタウロス",
         image: "enemy-minotaur.png?v=11",
         tier: 3,
@@ -12464,6 +12490,60 @@
         ],
       },
       {
+        name: "雪女",
+        image: "enemy-yukionna.png",
+        tier: 2,
+        rank: "普通",
+        stature: "same",
+        hp: 65,
+        atkHidden: 3,
+        defHidden: 1,
+        spdCut: 2,
+        trait: "極寒の吹雪。戦闘中、相手のSPD-2。下限は1。",
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "吹雪", cost: 1, text: "次の相手のターン終了まで、相手のATK-4", frost: 4, kind: "skill", stars: 2 },
+        ],
+      },
+      {
+        name: "ガーゴイル",
+        image: "enemy-gargoyle.png?v=1",
+        tier: 2,
+        rank: "普通",
+        stature: "same",
+        hp: 35,
+        atkHidden: 2,
+        defHidden: 2,
+        spd: 2,
+        openingBlock: 10,
+        openingThorns: 2,
+        trait: "石の皮膚。戦闘開始時、シールド10とトゲ2。",
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "ブロック" },
+          { name: "棘の構え", cost: 1, text: "トゲ+3", thorns: 3, kind: "orange", stars: 2 },
+        ],
+      },
+      {
+        name: "マーフォーク",
+        image: "enemy-merfolk.png",
+        tier: 2,
+        rank: "普通",
+        stature: "same",
+        hp: 65,
+        atkHidden: 2,
+        defHidden: 1,
+        spd: 2,
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "ブロック" },
+          { name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 },
+        ],
+      },
+      {
         name: "トロール",
         image: "enemy-troll.png?v=10",
         tier: 2,
@@ -12471,11 +12551,12 @@
         stature: "huge",
         hp: 100,
         atkHidden: 0,
+        ordered: true,
         pattern: [
-          { name: "ビッグアタック" },
+          { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true },
           { name: "ビッグアタック" },
           { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true },
-          { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true },
+          { name: "ビッグアタック" },
         ],
       },
       {
@@ -12718,7 +12799,7 @@
     let foePlan = [];
     const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
     const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。";
-    const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。";
+    const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。シールドで防いでも受ける。パリィで攻撃ダメージを無効にしても、トゲは防げない。";
     const FLASH_NOTE = "プレイエリアに置いて、ターンの解決で処理する。効果のあとデッキから削除し、戦闘が終わると戻る。戦闘中1回。";
     const POWER_NOTE = "プレイエリアに置いて、ターンの解決で処理する。出した効果は、その戦闘中だけ残る。";
     const BURST_NOTE = "プレイエリアに置いて、ターンの解決で処理する。効果のあとデッキから削除し、戻らない。";
@@ -12781,7 +12862,13 @@
     let returnScreen = "title";
     let fxLabId = "guard";
     let fxLabFoeName = "スライム";
+    let fxLabHeroId = "warrior";
     let fxLabTick = 0;
+    const FX_HEROES = [
+      { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
+      { id: "half", name: "半悪魔", battle: "girl-demon-half-battle.png?v=2", battleRatio: "4 / 3", head: ["68%", "22%"], body: ["52%", "52%"], shield: ["48%", "50%"] },
+      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=2", battleRatio: "4 / 3", head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
+    ];
     let askLeave = false;
     let showDeck = false;
     let pileLook = "";
@@ -13140,7 +13227,7 @@
         dungeon: dungeonName,
         turn: turn || 0,
         gear: gearBrief(),
-        spd: player ? DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0) : DRAW_PER_TURN,
+        spd: player ? playerSpd() : DRAW_PER_TURN,
         hand: (hand || []).map((card) => card && card.name).filter(Boolean),
         deck: (deck || []).length,
         discard: (discard || []).length,
@@ -13282,7 +13369,8 @@
       const curse = Math.max(0, Number(enemy.curseAtk) || 0);
       const rageAtk = Math.max(0, Number(enemy.rageAtk) || 0);
       const grown = Math.max(0, Number(enemy.grownAtk) || 0);
-      enemy.atk = hiddenAtk(foe) + anger + spite + rageAtk + grown - curse;
+      const frost = Math.max(0, Number(enemy.frostCut) || 0);
+      enemy.atk = hiddenAtk(foe) + anger + spite + rageAtk + grown - curse - frost;
     }
 
     function hiddenDef(foe) {
@@ -13358,7 +13446,7 @@
     }
 
     const BURN_NOTE = "炎上は、受けた側のDEFを重なった数だけ下げる。この戦闘中だけ。終わると戻る。";
-    const CRIT_NOTE = "書いた％の確率で、その1回のダメージが1.5倍になる。端数は切り上げ。％はカードごとに違う。";
+    const CRIT_NOTE = "書いた％の確率で、その1回のダメージ、または得るシールドが1.5倍になる。端数は切り上げ。％はカードごとに違う。";
 
     function burnBadge(stacks) {
       if (!stacks) return "";
@@ -14797,7 +14885,8 @@
       const medalAtk = gear.medal && gear.medal.halfAtk && hpHalf(player) ? gear.medal.halfAtk : 0;
       const burnCut = hasStatLock() || hasStatusImmune() ? 0 : burnStacks(player);
       const charge = Math.max(0, Number(player.chargeAtk) || 0);
-      player.atk = gearStatSum("atk") + atkMod + medalAtk + charge;
+      const frost = Math.max(0, Number(player.frostCut) || 0);
+      player.atk = gearStatSum("atk") + atkMod + medalAtk + charge - frost;
       player.def = gearStatSum("def") + defMod - burnCut;
     }
 
@@ -15228,15 +15317,20 @@
       enemyLoop[pick] = held;
     }
 
+    function foeOrdered() {
+      const foe = enemyNow();
+      return !!(foe && foe.ordered);
+    }
+
     function startEnemyLoop() {
-      enemyLoop = shuffle(sourcePattern());
+      enemyLoop = foeOrdered() ? sourcePattern() : shuffle(sourcePattern());
       intentIndex = 0;
       foeDiscard = [];
       foeDeckEmpty = false;
       foeRageBusy = false;
       foeAngerShow = false;
       foePlan = [];
-      chooseNextIntent();
+      if (!foeOrdered()) chooseNextIntent();
     }
 
     function foeSpd() {
@@ -15252,7 +15346,7 @@
 
     function takeDeckCard() {
       if (deckCardsLeft() <= 0) return null;
-      chooseNextIntent();
+      if (!foeOrdered()) chooseNextIntent();
       const card = applyEnemyHidden(enemyLoop[intentIndex], enemyNow());
       intentIndex += 1;
       if (intentIndex >= enemyLoop.length) foeDeckEmpty = true;
@@ -15263,7 +15357,7 @@
       foeDiscard = foeDiscard.filter((card) => card && !card.foeRage);
       if (!foeDiscard.length) return false;
       const foe = enemyNow();
-      enemyLoop = shuffle(foeDiscard.map((card) => applyEnemyHidden(card, foe)));
+      enemyLoop = foeOrdered() ? sourcePattern() : shuffle(foeDiscard.map((card) => applyEnemyHidden(card, foe)));
       foeDiscard = [];
       intentIndex = 0;
       foeDeckEmpty = false;
@@ -15754,14 +15848,19 @@
       let gain = Math.max(0, (Number(amount) || 0) + bonus);
       gain = halfBraced(card, player, gain);
       gain = anyShield("blockBoost") ? Math.ceil(gain * 1.5) : Math.floor(gain);
-      if (!gain) return;
+      if (!gain) return false;
       if (parryCount(player) > 0 && !player.guardThrough) {
-        log(`${heroName()}は${card.name}。パリィ中はシールドを得られない。`, card);
-        return;
+        const name = card && card.name ? `${card.name}。` : "";
+        log(`${heroName()}は${name}パリィ中はシールドを得られない。`, card);
+        return false;
       }
+      const rolled = applyCritChance(card, gain);
+      gain = rolled.amount;
       player.block += gain;
       fxShieldPlayer = true;
-      log(`${heroName()}は${card.name}でブロック${gain}。`, card);
+      const label = card && card.name ? card.name : "強靭な肉体";
+      log(`${heroName()}は${label}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card);
+      return true;
     }
 
     function hurtSentence(actor, card, raw, reduced, result, crit) {
@@ -15905,6 +16004,23 @@
         onParrySuccess(amount);
         fxGuard = "parry";
         log(`${enemy.name}は${name}。${crit ? "クリティカル。" : ""}パリィで無効。`, card, true);
+        if (amount > 0) {
+          const foeThorns = thornCount(enemy);
+          if (foeThorns > 0) {
+            const poked = applyDamage(player, foeThorns, true);
+            if (poked.hpLoss > 0) {
+              player.hurtThis = true;
+              fxHurt = true;
+              noteHit("player", poked.hpLoss, foeThorns, "blunt");
+              if (player.hp <= 0) {
+                fxFatal = true;
+                fatalHold = true;
+              }
+            }
+            log(`${enemy.name}のトゲ。${heroName()}に${foeThorns}ダメージ。`);
+          }
+          retaliateThorns(player);
+        }
         return;
       }
       const extra = Math.max(0, Number(player.expose) || 0);
@@ -16151,6 +16267,77 @@
       return true;
     }
 
+    function playerSpd() {
+      const base = DRAW_PER_TURN + Math.max(0, Number(player && player.spdMod) || 0);
+      const cut = player && !hasStatLock() ? Math.max(0, Number(player.frostSpd) || 0) : 0;
+      if (!cut) return base;
+      return Math.max(1, base - cut);
+    }
+
+    function applyBlizzard(card, caster) {
+      const n = Math.max(0, Number(card && card.frost) || 0);
+      const fromPlayer = caster === "player";
+      const target = fromPlayer ? enemy : player;
+      const foeLog = !fromPlayer;
+      const actor = fromPlayer ? heroName() : enemy.name;
+      if (!fromPlayer && hasStatLock()) {
+        log(`${actor}は${card.name}。${heroName()}のATKは下がらない。`, card, foeLog);
+        return;
+      }
+      if (!target || !n) return;
+      target.frostCut = (Number(target.frostCut) || 0) + n;
+      target.frostClear = fromPlayer ? "enemy" : "player";
+      if (fromPlayer) syncEnemyAtk();
+      else syncGearStats();
+      const shown = fromPlayer ? enemy.atk : player.atk;
+      const who = fromPlayer ? enemy.name : heroName();
+      log(`${actor}は${card.name}。${who}のATK${signed(shown)}。次の相手のターン終了まで。`, card, foeLog);
+    }
+
+    function applySong(card, caster) {
+      if (card) card.songCast = true;
+      const fromPlayer = caster === "player";
+      const target = fromPlayer ? enemy : player;
+      if (!target) return;
+      target.songMute = (Number(target.songMute) || 0) + 1;
+      const who = fromPlayer ? enemy.name : heroName();
+      const actor = fromPlayer ? heroName() : enemy.name;
+      log(`${actor}は${card.name}。次の${who}のターン、プレイエリアの1枚目は不発。`, card, !fromPlayer);
+    }
+
+    function songsAimedAt(who) {
+      let n = Math.max(0, Number(who && who.songMute) || 0);
+      if (who === enemy && phase === "player") {
+        for (const card of inPlay || []) {
+          if (card && card.song && !card.songCast && !(card.keep && card.resolved)) n += 1;
+        }
+      }
+      return n;
+    }
+
+    function takeSong(who) {
+      if (!who || !(Number(who.songMute) > 0)) return false;
+      who.songMute -= 1;
+      return true;
+    }
+
+    function clearSong(who) {
+      if (who) who.songMute = 0;
+    }
+
+    function clearFrost(who, side) {
+      if (!who || who.frostClear !== side || !(Number(who.frostCut) > 0)) return;
+      who.frostCut = 0;
+      who.frostClear = "";
+      if (who === player) {
+        syncGearStats();
+        log(`${heroName()}の吹雪が切れた。ATK${signed(player.atk)}。`);
+      } else if (enemy) {
+        syncEnemyAtk();
+        log(`${enemy.name}の吹雪が切れた。ATK${signed(enemy.atk)}。`, null, true);
+      }
+    }
+
     function draw(n, animate) {
       for (let i = 0; i < n; i++) {
         if (hand.length >= HAND_CAP) break;
@@ -16273,7 +16460,15 @@
       }
     }
 
-    // クリティカル。critChance は百分率。当たると、その1回のダメージを1.5倍し、端数は切り上げ。
+    // クリティカル。critChance は百分率。当たると、その1回のダメージか、得るシールドを1.5倍し、端数は切り上げ。
+    function applyCritChance(card, amount) {
+      const n = Math.max(0, Number(amount) || 0);
+      const chance = Number(card && card.critChance) || 0;
+      if (chance <= 0 || n <= 0) return { amount: n, crit: false };
+      if (Math.random() * 100 >= chance) return { amount: n, crit: false };
+      return { amount: Math.ceil(n * 1.5), crit: true };
+    }
+
     function rollCrit(card, amount) {
       let n = Math.max(0, Number(amount) || 0);
       if (card && player && cardKind(card) === "attack") {
@@ -16283,10 +16478,7 @@
         }
         if (anySword("attackBoost")) n = Math.ceil(n * 1.5);
       }
-      const chance = Number(card && card.critChance) || 0;
-      if (chance <= 0 || n <= 0) return { amount: n, crit: false };
-      if (Math.random() * 100 >= chance) return { amount: n, crit: false };
-      return { amount: Math.ceil(n * 1.5), crit: true };
+      return applyCritChance(card, n);
     }
 
     function scaledPrinted(n) {
@@ -16757,6 +16949,14 @@
         player.spite = true;
         player.spiteCard = card.name;
         log(`${heroName()}は${card.name}。この戦闘中、体力を失うたびATK+1。`, card);
+        return;
+      }
+      if (card.frost) {
+        applyBlizzard(card, "player");
+        return;
+      }
+      if (card.song) {
+        applySong(card, "player");
         return;
       }
       if (card.shave) {
@@ -17262,6 +17462,7 @@
 
     function afterUsePile(card) {
       if (!card) return "discard";
+      if (card.fizzle) return "discard";
       if (card.burst || isItemCard(card)) return "burst";
       if (isFlashCard(card)) return "exile";
       return "discard";
@@ -17757,6 +17958,7 @@
       if (card.thorns) {
         const now = gainThorns(enemy, card.thorns);
         log(`${enemy.name}は${card.name}。トゲ${now}。`, card, true);
+        if (!card.damage && !card.block && !card.heal && !card.poison && !card.burn) return;
       }
       if (card.press) {
         const amount = enemy.block || 0;
@@ -17781,6 +17983,14 @@
       if (card.spite) {
         enemy.spiteOn = true;
         log(`${enemy.name}は${card.name}。体力を失うたびATK+1。`, card, true);
+        return;
+      }
+      if (card.frost) {
+        applyBlizzard(card, "enemy");
+        return;
+      }
+      if (card.song) {
+        applySong(card, "enemy");
         return;
       }
       if (card.legion) {
@@ -17809,12 +18019,19 @@
         takeEnemyHit(rolled.amount, card, rolled.crit);
         noteAttackGrow(card, "enemy");
       } else if (card.block) {
-        const gain = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
+        const base = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
+        const rolled = applyCritChance(card, base);
+        const gain = rolled.amount;
         if (gain) {
           enemy.block += gain;
           fxShieldEnemy = true;
         }
-        log(`${enemy.name}は${card.name}でブロック${gain}。`, card, true);
+        log(`${enemy.name}は${card.name}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card, true);
+      } else if (card.heal) {
+        const room = Math.max(0, enemy.maxHp - enemy.hp);
+        const gain = Math.max(0, Math.min(Math.floor(Number(card.heal) || 0), room));
+        if (gain) enemy.hp += gain;
+        log(gain ? `${enemy.name}は${card.name}で${gain}回復。` : `${enemy.name}は${card.name}。体力は満タン。`, card, true);
       } else if (card.poison) {
         if (addPoison(player, card.poison)) log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
         else log(`${enemy.name}は${card.name}。`, card, true);
@@ -17835,7 +18052,11 @@
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
       if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 });
       if (who === "デスドラゴン") return wrap({ name: "死撃", cost: 2, text: "8ダメージ\nこの戦闘中、ATK+2", damage: 8, atkGrow: 2, kind: "attack", stars: 3 });
+      if (who === "雪女") return wrap({ name: "吹雪", cost: 1, text: "次の相手のターン終了まで、相手のATK-4", frost: 4, kind: "skill", stars: 2 });
+      if (who === "マーフォーク") return wrap({ name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 });
+      if (who === "ガーゴイル") return wrap({ name: "棘の構え", cost: 1, text: "トゲ+3", thorns: 3, kind: "orange", stars: 2 });
       if (who === "コボルド") return wrap({ name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "orange", flash: true, spite: true, stars: 1 });
+      if (who === "河童") return wrap({ name: "きゅうりかじり", cost: 1, text: "体力を6回復", heal: 6, kind: "skill", flash: true, stars: 1 });
       if (who === "ミノタウロス") return null;
       if (who === "トロール") {
         return wrap({ name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true });
@@ -18060,6 +18281,7 @@
         return;
       }
       if (resolveAt === enemyIndex && !foeTurnAnnounced) {
+        clearSong(player);
         foeTurnAnnounced = true;
         turnCall = "enemy";
         render();
@@ -18070,6 +18292,10 @@
       resolveAt += 1;
       if (index < enemyIndex) {
         const played = inPlay[index];
+        if (takeSong(player)) {
+          if (played) played.fizzle = true;
+          log(`${heroName()}は${played ? played.name : "カード"}。惑わしの歌で、プレイエリアの1枚目が不発。捨て札へ。`, played);
+        } else {
         player.effectFactor = effectFactorFor(index);
         resolveCard(played);
         if (played && played.echo && !stealArmed && !lootChoice) resolveCard(played);
@@ -18117,6 +18343,7 @@
           scheduleFinish("win");
           return;
         }
+        }
       } else {
         const foeIndex = index - enemyIndex;
         if (foeIndex >= foePlan.length) {
@@ -18124,11 +18351,19 @@
           return;
         }
         if (foeIndex === 0) {
+          clearFrost(player, "player");
           logTurn("enemy");
           dropShield(enemy);
         }
         const step = foePlan[foeIndex];
-        if (player.hp > 0 && step) {
+        if (player.hp > 0 && step && takeSong(enemy)) {
+          if (step.card) {
+            const live = applyEnemyHidden(step.card, enemyNow());
+            foeDiscard.push({ ...live });
+            log(`${enemy.name}は${live.name}。惑わしの歌で、プレイエリアの1枚目が不発。`, live, true);
+          } else log(`${enemy.name}の怒りは、惑わしの歌で、プレイエリアの1枚目が不発。`, null, true);
+          step.gone = true;
+        } else if (player.hp > 0 && step) {
           if (step.anger) {
             gainEnemyAnger();
             step.gone = true;
@@ -18260,10 +18495,7 @@
       note = "";
       const poisoned = tickPoison("player");
       const usedBlock = (player.blocksPlayed || 0) > 0 || inPlay.some((card) => cardKind(card) === "block");
-      if (!poisoned && !usedBlock && anyShield("sturdy")) {
-        gainBlock(7);
-        log(`${heroName()}は強靭な肉体。防御カードを使わなかったので、シールドを得た。`);
-      }
+      if (!poisoned && !usedBlock && anyShield("sturdy")) gainBlock(7);
       turnCall = "player";
       if (poisoned) {
         scheduleFinish("lose");
@@ -18283,6 +18515,8 @@
         return;
       }
       turn += 1;
+      clearFrost(enemy, "enemy");
+      clearSong(enemy);
       player.smoke = false;
       player.areaBonus = 0;
       for (const pile of [hand, deck, discard, inPlay]) {
@@ -18392,11 +18626,12 @@
         player.nextSpd = 0;
       }
       settleKeptHand();
-      const spdNow = Math.max(0, Number(player.spdMod) || 0);
+      const spdNow = playerSpd();
       const parts = [`基本${DRAW_PER_TURN}`];
-      if (spdNow) parts.push(`SPD+${spdNow}`);
+      if (Math.max(0, Number(player.spdMod) || 0)) parts.push(`SPD+${Math.max(0, Number(player.spdMod) || 0)}`);
+      if (player.frostSpd && !hasStatLock()) parts.push(`極寒-${player.frostSpd}`);
       if (extra) parts.push(extraWhy.length ? extraWhy.join("、") : `前ターンの追加+${extra}`);
-      const want = DRAW_PER_TURN + spdNow + extra;
+      const want = spdNow + extra;
       const beforeHand = hand.length;
       const lined = turn === 1 ? takeOpeners(Math.min(5, want)) : [];
       if (turn > 1) {
@@ -19236,7 +19471,10 @@
       syncGearStats();
       const foe = enemyNow();
       const foeHp = foeBattleHp(foe);
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: 0, poison: 0, burn: 0, thorns: 0, def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, halfSpdDone: false, spdBonus: 0, hit: false };
+      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: Math.max(0, Number(foe.openingBlock) || 0), poison: 0, burn: 0, thorns: Math.max(0, Number(foe.openingThorns) || 0), def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, halfSpdDone: false, spdBonus: 0, hit: false, frostCut: 0, frostClear: "" };
+      player.frostCut = 0;
+      player.frostClear = "";
+      player.frostSpd = Math.max(0, Number(foe.spdCut) || 0);
       pushFightStep();
       bindShown();
       turn = 0;
@@ -19252,6 +19490,13 @@
       buildDeck();
       bugMark("note", `戦闘開始。相手は${enemy.name}。${floorNo()}F ${dungeonName}。表示SPDは${DRAW_PER_TURN}+革靴など${runSpdBonus()}。装備 ${gearBrief()}。山札${deck.length}枚。`);
       if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
+      if (player.frostSpd && !hasStatLock()) log(`${foe.name}の極寒の吹雪。SPD-${player.frostSpd}。下限は1。`);
+      if (enemy.block > 0 || enemy.thorns > 0) {
+        const parts = [];
+        if (enemy.block > 0) parts.push(`シールド${enemy.block}`);
+        if (enemy.thorns > 0) parts.push(`トゲ${enemy.thorns}`);
+        log(`${enemy.name}の石の皮膚。${parts.join("、")}。`);
+      }
       openBattleIntro();
     }
 
@@ -20247,10 +20492,10 @@
       if (at >= 0) stolen.splice(at, 1);
     }
 
-    function smithMateOk(base, baseSeen, baseIndex, card, index) {
+    function smithMateOk(base, baseSeen, baseIndex, card, index, matSeen) {
       if (!base || !card || index === baseIndex || (baseSeen && baseSeen.fused)) return false;
-      const baseCost = Number(base.cost) || 0;
-      const cost = Number(card.cost) || 0;
+      const baseCost = Number((baseSeen || base).cost) || 0;
+      const cost = Number((matSeen || card).cost) || 0;
       return baseCost >= 1 && cost < baseCost;
     }
 
@@ -20261,7 +20506,7 @@
       const base = raw[smithBase];
       const mat = raw[matIndex];
       const baseShown = shown[smithBase];
-      if (!smithMateOk(base, baseShown, smithBase, mat, matIndex)) return;
+      if (!smithMateOk(base, baseShown, smithBase, mat, matIndex, shown[matIndex])) return;
       if (!spendStars(smithPrice(SMITH_FUSE_COST))) return;
       const nth = raw.slice(0, smithBase).filter((card) => card.name === base.name).length;
       cardAlters.push(mixSmithAlter(base, mat, nth));
@@ -20337,7 +20582,7 @@
       const base = raw[baseIndex];
       const best = new Map();
       raw.forEach((card, index) => {
-        if (!smithMateOk(base, cards[baseIndex], baseIndex, card, index)) return;
+        if (!smithMateOk(base, cards[baseIndex], baseIndex, card, index, cards[index])) return;
         const face = cards[index] || card;
         const score = smithMasteryScore(face);
         const prev = best.get(card.name);
@@ -20348,7 +20593,7 @@
 
     function smithRulesHtml() {
       const pick = floorPhase === "smith-mat" ? "素材にするカードを選んでください。" : "合成にするカードを選んでください。";
-      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、合成よりマナが低いカードです。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。</p><p>${pick}</p></div>`;
+      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、いまのマナが合成より低いカードです。光のエンチャントと効率化で下がったコストを見ます。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。</p><p>${pick}</p></div>`;
     }
 
     function smithFuseOverlay() {
@@ -21007,12 +21252,16 @@
       return enemyByName(fxLabFoeName) || ENEMIES[0];
     }
 
+    function fxLabHero() {
+      return FX_HEROES.find((row) => row.id === fxLabHeroId) || FX_HEROES[0];
+    }
+
     function fxPlate(id) {
       const foe = fxLabFoeDef();
       const heroBlock = id === "shield" ? 8 : 0;
       const heroHp = id === "fatal" ? 0 : (id === "hurt" || id === "hurt-big" || id === "poison-tick" || id === "break" ? 18 : 50);
       const heroThreat = id === "hurt" || id === "break" ? 6 : id === "hurt-big" ? 12 : id === "poison-tick" ? 3 : id === "fatal" ? 12 : 0;
-      const hero = plateMarkup("hero-plate", "player", heroName(), "", heroHp, 50, heroBlock, {
+      const hero = plateMarkup("hero-plate", "player", fxLabHero().name, "", heroHp, 50, heroBlock, {
         shieldFlash: id === "shield",
         break: id === "break",
         parry: id === "parry" ? 1 : 0,
@@ -21154,7 +21403,8 @@
         const buttons = rows.map(([id, label]) => `<button type="button" class="${id === fxLabId ? "on" : ""}" data-action="fx-play" data-fx="${id}">${esc(label)}</button>`).join("");
         return `<h2>${esc(title)}</h2>${buttons}`;
       }).join("");
-      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。右は実際のプレイ画面と同じ割り付け。</p><button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
+      const mine = FX_HEROES.map((row) => `<button type="button" class="${row.id === fxLabHeroId ? "on" : ""}" data-action="fx-hero" data-hero="${esc(row.id)}">${esc(row.name)}</button>`).join("");
+      root.innerHTML = `<div class="fx-lab"><aside class="fx-col" aria-label="演出"><h1>演出</h1><p>戦闘で使っているアニメを、押すと再生する。左で自分、右で敵を切り替えられる。右は実際のプレイ画面と同じ割り付け。</p><h2>自分</h2>${mine}<button type="button" data-action="fx-replay">もう一度</button>${groups}<button type="button" data-action="back">もどる</button></aside><div class="fx-lab-preview">${fxStage(fxLabId)}</div></div>`;
       placeFoePoisonWords();
       fitHand();
     }
@@ -22332,7 +22582,7 @@
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
               ${sheetFig("girl-demon-half-battle.png?v=2", "半悪魔化の戦闘", "cut-ref")}
-              ${sheetFig("girl-demon-full-battle.png?v=1", "完全悪魔化の戦闘", "cut-ref")}
+              ${sheetFig("girl-demon-full-battle.png?v=2", "完全悪魔化の戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
@@ -23603,6 +23853,17 @@
       return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
+    function songChainMarkup() {
+      const links = [];
+      for (let i = 0; i < 4; i += 1) {
+        const x = 24 + i * 30;
+        const tilt = i % 2 ? 68 : 112;
+        links.push(`<ellipse cx="${x}" cy="20" rx="12" ry="17" fill="#9aa1ab" stroke="#f7f8fb" stroke-width="2.4" transform="rotate(${tilt} ${x} 20)"/>`);
+        links.push(`<ellipse cx="${x}" cy="20" rx="6.5" ry="10.5" fill="#241910" stroke="#4a4038" stroke-width="1.2" transform="rotate(${tilt} ${x} 20)"/>`);
+      }
+      return `<svg class="song-chain" viewBox="0 0 140 40" aria-hidden="true">${links.join("")}</svg>`;
+    }
+
     function playFace(card, on, live, foe, recallIndex, extra) {
       const tone = faceTone(card, foe);
       const recall = recallIndex != null && phase === "player" && !outcome;
@@ -23612,11 +23873,14 @@
       if (extra && extra.held) bits.push("held");
       if (extra && extra.awaitDraw) bits.push("await-draw");
       if (extra && extra.steal) bits.push("steal-arrive");
+      if (extra && extra.chain) bits.push("chained");
       const attrs = recall ? ` data-unplay="${recallIndex}" class="${bits.join(" ")}"` : ` class="${bits.join(" ")}"`;
+      const bound = extra && extra.chain ? "。鎖。不発" : "";
       const label = recall
-        ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す`
-        : `${card.cost} ${esc(card.name)}`;
-      return `<div${attrs}><div class="card preview ${tone}" aria-label="${label}">${cardFace(card, live, foe)}</div></div>`;
+        ? `${card.cost} ${esc(card.name)}。クリックで手札に戻す${bound}`
+        : `${card.cost} ${esc(card.name)}${bound}`;
+      const chain = extra && extra.chain ? songChainMarkup() : "";
+      return `<div${attrs}><div class="card preview ${tone}" aria-label="${label}">${cardFace(card, live, foe)}${chain}</div></div>`;
     }
 
     function scratchApply(target, amount, fromThorns) {
@@ -23719,8 +23983,13 @@
       }
       const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
       const queue = inPlay || [];
+      let songLeft = Math.max(0, Number(player && player.songMute) || 0);
       for (const card of queue) {
         if (card.keep && card.resolved) continue;
+        if (songLeft > 0) {
+          songLeft -= 1;
+          continue;
+        }
         scratchPlayerCard(card, mine, foe, queue, give);
         if (foe.hp <= 0) break;
       }
@@ -23739,7 +24008,13 @@
       foe.block = 0;
       let take = null;
       const foeSwings = [];
+      let songSkip = songsAimedAt(enemy);
       for (const step of foePlan) {
+        if (songSkip > 0) {
+          songSkip -= 1;
+          foeSwings.push(null);
+          continue;
+        }
         if (step.anger) {
           foeSwings.push(null);
           foe.atk = (Number(foe.atk) || 0) + 2;
@@ -24001,6 +24276,10 @@
       }
       const step = foePlan[index];
       if (!step) return null;
+      if (index < songsAimedAt(enemy)) {
+        if (step.anger) return { name: "怒り", text: "不発", kind: "power", songFizzle: true };
+        return { ...step.card, text: "不発", damage: 0, block: 0, heal: 0, poison: 0, burn: 0, hits: 0, previewAtk: 0, previewSwing: 0, songFizzle: true };
+      }
       if (step.anger) return step.card;
       const base = Number(enemy && enemy.atk) || 0;
       let pending = 0;
@@ -24047,7 +24326,9 @@
         if (mine.knifeReflect && swing > 0 && foe.hp > 0) {
           reflect = scratchApply(foe, swing).hpLoss;
         }
-        return { raw: swing, hp: 0, parry: true, show: swing > 0, reflect, swing };
+        if (swing > 0 && mine.thorns > 0 && foe.hp > 0) reflect += scratchApply(foe, mine.thorns, true).hpLoss;
+        const poked = swing > 0 && foe.thorns > 0 ? scratchApply(mine, foe.thorns, true).hpLoss : 0;
+        return { raw: swing, hp: poked, parry: true, show: swing > 0 || poked > 0, reflect, swing };
       }
       const dealt = swing + (mine.expose || 0);
       if (!dealt) return null;
@@ -24093,17 +24374,19 @@
     function useZoneMarkup() {
       const resolving = phase === "resolve";
       const active = resolving ? resolveAt - 1 : -1;
+      const mineBind = Math.max(0, Number(player && player.songMute) || 0) + inPlay.filter((card) => card && card.fizzle).length;
+      const foeBind = songsAimedAt(enemy);
       const mine = inPlay.map((card, i) => {
         const on = active === i;
         const held = resolving && i < active;
-        return playFace(card, on, true, false, i, { held });
+        return playFace(card, on, true, false, i, { held, chain: i < mineBind });
       }).join("");
       const foeActive = active - inPlay.length;
       const foeCards = phase === "intro" ? "" : foePlan.map((step, i) => {
         if (step.gone) return "";
         const face = planCardFace(i);
         const hot = resolving && i === foeActive;
-        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !step.shown && !hot }) : "";
+        return face ? playFace(face, hot, true, true, null, { awaitDraw: foeArriveHide && !step.shown && !hot, chain: i < foeBind }) : "";
       }).join("");
       const stealFace = stealArrive
         ? playFace(stealArrive.card, true, true, false, null, { awaitDraw: !!stealArrive.hide, steal: true })
@@ -24222,7 +24505,7 @@
       const guarding = guard === "hold" || guard === "parry";
       const guardHtml = guarding ? holdGuard(guard === "parry") : "";
       const buffHtml = buff ? buffFxHtml() : "";
-      const who = heroItem();
+      const who = screen === "fx" ? fxLabHero() : heroItem();
       const head = Array.isArray(who.head) && who.head.length >= 2 ? who.head : ["52.7%", "6.8%"];
       const body = Array.isArray(who.body) && who.body.length >= 2 ? who.body : ["48.3%", "35.3%"];
       const shield = Array.isArray(who.shield) && who.shield.length >= 2 ? who.shield : [];
@@ -24686,6 +24969,8 @@
       if (card.itemHit) next.itemHit = true;
       if (card.pierce) next.pierce = true;
       if (card.atkGrow) next.atkGrow = Number(card.atkGrow) || 0;
+      if (card.frost) next.frost = Number(card.frost) || 0;
+      if (card.song) next.song = true;
       if (card.curseDoll) next.curseDoll = true;
       if (card.battleAtk) next.battleAtk = card.battleAtk;
       if (card.battleDef) next.battleDef = card.battleDef;
@@ -26717,7 +27002,7 @@
           <div class="stage">
             <div class="enemy-field">
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: DRAW_PER_TURN + Math.max(0, Number(player.spdMod) || 0), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: playerSpd(), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             </div>
             <div class="foe-stack">
             ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
@@ -27305,6 +27590,13 @@
         if (name === "fx-foe") {
           const pick = action.dataset.foeName || "スライム";
           if (enemyByName(pick)) fxLabFoeName = enemyByName(pick).name;
+          fxLabTick += 1;
+          screen = "fx";
+          render();
+        }
+        if (name === "fx-hero") {
+          const pick = action.dataset.hero || "warrior";
+          if (FX_HEROES.some((row) => row.id === pick)) fxLabHeroId = pick;
           fxLabTick += 1;
           screen = "fx";
           render();
