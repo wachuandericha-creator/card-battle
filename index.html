@@ -835,6 +835,11 @@
       background: rgba(36, 16, 48, 0.92);
       box-shadow: inset 0 0 0 2px rgba(196, 140, 220, 0.9);
     }
+    .forecast.heal {
+      color: #f4fff0;
+      background: rgba(16, 78, 32, 0.94);
+      box-shadow: inset 0 0 0 2px rgba(150, 230, 120, 0.95);
+    }
     .forecast.poison {
       color: #f6ecff;
       background: rgba(48, 16, 72, 0.94);
@@ -1063,6 +1068,16 @@
       border-radius: 0 3px 3px 0;
       background: linear-gradient(180deg, #6a221c 0%, #4a100e 55%, #2c0808 100%);
       box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+    }
+    .battle-plate .meter.hp .hp-heal {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 1;
+      border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #c8ffb0 0%, #3dae45 55%, #146828 100%);
+      box-shadow: inset 1px 0 0 rgba(230, 255, 210, 0.45);
       pointer-events: none;
     }
     .battle-plate.low .meter.hp > span {
@@ -1959,7 +1974,7 @@
       100% { opacity: 1; transform: none; }
     }
     .reward-pick .card.preview { width: min(250px, 24cqw); height: auto; box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55); }
-    .overlay.victory .reward-row { gap: 56px; }
+    .overlay.victory .reward-row { gap: 56px; flex-wrap: nowrap; }
     .overlay.victory .reward-pick { padding: 0; }
     .overlay.victory .reward-altar { padding: 8px 0 0; }
     .overlay.victory .reward-pick .card.preview,
@@ -4578,7 +4593,16 @@
       14% { opacity: 1; bottom: 8%; transform: translate(-50%, 0) scale(1); }
       100% { opacity: 0; bottom: 92%; transform: translate(-50%, 0) scale(0.95); }
     }
-    .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
+    .hero-shoulder.healed .hero-fig,
+    .sprite.healed img { animation: heal-glow 1.55s ease-out both; }
+    .sprite .hero-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .sprite.healed { overflow: visible; }
     .hero-shoulder.ward:not(.spark-gold):not(.blunt):not(.held):not(.healed) .hero-fig,
     .sprite.ward:not(.spark-gold):not(.parry-hold) img { animation: guard-rim 1.45s ease-out both; }
     .hero-shoulder.ward.spark-gold:not(.blunt):not(.held):not(.healed) .hero-fig,
@@ -5174,7 +5198,7 @@
       padding: 6px 8px 0;
       overflow: visible;
       margin-bottom: 0;
-      transform: translateY(40px);
+      transform: translate(var(--hand-nudge, 0px), 40px);
     }
     .battle-log {
       min-width: 0;
@@ -5212,27 +5236,28 @@
     }
     .battle-log h2::after { content: none; }
     .battle-log p {
-      margin: 0 0 16px;
-      font-size: 22px;
+      margin: 0 0 8px;
+      font-size: 16px;
       font-weight: 600;
-      line-height: 1.65;
-      letter-spacing: 0.04em;
-      text-align: center;
-      color: #ead8b0;
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      text-align: left;
+      color: #f3e6c8;
       text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
     }
-    .battle-log p.turn-player { color: #e8d4a0; }
-    .battle-log p.turn-enemy { color: #c4a070; }
-    .battle-log .who-me { color: #f0e0b8; }
-    .battle-log .who-foe { color: #b89060; }
+    .battle-log p.turn-player { color: #d7e8ff; }
+    .battle-log p.turn-enemy { color: #ffd0c4; }
+    .battle-log .who-me { color: #8ec8ff; }
+    .battle-log .who-foe { color: #ff8d7a; }
     .battle-log p.turn-head {
-      margin: 4px 0 12px;
-      padding-top: 10px;
+      margin: 10px 0 6px;
+      padding-top: 8px;
       border-top: 1px solid rgba(212, 168, 74, 0.35);
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       white-space: nowrap;
+      text-align: left;
       color: var(--gold);
       text-shadow: none;
     }
@@ -5443,6 +5468,32 @@
         0 5px 12px rgba(0, 0, 0, 0.45);
     }
     .gear-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .gear-slot.relic-open .gear-frame {
+      border-color: #f0d078;
+      box-shadow:
+        0 0 0 1px rgba(18, 12, 9, 0.9),
+        0 0 14px rgba(240, 195, 106, 0.45),
+        inset 0 0 0 1px rgba(255, 236, 200, 0.22),
+        0 5px 12px rgba(0, 0, 0, 0.45);
+    }
+    .relic-zoom {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      background: rgba(8, 6, 4, 0.55);
+      pointer-events: auto;
+    }
+    .relic-zoom img {
+      width: min(980px, 62cqw);
+      height: auto;
+      object-fit: contain;
+      border-radius: 16px;
+      border: 3px solid #e4b15a;
+      box-shadow: 0 0 0 2px #5c3a12, 0 24px 48px rgba(0, 0, 0, 0.55);
+      background: #7a7a7a;
+    }
     .gear-mark { color: rgba(228, 177, 90, 0.55); display: flex; }
     .gear-mark .ico { width: 48cqw; height: 48cqw; }
     .plate-gear {
@@ -7145,32 +7196,30 @@
     .overlay.victory {
       background: transparent;
     }
-    /* 報酬の板は、左のステータスと下の山札に被せない */
+    /* 報酬の板は大きく、3枚は横一列。左のステータスと下の山札には被せない */
     .overlay.victory:not(.finale) {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 36px 28px 720px;
+      padding: 16px;
       pointer-events: none;
+    }
+    html.stage-fit .overlay.victory:not(.finale) {
+      padding: 16px 40px 210px 940px;
     }
     .overlay.victory:not(.finale) .panel,
     .overlay.victory:not(.finale) .panel * {
       pointer-events: auto;
     }
     .overlay.victory:not(.finale) .panel.wide.reward-panel {
-      width: min(1400px, 100%);
+      width: min(1860px, 100%);
       max-width: 100%;
       max-height: 100%;
     }
     .overlay.victory:not(.finale) .win-head {
-      flex-wrap: wrap;
-      row-gap: 6px;
-      font-size: 48px;
-    }
-    .overlay.victory:not(.finale) .win-head .reward-lead,
-    .overlay.victory:not(.finale) .win-head .reward-lead.drop {
-      white-space: normal;
-      font-size: 26px;
+      flex-wrap: nowrap;
+      width: 100%;
+      min-width: 0;
     }
     .overlay.victory .panel {
       position: relative;
@@ -10746,21 +10795,6 @@
       width: max-content;
       max-width: calc(100% - 44px);
     }
-    .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
-      margin: 0 0 6px;
-      width: max-content;
-      align-self: center;
-      box-sizing: border-box;
-      padding: 0 10px;
-      text-align: center;
-      white-space: nowrap;
-      color: #f0c36a;
-      font-size: clamp(18px, 1.7cqw, 24px);
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: 0.04em;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-    }
     .cast-screen.character-focus .cast-on-stats .cast-stat-board.cast-vitals {
       width: auto;
       min-width: 100%;
@@ -12272,7 +12306,7 @@
     html.phone .battle-plate .hp-line.stat-star .lbl { font-size: 10px; }
     html.phone .battle-plate .shield-badge { width: 48px; height: 64px; top: -4px; }
     html.phone .handbar { padding: 4px 4px 0; gap: 4px; }
-    html.phone .hand { transform: translateY(18px); }
+    html.phone .hand { transform: translate(var(--hand-nudge, 0px), 18px); }
     html.phone .handbar .end,
     html.phone .end {
       width: 108px;
@@ -12453,6 +12487,7 @@
       "悪魔剣・双斬": "card-demon-twin-slash-k.jpg?v=1",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
+      竜の怒り: "card-dragon-rage-idea-a.jpg?v=1",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       見切り斬り: "card-mikiri-2a-v5.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
@@ -12562,7 +12597,7 @@
     };
     const KNIGHT = {
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
-      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドをすべて割る\n割った数と同じダメージ\nATKは乗らない", kind: "skill", guardBreak: true },
+      ガードブレイク: { cost: 2, stars: 2, text: "相手のシールドを破壊する。\n破壊したシールド数に等しいダメージを相手に与える。", kind: "skill", guardBreak: true },
     };
     const CARD_BUILD = {
       捨て身の一撃: "パリィ",
@@ -13116,7 +13151,7 @@
     const FX_HEROES = [
       { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
       { id: "half", name: "半悪魔", battle: "girl-demon-half-battle.png?v=2", battleRatio: "4 / 3", head: ["68%", "22%"], body: ["52%", "52%"], shield: ["48%", "50%"] },
-      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=2", battleRatio: "4 / 3", head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
+      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=3", battleRatio: "4 / 3", head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
     ];
     let askLeave = false;
     let showDeck = false;
@@ -13168,6 +13203,7 @@
     let fxBreakPlayer = false;
     let fxBreakEnemy = false;
     let fxHeal = 0;
+    let fxFoeHeal = 0;
     let fxBuff = false;
     let fxFoeBuff = false;
     let fxHit = null;
@@ -13371,7 +13407,7 @@
     }
 
     function trimLog() {
-      while (logLines.length > 16) logLines.pop();
+      while (logLines.length > 48) logLines.pop();
     }
 
     function logTurn(kind) {
@@ -14008,6 +14044,7 @@
       { id: "enchant", stars: 3 },
       { id: "spd", stars: 3 },
       { id: "play", stars: 3 },
+      { id: "loot", stars: 1 },
     ];
     const ENCOUNTER_BEGGAR = 0.5;
 
@@ -14230,7 +14267,7 @@
       if (name === "出来事:祝福") return { src: "path-bless-v4.jpg?v=1", label: "祝福" };
       if (name === "出来事:探索") return { src: "path-search.jpg?v=13", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=9", label: "遭遇" };
-      if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=3", label: "休憩" };
+      if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=4", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=13", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
       if (name === "出来事:修行") return { src: "path-train.jpg?v=5", label: "修行" };
@@ -14273,7 +14310,8 @@
       const blessing = route[0] === "出来事:祝福";
       const rows = route.map((node, i) => ({ node, i })).reverse().map(({ node, i }) => {
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
-        const show = !!node && (i <= battleIndex || roadPlacedAhead(i) || node === DUNGEON.boss);
+        const chosenAhead = !!node && i > battleIndex && !roadFixed(node, i);
+        const show = !!node && (i <= battleIndex || chosenAhead || roadPlacedAhead(i) || node === DUNGEON.boss);
         const face = show ? roadFace(node) : { label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
@@ -15195,10 +15233,10 @@
       const medalN = Math.max(gear && gear.medal ? 1 : 0, Math.floor(Number(gear && gear.medals) || 0));
       const medalSrc = (gear && gear.medal && gear.medal.image) || "gear-medal.jpg?v=6";
       const medalName = (gear && gear.medal && gear.medal.name) || "戦利品";
-      const medals = Array.from({ length: medalN }, () => `<button type="button" class="gear-slot filled${shownGearSlot() === "medal" ? (gearOpen === "medal" ? " open" : " hot") : ""}" data-gear="medal" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
-      const relics = heldRelics().map((item) => {
+      const medals = Array.from({ length: medalN }, (_, i) => `<button type="button" class="gear-slot filled" data-gear="medal" data-loot="medal-${i}" aria-label="${esc(medalName)}"><span class="gear-frame"><img src="${esc(medalSrc)}" alt=""></span><span class="gear-label">${esc(medalName)}</span></button>`).join("");
+      const relics = heldRelics().map((item, i) => {
         const picture = item.image ? `<img src="${esc(item.image)}" alt="">` : `<span class="gear-mark">${medalIcon()}</span>`;
-        return `<button type="button" class="gear-slot filled" data-land="relic" data-relic="${esc(item.id)}" aria-label="${esc(item.name || "戦利品")}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item.name || "戦利品")}</span></button>`;
+        return `<button type="button" class="gear-slot filled" data-land="relic" data-relic="${esc(item.id)}" data-loot="relic-${i}" aria-label="${esc(item.name || "戦利品")}"><span class="gear-frame">${picture}</span><span class="gear-label">${esc(item.name || "戦利品")}</span></button>`;
       }).join("");
       const bootN = runSpdBonus();
       const boot = blessBootItem();
@@ -15492,6 +15530,13 @@
       rail.addEventListener("pointerover", (event) => {
         const btn = event.target instanceof Element ? event.target.closest("[data-gear]") : null;
         if (!btn || !rail.contains(btn)) return;
+        if (btn.dataset.loot) {
+          if (!gearHover && !gearOpen) return;
+          gearHover = "";
+          gearOpen = null;
+          paintGear();
+          return;
+        }
         const id = btn.dataset.gear || "";
         if (gearHover === id) return;
         gearHover = id;
@@ -15686,8 +15731,18 @@
       return { up: card && card.ultimate ? up * 2 : up, down };
     }
 
-    function gainEnemyAnger() {
+    function gainEnemyAnger(card) {
       if (!enemy) return;
+      if (card && card.rageAtk != null) {
+        const rage = rageAmounts(card);
+        enemy.rageAtk = (Number(enemy.rageAtk) || 0) + rage.up;
+        enemy.rageDef = (Number(enemy.rageDef) || 0) + rage.down;
+        syncEnemyAtk();
+        syncEnemyDef();
+        fxFoeBuff = true;
+        log(`${enemy.name}は${card.name}。ATK${signed(enemy.atk)}、DEF${signed(enemy.def)}。`, card, true);
+        return;
+      }
       enemy.anger = Math.max(0, Number(enemy.anger) || 0) + 1;
       syncEnemyAtk();
       syncEnemyDef();
@@ -15704,7 +15759,28 @@
       chooseNextIntent();
     }
 
+    function dragonRageCard() {
+      return {
+        name: "竜の怒り",
+        cost: 0,
+        text: "ATK+6　DEF-2",
+        kind: "orange",
+        rage: true,
+        rageAtk: 6,
+        rageDef: 2,
+        flash: true,
+        stars: 3,
+      };
+    }
+
+    function usesDragonRage(name) {
+      return name === "ちびドラゴン" || name === "デスドラゴン";
+    }
+
     function foeAngerCard() {
+      if (usesDragonRage(enemy && enemy.name)) {
+        return { ...dragonRageCard(), foeRage: true };
+      }
       const base = FOE_ONLY[FOE_ANGER_KEY];
       return { ...base, name: "怒り" };
     }
@@ -15884,6 +15960,14 @@
       return { loss, stayPct: Math.max(0, hpPct - lossPct), lossPct };
     }
 
+    function healSpan(hp, maxHp, heal) {
+      const cap = Math.max(1, Number(maxHp) || 1);
+      const now = Math.max(0, Number(hp) || 0);
+      const room = Math.max(0, cap - now);
+      const gain = Math.max(0, Math.min(room, Number(heal) || 0));
+      return { gain, left: Math.max(0, Math.min(100, (now / cap) * 100)), width: (gain / cap) * 100 };
+    }
+
     function paintShown() {
       for (const who of ["enemy", "player"]) {
         const hp = who === "enemy" ? shown.enemy : shown.player;
@@ -15898,6 +15982,12 @@
           const span = threatSpan(hp, max, meter.dataset.threat);
           mark.style.left = `${span.stayPct}%`;
           mark.style.width = `${span.lossPct}%`;
+        }
+        const healMark = meter && meter.querySelector(".hp-heal");
+        if (healMark) {
+          const span = healSpan(hp, max, meter.dataset.heal);
+          healMark.style.left = `${span.left}%`;
+          healMark.style.width = `${span.width}%`;
         }
         const text = `${Math.max(0, Math.round(hp))}/${Math.round(max)}`;
         root.querySelectorAll(`[data-hp="${who}"]`).forEach((el) => { el.textContent = text; });
@@ -16031,10 +16121,16 @@
     }
 
     function finalDamageLine(actor, card, result, crit) {
-      if (crit && result.blocked && !result.hpLoss) return `${actor}は${card}。クリティカル。ブロックで防いだ。`;
-      if (result.blocked && !result.hpLoss) return `${actor}は${card}。ブロックで防いだ。`;
-      if (crit) return `${actor}は${card}。クリティカルで${result.hpLoss}ダメージ。`;
-      return `${actor}は${card}で${result.hpLoss}ダメージ。`;
+      const target = actor === heroName() ? enemy : player;
+      const left = target ? `残り${Math.round(target.hp)}/${Math.round(target.maxHp)}。` : "";
+      const shield = result.blocked ? `シールド${result.blocked}。` : "";
+      if (!result.hpLoss) {
+        const critWord = crit ? "クリティカル。" : "";
+        const guard = result.blocked ? `シールド${result.blocked}で防いだ。` : "ダメージは0。";
+        return `${actor}は${card}。${critWord}${guard}${left}`;
+      }
+      const how = crit ? `。クリティカルで${result.hpLoss}ダメージ。` : `で${result.hpLoss}ダメージ。`;
+      return `${actor}は${card}${how}${shield}${left}`;
     }
 
     function damageSentence(actor, card, raw, result, crit) {
@@ -16970,6 +17066,17 @@
       return out;
     }
 
+    function offerEnemyDemon(n) {
+      const want = Math.max(0, Math.floor(Number(n) || 0));
+      if (!enemy || want <= 0) return 0;
+      const room = Math.max(0, (Number(enemy.hp) || 0) - 1);
+      const lost = Math.min(want, room);
+      if (lost) enemy.hp -= lost;
+      const stop = lost < want ? "HPは1で止めた。" : "";
+      log(`${enemy.name}は悪魔に体力を捧げた。HP-${lost}。${stop}残り${Math.round(enemy.hp)}/${Math.round(enemy.maxHp)}。`, null, true);
+      return lost;
+    }
+
     function offerDemon(n) {
       const want = Math.max(0, Math.floor(Number(n) || 0));
       if (!player || want <= 0) return 0;
@@ -17167,6 +17274,7 @@
 
     function resolveCard(card) {
       card = scaledResolvedCard(card);
+      if (card && cardKind(card) === "orange") fxBuff = true;
       if (card && card.stealTop && !card.stealBusy) {
         stealArmed = { card, caster: "player" };
         return;
@@ -17204,13 +17312,14 @@
         return;
       }
       if (card.guardBreak) {
+        // 壊したシールドの数だけ。ATKは足さない。効果文には書かない。
         const had = Math.max(0, Number(enemy.block) || 0);
         enemy.block = 0;
         if (!had) {
           log(`${heroName()}は${card.name}。${enemy.name}にシールドは無かった。`, card);
           return;
         }
-        log(`${heroName()}は${card.name}。${enemy.name}のシールド${had}をすべて割った。`, card);
+        log(`${heroName()}は${card.name}。${enemy.name}のシールド${had}を破壊した。`, card);
         strike(card, had);
         return;
       }
@@ -17862,8 +17971,23 @@
       flyFoeFromDeck(play, flyNextFoeCard);
     }
 
+    function settlePlayText() {
+      fitCardNames();
+      fitCardEffects();
+    }
+
     function flyFoeFromDeck(play, done) {
       const gen = foeArriveGen;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (gen != null && gen !== foeArriveGen) return;
+          settlePlayText();
+          flyFoeFromDeckNow(play, done, gen);
+        });
+      });
+    }
+
+    function flyFoeFromDeckNow(play, done, gen) {
       const next = () => {
         if (gen != null && gen !== foeArriveGen) return;
         if (done) done();
@@ -17903,7 +18027,8 @@
       const dy = from.cy - to.cy;
       ghost.style.transform = `translate(${dx}px, ${dy}px) scale(${startScale})`;
       mountFloat(ghost);
-      const finish = () => {
+      const finish = (event) => {
+        if (event && (event.target !== ghost || event.propertyName !== "transform")) return;
         if (ghost.dataset.landed) return;
         ghost.dataset.landed = "1";
         ghost.remove();
@@ -17913,12 +18038,12 @@
       };
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          ghost.style.transition = "transform 1.05s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transition = "transform 0.72s cubic-bezier(0.22, 0.82, 0.2, 1)";
           ghost.style.transform = "translate(0px, 0px) scale(1)";
         });
       });
-      ghost.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 1180);
+      ghost.addEventListener("transitionend", finish);
+      setTimeout(() => finish(), 860);
     }
 
     function flyDiscardIntoDeck(done) {
@@ -18309,6 +18434,21 @@
         stealArmed = { card, caster: "enemy" };
         return;
       }
+      if (card.demonSword) {
+        offerEnemyDemon(card.demon || 0);
+        const aura = Math.max(0, Number(enemy.demonAura) || 0);
+        const swing = Math.max(0, Number(card.damage) || 0) + aura + (Number(enemy.atk) || 0);
+        if (player.hp > 0 && swing > 0) {
+          const rolled = rollCrit(card, swing);
+          takeEnemyHit(rolled.amount, card, rolled.crit);
+        }
+        const add = Math.max(0, Number(card.demonAura) || 0);
+        if (add) {
+          enemy.demonAura = aura + add;
+          log(`${enemy.name}は${card.name}。悪魔の剣のダメージ+${add}。いま+${enemy.demonAura}。`, card, true);
+        }
+        return;
+      }
       if (!card.damage && !card.hits && (card.parry || card.parryAdd || card.poise)) {
         gainEnemyParry(card, card.parryAdd || 1);
         if (!card.block && !card.heal && !card.poison && !card.burn) return;
@@ -18347,7 +18487,10 @@
       } else if (card.heal) {
         const room = Math.max(0, enemy.maxHp - enemy.hp);
         const gain = Math.max(0, Math.min(Math.floor(Number(card.heal) || 0), room));
-        if (gain) enemy.hp += gain;
+        if (gain) {
+          enemy.hp += gain;
+          fxFoeHeal = gain;
+        }
         log(gain ? `${enemy.name}は${card.name}で${gain}回復。` : `${enemy.name}は${card.name}。体力は満タン。`, card, true);
       } else if (card.poison) {
         if (addPoison(player, card.poison)) log(`${enemy.name}は${card.name}。${heroName()}は毒+${player.poison}。`, card, true);
@@ -18416,6 +18559,7 @@
         done();
         return;
       }
+      settlePlayText();
       const from = stageFrameOf(fromEl);
       const to = stageFrameOf(play);
       if (!from.w || !to.w) {
@@ -18439,7 +18583,8 @@
       ghost.style.transform = `translate(${from.cx - to.cx}px, ${from.cy - to.cy}px) scale(${startScale})`;
       mountFloat(ghost);
       let landed = false;
-      const finish = () => {
+      const finish = (event) => {
+        if (event && (event.target !== ghost || event.propertyName !== "transform")) return;
         if (landed) return;
         landed = true;
         ghost.remove();
@@ -18448,12 +18593,12 @@
       };
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          ghost.style.transition = "transform 1.05s cubic-bezier(0.22, 0.7, 0.2, 1)";
+          ghost.style.transition = "transform 0.72s cubic-bezier(0.22, 0.82, 0.2, 1)";
           ghost.style.transform = "translate(0px, 0px) scale(1)";
         });
       });
-      ghost.addEventListener("transitionend", finish, { once: true });
-      setTimeout(finish, 1180);
+      ghost.addEventListener("transitionend", finish);
+      setTimeout(() => finish(), 860);
     }
 
     function beginStealTop(casterCard, caster, done) {
@@ -18639,9 +18784,10 @@
             const slashCount = fxSlashes.length;
             const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
             const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+            const buffWait = fxBuff ? 1100 : 0;
             const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
             render();
-            const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, parryWait);
+            const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, buffWait, parryWait);
             timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
           });
           return;
@@ -18687,7 +18833,7 @@
           step.gone = true;
         } else if (player.hp > 0 && step) {
           if (step.anger) {
-            gainEnemyAnger();
+            gainEnemyAnger(step.card);
             step.gone = true;
           } else if (step.card) {
             const live = applyEnemyHidden(step.card, enemyNow());
@@ -18754,9 +18900,10 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+      const buffWait = fxBuff ? 1100 : 0;
       const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, parryWait);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, buffWait, parryWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -19884,15 +20031,20 @@
       const pool = gearOfferPool().filter((item) => (Number(item.stars) || 0) >= 2);
       const list = pool.length ? pool : gearOfferPool();
       if (!list.length) return null;
-      const item = pickRarityCard(list);
+      const item = list[Math.floor(Math.random() * list.length)];
       noteApexGear(item);
       return { ...item };
+    }
+    function rollBlessLoot() {
+      const fresh = LOOT_RELICS.map((row) => gearItem(row.id)).filter((item) => item && lootSeen.indexOf(item.id) < 0);
+      if (!fresh.length) return lootPicture(1);
+      return { ...fresh[Math.floor(Math.random() * fresh.length)] };
     }
     function rollBlessCard() {
       const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }))
         .concat(classCards())
         .filter((card) => (Number(card.stars) || 1) >= 2);
-      const pick = pickRarityCard(offers) || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
+      const pick = offers[Math.floor(Math.random() * offers.length)] || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
       return keepCard(pick);
     }
     function emptyRunBonus() {
@@ -20042,17 +20194,25 @@
       return "";
     }
 
+    function rollBlessEnchantElem() {
+      for (const elem of shuffle(ENCHANT_ELEMS)) {
+        if (enchantTargets(elem).length) return elem;
+      }
+      return "";
+    }
+
     function rollBlessPicks() {
       const picks = [];
-      for (const entry of takeRarityCards(BLESS_KINDS, 3)) {
+      for (const entry of shuffle(BLESS_KINDS).slice(0, 3)) {
         const kind = entry.id;
         if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
         else if (kind === "spd") picks.push({ kind, label: "SPD" });
         else if (kind === "play") picks.push({ kind, label: "皮の手袋" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
+        else if (kind === "loot") picks.push({ kind, gear: rollBlessLoot(), label: "戦利品" });
         else if (kind === "card") picks.push({ kind: "card", card: rollBlessCard(), label: "カード" });
         else if (kind === "enchant") {
-          const elem = rollEnchantElem();
+          const elem = rollBlessEnchantElem();
           if (elem) picks.push({ kind, elem, label: enchantFace(elem).name });
         }
       }
@@ -20062,7 +20222,7 @@
     function takeGift(pick) {
       if (!pick) return "";
       if (pick.kind === "item") return "";
-      if (pick.kind === "gear") {
+      if (pick.kind === "gear" || pick.kind === "loot") {
         if (pick.gear && pick.gear.picture) {
           floorGift = { kind: "gear", gear: { ...pick.gear } };
           return `${pick.gear.name}を受け取った。`;
@@ -20163,20 +20323,8 @@
     }
 
     function previewEnchantCard(card, elem) {
-      const next = { ...card, enchantPreview: true, enchant: elem };
-      if (elem === "fire") {
-        const base = printedDamage(card);
-        if (base) next.damage = base + 2;
-      } else if (elem === "water") {
-        const base = printedBlock(card);
-        if (base) next.block = base + 2;
-      } else if (elem === "light") {
-        next.cost = Math.max(0, (Number(card.cost) || 0) - 1);
-      } else if (elem === "dark") {
-        const text = String(card.text || "");
-        if (!text.includes("キーワード")) next.text = `${text}\nキーワードが一つ付く`.trim();
-      }
-      return next;
+      // 前後の枠は、光のエンチャントと同じ見せ方。変わるのは宝珠の画像だけ。
+      return { ...card, enchantPreview: true, enchant: elem };
     }
 
     function enchantCompareHtml(card, elem) {
@@ -20530,6 +20678,7 @@
       if (pick.kind === "spd") return "革靴";
       if (pick.kind === "play") return "皮の手袋";
       if (pick.kind === "gear") return (pick.gear && pick.gear.name) || "装備";
+      if (pick.kind === "loot") return (pick.gear && pick.gear.name) || "戦利品";
       if (pick.kind === "card") return (pick.card && pick.card.name) || "カード";
       if (pick.kind === "enchant") {
         const face = enchantFace(pick.elem);
@@ -21272,19 +21421,26 @@
       return true;
     }
 
-    function meters(who, hp, maxHp, block, threat, demon) {
+    function meters(who, hp, maxHp, block, threat, demon, heal) {
       const cap = Math.max(1, maxHp);
       const span = threatSpan(hp, cap, threat);
+      const gained = healSpan(hp, cap, heal);
       const blockPct = Math.max(0, Math.min(100, (block / cap) * 100));
       const shield = `<div class="shield-row" aria-label="シールド ${block}"><div class="meter shield" style="width:${blockPct}%"><span></span></div></div>`;
       const threatHtml = span.loss > 0 ? `<i class="hp-threat" style="left:${span.stayPct}%;width:${span.lossPct}%"></i>` : "";
-      const aria = span.loss > 0 ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(span.loss)}減る` : `HP ${Math.round(hp)}/${Math.round(cap)}`;
+      const healHtml = gained.gain > 0 ? `<i class="hp-heal" style="left:${gained.left}%;width:${gained.width}%"></i>` : "";
+      const aria = span.loss > 0
+        ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(span.loss)}減る`
+        : gained.gain > 0
+          ? `HP ${Math.round(hp)}/${Math.round(cap)}。このあと${Math.round(gained.gain)}回復`
+          : `HP ${Math.round(hp)}/${Math.round(cap)}`;
       const threatHp = Math.max(0, Number(threat) || 0);
+      const healHp = Math.max(0, Number(gained.gain) || 0);
       const demonN = Math.max(0, Math.round(Number(demon) || 0));
       const demonHtml = demonN > 0
         ? `<div class="demon-row" aria-label="悪魔化 ${demonN}"><div class="meter demon" style="width:${Math.max(0, Math.min(100, demonN))}%"><span></span></div><span class="demon-line">悪魔化<b>${demonN}</b></span></div>`
         : "";
-      return `<div class="meters">${shield}<div class="meter hp" data-threat="${threatHp}" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${Math.max(0, Math.min(100, (hp / cap) * 100))}%"></span>${threatHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>${demonHtml}</div>`;
+      return `<div class="meters">${shield}<div class="meter hp" data-threat="${threatHp}" data-heal="${healHp}" style="--cap:${cap}; --max:${cap}" aria-label="${aria}"><span data-bar="${who}" style="width:${Math.max(0, Math.min(100, (hp / cap) * 100))}%"></span>${threatHtml}${healHtml}<b class="hp-now"><span data-hp="${who}">${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>${demonHtml}</div>`;
     }
 
     function heroPlateProgress() {
@@ -21338,7 +21494,7 @@
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${badges}${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}</h2>
-        ${meters(who, shownHp, maxHp, block, extra && extra.threat, extra && Object.prototype.hasOwnProperty.call(extra, "demon") ? extra.demon : null)}
+        ${meters(who, shownHp, maxHp, block, extra && extra.threat, extra && Object.prototype.hasOwnProperty.call(extra, "demon") ? extra.demon : null, extra && extra.heal)}
         <div class="plate-stats">${stats}${extra && extra.tail ? extra.tail : ""}</div>
       </section>`;
     }
@@ -21903,7 +22059,8 @@
         const boss = VICTORY_EXTRA.boss[key];
         return [name, pct(road), pct(boss)];
       });
-      const blessNames = { maxhp: "最大HP+20", spd: "革靴", gear: "装備", card: "カード", enchant: "エンチャント", play: "皮の手袋" };
+      const blessNames = { maxhp: "最大HP+20", spd: "革靴", gear: "装備", card: "カード", enchant: "エンチャント", play: "皮の手袋", loot: "戦利品" };
+      const blessLoot = LOOT_RELICS.map((item) => item);
       const blessGear = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 2);
       const starterNames = new Set(CARD_POOL.map(([name]) => name));
       const blessCards = Object.keys(COMMON)
@@ -21997,22 +22154,24 @@
           <section class="odds-block">
             <h2>祝福</h2>
             <ul>
-              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。先にレアリティ（★60%、★★30%、★★★10%）です。表は1枠を引く割合です。</li>
+              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。七つは同じ確率です。どれも、3枠に入る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
             </ul>
-            ${oddsTable(["★", "レアリティ", "1枠の割合", "祝福"], rarityRows(BLESS_KINDS.map((kind) => ({ name: blessNames[kind.id], stars: kind.stars }))))}
+            ${oddsTable(["祝福", "3枠に入る割合"], BLESS_KINDS.map((kind) => [blessNames[kind.id], pct(3 / BLESS_KINDS.length)]))}
             <ul>
-              <li>エンチャントは、上の属性の重みで一つ出ます。光が少し出にくいです。</li>
+              <li>エンチャントは、付けられる火・水・光・闇が同じ確率です。</li>
               <li>選ぶと、もらったエンチャントのポップと、デッキのカードが出ます。一つ決めて決定します。</li>
               <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
-            <h3>装備（★2以上・先にレアリティ）</h3>
-            ${oddsTable(["★", "レアリティ", "1つの割合", "装備"], rarityRows(blessGear))}
-            <h3>カード（★2以上・先にレアリティ）</h3>
-            ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(blessCards.map((name) => {
+            <h3>戦利品（ボスを除く・未入手から同じ確率）</h3>
+            ${oddsTable(["戦利品", "★", "割合"], blessLoot.map((item) => [item.name, "★".repeat(item.stars), pct(1 / blessLoot.length)]))}
+            <h3>装備（★2以上・同じ確率）</h3>
+            ${oddsTable(["装備", "★", "割合"], blessGear.map((item) => [item.name, "★".repeat(item.stars), pct(1 / blessGear.length)]))}
+            <h3>カード（★2以上・同じ確率）</h3>
+            ${oddsTable(["カード", "★", "割合"], blessCards.map((name) => {
               const def = COMMON[name] || WARRIOR[name] || {};
-              return { name, stars: Number(def.stars) || 1 };
-            })))}
+              return [name, "★".repeat(Number(def.stars) || 1), pct(1 / blessCards.length)];
+            }))}
           </section>
           <section class="odds-block">
             <h2>そのほか</h2>
@@ -22136,7 +22295,6 @@
         : "";
       return `
         <div class="cast-on-stats">
-          <p class="cast-stat-caption">初期ステータス</p>
           <div class="cast-stat-board cast-vitals" aria-label="初期ステータス">
             <div class="hp-line stat-hp"><span class="lbl">${heartIcon()}HP</span><span class="num"><b>50</b></span></div>
             <div class="hp-line stat-atk"><span class="lbl">${swordIcon()}ATK</span><span class="num"><b>0</b></span></div>
@@ -22568,6 +22726,32 @@
       });
     }
 
+    function hideRelicZoom() {
+      const pop = root.querySelector(".relic-zoom");
+      if (pop) pop.remove();
+      root.querySelectorAll(".gear-slot.relic-open").forEach((el) => el.classList.remove("relic-open"));
+    }
+
+    function showRelicZoom(btn) {
+      const id = btn.dataset.loot || btn.dataset.relic || "";
+      const old = root.querySelector(".relic-zoom");
+      if (old && old.dataset.relic === id) {
+        hideRelicZoom();
+        return;
+      }
+      hideRelicZoom();
+      const img = btn.querySelector("img");
+      const src = img && img.getAttribute("src");
+      if (!src) return;
+      const title = btn.getAttribute("aria-label") || "戦利品";
+      const pop = document.createElement("div");
+      pop.className = "relic-zoom";
+      pop.dataset.relic = id;
+      pop.innerHTML = `<img src="${esc(src)}" alt="${esc(title)}">`;
+      root.appendChild(pop);
+      btn.classList.add("relic-open");
+    }
+
     function showFoePlayZoom(play) {
       const cards = [...document.querySelectorAll(".play-side.foe .play-card")];
       const key = String(cards.indexOf(play));
@@ -22922,7 +23106,7 @@
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
               ${sheetFig("girl-demon-half-battle.png?v=2", "半悪魔化の戦闘", "cut-ref")}
-              ${sheetFig("girl-demon-full-battle.png?v=2", "完全悪魔化の戦闘", "cut-ref")}
+              ${sheetFig("girl-demon-full-battle.png?v=3", "完全悪魔化の戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
@@ -22947,8 +23131,8 @@
               ${sheetFig("path-boss.jpg?v=4", "ボス戦", "", "path-series")}
               ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
               ${sheetFig("path-shop.jpg?v=13", "お店")}
-              ${sheetFig("path-rest.jpg?v=3", "休憩")}
-              ${sheetFig("path-lost.jpg?v=11", "迷子")}
+              ${sheetFig("path-rest.jpg?v=4", "休憩")}
+              ${sheetFig("path-lost.jpg?v=12", "迷子")}
               ${sheetFig("path-job.jpg?v=8", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=9", "遭遇")}
               ${sheetFig("path-train.jpg?v=5", "修行")}
@@ -23388,7 +23572,7 @@
           if (lv) blessLevels.push(lv);
           const card = pick.kind === "card" && pick.card
             ? pick.card
-            : pick.kind === "gear"
+            : (pick.kind === "gear" || pick.kind === "loot")
               ? gearAsCard(pick.gear)
               : boonAsCard(pick.kind, pick.elem);
           if (pick.kind === "play") card.text = playGloveBody(playAreaMax());
@@ -24275,6 +24459,13 @@
       const room = Math.max(0, who.maxHp - who.hp);
       const gain = Math.max(0, Math.min(Math.floor(Number(amount) || 0), room));
       who.hp += gain;
+      return gain;
+    }
+
+    function noteHeal(bag, gain) {
+      const n = Math.max(0, Number(gain) || 0);
+      if (!n || !bag) return;
+      bag.heal = (Number(bag.heal) || 0) + n;
     }
 
     function scratchGainParry(who, add) {
@@ -24468,7 +24659,7 @@
 
     function forecastBag(bag) {
       if (!bag) return null;
-      if (bag.show || bag.shield > 0 || bag.status > 0 || bag.lethal) return bag;
+      if (bag.show || bag.shield > 0 || bag.status > 0 || bag.lethal || bag.heal > 0) return bag;
       return null;
     }
 
@@ -24478,11 +24669,13 @@
       const burn = Number(card.burn) || 0;
       const poison = !card.damage && card.poison ? (Number(card.poison) || 0) : 0;
       const gainingParry = !!(card.parry || card.parryAdd || card.poise);
+      const healed = card.heal ? scratchHeal(foe, card.heal) : 0;
       const shield = !card.damage && card.block && !(foe.parry > 0) && !gainingParry
         ? halfBraced(card, foe, Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)))
         : 0;
-      if (!thorns && !burn && !poison && !shield && !gainingParry) return bag;
+      if (!thorns && !burn && !poison && !shield && !gainingParry && !healed) return bag;
       if (!bag) bag = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0, poison: 0, burn: 0, thorns: 0 };
+      if (healed) bag.heal = (bag.heal || 0) + healed;
       bag.poison = (bag.poison || 0) + poison;
       bag.burn = (bag.burn || 0) + burn;
       bag.thorns = (bag.thorns || 0) + thorns;
@@ -24539,7 +24732,7 @@
       if (card.masterOnce) {
         if (mine.masterOnce) return;
         mine.masterOnce = true;
-        scratchHeal(mine, card.heal || 10);
+        noteHeal(give, scratchHeal(mine, card.heal || 10));
         scratchGainParry(mine, 1);
         return;
       }
@@ -24590,7 +24783,7 @@
         return;
       }
       if (card.poison && !card.damage && !card.block && !card.heal && !card.draw) scratchPoisonFoe(foe, give, card.poison);
-      if (card.heal) scratchHeal(mine, card.heal);
+      if (card.heal) noteHeal(give, scratchHeal(mine, card.heal));
       if (!card.damage && !card.block && !card.burn && (card.heal || card.draw || (card.poison && !card.parry))) return;
       if (card.redTimes) {
         const reds = queue.filter((item) => cardKind(item) === "attack").length;
@@ -24722,7 +24915,7 @@
     }
 
     function forecastChip(kind, amount, lethal) {
-      const label = kind === "shield" ? "シールド" : kind === "status" ? "状態異常" : kind === "poison" ? "毒" : "ダメージ";
+      const label = kind === "shield" ? "シールド" : kind === "status" ? "状態異常" : kind === "poison" ? "毒" : kind === "heal" ? "回復" : "ダメージ";
       const n = Math.max(0, Math.round(Number(amount) || 0));
       const skull = lethal ? `<span class="skull" aria-hidden="true">💀</span>` : "";
       return `<div class="forecast ${kind}${lethal ? " lethal" : ""}" aria-label="${label} ${n}${lethal ? " 止め" : ""}"><em>${label}</em><b>${n}</b>${skull}</div>`;
@@ -24746,6 +24939,7 @@
       const poisonKills = !!bag.lethal && poisonRaw > 0 && otherHp <= 0;
       if (otherRaw > 0 || ((bag.show || bag.lethal) && !poisonRaw)) chips.push(forecastChip("damage", otherHp, !!bag.lethal && !poisonKills));
       if (poisonRaw > 0) chips.push(forecastChip("poison", poisonHp, poisonKills));
+      if (bag.heal > 0) chips.push(forecastChip("heal", bag.heal));
       if (bag.shield > 0) chips.push(forecastChip("shield", bag.shield));
       const icons = foe ? forecastStatusIcons(bag) : [];
       if (icons.length) chips.push(icons.join(""));
@@ -25186,13 +25380,13 @@
     }
 
     const PATHS = {
-      camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=3" },
+      camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=4" },
       straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=5" },
       boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=4" },
       search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=13" },
       beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=6" },
       shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=13" },
-      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
+      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=12" },
       smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=1" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
@@ -25418,12 +25612,16 @@
         .map((name) => ({ ...keepCard({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }), source: "共通" }));
       list.push(...classCards().filter((card) => !basicCardName(card.name)));
       const seen = new Set();
-      for (const card of enemyNow().pattern) {
+      const foe = enemyNow();
+      for (const card of foe.pattern) {
         if (!card || basicCardName(card.name)) continue;
         const reward = playerCopy(card);
         if (basicCardName(reward.name) || seen.has(reward.name)) continue;
         seen.add(reward.name);
         list.push(reward);
+      }
+      if (usesDragonRage(foe.name) && !seen.has("竜の怒り")) {
+        list.push(playerCopy(dragonRageCard()));
       }
       return list.filter((card) => !basicCardName(card.name));
     }
@@ -27397,6 +27595,7 @@
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
       const healNow = fxHeal;
+      const foeHealNow = fxFoeHeal;
       const buffNow = fxBuff;
       const foeBuffNow = fxFoeBuff;
       const hitNow = fxHit;
@@ -27434,6 +27633,7 @@
       fxFatal = false;
       fxGuard = "";
       fxHeal = 0;
+      fxFoeHeal = 0;
       fxBuff = false;
       fxFoeBuff = false;
       fxHit = null;
@@ -27448,6 +27648,8 @@
       const foeThreat = cast.give && cast.give.hp > 0 ? cast.give.hp : 0;
       const breakFoeShield = Boolean(cast.breakShield);
       const mineThreat = cast.take && cast.take.hp > 0 ? cast.take.hp : 0;
+      const mineHeal = cast.give && cast.give.heal > 0 ? cast.give.heal : 0;
+      const foeHeal = cast.take && cast.take.heal > 0 ? cast.take.heal : 0;
       root.innerHTML = `
         <div class="battle-screen${showLog ? "" : " no-log"}${phoneLogOpen ? " log-open" : ""}${noManaNow ? " no-mana" : ""}${fatalNow ? " fatal" : ""}${pathPick ? " path-pick" : ""}${rewarding ? " rewarding" : ""}">
         <div class="game">
@@ -27466,10 +27668,10 @@
           <div class="stage">
             <div class="enemy-field">
             <div class="hero-stack">
-            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: playerSpd(), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
+            ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, heal: mineHeal, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: playerSpd(), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             </div>
             <div class="foe-stack">
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, parry: parryCount(enemy), parryFlash: parryEnemyNow, parryFromShield: parryEnemyFromNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, parry: parryCount(enemy), parryFlash: parryEnemyNow, parryFromShield: parryEnemyFromNow, threat: foeThreat, heal: foeHeal, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             ${traitNote()}
             </div>
             <div class="duel-side ally">
@@ -27486,11 +27688,12 @@
             <div class="duel-side foe">
               <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}"${floorCall || encounter ? "" : ` data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る"`}>
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${parryEnemyNow || parryEnemyHoldNow ? " spark-gold" : ""}${parryEnemyHoldNow ? " parry-hold" : ""}${foeBuffNow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${parryEnemyNow || parryEnemyHoldNow ? " spark-gold" : ""}${parryEnemyHoldNow ? " parry-hold" : ""}${foeBuffNow ? " anger" : ""}${foeHealNow ? " healed" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">${slashNow ? foeHitWash(enemy.image) : ""}` : `<span class="foe-blank" aria-hidden="true"></span>`}
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
+                ${foeHealNow ? healFxHtml(foeHealNow) : ""}
                 ${shieldEnemyNow ? wardFxHtml(false) : ""}
                 ${parryEnemyNow || parryEnemyHoldNow ? wardFxHtml(true) : ""}
                 ${foeBuffNow ? angerFxHtml() : ""}
@@ -27717,6 +27920,7 @@
         handEl.style.setProperty("--overlap", `${base}px`);
         syncPiles();
         applyHandArc(handEl);
+        nudgeHand(handEl);
         return;
       }
       const n = cards.length;
@@ -27732,6 +27936,7 @@
         handEl.style.setProperty("--overlap", `${base}px`);
         syncPiles();
         applyHandArc(handEl);
+        nudgeHand(handEl);
         return;
       }
       const fitW = avail - (n - 1) * minStep;
@@ -27747,7 +27952,29 @@
       handEl.style.setProperty("--overlap", `${Math.round(overlap * 10) / 10}px`);
       syncPiles();
       applyHandArc(handEl);
+      nudgeHand(handEl);
     }
+
+    function nudgeHand(handEl) {
+      const arena = document.querySelector(".battle-screen .battle-bands");
+      const cards = [...handEl.querySelectorAll(".card")];
+      if (!arena || cards.length < 1) {
+        handEl.style.setProperty("--hand-nudge", "0px");
+        return;
+      }
+      const arenaBox = arena.getBoundingClientRect();
+      if (arenaBox.width < 8) return;
+      const midIndex = (cards.length - 1) / 2;
+      const leftCard = cards[Math.floor(midIndex)].getBoundingClientRect();
+      const rightCard = cards[Math.ceil(midIndex)].getBoundingClientRect();
+      if (leftCard.width < 1 || rightCard.width < 1) return;
+      const mid = (leftCard.left + leftCard.width / 2 + rightCard.left + rightCard.width / 2) / 2;
+      const target = arenaBox.left + arenaBox.width / 2;
+      const current = parseFloat(handEl.style.getPropertyValue("--hand-nudge")) || 0;
+      const next = Math.round((current + target - mid) * 10) / 10;
+      if (Math.abs(next - current) > 0.5) handEl.style.setProperty("--hand-nudge", `${next}px`);
+    }
+
     let handPopCard = null;
 
     function clearHandPop() {
@@ -27987,6 +28214,12 @@
         root.querySelectorAll(".hud-menu-pop").forEach((box) => { box.hidden = true; });
         root.querySelectorAll(".hud-menu-btn").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
       }
+      const relicBtn = el.closest("[data-loot]");
+      if (relicBtn) {
+        showRelicZoom(relicBtn);
+        return;
+      }
+      if (root.querySelector(".relic-zoom")) hideRelicZoom();
       const foePlay = el.closest(".battle-screen .play-side.foe .play-card");
       if (foePlay && !foePlay.classList.contains("await-draw")) {
         event.stopPropagation();
@@ -28433,6 +28666,7 @@
     document.addEventListener("fullscreenchange", paintFullscreenLabels);
     document.addEventListener("webkitfullscreenchange", paintFullscreenLabels);
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && root.querySelector(".relic-zoom")) { hideRelicZoom(); return; }
       if (event.key === "Escape" && fullscreenActive()) return;
       if (event.key === "Escape" && ((screen === "album" && albumZoom) || (screen === "sheet" && sheetZoom))) {
         captureAlbumScroll();
