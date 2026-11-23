@@ -110,6 +110,8 @@
       align-items: stretch;
       gap: 6px;
       pointer-events: none;
+      transform: scale(1.16);
+      transform-origin: top left;
     }
     .hero-stack .battle-plate {
       position: relative;
@@ -370,6 +372,10 @@
       padding: 8px 8px 6px;
       pointer-events: none;
     }
+    .road-floor,
+    .road-name {
+      font-family: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
+    }
     .road-floor {
       flex: 0 0 auto;
       color: #ffe7a4;
@@ -379,13 +385,12 @@
       letter-spacing: 0.04em;
       text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.85);
     }
-    .road-node.now .road-floor { font-size: 42px; }
     .road-name {
       flex: 1 1 auto;
       width: auto;
       min-width: 0;
       overflow: hidden;
-      color: #fff6e4;
+      color: var(--road-line, #e4b15a);
       font-size: 28px;
       font-weight: 900;
       line-height: 1.15;
@@ -394,14 +399,12 @@
       text-overflow: ellipsis;
       text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.8);
     }
-    .road-node.now .road-name { font-size: 32px; }
-    .road-node.done .road-name { color: rgba(255, 246, 228, 0.88); }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
       position: relative;
       z-index: 40;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
       column-gap: 12px;
       min-width: 0;
@@ -464,9 +467,12 @@
     }
     .hud-gear {
       grid-column: 2;
-      justify-self: center;
+      justify-self: stretch;
+      display: flex;
+      justify-content: center;
       min-width: 0;
-      max-width: min(980px, 48cqw);
+      width: 100%;
+      max-width: none;
       pointer-events: auto;
     }
     .hud-gear .gear-board {
@@ -476,7 +482,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      width: auto;
+      width: max-content;
       max-width: 100%;
       height: auto;
       overflow-x: auto;
@@ -796,7 +802,8 @@
       line-height: 1;
       letter-spacing: 0;
     }
-    .forecast.damage.lethal {
+    .forecast.damage.lethal,
+    .forecast.poison.lethal {
       box-shadow:
         inset 0 0 0 2px #ffe0b0,
         0 0 10px rgba(255, 176, 64, 0.9),
@@ -827,6 +834,11 @@
       color: #f7ecff;
       background: rgba(36, 16, 48, 0.92);
       box-shadow: inset 0 0 0 2px rgba(196, 140, 220, 0.9);
+    }
+    .forecast.poison {
+      color: #f6ecff;
+      background: rgba(48, 16, 72, 0.94);
+      box-shadow: inset 0 0 0 2px rgba(186, 120, 230, 0.92);
     }
     .forecasts .status-chip {
       height: 42px;
@@ -1903,8 +1915,8 @@
       height: 80px;
       flex: 0 0 auto;
       display: block;
-      border-radius: 0;
-      background: url("mana-orb.png?v=2") center / contain no-repeat;
+      border-radius: 50%;
+      background: none;
       box-shadow: none;
     }
     .reward-pick {
@@ -2317,6 +2329,69 @@
       --lit-near-hot-s: 4px;
       --lit-far-hot-r: 36px;
       --lit-far-hot-s: 8px;
+    }
+    /* 祝福の報酬は、勝利報酬の金銀より光を一回り大きく。★は銅、★★は銀、★★★以上は金 */
+    .menu.event.bless .gift-btn.rare-1 {
+      --rare: rgba(205, 122, 52, 0.95);
+      --lit-line: #e4b07a;
+      --lit-hot: #f6d2b0;
+      --lit-near: rgba(205, 122, 52, 0.92);
+      --lit-near-hot: rgba(224, 142, 68, 0.98);
+      --lit-far: rgba(150, 78, 28, 0.48);
+      --lit-far-hot: rgba(176, 96, 36, 0.66);
+      --lit-near-r: 10px;
+      --lit-near-s: 2px;
+      --lit-far-r: 20px;
+      --lit-far-s: 4px;
+      --lit-near-hot-r: 22px;
+      --lit-near-hot-s: 5px;
+      --lit-far-hot-r: 40px;
+      --lit-far-hot-s: 9px;
+    }
+    .menu.event.bless .gift-btn.rare-2 {
+      --lit-line: #e7eef6;
+      --lit-hot: #ffffff;
+      --lit-near: rgba(214, 224, 236, 0.9);
+      --lit-near-hot: rgba(238, 244, 252, 0.98);
+      --lit-far: rgba(156, 172, 192, 0.52);
+      --lit-far-hot: rgba(186, 200, 218, 0.74);
+      --lit-near-r: 10px;
+      --lit-near-s: 2px;
+      --lit-far-r: 20px;
+      --lit-far-s: 4px;
+      --lit-near-hot-r: 22px;
+      --lit-near-hot-s: 5px;
+      --lit-far-hot-r: 40px;
+      --lit-far-hot-s: 9px;
+    }
+    .menu.event.bless .gift-btn.rare-3,
+    .menu.event.bless .gift-btn.rare-4,
+    .menu.event.bless .gift-btn.rare-5 {
+      --lit-line: #ffe7a0;
+      --lit-hot: #fff8dc;
+      --lit-near: rgba(255, 226, 130, 0.72);
+      --lit-near-hot: rgba(255, 248, 210, 0.82);
+      --lit-far: rgba(255, 176, 40, 0.42);
+      --lit-far-hot: rgba(255, 190, 48, 0.58);
+      --lit-near-r: 12px;
+      --lit-near-s: 3px;
+      --lit-far-r: 24px;
+      --lit-far-s: 5px;
+      --lit-near-hot-r: 26px;
+      --lit-near-hot-s: 6px;
+      --lit-far-hot-r: 48px;
+      --lit-far-hot-s: 11px;
+    }
+    .menu.event.bless .gift-btn.rare-4,
+    .menu.event.bless .gift-btn.rare-5 {
+      --lit-near-r: 13px;
+      --lit-near-s: 3px;
+      --lit-far-r: 26px;
+      --lit-far-s: 5px;
+      --lit-near-hot-r: 28px;
+      --lit-near-hot-s: 6px;
+      --lit-far-hot-r: 54px;
+      --lit-far-hot-s: 12px;
     }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
@@ -2732,8 +2807,9 @@
     }
     .enchant-pick:not(.smith-fuse) .enchant-body {
       flex: 1 1 auto;
-      grid-template-columns: minmax(0, 1fr) minmax(440px, 48%);
+      grid-template-columns: minmax(0, 1fr) auto;
       grid-template-rows: minmax(0, 1fr);
+      align-items: start;
       min-height: 0;
       overflow: hidden;
     }
@@ -2748,11 +2824,15 @@
     .enchant-pick:not(.smith-fuse) .enchant-actions {
       flex: 0 0 auto;
     }
+    .enchant-pick:not(.smith-fuse) .deck-lead {
+      margin-bottom: 0;
+    }
     .enchant-pick:not(.smith-fuse) .deck-scroll {
       flex: 1 1 auto;
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
+      padding: 36px 16px 10px;
     }
     .enchant-pick .enchant-compare {
       min-width: 0;
@@ -2763,13 +2843,14 @@
       gap: 6px;
     }
     .enchant-pick:not(.smith-fuse) .enchant-compare {
+      width: 172px;
       height: auto;
       min-height: 0;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      align-content: stretch;
+      align-items: center;
+      align-content: start;
       gap: 8px;
     }
     .enchant-pick .compare-arrow {
@@ -2803,11 +2884,28 @@
       letter-spacing: 0.08em;
       color: #ffe7a8;
     }
+    .enchant-pick:not(.smith-fuse) .compare-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .enchant-pick:not(.smith-fuse) .compare-label {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      color: #ffe7a8;
+      white-space: nowrap;
+    }
     .enchant-pick:not(.smith-fuse) .compare-slot {
-      flex: 1 1 0;
+      flex: 0 0 auto;
       width: 100%;
       height: auto;
       min-height: 0;
+      padding: 6px;
     }
     .enchant-pick .compare-face {
       flex: 0 0 auto;
@@ -2818,13 +2916,15 @@
       justify-content: center;
     }
     .enchant-pick:not(.smith-fuse) .compare-face {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
+      width: 148px;
+      height: auto;
       min-height: 0;
-      container-type: size;
     }
     .enchant-pick:not(.smith-fuse) .compare-well {
-      width: min(100cqw, calc(100cqh * 0.75));
-      height: min(100cqh, calc(100cqw * 4 / 3));
+      width: 148px;
+      height: calc(148px * 4 / 3);
+      aspect-ratio: 3 / 4;
       background: #14110e;
       border-radius: 10px;
       box-shadow: inset 0 0 0 2px rgba(228, 194, 122, 0.75);
@@ -2857,6 +2957,44 @@
       justify-content: center;
       gap: 16px;
       margin-top: 12px;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-actions {
+      gap: 18px;
+      margin-top: 16px;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-actions > button {
+      min-width: 220px;
+      min-height: 88px;
+      padding: 16px 36px;
+      border-radius: 999px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-actions > button:not(.primary) {
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      background: linear-gradient(180deg, #4a3424 0%, #2a1c14 55%, #1a100c 100%);
+      color: #ffe7a8;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-actions > button.primary {
+      border: 2px solid #ffd28a;
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(255, 70, 10, 0.95) 0%, transparent 58%),
+        linear-gradient(180deg, #fff0b8 0%, #ffc45a 28%, #f07820 68%, #a02808 100%);
+      color: #2a1008;
+      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 4px rgba(255, 170, 70, 0.35),
+        0 0 28px rgba(255, 110, 30, 0.72),
+        0 12px 26px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+    }
+    .enchant-pick:not(.smith-fuse) .enchant-actions > button.primary:disabled {
+      filter: grayscale(0.45) brightness(0.62);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
     }
     .enchant-pick .enchant-got,
     .enchant-pick .elem-row {
@@ -4442,8 +4580,10 @@
     }
     .hero-shoulder.healed .hero-fig { animation: heal-glow 1.55s ease-out both; }
     .hero-shoulder.ward:not(.spark-gold):not(.blunt):not(.held):not(.healed) .hero-fig,
-    .sprite.ward img { animation: guard-rim 1.45s ease-out both; }
-    .hero-shoulder.ward.spark-gold:not(.blunt):not(.held):not(.healed) .hero-fig { animation: parry-rim 1.45s ease-out both; }
+    .sprite.ward:not(.spark-gold):not(.parry-hold) img { animation: guard-rim 1.45s ease-out both; }
+    .hero-shoulder.ward.spark-gold:not(.blunt):not(.held):not(.healed) .hero-fig,
+    .sprite.spark-gold img,
+    .sprite.parry-hold img { animation: parry-rim 1.45s ease-out both; }
     .hero-hit.ward {
       position: absolute;
       inset: 0;
@@ -4881,38 +5021,40 @@
       filter: none;
     }
     .mana-read b {
-      width: 80px;
-      height: 80px;
+      position: relative;
+      width: 52px;
+      height: 78px;
       flex: 0 0 auto;
       display: block;
       border-radius: 0;
-      background: url("mana-orb.png?v=2") center / contain no-repeat;
+      background: none center / contain no-repeat;
       box-shadow: none;
+      --mana-gem: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'%3E%3Cpolygon points='32,3 58,28 48,68 32,93 16,68 6,28' fill='%23f0c14a' stroke='%236a3c0c' stroke-width='3' stroke-linejoin='round'/%3E%3Cpolygon points='32,3 58,28 32,40 6,28' fill='%23fff4c4'/%3E%3Cpolygon points='32,40 58,28 48,68 32,78' fill='%23c88820' opacity='.72'/%3E%3Cpolygon points='32,40 6,28 16,68 32,78' fill='%23ffe08a' opacity='.5'/%3E%3C/svg%3E");
+      --mana-empty: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'%3E%3Cpolygon points='32,5 56,28 47,67 32,91 17,67 8,28' fill='none' stroke='%23e4b15a' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --mana-surge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'%3E%3Cpolygon points='32,3 58,28 48,68 32,93 16,68 6,28' fill='%233ec6ea' stroke='%230c4a66' stroke-width='3' stroke-linejoin='round'/%3E%3Cpolygon points='32,3 58,28 32,40 6,28' fill='%23e7fbff'/%3E%3Cpolygon points='32,40 58,28 48,68 32,78' fill='%231a7ea0' opacity='.72'/%3E%3Cpolygon points='32,40 6,28 16,68 32,78' fill='%237ad4f0' opacity='.55'/%3E%3C/svg%3E");
+      --mana-surge-empty: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'%3E%3Cpolygon points='32,5 56,28 47,67 32,91 17,67 8,28' fill='none' stroke='%237ad4f0' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
     .mana-read b.live {
-      transform-origin: 50% 78%;
-      animation: mana-flicker 1.15s ease-in-out infinite;
-      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+      background-image: var(--mana-gem);
+      filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.4));
+      animation: mana-glow 1.6s ease-in-out infinite;
     }
-    .mana-read b.live:nth-child(2n) { animation-duration: 1.38s; animation-delay: -0.42s; }
-    .mana-read b.live:nth-child(3n) { animation-duration: 0.96s; animation-delay: -0.73s; }
-    .mana-read b.carry {
-      filter:
-        drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35))
-        drop-shadow(0 0 4px rgba(140, 190, 255, 0.5));
+    .mana-read b.live:nth-child(2n) { animation-duration: 1.9s; animation-delay: -0.5s; }
+    .mana-read b.live:nth-child(3n) { animation-duration: 1.35s; animation-delay: -0.9s; }
+    .mana-read b.live.surge {
+      background-image: var(--mana-surge);
+      filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.4));
     }
     .mana-read b.spent {
-      border-radius: 50%;
-      background: none;
-      box-shadow:
-        inset 0 0 0 2px #f0d078,
-        inset 0 0 0 3px #6a4410;
+      background-image: var(--mana-empty);
+      box-shadow: none;
       filter: none;
+      animation: none;
     }
-    @keyframes mana-flicker {
-      0%, 100% { transform: scaleX(1) scaleY(1) translateY(0); }
-      38% { transform: scaleX(0.94) scaleY(1.08) translateY(-3px); }
-      70% { transform: scaleX(1.06) scaleY(0.93) translateY(1px); }
+    .mana-read b.spent.surge { background-image: var(--mana-surge-empty); }
+    @keyframes mana-glow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.16); }
     }
     .handbar {
       width: 100%;
@@ -4925,7 +5067,7 @@
       gap: 10px;
       overflow: visible;
       margin-top: 0;
-      padding: 8px 8px 14px;
+      padding: 8px 8px 0;
       box-sizing: border-box;
       position: relative;
       z-index: 8;
@@ -5032,6 +5174,7 @@
       padding: 6px 8px 0;
       overflow: visible;
       margin-bottom: 0;
+      transform: translateY(40px);
     }
     .battle-log {
       min-width: 0;
@@ -5339,6 +5482,7 @@
       gap: 8px;
       width: max-content;
       max-width: 100%;
+      margin: 0 auto;
       overflow-x: auto;
       overflow-y: hidden;
     }
@@ -6676,9 +6820,16 @@
     .battle-screen.path-pick .field-note {
       visibility: hidden;
     }
-    .battle-screen.rewarding .ally-piles,
     .battle-screen.rewarding .foe-piles {
       visibility: hidden;
+    }
+    .pile.swallow .pile-card {
+      animation: deck-swallow 0.38s ease-out;
+    }
+    @keyframes deck-swallow {
+      0% { transform: scale(1); filter: brightness(1); }
+      35% { transform: scale(1.08); filter: brightness(1.45); }
+      100% { transform: scale(1); filter: brightness(1); }
     }
     @keyframes path-pop {
       0% { opacity: 0; transform: translateY(46px) scale(0.82); }
@@ -6993,6 +7144,33 @@
     .overlay p { margin: 0 0 16px; color: var(--muted); }
     .overlay.victory {
       background: transparent;
+    }
+    /* 報酬の板は、左のステータスと下の山札に被せない */
+    .overlay.victory:not(.finale) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 36px 28px 720px;
+      pointer-events: none;
+    }
+    .overlay.victory:not(.finale) .panel,
+    .overlay.victory:not(.finale) .panel * {
+      pointer-events: auto;
+    }
+    .overlay.victory:not(.finale) .panel.wide.reward-panel {
+      width: min(1400px, 100%);
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .overlay.victory:not(.finale) .win-head {
+      flex-wrap: wrap;
+      row-gap: 6px;
+      font-size: 48px;
+    }
+    .overlay.victory:not(.finale) .win-head .reward-lead,
+    .overlay.victory:not(.finale) .win-head .reward-lead.drop {
+      white-space: normal;
+      font-size: 26px;
     }
     .overlay.victory .panel {
       position: relative;
@@ -7360,6 +7538,12 @@
       align-items: center;
       min-height: 72px;
     }
+    .win-star-dock.gone {
+      min-height: 0;
+      width: 0;
+      margin: 0;
+      overflow: hidden;
+    }
     .win-star-dock .fly-star {
       position: relative;
       left: auto;
@@ -7496,6 +7680,24 @@
       color: #fff8e6;
       text-shadow: 0 0 12px #ffe7a8;
     }
+    .path-tip {
+      position: fixed;
+      z-index: 1000;
+      width: max-content;
+      max-width: min(280px, calc(100cqw - 16px));
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(228, 177, 90, 0.9);
+      background: linear-gradient(180deg, #2a2019, #140f0c);
+      color: #f6e2b6;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.45;
+      pointer-events: none;
+      box-shadow: 0 0 0 3px #15100d, 0 14px 26px rgba(0, 0, 0, 0.6);
+    }
+    .path-tip[hidden] { display: none; }
+    .path-tip .path-sub { display: block; margin-top: 4px; color: #fff6e4; font-weight: 800; }
     .overlay.paths .path-list button {
       container-type: inline-size;
       display: flex;
@@ -7605,6 +7807,7 @@
     }
     .overlay.paths .path-node {
       --step-line: #e4b15a;
+      --road-line: var(--step-line);
       position: relative;
       display: flex;
       flex-direction: column;
@@ -9286,8 +9489,39 @@
       min-width: 0;
       align-self: center;
       min-height: 52px;
+      padding: 0 28px;
       white-space: nowrap;
       font-size: clamp(18px, 1.4cqw, 24px);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      border-radius: 999px;
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      background: rgba(18, 14, 12, 0.92);
+      color: var(--cream);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+    }
+    .menu.event.beggar .event-actions button.primary {
+      border-color: #ffd28a;
+      color: #2a1008;
+      text-shadow: 0 1px 0 rgba(255, 245, 210, 0.7);
+      background:
+        radial-gradient(120% 160% at 50% 120%, rgba(255, 70, 10, 0.95) 0%, transparent 58%),
+        linear-gradient(180deg, #fff0b8 0%, #ffc45a 28%, #f07820 68%, #a02808 100%);
+      box-shadow:
+        0 0 0 2px rgba(40, 12, 6, 0.92),
+        0 0 0 4px rgba(255, 170, 70, 0.35),
+        0 0 28px rgba(255, 110, 30, 0.72),
+        0 12px 26px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -10px 18px rgba(160, 30, 0, 0.35);
+      animation: decide-glow 1.15s ease-in-out infinite;
+    }
+    .menu.event.beggar .event-actions button.primary:disabled {
+      opacity: 1;
+      filter: grayscale(0.45) brightness(0.62);
+      animation: none;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+      cursor: default;
     }
     .menu.event.smith-quiet .event-title,
     .menu.event.smith-quiet .event-title-gap,
@@ -9895,7 +10129,7 @@
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
     .scene-fade.scene-fade-floor i { transition-duration: 0.14s; }
-    .scene-fade.scene-fade-floor.out i { transition-duration: 0.16s; }
+    .scene-fade.scene-fade-floor.out i { transition-duration: 0.7s; }
     .scene-fade .scene-floor {
       position: fixed;
       z-index: 2;
@@ -9908,6 +10142,12 @@
     }
     .scene-fade.in .scene-floor { opacity: 1; }
     .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.16s; }
+    .scene-fade.scene-fade-floor.out .scene-floor { transition-duration: 0.7s; }
+    .scene-cross { animation: scene-cross 0.7s ease both; }
+    @keyframes scene-cross {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
     .scene-fade .scene-floor b {
       font-weight: 900;
       letter-spacing: 0.06em;
@@ -10498,13 +10738,13 @@
       pointer-events: none;
     }
     .cast-screen.character-focus .cast-on-stats {
-      top: 10px;
-      left: 10px;
+      top: 22px;
+      left: 22px;
       display: flex;
       flex-direction: column;
       align-items: stretch;
       width: max-content;
-      max-width: calc(100% - 20px);
+      max-width: calc(100% - 44px);
     }
     .cast-screen.character-focus .cast-on-stats .cast-stat-caption {
       margin: 0 0 6px;
@@ -11862,6 +12102,8 @@
       .hero-shoulder.parry-hold .hero-fig,
       .hero-shoulder.ward .hero-fig,
       .sprite.ward img,
+      .sprite.spark-gold img,
+      .sprite.parry-hold img,
       .hero-hit.ward .mark,
       .hero-hit.status-ward .halo,
       .hero-hit.status-ward .ward-word,
@@ -12000,7 +12242,7 @@
       max-width: 100%;
       justify-self: stretch;
     }
-    html.phone .hud-gear .gear-board { justify-content: flex-start; }
+    html.phone .hud-gear .gear-board { justify-content: center; }
     html.phone .hud-gear .gear-slot,
     html.phone .hud-gear .gear-frame { width: 44px; height: 44px; flex-basis: 44px; max-width: 44px; }
     html.phone .dungeon { grid-area: dungeon; }
@@ -12011,7 +12253,7 @@
     html.phone .dungeon-name { font-size: 28px; letter-spacing: 0.06em; }
     html.phone .dungeon-progress { font-size: 20px; }
     html.phone .hud-actions { flex-wrap: wrap; justify-content: flex-end; }
-    html.phone .hero-stack { top: 4px; width: min(168px, 46%); }
+    html.phone .hero-stack { top: 4px; width: min(168px, 46%); transform: none; }
     html.phone .event-gear .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
     html.phone .event-gear .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
     html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
@@ -12029,7 +12271,8 @@
     html.phone .battle-plate .hp-line.stat-mana .lbl,
     html.phone .battle-plate .hp-line.stat-star .lbl { font-size: 10px; }
     html.phone .battle-plate .shield-badge { width: 48px; height: 64px; top: -4px; }
-    html.phone .handbar { padding: 4px 4px 6px; gap: 4px; }
+    html.phone .handbar { padding: 4px 4px 0; gap: 4px; }
+    html.phone .hand { transform: translateY(18px); }
     html.phone .handbar .end,
     html.phone .end {
       width: 108px;
@@ -12045,8 +12288,8 @@
       border-width: 2px;
     }
     html.phone .mana-read { width: auto; height: auto; gap: 2px; }
-    html.phone .mana-read b { width: 48px; height: 48px; }
-    html.phone .mana-read b.spent { box-shadow: inset 0 0 0 2px #f0d078, inset 0 0 0 3px #6a4410; }
+    html.phone .mana-read b { width: 34px; height: 50px; }
+    html.phone .mana-read b.spent { box-shadow: none; }
     html.phone .mana-orb { width: 30px; height: 100%; max-height: 42px; margin: 0; }
     html.phone .forecast { font-size: 11px; padding: 3px 7px; gap: 3px; margin: 0 3px; }
     html.phone .forecast b { font-size: 16px; }
@@ -12128,8 +12371,8 @@
       max-height: 58%;
     }
     html.phone.land .mana-read { width: auto; height: auto; gap: 1px; }
-    html.phone.land .mana-read b { width: 36px; height: 36px; }
-    html.phone.land .mana-read b.spent { box-shadow: inset 0 0 0 1px #f0d078, inset 0 0 0 2px #6a4410; }
+    html.phone.land .mana-read b { width: 26px; height: 40px; }
+    html.phone.land .mana-read b.spent { box-shadow: none; }
     html.phone.land .mana-orb { width: 28px; height: 100%; max-height: 40px; margin: 0; }
     html.phone.land .hand .card,
     html.phone.land .hand .card:hover {
@@ -12206,6 +12449,7 @@
       魔剣封印: "card-demon-seal-g.jpg?v=1",
       血の呼び声: "card-blood-call-c.jpg?v=1",
       血の契約: "card-blood-pact-d.jpg?v=1",
+      呪われた鞘: "card-cursed-sheath-sword.jpg?v=1",
       "悪魔剣・双斬": "card-demon-twin-slash-k.jpg?v=1",
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
@@ -12289,7 +12533,7 @@
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィ+1", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
       ラッキーパリィ: { cost: 1, stars: 1, text: "パリィ+1", parry: true, kind: "block", flash: true, note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
-      捨て身の一撃: { cost: 1, stars: 1, text: "10ダメージ\n次に受けるダメージ+5", damage: 10, kind: "attack", expose: 5 },
+      捨て身の一撃: { cost: 1, stars: 1, text: "10ダメージ\n次に受ける攻撃ダメージ+5", damage: 10, kind: "attack", expose: 5 },
       見切り斬り: { cost: 1, stars: 1, text: "5ダメージ\n前のターンにダメージを受けていないなら追加で3ダメージ", damage: 5, kind: "attack", safeBonus: 3 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "14ダメージ\nパリィ+1", damage: 14, parry: true, kind: "attack" },
       臆病者の構え: { cost: 1, stars: 2, text: "ブロック4\nパリィ中でもシールドを獲得", block: 4, kind: "orange", coward: true },
@@ -12742,14 +12986,19 @@
       }
       document.body.appendChild(veil);
       const fadeIn = showFloor ? 160 : 280;
-      const hold = showFloor ? 520 : 0;
-      const fadeOut = showFloor ? 180 : 440;
+      const hold = showFloor ? 900 : 0;
+      const fadeOut = showFloor ? 700 : 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
         run();
+        const arrive = showFloor
+          ? [...document.querySelectorAll(".battle-screen .battle-bands, .battle-screen .event-stage, .battle-screen .handbar")]
+          : [];
         setTimeout(() => {
+          arrive.forEach((el) => el.classList.add("scene-cross"));
           veil.classList.add("out");
           setTimeout(() => {
+            arrive.forEach((el) => el.classList.remove("scene-cross"));
             if (veil.parentNode) veil.remove();
             if (after) after();
           }, fadeOut);
@@ -12908,6 +13157,9 @@
     let fxShieldEnemy = false;
     let fxParryPlayer = false;
     let fxParryFromShield = false;
+    let fxParryEnemy = false;
+    let fxParryEnemyFromShield = false;
+    let fxParryEnemyHold = false;
     let fxFatal = false;
     let fatalHold = false;
     let lastFoeBlow = null;
@@ -12994,6 +13246,8 @@
     let rewardStars = 0;
     let starBurst = 0;
     let pendingStars = 0; // もらったが、まだステータスの★に吸い込まれていない数
+    let starsHomeSent = false;
+    let starHomeTimer = 0;
 
     function shownStarCount() {
       return Math.max(0, (Number(meta.stars) || 0) - pendingStars);
@@ -13938,7 +14192,7 @@
       return true;
     }
 
-    // 階層が進む黒は短く、階の数字はほんの少し長く残す。明けてから敵が現れる。
+    // 階層が進む黒は短く、階の数字はもう少し長く残す。明けるときは次の画面へクロスフェードし、そのあと敵が現れる。
     function openBattleIntro() {
       const token = ++floorAnnounceToken;
       const eventFight = isEventBattle();
@@ -14250,6 +14504,7 @@
       const file = String(src || "").split("?")[0];
       if (file.endsWith("enemy-goblin.png")) return 0.78;
       if (file.endsWith("enemy-kobold.png")) return 0.64;
+      if (file.endsWith("enemy-kappa.png")) return 0.64;
       return 0.5;
     }
 
@@ -14715,16 +14970,29 @@
       const fromTemp = Math.min(Math.max(0, Number(player.tempEnergy) || 0), left);
       player.tempEnergy = (Number(player.tempEnergy) || 0) - fromTemp;
       left -= fromTemp;
-      player.baseEnergy = Math.max(0, (Number(player.baseEnergy) || 0) - left);
+      const surgeLeft = Math.max(0, Number(player.surgeLeft) || 0);
+      const usualLive = Math.max(0, (Number(player.baseEnergy) || 0) - surgeLeft);
+      const fromUsual = Math.min(usualLive, left);
+      left -= fromUsual;
+      const fromSurge = Math.min(surgeLeft, left);
+      player.surgeLeft = surgeLeft - fromSurge;
+      player.baseEnergy = Math.max(0, (Number(player.baseEnergy) || 0) - fromUsual - fromSurge);
       syncEnergyTotal();
     }
 
     function refundEnergy(cost) {
       let left = Math.max(0, Number(cost) || 0);
-      const room = Math.max(0, (Number(player.baseMax) || 0) - (Number(player.baseEnergy) || 0));
-      const toBase = Math.min(room, left);
-      player.baseEnergy = (Number(player.baseEnergy) || 0) + toBase;
-      left -= toBase;
+      const surgeMax = Math.max(0, Number(player.surgeMax) || 0);
+      const surgeLeft = Math.max(0, Number(player.surgeLeft) || 0);
+      const usualCap = Math.max(0, (Number(player.baseMax) || 0) - surgeMax);
+      const usualLive = Math.max(0, (Number(player.baseEnergy) || 0) - surgeLeft);
+      const toUsual = Math.min(Math.max(0, usualCap - usualLive), left);
+      player.baseEnergy = (Number(player.baseEnergy) || 0) + toUsual;
+      left -= toUsual;
+      const toSurge = Math.min(Math.max(0, surgeMax - surgeLeft), left);
+      player.surgeLeft = surgeLeft + toSurge;
+      player.baseEnergy = (Number(player.baseEnergy) || 0) + toSurge;
+      left -= toSurge;
       if (left > 0) player.tempEnergy = (Number(player.tempEnergy) || 0) + left;
       syncEnergyTotal();
     }
@@ -15843,6 +16111,40 @@
       return true;
     }
 
+    function gainEnemyParry(card, add) {
+      const n = Math.max(1, Number(add) || 1);
+      const hadShield = Math.max(0, Number(enemy.block) || 0);
+      if (hadShield) enemy.block = 0;
+      enemy.parry = parryCount(enemy) + n;
+      fxParryEnemy = true;
+      fxParryEnemyFromShield = hadShield > 0;
+      let detail = enemy.parry > 1 ? `パリィ${enemy.parry}。` : "パリィを得た。次の攻撃を無効。";
+      if (hadShield) detail += `所持していたシールド${hadShield}を失った。`;
+      log(`${enemy.name}は${card && card.name ? card.name : "パリィ"}。${detail}`, card, true);
+    }
+
+    function spendEnemyParry(dealt, card) {
+      const stacks = parryCount(enemy);
+      if (!stacks || !enemy || enemy.hp <= 0) return false;
+      enemy.parry = stacks - 1;
+      fxParryEnemyHold = true;
+      const name = card && card.name ? card.name : "攻撃";
+      log(`${heroName()}は${name}。${enemy.name}はパリィで無効。`, card);
+      if (dealt > 0) {
+        const mineThorns = thornCount(player);
+        if (mineThorns > 0) {
+          const poked = applyDamage(enemy, mineThorns, true);
+          if (poked.hpLoss || poked.blocked) {
+            slashFoe();
+            noteHit("enemy", poked.hpLoss, mineThorns, "blunt");
+          }
+          log(`${heroName()}のトゲ。${enemy.name}に${mineThorns}ダメージ。`);
+        }
+        retaliateThorns(enemy);
+      }
+      return true;
+    }
+
     function gainBlock(amount, card) {
       const bonus = Number(player && player.def) || 0;
       let gain = Math.max(0, (Number(amount) || 0) + bonus);
@@ -15925,14 +16227,7 @@
       const stacks = poisonStacks(target);
       if (!stacks) return false;
       const name = who === "player" ? heroName() : enemy.name;
-      let amount = stacks;
-      if (who === "player") {
-        const extra = Math.max(0, Number(player.expose) || 0);
-        if (extra) {
-          player.expose = 0;
-          amount += extra;
-        }
-      }
+      const amount = stacks;
       const result = applyDamage(target, amount);
       markPoisonApply(target);
       if (who === "player" && result.hpLoss > 0) player.hurtThis = true;
@@ -15990,6 +16285,12 @@
       }
     }
 
+    function incomingAttack(card) {
+      if (!card || card.kind === "skill" || card.kind === "power" || card.kind === "orange" || card.kind === "block") return false;
+      if (card.kind === "attack" || card.press) return true;
+      return !!(card.damage && !card.block);
+    }
+
     function takeEnemyHit(raw, card, crit) {
       const name = card && card.name ? card.name : "攻撃";
       let amount = Math.max(0, Number(raw) || 0);
@@ -16023,7 +16324,7 @@
         }
         return;
       }
-      const extra = Math.max(0, Number(player.expose) || 0);
+      const extra = incomingAttack(card) ? Math.max(0, Number(player.expose) || 0) : 0;
       if (extra) player.expose = 0;
       const dealt = Math.max(0, amount + extra);
       const result = applyDamage(player, dealt);
@@ -16423,6 +16724,10 @@
     function strike(card, amount, crit) {
       let dealt = Math.max(0, amount);
       dealt += relicAttackBonus(card) + relicDamageBonus();
+      if (spendEnemyParry(dealt, card)) {
+        if (phase !== "resolve" && enemy && enemy.hp <= 0 && !outcome) scheduleFinish("win");
+        return;
+      }
       const result = applyDamage(enemy, dealt);
       if (card && card.atkGrow) noteAttackGrow(card, "player");
       if (dealt > 0 && (result.hpLoss || result.blocked)) {
@@ -16570,6 +16875,7 @@
       }
       if (card.itemHit) {
         const dealt = Math.max(0, Number(card.damage) || 0);
+        if (spendEnemyParry(dealt, card)) return true;
         let held = 0;
         if (card.pierce && enemy) {
           held = Math.max(0, Number(enemy.block) || 0);
@@ -16608,6 +16914,8 @@
         if (card.manaNow) {
           player.baseMax = (Number(player.baseMax) || 0) + card.manaNow;
           player.baseEnergy = (Number(player.baseEnergy) || 0) + card.manaNow;
+          player.surgeMax = (Number(player.surgeMax) || 0) + card.manaNow;
+          player.surgeLeft = (Number(player.surgeLeft) || 0) + card.manaNow;
           syncEnergyTotal();
         }
         if (card.areaNow) player.areaBonus = (Number(player.areaBonus) || 0) + card.areaNow;
@@ -17054,7 +17362,7 @@
       }
       if (card.expose) {
         player.expose = (Number(player.expose) || 0) + card.expose;
-        log(`${heroName()}は次に受けるダメージ+${player.expose}。`, card);
+        log(`${heroName()}は次に受ける攻撃ダメージ+${player.expose}。`, card);
       }
       if (card.parry && card.damage) gainParry(card);
       if (card.block) gainBlock(card.block + added, card);
@@ -18001,6 +18309,10 @@
         stealArmed = { card, caster: "enemy" };
         return;
       }
+      if (!card.damage && !card.hits && (card.parry || card.parryAdd || card.poise)) {
+        gainEnemyParry(card, card.parryAdd || 1);
+        if (!card.block && !card.heal && !card.poison && !card.burn) return;
+      }
       if (card.hits && card.damage) {
         const times = Math.max(1, Number(card.hits) || 1);
         const atk = Number(enemy.atk) || 0;
@@ -18018,15 +18330,20 @@
         const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0)));
         takeEnemyHit(rolled.amount, card, rolled.crit);
         noteAttackGrow(card, "enemy");
+        if (card.parry || card.parryAdd) gainEnemyParry(card, card.parryAdd || 1);
       } else if (card.block) {
-        const base = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
-        const rolled = applyCritChance(card, base);
-        const gain = rolled.amount;
-        if (gain) {
-          enemy.block += gain;
-          fxShieldEnemy = true;
+        if (parryCount(enemy) > 0) {
+          log(`${enemy.name}は${card.name}。パリィ中はシールドを得られない。`, card, true);
+        } else {
+          const base = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
+          const rolled = applyCritChance(card, base);
+          const gain = rolled.amount;
+          if (gain) {
+            enemy.block += gain;
+            fxShieldEnemy = true;
+          }
+          log(`${enemy.name}は${card.name}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card, true);
         }
-        log(`${enemy.name}は${card.name}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card, true);
       } else if (card.heal) {
         const room = Math.max(0, enemy.maxHp - enemy.hp);
         const gain = Math.max(0, Math.min(Math.floor(Number(card.heal) || 0), room));
@@ -18322,8 +18639,9 @@
             const slashCount = fxSlashes.length;
             const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
             const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+            const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
             render();
-            const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0);
+            const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, parryWait);
             timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
           });
           return;
@@ -18354,6 +18672,10 @@
           clearFrost(player, "player");
           logTurn("enemy");
           dropShield(enemy);
+          if (parryCount(enemy) > 0) {
+            enemy.parry = 0;
+            log(`${enemy.name}のパリィが消えた。`);
+          }
         }
         const step = foePlan[foeIndex];
         if (player.hp > 0 && step && takeSong(enemy)) {
@@ -18392,8 +18714,9 @@
                 const shieldBreak = fxBreakPlayer || fxBreakEnemy;
                 const statusWardWait = fxStatusWard.length ? 1100 : 0;
                 const buffWait = fxFoeBuff ? 1100 : 0;
+                const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
                 render();
-                const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, statusWardWait, buffWait);
+                const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, statusWardWait, buffWait, parryWait);
                 const more = foeIndex + 1 < foePlan.length;
                 timer = setTimeout(more ? stepResolve : leaveFoeCard, wait);
               });
@@ -18419,8 +18742,9 @@
         const shieldBreak = fxBreakPlayer || fxBreakEnemy;
         const statusWardWait = fxStatusWard.length ? 1100 : 0;
         const buffWait = fxFoeBuff ? 1100 : 0;
+        const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
         render();
-        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, statusWardWait, buffWait);
+        const wait = Math.max(1400 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, statusWardWait, buffWait, parryWait);
         const more = foeIndex + 1 < foePlan.length;
         timer = setTimeout(more ? stepResolve : leaveFoeCard, wait);
         return;
@@ -18430,8 +18754,9 @@
       const slashCount = fxSlashes.length;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       const shieldBreak = fxBreakPlayer || fxBreakEnemy;
+      const parryWait = fxParryEnemy || fxParryEnemyHold ? 1450 : 0;
       render();
-      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0);
+      const wait = Math.max(720 + Math.max(0, slashCount - 1) * 340, drainMs(), playerNumber ? 1850 : 0, guardKind === "hold" || guardKind === "parry" ? 1750 : 0, poisonWait, shieldBreak ? 1800 : 0, parryWait);
       timer = setTimeout(resolveAt > enemyIndex ? finishResolve : stepResolve, wait);
     }
 
@@ -18609,7 +18934,10 @@
       player.pendingCarry = 0;
       const bonusMana = Math.max(0, Number(player.nextMana) || 0) + (anyBracelet("soloMana") && braceletsWorn().length === 1 ? 1 : 0);
       player.nextMana = 0;
-      player.baseMax = MANA + (Number(player.manaMod) || 0) + halfMana + bonusMana + relicMana;
+      const surge = halfMana + bonusMana + relicMana;
+      player.surgeMax = surge;
+      player.surgeLeft = surge;
+      player.baseMax = MANA + (Number(player.manaMod) || 0) + surge;
       player.baseEnergy = player.baseMax;
       player.tempEnergy = carried;
       syncEnergyTotal();
@@ -19265,6 +19593,8 @@
         if (player.tempEnergy == null) player.tempEnergy = 0;
         if (player.baseEnergy == null) player.baseEnergy = Math.max(0, (Number(player.energy) || 0) - (Number(player.tempEnergy) || 0));
         if (player.pendingCarry == null) player.pendingCarry = 0;
+        if (player.surgeMax == null) player.surgeMax = 0;
+        if (player.surgeLeft == null) player.surgeLeft = 0;
         syncEnergyTotal();
         player.burn = burnStacks(player);
         player.focus = 0;
@@ -19466,7 +19796,7 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, surgeMax: 0, surgeLeft: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
@@ -19854,7 +20184,8 @@
       const afterCard = card && elem ? previewEnchantCard(card, elem) : null;
       const after = afterCard ? `<div class="card preview ${cardKind(afterCard)}">${cardFace(afterCard, false)}</div>` : "";
       const well = (inner) => `<div class="compare-face"><div class="compare-well">${inner}</div></div>`;
-      return `<div class="enchant-compare" aria-label="エンチャントの前後"><div class="compare-slot"><p>エンチャント前</p>${well(before)}</div><p class="compare-arrow" aria-hidden="true">→</p><div class="compare-slot"><p>エンチャント後</p>${well(after)}</div></div>`;
+      const col = (label, inner) => `<div class="compare-col"><p class="compare-label">${label}</p><div class="compare-slot">${well(inner)}</div></div>`;
+      return `<div class="enchant-compare" aria-label="エンチャントの前後">${col("エンチャント前", before)}<p class="compare-arrow" aria-hidden="true">→</p>${col("エンチャント後", after)}</div>`;
     }
 
     function enchantPickOverlay() {
@@ -19888,7 +20219,7 @@
       const shut = blocked.map((card) => `<div class="enchant-card blocked"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div><b class="enchant-x" aria-hidden="true">×</b></div>`).join("");
       const rows = `${cards.map(choice).join("")}${shut ? `<div class="enchant-blocked">${shut}</div>` : ""}`;
       const ok = enchantPop === "bless" ? "bless-enchant-ok" : enchantPop === "victory" ? "victory-enchant-ok" : "smith-enchant-ok";
-      return `<div class="overlay deck-view enchant-pick"><div class="panel"><div class="enchant-body"><div class="enchant-main"><h2>${esc(title)}</h2>${award}<p class="deck-lead">エンチャントするカードを選ぶ</p><div class="deck-scroll"><div class="deck-cards">${rows || `<p class="deck-empty">付けられるカードは無い。</p>`}</div></div></div>${enchantCompareHtml(pickedCard, elem)}</div><div class="enchant-actions">${menuButton("決定", ok, true, !pickedName)}${menuButton("もどる", "enchant-back")}</div></div></div>`;
+      return `<div class="overlay deck-view enchant-pick"><div class="panel"><div class="enchant-body"><div class="enchant-main"><h2>${esc(title)}</h2>${award}<p class="deck-lead">エンチャントするカードを選ぶ</p><div class="deck-scroll"><div class="deck-cards">${rows || `<p class="deck-empty">付けられるカードは無い。</p>`}</div></div></div>${enchantCompareHtml(pickedCard, elem)}</div><div class="enchant-actions">${menuButton("もどる", "enchant-back")}${menuButton("決定", ok, true, !pickedName)}</div></div></div>`;
     }
 
     function cardBuildName(name) {
@@ -20676,7 +21007,7 @@
         cardMastery = Array.isArray(cardMastery) ? cardMastery : [];
       }
       const maxHp = runMaxHp();
-      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
+      player = { hp: maxHp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, surgeMax: 0, surgeLeft: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
       syncGearStats();
       floorHp = maxHp;
     }
@@ -21050,22 +21381,26 @@
     }
 
     function pips() {
+      const surgeMax = player ? Math.max(0, Number(player.surgeMax) || 0) : 0;
       const baseOn = player ? Math.max(0, Number(player.baseEnergy != null ? player.baseEnergy : player.energy) || 0) : MANA;
+      const surgeLeft = player ? Math.min(surgeMax, Math.max(0, Number(player.surgeLeft) || 0)) : 0;
       const temp = player ? Math.max(0, Number(player.tempEnergy) || 0) : 0;
       const baseMax = player ? Math.max(0, Number(player.baseMax) || 0) : MANA;
-      const spent = Math.max(0, baseMax - baseOn);
-      const total = baseOn + temp;
+      const usualLive = Math.max(0, baseOn - surgeLeft);
+      const usualSpent = Math.max(0, baseMax - surgeMax - usualLive);
+      const surgeSpent = Math.max(0, surgeMax - surgeLeft);
       const parts = [];
-      for (let i = 0; i < baseOn; i += 1) parts.push(`<b class="live"></b>`);
-      for (let i = 0; i < temp; i += 1) parts.push(`<b class="live carry"></b>`);
-      for (let i = 0; i < spent; i += 1) parts.push(`<b class="spent"></b>`);
+      for (let i = 0; i < usualLive + temp; i += 1) parts.push(`<b class="live"></b>`);
+      for (let i = 0; i < surgeLeft; i += 1) parts.push(`<b class="live surge"></b>`);
+      for (let i = 0; i < usualSpent; i += 1) parts.push(`<b class="spent"></b>`);
+      for (let i = 0; i < surgeSpent; i += 1) parts.push(`<b class="spent surge"></b>`);
       if (!parts.length) {
-        const empty = Math.max(MANA, baseMax);
+        const empty = Math.max(MANA, baseMax - surgeMax);
         for (let i = 0; i < empty; i += 1) parts.push(`<b class="spent"></b>`);
       }
+      const total = usualLive + surgeLeft + temp;
       const lit = total > 0 ? " on" : " off";
-      const carry = temp ? `。持ち越し ${temp}` : "";
-      return `<div class="mana-read${lit}" aria-label="マナ残り ${total}${carry}">${parts.join("")}</div>`;
+      return `<div class="mana-read${lit}" aria-label="マナ残り ${total}">${parts.join("")}</div>`;
     }
 
     function titleIcon(kind) {
@@ -21833,11 +22168,10 @@
         <aside class="cast-keys" aria-label="キーワード">
           <section class="cast-key">
             <h2>パリィ</h2>
-            <p class="lead">敵からのダメージを1回だけ無効にできる</p>
+            <p class="lead">敵からのダメージを1回だけ無効にできる。</p>
             <ul class="cast-key-points">
-              <li>ターン終了で消える</li>
-              <li>パリィ中はシールドを新しく得ることができない</li>
-              <li>(所持中のシールドも消える)</li>
+              <li>ターン終了で消える。</li>
+              <li>パリィ中はシールドを新しく得ることができない。(所持中のシールドも消える)</li>
             </ul>
           </section>
         </aside>`;
@@ -22032,6 +22366,8 @@
       });
       const slot = root.querySelector(".dungeon-clear-slot");
       if (slot) slot.innerHTML = shown ? dungeonClearFaces(shown.floors) : "";
+      const foes = root.querySelector(".dungeon-foes");
+      if (foes && shown) foes.innerHTML = dungeonEnemyFaces(shown.name);
       paintChallengeStart();
       const start = root.querySelector('[data-action="dungeon-enter"]');
       if (start) start.classList.toggle("lit", !start.disabled);
@@ -22304,7 +22640,9 @@
     }
 
     function renderFoes() {
-      const order = ["スライム", "ゴブリン", "コボルド", "トロール", "ちびドラゴン", "ミノタウロス", "物乞い", "ハデス"];
+      const pinned = ["スライム", "ゴブリン", "コボルド", "トロール", "ちびドラゴン", "ミノタウロス", "物乞い", "ハデス"];
+      const names = ENEMIES.map((enemy) => enemy.name);
+      const order = pinned.filter((name) => names.includes(name)).concat(names.filter((name) => !pinned.includes(name)));
       const files = order.map((name) => {
         const foe = ENEMIES.find((enemy) => enemy.name === name);
         return foe ? foeDossierHtml(foe) : "";
@@ -22327,8 +22665,10 @@
       bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
     }
 
-    function dungeonEnemyFaces() {
-      return ["スライム", "ゴブリン", "コボルド", "トロール", "ちびドラゴン", "ミノタウロス", "ハデス"].map((name) => {
+    function dungeonEnemyFaces(dungeon) {
+      const names = combatNames(dungeon, false, 99);
+      if (ENEMIES.some((foe) => foe.name === "ハデス")) names.push("ハデス");
+      return names.map((name) => {
         const foe = ENEMIES.find((enemy) => enemy.name === name);
         if (!foe) return "";
         const boss = name === DUNGEON.boss;
@@ -22938,7 +23278,7 @@
       const routeAttr = opt && opt.route ? ` data-route="${index}"` : "";
       const steps = cells.map((id, step) => {
         const floor = routeOfferFloors.length ? pathNodeFloor(step) : nextFloorNumber();
-        return `<span class="route-step path-node path-${id} tone-${pathToneOf(id)}">${pathNodeHtml(id, floor)}</span>`;
+        return `<span class="route-step path-node path-${id} tone-${pathToneOf(id)}" data-path="${id}">${pathNodeHtml(id, floor)}</span>`;
       }).reverse().join("");
       return `<button type="button" class="path-route path-tone-${routeTone(cells)}${forced ? " path-forced" : ""}" data-action="reward-path"${routeAttr} data-path="${first}"><b class="route-letter">${esc(title)}</b><span class="route-stack">${steps}</span></button>`;
     }
@@ -22963,6 +23303,40 @@
       return `${line}<div class="path-list${forced ? " forced" : ""}">${pathButtonsHtml()}</div>`;
     }
 
+    function bindPathHover() {
+      const list = root.querySelector(".overlay.paths .path-list");
+      if (!list || list.dataset.pathTip === "1") return;
+      list.dataset.pathTip = "1";
+      let tip = document.querySelector(".path-tip");
+      if (!tip) {
+        tip = document.createElement("div");
+        tip.className = "path-tip";
+        tip.hidden = true;
+        mountFloat(tip);
+      }
+      const show = (step) => {
+        const face = PATHS[step.dataset.path];
+        if (!face) {
+          tip.hidden = true;
+          return;
+        }
+        tip.innerHTML = pathBlurb(step.dataset.path, face);
+        tip.hidden = false;
+        placeAnchored(tip, step, { prefer: "right", gap: 12, pad: 8 });
+      };
+      list.addEventListener("pointerover", (event) => {
+        const step = event.target instanceof Element ? event.target.closest(".route-step") : null;
+        if (!step || !list.contains(step)) {
+          tip.hidden = true;
+          return;
+        }
+        show(step);
+      });
+      list.addEventListener("pointerleave", () => {
+        tip.hidden = true;
+      });
+    }
+
     function eventShell(body) {
       const buttons = hudMenuHtml();
       const logHtml = logLinesHtml(logLines);
@@ -22984,7 +23358,7 @@
           const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
           const picked = i === beggarPick ? " picked" : "";
           return `<button type="button" class="beggar-card${picked}" data-action="beggar-pick" data-index="${i}">${face}</button>`;
-        }).join("") || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("渡すカードを選んで決定", "beggar-confirm", true)}${menuButton("無視して進む", "beggar-skip")}</div>`
+        }).join("") || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("無視して進む", "beggar-skip")}${menuButton("渡すカードを選んで決定", "beggar-confirm", true, beggarPick < 0)}</div>`
         : "";
       const searchActions = floorKind === "探索" && floorPhase === "search"
         ? `<div class="event-actions">${menuButton("受け取る", "search-take", true)}${menuButton("無視する", "search-skip")}</div>`
@@ -23036,7 +23410,8 @@
       const smith = floorKind === "鍛冶屋" ? smithPanelHtml() : "";
       const floorFlash = eventFloorCall ? eventFloorFlashHtml() : "";
       eventFloorCall = false;
-      const title = fadeSandwichMarkup(`<span class="event-title-name">${esc(floorKind)}</span>`, { tag: "h1" });
+      const titleName = floorKind === "挑戦者に祝福を" ? "祝福" : floorKind === "物乞いに遭遇" ? "物乞い" : floorKind;
+      const title = fadeSandwichMarkup(`<span class="event-title-name">${esc(titleName)}</span>`, { tag: "h1" });
       const shopMode = floorKind === "お店";
       const note = eventNoteHtml();
       const artBox = art ? `<div class="event-art${restFx ? " rest-heal" : ""}">${art}${restFx}</div>` : "";
@@ -23174,6 +23549,7 @@
         paintGear();
       }
       bindShopHover();
+      bindPathHover();
       requestAnimationFrame(() => {
         placeRoad();
         fitPathArtToRoad();
@@ -23914,6 +24290,11 @@
     }
 
     function scratchStrike(enemySide, give, amount) {
+      const n = Math.max(0, Number(amount) || 0);
+      if (n > 0 && enemySide.parry > 0) {
+        enemySide.parry -= 1;
+        return;
+      }
       const hit = scratchApply(enemySide, amount);
       give.raw += hit.raw;
       give.hp += hit.hpLoss;
@@ -23964,6 +24345,7 @@
         atk: Number(enemy.atk) || 0,
         spiteOn: !!enemy.spiteOn,
         poison: Math.max(0, Number(enemy.poison) || 0),
+        parry: parryCount(enemy),
       };
       mine.spiteOn = !!player.spite;
       mine.opp = foe;
@@ -23972,14 +24354,13 @@
       const poison = Math.max(0, Number(player.poison) || 0);
       let poisonTake = null;
       if (poison) {
-        let amount = poison;
-        if (mine.expose) {
-          amount += mine.expose;
-          mine.expose = 0;
-        }
-        const hit = scratchApply(mine, amount);
+        const hit = scratchApply(mine, poison);
         if (hit.raw > 0) poisonTake = { raw: hit.raw, hp: hit.hpLoss };
-        if (mine.hp <= 0) return { give: null, take: { raw: hit.raw, hp: hit.hpLoss, show: true, lethal: true, shield: 0, status: 0 }, breakShield: false };
+        if (mine.hp <= 0) {
+          const taken = notePoisonHit(null, hit);
+          if (taken) taken.lethal = true;
+          return { give: null, take: taken, breakShield: false };
+        }
       }
       const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
       const queue = inPlay || [];
@@ -23997,15 +24378,11 @@
       if (foe.hp <= 0) {
         give.lethal = true;
         let taken = scratchFoldSelf(null, mine);
-        if (poisonTake) {
-          if (!taken) taken = { raw: 0, hp: 0, show: true, shield: 0, status: 0 };
-          taken.raw += poisonTake.raw;
-          taken.hp += poisonTake.hp;
-          taken.show = true;
-        }
+        if (poisonTake) taken = notePoisonHit(taken, poisonTake);
         return { give: forecastBag(give), take: taken, breakShield, foeAtk: foe.atk };
       }
       foe.block = 0;
+      foe.parry = 0;
       let take = null;
       const foeSwings = [];
       let songSkip = songsAimedAt(enemy);
@@ -24045,20 +24422,11 @@
         foeSwings.push(swing);
       }
       take = scratchFoldSelf(take, mine);
-      if (poisonTake) {
-        if (!take) take = { raw: 0, hp: 0, show: true, shield: 0, status: 0 };
-        take.raw += poisonTake.raw;
-        take.hp += poisonTake.hp;
-        take.show = true;
-      }
+      if (poisonTake) take = notePoisonHit(take, poisonTake);
       const foePoison = Math.max(0, Number(foe.poison) || 0);
       if (foePoison && foe.hp > 0) {
         const hit = scratchApply(foe, foePoison);
-        if (hit.raw > 0) {
-          give.raw += hit.raw;
-          give.hp += hit.hpLoss;
-          give.show = true;
-        }
+        if (hit.raw > 0) notePoisonHit(give, hit);
         if (foe.hp <= 0) give.lethal = true;
       }
       if (mine.hp <= 0) {
@@ -24085,6 +24453,19 @@
       return take;
     }
 
+    function notePoisonHit(bag, hit) {
+      const raw = Math.max(0, Number(hit && hit.raw) || 0);
+      const hp = Math.max(0, Number(hit && (hit.hpLoss != null ? hit.hpLoss : hit.hp)) || 0);
+      if (!raw) return bag;
+      if (!bag) bag = { raw: 0, hp: 0, show: true, shield: 0, status: 0 };
+      bag.raw += raw;
+      bag.hp += hp;
+      bag.poisonRaw = (Number(bag.poisonRaw) || 0) + raw;
+      bag.poisonHp = (Number(bag.poisonHp) || 0) + hp;
+      bag.show = true;
+      return bag;
+    }
+
     function forecastBag(bag) {
       if (!bag) return null;
       if (bag.show || bag.shield > 0 || bag.status > 0 || bag.lethal) return bag;
@@ -24096,10 +24477,11 @@
       const thorns = card.thorns ? (Number(card.thorns) || 1) : 0;
       const burn = Number(card.burn) || 0;
       const poison = !card.damage && card.poison ? (Number(card.poison) || 0) : 0;
-      const shield = !card.damage && card.block
+      const gainingParry = !!(card.parry || card.parryAdd || card.poise);
+      const shield = !card.damage && card.block && !(foe.parry > 0) && !gainingParry
         ? halfBraced(card, foe, Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)))
         : 0;
-      if (!thorns && !burn && !poison && !shield) return bag;
+      if (!thorns && !burn && !poison && !shield && !gainingParry) return bag;
       if (!bag) bag = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0, poison: 0, burn: 0, thorns: 0 };
       bag.poison = (bag.poison || 0) + poison;
       bag.burn = (bag.burn || 0) + burn;
@@ -24107,6 +24489,7 @@
       bag.status += poison + burn + thorns;
       bag.shield += shield;
       if (shield) foe.block = (Number(foe.block) || 0) + shield;
+      if (gainingParry) scratchGainParry(foe, card.parryAdd || 1);
       return bag;
     }
 
@@ -24319,7 +24702,8 @@
         mine.doubleNext = false;
         swing = Math.ceil(swing * mul);
       }
-      if (!swing && !mine.expose) return null;
+      const extra = incomingAttack(card) ? Math.max(0, Number(mine.expose) || 0) : 0;
+      if (!swing && !extra) return null;
       if (mine.parry > 0) {
         mine.parry -= 1;
         let reflect = 0;
@@ -24330,14 +24714,15 @@
         const poked = swing > 0 && foe.thorns > 0 ? scratchApply(mine, foe.thorns, true).hpLoss : 0;
         return { raw: swing, hp: poked, parry: true, show: swing > 0 || poked > 0, reflect, swing };
       }
-      const dealt = swing + (mine.expose || 0);
+      if (extra) mine.expose = 0;
+      const dealt = swing + extra;
       if (!dealt) return null;
       const hit = scratchApply(mine, dealt);
       return { raw: dealt, hp: hit.hpLoss, parry: false, show: true, swing };
     }
 
     function forecastChip(kind, amount, lethal) {
-      const label = kind === "shield" ? "シールド" : kind === "status" ? "状態異常" : "ダメージ";
+      const label = kind === "shield" ? "シールド" : kind === "status" ? "状態異常" : kind === "poison" ? "毒" : "ダメージ";
       const n = Math.max(0, Math.round(Number(amount) || 0));
       const skull = lethal ? `<span class="skull" aria-hidden="true">💀</span>` : "";
       return `<div class="forecast ${kind}${lethal ? " lethal" : ""}" aria-label="${label} ${n}${lethal ? " 止め" : ""}"><em>${label}</em><b>${n}</b>${skull}</div>`;
@@ -24354,7 +24739,13 @@
     function forecastChips(bag, foe) {
       if (!bag) return "";
       const chips = [];
-      if (bag.show || bag.lethal) chips.push(forecastChip("damage", bag.hp, !!bag.lethal));
+      const poisonRaw = Math.max(0, Number(bag.poisonRaw) || 0);
+      const poisonHp = Math.max(0, Number(bag.poisonHp) || 0);
+      const otherRaw = Math.max(0, (Number(bag.raw) || 0) - poisonRaw);
+      const otherHp = Math.max(0, (Number(bag.hp) || 0) - poisonHp);
+      const poisonKills = !!bag.lethal && poisonRaw > 0 && otherHp <= 0;
+      if (otherRaw > 0 || ((bag.show || bag.lethal) && !poisonRaw)) chips.push(forecastChip("damage", otherHp, !!bag.lethal && !poisonKills));
+      if (poisonRaw > 0) chips.push(forecastChip("poison", poisonHp, poisonKills));
       if (bag.shield > 0) chips.push(forecastChip("shield", bag.shield));
       const icons = foe ? forecastStatusIcons(bag) : [];
       if (icons.length) chips.push(icons.join(""));
@@ -24796,12 +25187,12 @@
 
     const PATHS = {
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=3" },
-      straight: { name: "戦闘", text: "このダンジョンの敵と戦う。", image: "path-fight.jpg?v=5" },
+      straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=5" },
       boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=4" },
       search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=13" },
       beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=6" },
       shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=13" },
-      lost: { name: "迷子", text: "踏むと、道のどれかが起きる。", image: "path-lost.jpg?v=11" },
+      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=11" },
       smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=1" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
       train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=5" },
@@ -24871,7 +25262,8 @@
       if (name === "応急手当") name = "薬草";
       const known = cardDef(name);
       if (!known) return name === card.name ? card : { ...card, name };
-      const text = String(card.text || "");
+      const text = String(card.text || "").replaceAll("次に受けるダメージ+5", "次に受ける攻撃ダメージ+5");
+      if (name === "捨て身の一撃" && text !== String(card.text || "")) card.text = text;
       const costMissing = card.cost == null || card.cost === "";
       const stripped = !text && (costMissing || (Number(card.cost) === 0 && Number(known.cost) > 0));
       if (!stripped) {
@@ -25469,6 +25861,8 @@
       }
       starBurst = rewardStars;
       pendingStars = rewardStars;
+      starsHomeSent = false;
+      if (starHomeTimer) { clearTimeout(starHomeTimer); starHomeTimer = 0; }
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       persistMeta();
       rewardPaths = [];
@@ -25525,6 +25919,20 @@
           ? captureRewardCardFlight(`[data-action="reward-boss"][data-reward="${index}"] .card`)
           : null;
         if (pick.kind === "card" && pick.card) stolen.push(keepCard(pick.card));
+        sendStarsHome();
+        if (flight && flight.ghost) {
+          const picked = document.querySelector(`[data-action="reward-boss"][data-reward="${index}"]`);
+          if (picked) picked.style.visibility = "hidden";
+          flyRewardCardToDeck(flight);
+          const panel = document.querySelector(".overlay.victory .reward-panel");
+          if (panel) panel.style.pointerEvents = "none";
+          setTimeout(() => {
+            if (rewardStep !== "boss") return;
+            bossPicks = [];
+            showExtraOrAdvance();
+          }, 740);
+          return;
+        }
         if (pick.kind === "gear" && pick.gear) {
           if (!gear) gear = emptyGear();
           if (offerWeapon(pick.gear, { source: "boss" })) {
@@ -25575,6 +25983,32 @@
       });
     }
 
+    function sendStarsHome() {
+      if (starsHomeSent || !pendingStars) return;
+      starsHomeSent = true;
+      if (starHomeTimer) { clearTimeout(starHomeTimer); starHomeTimer = 0; }
+      const from = starStartPoints();
+      document.querySelectorAll(".win-star-dock .fly-star").forEach((el) => {
+        el.style.visibility = "hidden";
+      });
+      const dock = document.querySelector(".win-star-dock");
+      if (dock) dock.classList.add("gone");
+      flyStarsHome(from);
+    }
+
+    function armStarsHome() {
+      if (starsHomeSent || !pendingStars) return;
+      const stars = document.querySelectorAll(".win-star-dock .fly-star");
+      if (!stars.length) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const wait = reduce ? 280 : 1050 + Math.max(0, stars.length - 1) * 160 + 90;
+      if (starHomeTimer) clearTimeout(starHomeTimer);
+      starHomeTimer = setTimeout(() => {
+        starHomeTimer = 0;
+        sendStarsHome();
+      }, wait);
+    }
+
     function flyStarsHome(points) {
       const n = pendingStars;
       if (!n) return;
@@ -25615,10 +26049,9 @@
 
     function skipReward() {
       if (rewardStep === "cards" || rewardStep === "boss") {
-        const from = starStartPoints();
+        sendStarsHome();
         bossPicks = [];
         showExtraOrAdvance();
-        flyStarsHome(from);
         return;
       }
     }
@@ -25667,7 +26100,7 @@
         return;
       }
       let dest = null;
-      if (land === "deck") dest = document.querySelector('[data-pile="deck"] .pile-card');
+      if (land === "deck") dest = document.querySelector('.ally-piles [data-pile="deck"] .pile-card');
       else if (land === "relic" && relicId) {
         const id = window.CSS && CSS.escape ? CSS.escape(relicId) : relicId;
         dest = document.querySelector(`[data-land="relic"][data-relic="${id}"]`);
@@ -25693,7 +26126,25 @@
         if (done) return;
         done = true;
         ghost.remove();
+        if (land === "deck") {
+          const pile = dest.closest(".pile");
+          if (pile && pile.isConnected) {
+            pile.classList.remove("swallow");
+            void pile.offsetWidth;
+            pile.classList.add("swallow");
+          }
+        }
       };
+      if (land === "deck" && "animate" in Element.prototype && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const anim = ghost.animate([
+          { transform: "translate(0px, 0px) rotate(0deg) scale(1)", opacity: 1 },
+          { transform: `translate(${dx * 0.62}px, ${dy * 0.28 - 36}px) rotate(-8deg) scale(${Math.max(scale, 0.62)})`, opacity: 1, offset: 0.42 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(-18deg) scale(${scale})`, opacity: 0 },
+        ], { duration: 720, easing: "cubic-bezier(0.2, 0.72, 0.2, 1)", fill: "forwards" });
+        anim.onfinish = finish;
+        setTimeout(finish, 860);
+        return;
+      }
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           ghost.style.transition = "transform 0.55s cubic-bezier(0.22, 0.7, 0.18, 1), opacity 0.48s ease 0.08s";
@@ -25722,11 +26173,18 @@
       playPickCenter(`[data-action="reward-card"][data-reward="${index}"]`, () => {
         if (rewardStep !== "cards") return;
         const flight = captureRewardCardFlight(`[data-action="reward-card"][data-reward="${index}"] .card`);
-        const from = starStartPoints();
         stolen.push(keepCard(card));
-        showExtraOrAdvance();
-        flyStarsHome(from);
+        sendStarsHome();
+        const picked = document.querySelector(`[data-action="reward-card"][data-reward="${index}"]`);
+        if (picked) picked.style.visibility = "hidden";
         flyRewardCardToDeck(flight);
+        const panel = document.querySelector(".overlay.victory .reward-panel");
+        if (panel && flight && flight.ghost) panel.style.pointerEvents = "none";
+        const wait = flight && flight.ghost ? 740 : 0;
+        setTimeout(() => {
+          if (rewardStep !== "cards") return;
+          showExtraOrAdvance();
+        }, wait);
       });
     }
 
@@ -26925,11 +27383,17 @@
       const shieldEnemyNow = fxShieldEnemy;
       const parryPlayerNow = fxParryPlayer;
       const parryFromShieldNow = fxParryFromShield;
+      const parryEnemyNow = fxParryEnemy;
+      const parryEnemyFromNow = fxParryEnemyFromShield;
+      const parryEnemyHoldNow = fxParryEnemyHold;
       fxStruck = false;
       fxShieldPlayer = false;
       fxShieldEnemy = false;
       fxParryPlayer = false;
       fxParryFromShield = false;
+      fxParryEnemy = false;
+      fxParryEnemyFromShield = false;
+      fxParryEnemyHold = false;
       const fatalNow = fxFatal || fatalHold;
       const guardNow = fxGuard;
       const healNow = fxHeal;
@@ -27005,7 +27469,7 @@
             ${plateMarkup("hero-plate", "player", heroName(), "", playerShown, player.maxHp, player.block, { shieldFlash: shieldPlayerNow, break: breakPlayerNow, parryFlash: parryPlayerNow, parryFromShield: parryFromShieldNow, threat: mineThreat, badges: statusChips(player, poisonPlayerNow ? "poison" : ""), atk: player.atk || 0, def: player.def || 0, spd: playerSpd(), ...heroPlateProgress(), demon: demonGauge, tail: `${player.guardThrough ? `<div class="hp-line"><span class="lbl">構え</span><span class="num"><b>盾可</b></span></div>` : ""}` })}
             </div>
             <div class="foe-stack">
-            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
+            ${plateMarkup("foe-plate", "enemy", enemy.name, "", shownEnemy(), enemy.maxHp, enemy.block, { quiet: floorCall || encounter, shieldFlash: shieldEnemyNow, break: breakEnemyNow, parry: parryCount(enemy), parryFlash: parryEnemyNow, parryFromShield: parryEnemyFromNow, threat: foeThreat, crack: breakFoeShield, attrs: ` data-rank="${esc(enemyNow().rank || "普通")}"`, badges: statusChips(enemy, poisonEnemyNow ? "poison" : ""), stars: foeStarText(), atk: enemy.atk || 0, def: enemy.def || 0, spd: foeSpd() })}
             ${traitNote()}
             </div>
             <div class="duel-side ally">
@@ -27022,12 +27486,13 @@
             <div class="duel-side foe">
               <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}"${floorCall || encounter ? "" : ` data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る"`}>
               <div class="foe-body">
-              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${foeBuffNow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
+              <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${parryEnemyNow || parryEnemyHoldNow ? " spark-gold" : ""}${parryEnemyHoldNow ? " parry-hold" : ""}${foeBuffNow ? " anger" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">${slashNow ? foeHitWash(enemy.image) : ""}` : `<span class="foe-blank" aria-hidden="true"></span>`}
                 ${slashNow ? cutsHtml : ""}
                 ${(foeKind === "poison" || poisonEnemyNow) ? poisonFxHtml(foeKind !== "poison") : ""}
                 ${hitNow && hitNow.side === "enemy" ? foePopsHtml : ""}
                 ${shieldEnemyNow ? wardFxHtml(false) : ""}
+                ${parryEnemyNow || parryEnemyHoldNow ? wardFxHtml(true) : ""}
                 ${foeBuffNow ? angerFxHtml() : ""}
               </div>
               </div>
@@ -27071,6 +27536,7 @@
       launchPendingPlayClearFly();
       launchPendingHandDumpFly();
       launchFoeTurnTravel();
+      armStarsHome();
       const bugBox = root.querySelector("#bug-note");
       if (bugBox) {
         bugBox.addEventListener("input", () => { bugDraft = bugBox.value; });
