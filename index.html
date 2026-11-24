@@ -6566,12 +6566,36 @@
     .card .card-fit.k-boon.r2,
     .card .card-fit.k-boon.r3,
     .card .card-fit.k-boon.rboss { --frame-img: url("frame-gold-over-gold.png?v=7"); }
+    /* 祝福で並ぶ装備・戦利品も、祝福の金枠で出す */
+    .card .card-fit.gold-frame.r0,
+    .card .card-fit.gold-frame.r1,
+    .card .card-fit.gold-frame.r2,
+    .card .card-fit.gold-frame.r3,
+    .card .card-fit.gold-frame.rboss { --frame-img: url("frame-gold-over-gold.png?v=7"); }
     .card .card-fit.k-gear.r0 { --frame-img: url("frame-basic-shakudo.png?v=1"); }
     .card .card-fit.k-gear.r1 { --frame-img: url("frame-shakudo-over-copper.png?v=4"); }
     .card .card-fit.k-gear.r2 { --frame-img: url("frame-shakudo-over-silver.png?v=4"); }
     .card .card-fit.k-gear.r3 { --frame-img: url("frame-shakudo-over-gold.png?v=4"); }
     .card .card-fit.k-gear.rboss { --frame-img: url("frame-shakudo-over-black.png?v=4"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    /* 祝福の絵は正方形。切らずに全体を出し、左右の空きは同じ絵をぼかして敷く */
+    .card .card-fit.k-boon .art { overflow: hidden; }
+    .card .card-fit.k-boon .art .art-side {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 14.3%;
+      background-repeat: no-repeat;
+      background-size: 1667% 100%;
+    }
+    .card .card-fit.k-boon .art .art-side.l { left: 0; background-position: 0 0; }
+    .card .card-fit.k-boon .art .art-side.r { right: 0; background-position: 100% 0; }
+    .card .card-fit.k-boon .art img.art-whole {
+      position: relative;
+      object-fit: contain;
+      -webkit-mask-image: linear-gradient(90deg, transparent 14.1%, #000 20%, #000 80%, transparent 85.9%);
+      mask-image: linear-gradient(90deg, transparent 14.1%, #000 20%, #000 80%, transparent 85.9%);
+    }
     .card .card-fit .art {
       position: absolute;
       left: 7.4cqw;
@@ -7903,7 +7927,8 @@
     .overlay.paths .path-node.path-boss { --step-line: #e02020; }
     .overlay.paths .path-node.path-camp { --step-line: #1a6fe8; }
     .overlay.paths .path-node.path-lost,
-    .overlay.paths .path-node.path-beggar { --step-line: #9a4ad4; }
+    .overlay.paths .path-node.path-beggar,
+    .overlay.paths .path-node.path-unknown { --step-line: #9a4ad4; }
     .overlay.paths .path-node.path-search,
     .overlay.paths .path-node.path-train { --step-line: #3caf6a; }
     .overlay.paths .path-list button.path-node {
@@ -10842,20 +10867,26 @@
       border-radius: 16px;
       background: linear-gradient(180deg, rgba(28, 20, 14, 0.92), rgba(10, 8, 6, 0.9));
     }
-    .cast-screen.character-focus .cast-on-stats .hp-line {
+    /* 余白均等：ラベル列と数字列を4行で共有し、左右の余白を全行で同じにする（数字は右寄せ） */
+    .cast-screen.character-focus .cast-on-stats .cast-stat-board.cast-vitals {
       grid-template-columns: auto auto;
-      justify-content: start;
-      box-sizing: content-box;
+      column-gap: 0;
+    }
+    .cast-screen.character-focus .cast-on-stats .hp-line {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+      justify-content: stretch;
+      box-sizing: border-box;
       height: auto;
-      padding: 6px 16px;
-      gap: 18px;
+      padding: 8px 16px;
+      column-gap: 24px;
       white-space: nowrap;
     }
     .cast-screen.character-focus .cast-on-stats .hp-line .lbl { font-size: clamp(20px, 1.85cqw, 26px); gap: 6px; letter-spacing: 0; line-height: 1; }
     .cast-screen.character-focus .cast-on-stats .hp-line .ico { width: 22px; height: 22px; }
     .cast-screen.character-focus .cast-on-stats .hp-line .num {
-      text-align: left;
-      justify-self: start;
+      text-align: right;
+      justify-self: end;
       letter-spacing: 0;
       line-height: 1;
     }
@@ -13229,7 +13260,7 @@
     const FX_HEROES = [
       { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", imgW: 864, imgH: 1152, face: 135, inkLeft: 63, head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
       { id: "half", name: "半悪魔", battle: "girl-demon-half-battle.png?v=2", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 110, inkLeft: 80, head: ["68%", "22%"], body: ["52%", "52%"], shield: ["48%", "50%"] },
-      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=5", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 92, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
+      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=6", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 92, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
     ];
     let askLeave = false;
     let showDeck = false;
@@ -14117,12 +14148,10 @@
     const FIND_ITEM_NAMES = EXTRA_ITEM_NAMES;
     const BLESS_KINDS = [
       { id: "maxhp", stars: 1 },
-      { id: "card", stars: 2 },
       { id: "gear", stars: 3 },
       { id: "enchant", stars: 3 },
       { id: "spd", stars: 3 },
       { id: "play", stars: 3 },
-      { id: "loot", stars: 1 },
     ];
     // 入口の祝福だけに足す新しい14種。すべて★3、絵なし。選ぶと runBonus.fx に積む（途中の祝福には出ない）
     const BLESS_NEW = [
@@ -14145,7 +14174,8 @@
     function hasBless(key) {
       return Number(runBonus && runBonus.fx && runBonus.fx[key]) > 0;
     }
-    const ENCOUNTER_BEGGAR = 0.5;
+    // 途中の遭遇は物乞いだけ。祝福は入口の0層目だけ（2026-11-24）
+    const ENCOUNTER_BEGGAR = 1;
 
     function fillSpan(span, dungeon) {
       const size = Math.max(0, span.to - span.from + 1);
@@ -14363,18 +14393,18 @@
 
     function roadFace(node) {
       const name = String(node || "");
-      if (name === "出来事:祝福") return { src: "path-bless-v4.jpg?v=3", label: "祝福" };
-      if (name === "出来事:探索") return { src: "path-search.jpg?v=15", label: "探索" };
-      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=9", label: "遭遇" };
-      if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=5", label: "休憩" };
-      if (name === "出来事:お店") return { src: "path-shop.jpg?v=14", label: "お店" };
-      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=8", label: "物乞い" };
-      if (name === "出来事:修行") return { src: "path-train.jpg?v=8", label: "修行" };
-      if (name === "出来事:鍛冶屋") return { src: "path-smith.jpg?v=3", label: "鍛冶屋" };
-      if (name.startsWith("強敵:")) return { src: "path-strong.jpg?v=2", label: "強敵" };
-      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=5", label: "ボス戦", boss: true };
+      if (name === "出来事:祝福") return { src: "path-bless-v4.jpg?v=4", label: "祝福" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=16", label: "探索" };
+      if (name === "出来事:未知") return { src: "path-unknown.jpg?v=10", label: "遭遇" };
+      if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=6", label: "休憩" };
+      if (name === "出来事:お店") return { src: "path-shop.jpg?v=15", label: "お店" };
+      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=9", label: "物乞い" };
+      if (name === "出来事:修行") return { src: "path-train.jpg?v=9", label: "修行" };
+      if (name === "出来事:鍛冶屋") return { src: "path-smith.jpg?v=4", label: "鍛冶屋" };
+      if (name.startsWith("強敵:")) return { src: "path-strong.jpg?v=3", label: "強敵" };
+      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=6", label: "ボス戦", boss: true };
       if (!name) return { mark: "？", label: "" };
-      return { src: "path-fight.jpg?v=8", label: "戦闘" };
+      return { src: "path-fight.jpg?v=9", label: "戦闘" };
     }
 
     function roadTone(node) {
@@ -22495,7 +22525,7 @@
             <h2>祝福</h2>
             <ul>
               <li>入口の祝福は、下の${BLESS_KINDS.length + BLESS_NEW.length}種から、重ならない3つが出ます。同じ確率です。どれも、3枠に入る割合は${pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))}です。</li>
-              <li>途中の遭遇の祝福は、新しい${BLESS_NEW.length}種を除いた七つから出ます。どれも${pct(3 / BLESS_KINDS.length)}です。</li>
+              <li>祝福は入口の0層目だけです。途中の遭遇に祝福は出ません。</li>
             </ul>
             ${oddsTable(["祝福", "3枠に入る割合（入口）"], BLESS_KINDS.map((kind) => [blessNames[kind.id], pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))]).concat(BLESS_NEW.map((row) => [`${row.name}（★3・${row.body.replace(/\n/g, " ")}）`, pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))])))}
             <ul>
@@ -22517,7 +22547,7 @@
           <section class="odds-block">
             <h2>そのほか</h2>
             ${oddsTable(["出来事", "出るもの"], [
-              ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}　祝福 ${pct(1 - ENCOUNTER_BEGGAR)}`],
+              ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}（途中に祝福は出ない）`],
               ["探索", "装備、戦利品、アイテムが同じ確率。★は出ない。装備は先にレアリティ。戦利品は未入手。出尽くしたら効果の空の「戦利品」"],
               ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。もらったあと、デッキの未熟練から1枚。いまもらったカードも入る。必要回数まで上げて、出られる進化から2つ出て、1つを選ぶ"],
               ["迷子", "戦闘、強敵、探索、物乞い、お店、休憩、修行、遭遇、鍛冶屋が同じ確率。迷子自身とボスは入らない"],
@@ -23449,7 +23479,7 @@
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
               ${sheetFig("girl-demon-half-battle.png?v=2", "半悪魔化の戦闘", "cut-ref")}
-              ${sheetFig("girl-demon-full-battle.png?v=5", "完全悪魔化の戦闘", "cut-ref")}
+              ${sheetFig("girl-demon-full-battle.png?v=6", "完全悪魔化の戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
@@ -23465,21 +23495,21 @@
               ${sheetFig("job-girl-v2.png?v=2", "戦士の選択コマ（手を上げる）", "cut-ref")}
             </div>
             <h3>道（三択）</h3>
-            <p class="album-meta">道を選ぶときの候補アイコン。戦闘・強敵・ボスは赤、迷子・物乞いは紫、休憩は青、探索・修行は緑、お店・鍛冶屋・祝福は黄。同じ名前は並べない</p>
+            <p class="album-meta">道を選ぶときの候補アイコン。背景は文字色の縦グラデーション。戦闘・強敵・ボスは赤、迷子・物乞い・遭遇は紫、休憩は青、探索・修行は緑、お店・鍛冶屋・祝福・ジョブは黄。同じ名前は並べない</p>
             <div class="ref-grid">
-              ${sheetFig("path-search.jpg?v=15", "探索", "", "path-grow-ref")}
-              ${sheetFig("path-bless-v4.jpg?v=3", "祝福", "", "path-other-ref")}
-              ${sheetFig("path-fight.jpg?v=8", "戦闘", "", "path-series")}
-              ${sheetFig("path-strong.jpg?v=2", "強敵", "", "path-series")}
-              ${sheetFig("path-boss.jpg?v=5", "ボス戦", "", "path-series")}
-              ${sheetFig("path-beggar.jpg?v=8", "物乞い", "", "path-lost-ref")}
-              ${sheetFig("path-shop.jpg?v=14", "お店", "", "path-other-ref")}
-              ${sheetFig("path-rest.jpg?v=5", "休憩", "", "path-rest-ref")}
-              ${sheetFig("path-lost.jpg?v=13", "迷子", "", "path-lost-ref")}
-              ${sheetFig("path-job.jpg?v=8", "ジョブ")}
-              ${sheetFig("path-unknown.jpg?v=9", "遭遇")}
-              ${sheetFig("path-train.jpg?v=8", "修行", "", "path-grow-ref")}
-              ${sheetFig("path-smith.jpg?v=3", "鍛冶屋", "", "path-other-ref")}
+              ${sheetFig("path-search.jpg?v=16", "探索", "", "path-grow-ref")}
+              ${sheetFig("path-bless-v4.jpg?v=4", "祝福", "", "path-other-ref")}
+              ${sheetFig("path-fight.jpg?v=9", "戦闘", "", "path-series")}
+              ${sheetFig("path-strong.jpg?v=3", "強敵", "", "path-series")}
+              ${sheetFig("path-boss.jpg?v=6", "ボス戦", "", "path-series")}
+              ${sheetFig("path-beggar.jpg?v=9", "物乞い", "", "path-lost-ref")}
+              ${sheetFig("path-shop.jpg?v=15", "お店", "", "path-other-ref")}
+              ${sheetFig("path-rest.jpg?v=6", "休憩", "", "path-rest-ref")}
+              ${sheetFig("path-lost.jpg?v=14", "迷子", "", "path-lost-ref")}
+              ${sheetFig("path-job.jpg?v=9", "ジョブ", "", "path-other-ref")}
+              ${sheetFig("path-unknown.jpg?v=10", "遭遇", "", "path-lost-ref")}
+              ${sheetFig("path-train.jpg?v=9", "修行", "", "path-grow-ref")}
+              ${sheetFig("path-smith.jpg?v=4", "鍛冶屋", "", "path-other-ref")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
             <p class="album-meta">道を選んだあとに出る出来事の絵。頭身は戦闘絵と同じ。迷子と遭遇の絵は出さない</p>
@@ -23911,12 +23941,13 @@
       const blessButtons = floorPhase === "bless"
         ? blessPicks.map((pick, i) => {
           const entity = pick.kind === "card" ? pick.card : (pick.gear || pick.item || blessGearOpts(pick.kind, pick.elem));
-          const lv = blessLive ? rareLevel(entity) : 0;
+          // 祝福のレアリティはすべて金。光り方も金に揃える
+          const lv = blessLive ? 3 : 0;
           if (lv) blessLevels.push(lv);
           const card = pick.kind === "card" && pick.card
             ? pick.card
             : (pick.kind === "gear" || pick.kind === "loot")
-              ? gearAsCard(pick.gear)
+              ? { ...gearAsCard(pick.gear), goldFrame: true }
               : boonAsCard(pick.kind, pick.elem);
           if (pick.kind === "play") card.text = playGloveBody(playAreaMax());
           const inner = `<div class="gift-pick">${rewardCardHtml(card)}</div>`;
@@ -24765,7 +24796,10 @@
       const effects = `${kwHtml}${iconHtml}${noteHtml}`;
       const foeAttack = foe && card.name === "アタック" ? "card-attack-foe.jpg?v=1" : "";
       const foeBlock = foe && card.name === "ブロック" ? "card-block-minotaur.jpg?v=2" : "";
-      const picture = (card.image || foeAttack || foeBlock || cardArtSrc(card.name)) ? `<img src="${card.image || foeAttack || foeBlock || cardArtSrc(card.name)}" alt="">` : "";
+      const artSrc = card.image || foeAttack || foeBlock || cardArtSrc(card.name);
+      const picture = !artSrc ? "" : kind === "boon"
+        ? `<span class="art-side l" style="background-image:url('${artSrc}')"></span><span class="art-side r" style="background-image:url('${artSrc}')"></span><img class="art-whole" src="${artSrc}" alt="">`
+        : `<img src="${artSrc}" alt="">`;
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : stars >= 1 ? "r1" : "r0";
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
@@ -24773,7 +24807,7 @@
       const enchant = enchantKind ? enchantFace(enchantKind) : null;
       const gem = enchant ? `<span class="enchant-gem" aria-label="${esc(enchant.name)}"><img src="${enchant.image}" alt=""></span>` : "";
       const enchantHint = enchant ? `<span class="hint enchant-note" data-word="${esc(enchant.name)}">${esc(enchant.name)}<i>${esc(enchantEffectNote(enchantKind, card))}</i></span>` : "";
-      return `<div class="card-fit ${rank} k-${kind}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
+      return `<div class="card-fit ${rank} k-${kind}${card.goldFrame ? " gold-frame" : ""}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
 
     function songChainMarkup() {
@@ -25781,18 +25815,18 @@
     }
 
     const PATHS = {
-      camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=5" },
-      straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=8" },
-      boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=5" },
-      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=15" },
-      beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=8" },
-      shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=14" },
-      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=13" },
-      smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=3" },
-      unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
-      train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=8" },
-      elite: { name: "強敵", text: "強敵と戦う。戦利品は必ずもらえる。", image: "path-strong.jpg?v=2" },
-      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=3" },
+      camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=6" },
+      straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=9" },
+      boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=6" },
+      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=16" },
+      beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=9" },
+      shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=15" },
+      lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=14" },
+      smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=4" },
+      unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=10" },
+      train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=9" },
+      elite: { name: "強敵", text: "強敵と戦う。戦利品は必ずもらえる。", image: "path-strong.jpg?v=3" },
+      bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=4" },
     };
     // 右の1枠。左は休憩、真ん中は戦闘で固定
     const PATH_RIGHT = ["search", "beggar", "shop", "lost", "unknown", "train"];
