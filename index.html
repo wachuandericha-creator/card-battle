@@ -3564,6 +3564,11 @@
       outline-offset: 2px;
       border-radius: 12px;
     }
+    .ref-grid figure.path-grow-ref {
+      outline: 2px solid #3caf6a;
+      outline-offset: 2px;
+      border-radius: 12px;
+    }
     .ref-grid .ref-slot-note {
       margin: 4px 0 0;
       text-align: center;
@@ -6560,7 +6565,7 @@
     .card .card-fit.k-boon.r1,
     .card .card-fit.k-boon.r2,
     .card .card-fit.k-boon.r3,
-    .card .card-fit.k-boon.rboss { --frame-img: url("frame-gold-over-gold.png?v=6"); }
+    .card .card-fit.k-boon.rboss { --frame-img: url("frame-gold-over-gold.png?v=7"); }
     .card .card-fit.k-gear.r0 { --frame-img: url("frame-basic-shakudo.png?v=1"); }
     .card .card-fit.k-gear.r1 { --frame-img: url("frame-shakudo-over-copper.png?v=4"); }
     .card .card-fit.k-gear.r2 { --frame-img: url("frame-shakudo-over-silver.png?v=4"); }
@@ -7897,7 +7902,10 @@
     .overlay.paths .path-node.path-elite,
     .overlay.paths .path-node.path-boss { --step-line: #e02020; }
     .overlay.paths .path-node.path-camp { --step-line: #1a6fe8; }
-    .overlay.paths .path-node.path-lost { --step-line: #9a4ad4; }
+    .overlay.paths .path-node.path-lost,
+    .overlay.paths .path-node.path-beggar { --step-line: #9a4ad4; }
+    .overlay.paths .path-node.path-search,
+    .overlay.paths .path-node.path-train { --step-line: #3caf6a; }
     .overlay.paths .path-list button.path-node {
       width: 168px;
       height: 220px;
@@ -10427,11 +10435,8 @@
       min-height: 0;
       height: 100%;
       border-radius: 16px;
-      border: 2px solid rgba(228, 177, 90, 0.85);
-      box-shadow:
-        0 0 0 1px #15100d,
-        0 14px 28px rgba(0, 0, 0, 0.45),
-        inset 0 1px 0 rgba(255, 236, 190, 0.2);
+      border: 0;
+      box-shadow: none;
       overflow: hidden;
       background: #120e0c;
     }
@@ -10788,10 +10793,7 @@
       text-align: inherit;
     }
     .cast-screen.character-focus button.cast-hero-frame.locked {
-      box-shadow:
-        0 0 0 3px #ffe08a,
-        0 0 28px rgba(255, 196, 110, 0.55),
-        0 14px 28px rgba(0, 0, 0, 0.45);
+      box-shadow: inset 0 0 28px rgba(255, 196, 110, 0.45);
     }
     .cast-screen.character-focus .cast-title {
       position: static;
@@ -12697,9 +12699,9 @@
       戦術眼: { cost: 0, stars: 2, text: "手札を1枚捨て、2枚引く\n捨てる手札が無いと使えない", quick: true, tactic: true, kind: "skill" },
       気合溜め: { cost: 1, stars: 2, text: "次の自分のターン、マナ+1、ATK+2", nextMana: 1, nextAtk: 2, kind: "skill" },
       精神統一: { cost: 0, stars: 2, text: "このターン、マナ+1", manaNow: 1, flash: true, kind: "skill" },
-      薬草: { cost: 1, text: "体力を4回復", heal: 4, kind: "power", power: true },
-      ベッド: { cost: 2, text: "体力を10回復", heal: 10, kind: "power", power: true },
-      ホテル: { cost: 3, stars: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
+      薬草: { cost: 1, text: "体力を8回復", heal: 8, kind: "power", power: true },
+      ベッド: { cost: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
+      ホテル: { cost: 3, stars: 2, text: "体力を30回復", heal: 30, kind: "power", power: true },
       不死鳥の羽根: { cost: 0, stars: 2, text: "手札にあるとき、HPが0になると最大HPの半分で復活する。端数は切り捨て。そのあと消える。", kind: "power", power: true, phoenix: true },
       礼拝堂: { cost: 1, stars: 2, text: "手札のカードを4枚まで選び、デッキから永遠に削除する。", kind: "power", power: true, chapel: true },
       鉄壁の霊薬: { cost: 1, stars: 1, text: "ブロック18", flatBlock: 18, kind: "power", power: true },
@@ -12745,11 +12747,11 @@
         rank: "雑魚",
         stature: "small",
         hp: 50,
-        atkHidden: 1,
+        atkHidden: 0,
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "トリプルアタック", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true },
+          { name: "トリプルアタック", cost: 2, text: "2ダメージを3回", damage: 2, hits: 3, kind: "attack", stars: 1, atkEach: true },
         ],
       },
       {
@@ -12787,7 +12789,7 @@
         tier: 3,
         rank: "強敵",
         stature: "huge",
-        hp: 130,
+        hp: 165,
         atkHidden: 4,
         trait: "体力が最大の半分以下になったとき、SPD+1する。",
         halfSpd: true,
@@ -12795,7 +12797,7 @@
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "タウロスアタック", cost: 2, text: "13ダメージ\n体力が最大の半分以下なら、ダメージが2倍", damage: 13, kind: "attack", halfDouble: true, stars: 3 },
+          { name: "タウロスアタック", cost: 2, text: "16ダメージ\n体力が最大の半分以下なら、ダメージが2倍", damage: 16, kind: "attack", halfDouble: true, stars: 3 },
           { name: "踏ん張り", cost: 1, text: "ブロック8\n体力が最大の半分以下なら、ブロック16", block: 8, kind: "skill", halfBlock: true, stars: 3 },
         ],
       },
@@ -12805,7 +12807,7 @@
         tier: 3,
         rank: "強敵",
         stature: "huge",
-        hp: 140,
+        hp: 175,
         atkHidden: 0,
         spd: 2,
         attackGrow: 2,
@@ -12821,16 +12823,16 @@
       {
         name: "ちびドラゴン",
         image: "enemy-dragon.png?v=7",
-        tier: 2,
-        rank: "普通",
+        tier: 1,
+        rank: "雑魚",
         stature: "small",
-        hp: 60,
-        atkHidden: 4,
+        hp: 45,
+        atkHidden: 2,
         pattern: [
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 },
+          { name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n相手に炎上+2を与える", damage: 3, burn: 2, kind: "skill", stars: 1 },
         ],
       },
       {
@@ -12839,7 +12841,7 @@
         tier: 2,
         rank: "普通",
         stature: "same",
-        hp: 65,
+        hp: 80,
         atkHidden: 3,
         defHidden: 1,
         spdCut: 2,
@@ -12856,13 +12858,13 @@
         tier: 2,
         rank: "普通",
         stature: "same",
-        hp: 35,
+        hp: 45,
         atkHidden: 2,
         defHidden: 2,
         spd: 2,
-        openingBlock: 10,
+        openingBlock: 12,
         openingThorns: 2,
-        trait: "石の皮膚。戦闘開始時、シールド10とトゲ2。",
+        trait: "石の皮膚。戦闘開始時、シールド12とトゲ2。",
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
@@ -12876,13 +12878,13 @@
         tier: 2,
         rank: "普通",
         stature: "same",
-        hp: 65,
-        atkHidden: 2,
+        hp: 80,
+        atkHidden: 3,
         defHidden: 1,
         spd: 2,
         pattern: [
           { name: "アタック" },
-          { name: "ブロック" },
+          { name: "アタック" },
           { name: "ブロック" },
           { name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 },
         ],
@@ -12893,8 +12895,8 @@
         tier: 2,
         rank: "普通",
         stature: "huge",
-        hp: 100,
-        atkHidden: 0,
+        hp: 125,
+        atkHidden: -6,
         ordered: true,
         pattern: [
           { name: "さぼる", cost: 0, text: "なにもしない", kind: "skill", stars: 2, slack: true },
@@ -12922,7 +12924,7 @@
         tier: 4,
         rank: "★★★★",
         stature: "huge",
-        hp: 170,
+        hp: 220,
         atkHidden: 9,
         defHidden: 6,
         spd: 2,
@@ -12932,7 +12934,7 @@
           { name: "ブロック" },
           { name: "ブロック" },
           { name: "餌だ!!", cost: 3, text: "10ダメージを3回", damage: 10, hits: 3, kind: "attack", boss: true, stars: 4 },
-          { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を1枚使う", legion: true, kind: "skill", boss: true, stars: 4 },
+          { name: "死者の軍団", cost: 2, text: "この攻略で倒した敵の特徴を2枚使う", legion: true, kind: "skill", boss: true, stars: 4 },
         ],
       },
     ];
@@ -13227,7 +13229,7 @@
     const FX_HEROES = [
       { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", imgW: 864, imgH: 1152, face: 135, inkLeft: 63, head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
       { id: "half", name: "半悪魔", battle: "girl-demon-half-battle.png?v=2", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 110, inkLeft: 80, head: ["68%", "22%"], body: ["52%", "52%"], shield: ["48%", "50%"] },
-      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=4", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 92, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
+      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=5", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 92, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
     ];
     let askLeave = false;
     let showDeck = false;
@@ -13352,7 +13354,7 @@
     let blessCardName = "";
     let enchantPop = "";
     let floorHp = 30;
-    let runBonus = { hp: 0, spd: 0, mana: 0, play: 0 };
+    let runBonus = { hp: 0, spd: 0, mana: 0, play: 0, fx: {} };
     let runEntrance = false;
     let rewardReady = false;
     let rewardStars = 0;
@@ -14122,6 +14124,27 @@
       { id: "play", stars: 3 },
       { id: "loot", stars: 1 },
     ];
+    // 入口の祝福だけに足す新しい14種。すべて★3、絵なし。選ぶと runBonus.fx に積む（途中の祝福には出ない）
+    const BLESS_NEW = [
+      { id: "godAtk", name: "戦神の加護", body: "毎戦闘、ATK+2" },
+      { id: "godDef", name: "守護神の加護", body: "毎戦闘、DEF+2" },
+      { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
+      { id: "galeBless", name: "疾風の祝福", body: "毎戦闘の1・2ターン目、カードを2枚多く引く" },
+      { id: "magicBless", name: "魔導の祝福", body: "毎戦闘の1ターン目、マナ+1\nカードを1枚多く引く" },
+      { id: "rookieBless", name: "基本の極意", body: "初期デッキのカードのダメージとブロックが+3される" },
+      { id: "masterPick", name: "熟練の極意", body: "入手時、デッキの好きなカード1枚の熟練度をマックスにする" },
+      { id: "mirrorBless", name: "双子の鏡", body: "入手時、デッキの好きなカードを1枚コピーしてデッキに加える" },
+      { id: "purgeBless", name: "大浄化の祝福", body: "入手時、デッキのカードを2枚まで廃棄できる" },
+      { id: "goldWin", name: "黄金の加護", body: "戦闘勝利時の獲得★+2" },
+      { id: "springBless", name: "再生の泉", body: "戦闘が終わるたび、HPを6回復" },
+      { id: "trainBless", name: "鍛錬の極意", body: "戦闘に勝つたび、最大HP+2" },
+      { id: "restBless", name: "極上の休息", body: "休憩でHPが全回復。次の戦闘は、ATK+2 DEF+2" },
+      { id: "secretBless", name: "秘伝の祝福", body: "入手時、レアリティ★★★のカード3択から1枚を選んで獲得する" },
+    ];
+    function blessNewDef(id) { return BLESS_NEW.find((row) => row.id === id) || null; }
+    function hasBless(key) {
+      return Number(runBonus && runBonus.fx && runBonus.fx[key]) > 0;
+    }
     const ENCOUNTER_BEGGAR = 0.5;
 
     function fillSpan(span, dungeon) {
@@ -14341,17 +14364,17 @@
     function roadFace(node) {
       const name = String(node || "");
       if (name === "出来事:祝福") return { src: "path-bless-v4.jpg?v=3", label: "祝福" };
-      if (name === "出来事:探索") return { src: "path-search.jpg?v=14", label: "探索" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=15", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=9", label: "遭遇" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=5", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=14", label: "お店" };
-      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=6", label: "物乞い" };
-      if (name === "出来事:修行") return { src: "path-train.jpg?v=7", label: "修行" };
+      if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=8", label: "物乞い" };
+      if (name === "出来事:修行") return { src: "path-train.jpg?v=8", label: "修行" };
       if (name === "出来事:鍛冶屋") return { src: "path-smith.jpg?v=3", label: "鍛冶屋" };
-      if (name.startsWith("強敵:")) return { src: "path-strong.jpg?v=1", label: "強敵" };
-      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=4", label: "ボス戦", boss: true };
+      if (name.startsWith("強敵:")) return { src: "path-strong.jpg?v=2", label: "強敵" };
+      if (name === DUNGEON.boss) return { src: "path-boss.jpg?v=5", label: "ボス戦", boss: true };
       if (!name) return { mark: "？", label: "" };
-      return { src: "path-fight.jpg?v=7", label: "戦闘" };
+      return { src: "path-fight.jpg?v=8", label: "戦闘" };
     }
 
     function roadTone(node) {
@@ -14714,10 +14737,10 @@
       { id: "tyrant-shield", name: "覇王の盾", slot: "shield", stars: 3, def: 6, oneBlock: true, blockBoost: true, effect: "★★★　DEF+6。1ターンに防御は1枚。得るブロックは1.5倍（切り上げ）", image: "gear-tyrant-shield.jpg?v=1" },
       { id: "aegis", name: "イージスシールド", slot: "shield", stars: 3, def: 4, aegis: true, effect: "★★★　DEF+4。各戦闘で、最初のHPダメージを1回だけ0にする", image: "gear-aegis.jpg?v=1" },
       { id: "lion-shield", name: "獅子の盾", slot: "shield", stars: 3, atk: 2, def: 2, atkInTrait: true, effect: "★★★　ATK+2　DEF+2", image: "gear-lion-shield.jpg?v=6" },
-      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に攻撃がないとき、山札から攻撃カードを引く。アクセサリー枠。", image: "gear-chain-attack.jpg?v=9" },
-      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に防御がないとき、山札から防御カードを引く。アクセサリー枠。", image: "gear-chain-guard.jpg?v=8" },
+      { id: "chain-attack", name: "連撃の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に攻撃がないとき、山札から攻撃カードを引く（ターンに1度）。アクセサリー枠。", image: "gear-chain-attack.jpg?v=9" },
+      { id: "chain-guard", name: "連守の腕輪", slot: "braceletAny", stars: 3, effect: "★★★　手札に防御がないとき、山札から防御カードを引く（ターンに1度）。アクセサリー枠。", image: "gear-chain-guard.jpg?v=8" },
       { id: "power-bracelet", name: "力の腕輪", slot: "braceletAny", stars: 2, atk: 2, effect: "★★　アクセサリー。ATK+2", image: "gear-power-bracelet.jpg?v=7" },
-      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 3, effect: "★★　アクセサリー。DEF+3", image: "gear-guard-bracelet.jpg?v=10" },
+      { id: "guard-bracelet", name: "守りの腕輪", slot: "braceletAny", stars: 2, def: 2, effect: "★★　アクセサリー。DEF+2", image: "gear-guard-bracelet.jpg?v=10" },
       { id: "reuse-bracelet", name: "再利用の腕輪", slot: "braceletAny", stars: 3, carryMana: true, effect: "★★★　未使用マナを次のターンに持ち越す。", image: "gear-reuse-bracelet.jpg?v=8" },
       { id: "poison-ward", name: "毒無効の腕輪", slot: "braceletAny", stars: 1, poisonImmune: true, effect: "★　毒にならない", image: "gear-poison-ward.jpg?v=1" },
       { id: "burn-ward", name: "炎上無効の腕輪", slot: "braceletAny", stars: 1, burnImmune: true, effect: "★　炎上にならない", image: "gear-burn-ward.jpg?v=1" },
@@ -14796,10 +14819,10 @@
       "battle-counter": "DEF+2\n自分のDEFだけトゲを獲得",
       "eagle-shield": "DEF+5\nステータスが減少しない\n炎上はDEFを下げるので無効\n毒は入る",
       "lion-shield": "ATK+2\nDEF+2",
-      "chain-attack": "手札に攻撃がないとき、山札から攻撃カードを引く",
-      "chain-guard": "手札に防御がないとき、山札から防御カードを引く",
+      "chain-attack": "手札に攻撃がないとき、山札から攻撃カードを引く（ターンに1度）",
+      "chain-guard": "手札に防御がないとき、山札から防御カードを引く（ターンに1度）",
       "power-bracelet": "ATK+2",
-      "guard-bracelet": "DEF+3",
+      "guard-bracelet": "DEF+2",
       "reuse-bracelet": "未使用マナを次のターンに持ち越す",
       "hunter-dagger": "ATK+1\n戦闘開始時、カードを1枚引く",
       "rapier": "ATK+1\n毎ターン、最初のアタックのダメージ+3",
@@ -16801,7 +16824,7 @@
             next.damage = (Number(next.damage) || 0) + plus;
           }
         }
-        if (hasRelic("rookie") && card.starter) {
+        if ((hasRelic("rookie") || hasBless("rookieBless")) && card.starter) {
           if (next.damage) next.damage = (Number(next.damage) || 0) + 3;
           if (next.block) next.block = (Number(next.block) || 0) + 3;
         }
@@ -16959,17 +16982,19 @@
     function pullFromBracelets() {
       const right = gear.braceletR;
       const left = gear.braceletL;
-      if (right && right.id === "chain-attack" && !hand.some((card) => cardKind(card) === "attack")) {
+      if (right && right.id === "chain-attack" && !player.chainAtkUsed && !hand.some((card) => cardKind(card) === "attack")) {
         if (hand.length >= HAND_CAP) log(`${heroName()}は${right.name}。手札が10枚なので引かない。`);
         else {
           const card = pullKind("attack");
+          if (card) player.chainAtkUsed = true;
           log(card ? `${heroName()}は${right.name}で${card.name}を引いた。` : `${heroName()}は${right.name}。山札に攻撃カードがない。`);
         }
       }
-      if (left && left.id === "chain-guard" && !hand.some((card) => cardKind(card) === "block")) {
+      if (left && left.id === "chain-guard" && !player.chainGuardUsed && !hand.some((card) => cardKind(card) === "block")) {
         if (hand.length >= HAND_CAP) log(`${heroName()}は${left.name}。手札が10枚なので引かない。`);
         else {
           const card = pullKind("block");
+          if (card) player.chainGuardUsed = true;
           log(card ? `${heroName()}は${left.name}で${card.name}を引いた。` : `${heroName()}は${left.name}。山札に防御カードがない。`);
         }
       }
@@ -18723,9 +18748,9 @@
       const foe = enemyByName(who);
       const wrap = (card) => (card && foe ? applyEnemyCardRarity(card, foe) : card);
       if (who === "スライム") return wrap({ name: "スライム粘液", cost: 1, text: "相手に毒+4を与える", poison: 4, kind: "skill", stars: 1 });
-      if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "1ダメージを3回", damage: 1, hits: 3, kind: "attack", stars: 1, atkEach: true });
+      if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "2ダメージを3回", damage: 2, hits: 3, kind: "attack", stars: 1, atkEach: true });
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
-      if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "相手に炎上+3を与える", burn: 3, kind: "skill", stars: 2 });
+      if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n相手に炎上+2を与える", damage: 3, burn: 2, kind: "skill", stars: 1 });
       if (who === "デスドラゴン") return wrap({ name: "死撃", cost: 2, text: "12ダメージ\nこの戦闘中、ATK+2", damage: 12, atkGrow: 2, kind: "attack", stars: 3 });
       if (who === "雪女") return wrap({ name: "吹雪", cost: 1, text: "次の相手のターン終了まで、相手のATK-4", frost: 4, kind: "skill", stars: 2 });
       if (who === "マーフォーク") return wrap({ name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 });
@@ -18745,10 +18770,13 @@
         log(`${enemy.name}は死者の軍団。この攻略で使える特徴がない。`, card, true);
         return;
       }
-      const who = pool[Math.floor(Math.random() * pool.length)];
-      const trait = legionTraitFor(who);
-      log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
-      enemyUseCard(trait);
+      const rest = pool.slice();
+      for (let i = 0; i < 2 && rest.length; i += 1) {
+        const who = rest.splice(Math.floor(Math.random() * rest.length), 1)[0];
+        const trait = legionTraitFor(who);
+        log(`${enemy.name}は死者の軍団。${who}の${trait.name}。`, card, true);
+        enemyUseCard(trait);
+      }
     }
 
     let stealArmed = null;
@@ -19210,6 +19238,8 @@
         for (const row of pile || []) if (row) row.cheapTurn = false;
       }
       player.tomeUsed = false;
+      player.chainAtkUsed = false;
+      player.chainGuardUsed = false;
       player.comboPaid = false;
       player.relicArmedHit = (Number(player.relicNextHit) || 0) + (turn === 1 && hasRelic("bell") ? 5 : 0);
       player.relicNextHit = 0;
@@ -19275,15 +19305,19 @@
         }
       }
       if (turn === 1) {
-        let atk = (hasRelic("openAtk") ? 1 : 0) + (hasRelic("horn") ? 2 : 0);
-        let def = (hasRelic("openDef") ? 1 : 0) + (hasRelic("horn") ? 2 : 0);
+        const restBuff = hasBless("restBless") && Number(runBonus.fx.restBuff) > 0 ? 2 : 0;
+        if (restBuff) runBonus.fx.restBuff = 0;
+        let atk = (hasRelic("openAtk") ? 1 : 0) + (hasRelic("horn") ? 2 : 0) + (hasBless("godAtk") ? 2 : 0) + restBuff;
+        let def = (hasRelic("openDef") ? 1 : 0) + (hasRelic("horn") ? 2 : 0) + (hasBless("godDef") ? 2 : 0) + restBuff;
         if (atk) player.atkMod = (Number(player.atkMod) || 0) + atk;
         if (def) player.defMod = (Number(player.defMod) || 0) + def;
-        if (atk || def) log(`${heroName()}は戦利品。この戦闘、ATK+${atk}、DEF+${def}。`);
+        if (atk || def) log(`${heroName()}は戦利品と祝福。この戦闘、ATK+${atk}、DEF+${def}。`);
         if (hasRelic("openBlock")) gainBlock(8);
+        if (hasBless("ironBless")) gainBlock(8);
         if (hasRelic("openPoison") && enemy) addPoison(enemy, 3);
         if (hasRelic("openBurn") && enemy) addBurn(enemy, 3);
       }
+      if (turn === 2 && hasBless("ironBless")) gainBlock(8);
       if (turn === 4 && hasRelic("flag")) {
         player.atkMod = (Number(player.atkMod) || 0) + 3;
         player.defMod = (Number(player.defMod) || 0) + 3;
@@ -19303,7 +19337,7 @@
       }
       syncGearStats();
       const halfMana = hpHalf(player) && (gear.braceletL && gear.braceletL.halfMana || gear.braceletR && gear.braceletR.halfMana) ? 1 : 0;
-      const relicMana = (turn === 1 && hasRelic("clock") ? 1 : 0) + ((turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("shard")) ? 1 : 0);
+      const relicMana = (turn === 1 && hasRelic("clock") ? 1 : 0) + (turn === 1 && hasBless("magicBless") ? 1 : 0) + ((turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("shard")) ? 1 : 0);
       const carried = Math.max(0, Number(player.pendingCarry) || 0);
       player.pendingCarry = 0;
       const bonusMana = Math.max(0, Number(player.nextMana) || 0) + (anyBracelet("soloMana") && braceletsWorn().length === 1 ? 1 : 0);
@@ -19359,6 +19393,8 @@
       if (turn === 1 && anySword("openingDraw")) bugDrawExtra("狩人の短剣", 1);
       if (turn === 1 && hasRelic("openDraw")) bugDrawExtra("俊足のブーツ", 2);
       if (turn === 2 && hasRelic("feather")) bugDrawExtra("追い風の羽", 2);
+      if ((turn === 1 || turn === 2) && hasBless("galeBless")) bugDrawExtra("疾風の祝福", 2);
+      if (turn === 1 && hasBless("magicBless")) bugDrawExtra("魔導の祝福", 1);
       if (turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("pen")) bugDrawExtra("知恵の羽根ペン", 2);
       pullFromBracelets();
       slashSeq = 0;
@@ -19394,6 +19430,7 @@
         closeFightStep("win");
         if (anySword("vampHeal") && player && player.hp > 0) restoreHp(6);
         if (hasRelic("herb") && player && player.hp > 0) restoreHp(4);
+        if (hasBless("springBless") && player && player.hp > 0) restoreHp(6);
         if (hasRelic("fang") && player && player.hp > 0 && enemy && (enemy.rank === "強敵" || enemy.boss)) restoreHp(20);
         const slain = enemyKey(enemy && enemy.name);
         if (slain && runSlain.indexOf(slain) < 0) runSlain.push(slain);
@@ -19940,7 +19977,7 @@
     function applySave(data) {
       runLevel = savedRunLevel(data);
       runBonus = data.runBonus && typeof data.runBonus === "object"
-        ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0, play: Number(data.runBonus.play) || 0 }
+        ? { hp: Number(data.runBonus.hp) || 0, spd: Number(data.runBonus.spd) || 0, mana: Number(data.runBonus.mana) || 0, play: Number(data.runBonus.play) || 0, fx: data.runBonus.fx && typeof data.runBonus.fx === "object" ? { ...data.runBonus.fx } : {} }
         : emptyRunBonus();
       cleared = !!data.cleared;
       runEnded = data.runEnded || (data.cleared ? "win" : null);
@@ -20288,7 +20325,7 @@
       return keepCard(pick);
     }
     function emptyRunBonus() {
-      return { hp: 0, spd: 0, mana: 0, play: 0 };
+      return { hp: 0, spd: 0, mana: 0, play: 0, fx: {} };
     }
 
     function runSpdBonus() {
@@ -20306,7 +20343,7 @@
     function gainLevel(foe) {
       const before = player ? Number(player.maxHp) || runMaxHp() : runMaxHp();
       const stars = foe ? (Number(foe.tier) || starsForRank(foe.rank)) : 1;
-      if (!anyBracelet("cursed")) runGrownHp += Math.max(1, stars) + (hasRelic("weight") ? 1 : 0);
+      if (!anyBracelet("cursed")) runGrownHp += Math.max(1, stars) + (hasRelic("weight") ? 1 : 0) + (hasBless("trainBless") ? 2 : 0);
       runLevel = (Number(runLevel) || 0) + 1;
       const nextMax = runMaxHp();
       const grew = Math.max(0, nextMax - before);
@@ -20357,8 +20394,6 @@
       const list = [];
       if (!card.quick && !isItemCard(card)) list.push("quick");
       if (!card.keep) list.push("keep");
-      if (!isFlashCard(card)) list.push("flash");
-      if (!card.burst && !isItemCard(card)) list.push("burst");
       if (!card.parry) list.push("parry");
       if (!card.poison) list.push("poison");
       if (!card.burn) list.push("burn");
@@ -20443,9 +20478,12 @@
 
     function rollBlessPicks() {
       const picks = [];
-      for (const entry of shuffle(BLESS_KINDS).slice(0, 3)) {
+      const entrance = route[0] === "出来事:祝福" && floorNo() === 0;
+      const pool = entrance ? BLESS_KINDS.concat(BLESS_NEW.map((row) => ({ id: row.id, stars: 3 }))) : BLESS_KINDS;
+      for (const entry of shuffle(pool).slice(0, 3)) {
         const kind = entry.id;
-        if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
+        if (blessNewDef(kind)) picks.push({ kind, label: blessNewDef(kind).name });
+        else if (kind === "maxhp") picks.push({ kind, label: "最大HP" });
         else if (kind === "spd") picks.push({ kind, label: "SPD" });
         else if (kind === "play") picks.push({ kind, label: "皮の手袋" });
         else if (kind === "gear") picks.push({ kind, gear: rollBlessGear(), label: "装備" });
@@ -20528,6 +20566,24 @@
           runBonus.spd = (Number(runBonus.spd) || 0) + 1;
         } else if (pick.kind === "play") {
           runBonus.play = (Number(runBonus.play) || 0) + 1;
+        } else if (blessNewDef(pick.kind)) {
+          const choiceKind = { masterPick: "master", mirrorBless: "copy", purgeBless: "purge", secretBless: "shelf" }[pick.kind];
+          if (choiceKind) {
+            noteBless(blessChoiceText(pick));
+            blessPicks = [];
+            if (beginLootChoice(choiceKind, "floor")) {
+              lootChoice.resume = "event";
+              persistSave(true);
+              render();
+              return;
+            }
+            log(`${blessNewDef(pick.kind).name}。選べるカードは無かった。`);
+            finishEvent();
+            return;
+          }
+          if (!runBonus.fx || typeof runBonus.fx !== "object") runBonus.fx = {};
+          runBonus.fx[pick.kind] = (Number(runBonus.fx[pick.kind]) || 0) + 1;
+          if (pick.kind === "rookieBless") syncGearStats();
         } else if (pick.kind === "gear" || pick.kind === "loot") {
           const flight = captureRewardCardFlight(`[data-action="bless-pick"][data-bless="${index}"] .card`);
           const land = gearLandKey(pick.gear);
@@ -20683,13 +20739,13 @@
       return names.map(trainCard).filter(Boolean);
     }
 
-    function maxOneMastery(source) {
+    function maxOneMastery(source, only) {
       const open = runDeck().filter((card) => {
         if (!masteryEligible(card) || card.copyNth == null) return false;
         const row = masteryRow(card.name, card.copyNth);
         return !row || !row.picked;
       });
-      const card = shuffle(open)[0];
+      const card = only || shuffle(open)[0];
       if (!card) return null;
       let row = masteryRow(card.name, card.copyNth);
       if (!row) {
@@ -21161,7 +21217,8 @@
         floorKind = "休憩";
         const max = runMaxHp();
         const before = Math.min(max, floorHp);
-        const gain = hasRelic("glamp") ? Math.max(0, max - before) : Math.round(max * 0.2);
+        const gain = hasRelic("glamp") || hasBless("restBless") ? Math.max(0, max - before) : Math.round(max * 0.2);
+        if (hasBless("restBless")) runBonus.fx.restBuff = 1;
         const after = Math.min(max, before + gain);
         const healed = after - before;
         floorHp = after;
@@ -21246,12 +21303,22 @@
       const raw = deckCore();
       const shown = runDeck();
       const base = raw[smithBase];
-      const mat = raw[matIndex];
+      const mat = smithMatSource(raw, matIndex);
       const baseShown = shown[smithBase];
       if (!smithMateOk(base, baseShown, smithBase, mat, matIndex, shown[matIndex])) return;
       if (!spendStars(smithPrice(SMITH_FUSE_COST))) return;
       const nth = raw.slice(0, smithBase).filter((card) => card.name === base.name).length;
-      cardAlters.push(mixSmithAlter(base, mat, nth));
+      const matNth = raw.slice(0, matIndex).filter((card) => card && card.name === mat.name).length;
+      const merged = mixSmithAlter(base, mat, nth);
+      // 素材に飲まれたカードの合成跡を消し、同名の後ろの合成跡を1つ前へ詰める
+      for (let i = cardAlters.length - 1; i >= 0; i--) {
+        const item = cardAlters[i];
+        if (!item || item.name !== mat.name) continue;
+        if (item.nth === matNth) cardAlters.splice(i, 1);
+        else if (item.nth > matNth) item.nth -= 1;
+      }
+      if (merged.name === mat.name && merged.nth > matNth) merged.nth -= 1;
+      cardAlters.push(merged);
       dropOneCard(mat.name);
       smithUsed = true;
       persistMeta();
@@ -21287,10 +21354,21 @@
       return `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
     }
 
+    function smithMatSource(raw, matIndex) {
+      const mat = raw[matIndex];
+      if (!mat) return mat;
+      const matNth = raw.slice(0, matIndex).filter((card) => card && card.name === mat.name).length;
+      const alter = cardAlters.find((item) => item && item.name === mat.name && item.nth === matNth);
+      if (!alter) return mat;
+      const next = { ...mat };
+      applySmithAlter(next, alter);
+      return next;
+    }
+
     function smithResultCard(baseIndex, matIndex) {
       const raw = deckCore();
       const base = raw[baseIndex];
-      const mat = raw[matIndex];
+      const mat = smithMatSource(raw, matIndex);
       if (!base || !mat) return base;
       const nth = raw.slice(0, baseIndex).filter((card) => card && card.name === base.name).length;
       cardAlters.push(mixSmithAlter(base, mat, nth));
@@ -21335,7 +21413,7 @@
 
     function smithRulesHtml() {
       const pick = floorPhase === "smith-mat" ? "素材にするカードを選んでください。" : "合成にするカードを選んでください。";
-      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、いまのマナが合成より低いカードです。光のエンチャントと効率化で下がったコストを見ます。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。</p><p>${pick}</p></div>`;
+      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、いまのマナが合成より低いカードです。光のエンチャントと効率化で下がったコストを見ます。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。一度合成のもとにしたカードは、もう合成のもとにできません。素材にはできます。</p><p>${pick}</p></div>`;
     }
 
     function smithFuseOverlay() {
@@ -22416,13 +22494,14 @@
           <section class="odds-block">
             <h2>祝福</h2>
             <ul>
-              <li>下の${BLESS_KINDS.length}種から、重ならない3つが出ます。七つは同じ確率です。どれも、3枠に入る割合は${pct(3 / BLESS_KINDS.length)}です。</li>
+              <li>入口の祝福は、下の${BLESS_KINDS.length + BLESS_NEW.length}種から、重ならない3つが出ます。同じ確率です。どれも、3枠に入る割合は${pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))}です。</li>
+              <li>途中の遭遇の祝福は、新しい${BLESS_NEW.length}種を除いた七つから出ます。どれも${pct(3 / BLESS_KINDS.length)}です。</li>
             </ul>
-            ${oddsTable(["祝福", "3枠に入る割合"], BLESS_KINDS.map((kind) => [blessNames[kind.id], pct(3 / BLESS_KINDS.length)]))}
+            ${oddsTable(["祝福", "3枠に入る割合（入口）"], BLESS_KINDS.map((kind) => [blessNames[kind.id], pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))]).concat(BLESS_NEW.map((row) => [`${row.name}（★3・${row.body.replace(/\n/g, " ")}）`, pct(3 / (BLESS_KINDS.length + BLESS_NEW.length))])))}
             <ul>
               <li>エンチャントは、付けられる火・水・光・闇が同じ確率です。</li>
               <li>選ぶと、もらったエンチャントのポップと、デッキのカードが出ます。一つ決めて決定します。</li>
-              <li>闇は、クイック、キープ、フラッシュ、バースト、パリィ、毒、炎上、クリティカルのうち、そのカードにまだ無いものを一つ足します。毒は+3、炎上は+3、クリティカルは50%です。</li>
+              <li>闇は、クイック、キープ、パリィ、毒、炎上、クリティカル、トゲのうち、そのカードにまだ無いものを一つ足します。毒は+3、炎上は+3、クリティカルは50%、トゲは+3です。</li>
               <li>付けられるカードが無いときは、エンチャントは出ません。</li>
             </ul>
             <h3>戦利品（ボスを除く・未入手から同じ確率）</h3>
@@ -23333,6 +23412,8 @@
       if (kind === "spd") return { slot: "spd", name: "革靴", image: "reward-spd.jpg?v=1", body: "SPD+1", stars: 3 };
       if (kind === "play") return { slot: "play", name: "皮の手袋", image: "reward-play.jpg?v=1", body: playGloveBody(PLAY_AREA_BASE), stars: 3 };
       if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナ+1", stars: 5 };
+      const fresh = blessNewDef(kind);
+      if (fresh) return { slot: "bless", name: fresh.name, image: "", body: fresh.body, stars: 3 };
       const face = enchantFace(elem);
       return { slot: "enchant", name: face.name, image: face.image, body: face.sub, stars: 3, plain: true };
     }
@@ -23368,7 +23449,7 @@
               ${sheetFig("gear-full-demon-sword.jpg?v=1", "完全悪魔化の剣", "cut-ref")}
               ${sheetFig("girl-battle-v42.png?v=1", "戦闘", "cut-ref")}
               ${sheetFig("girl-demon-half-battle.png?v=2", "半悪魔化の戦闘", "cut-ref")}
-              ${sheetFig("girl-demon-full-battle.png?v=4", "完全悪魔化の戦闘", "cut-ref")}
+              ${sheetFig("girl-demon-full-battle.png?v=5", "完全悪魔化の戦闘", "cut-ref")}
             </div>
             <div class="ref-grid">
               ${sheetFig("girl-defeat.jpg?v=17", "敗北", "land-ref", "wide-land")}
@@ -23384,20 +23465,20 @@
               ${sheetFig("job-girl-v2.png?v=2", "戦士の選択コマ（手を上げる）", "cut-ref")}
             </div>
             <h3>道（三択）</h3>
-            <p class="album-meta">道を選ぶときの候補アイコン。戦闘・強敵・ボスは赤、迷子は紫、休憩は青、探索・お店・修行・鍛冶屋・祝福は黄。同じ名前は並べない</p>
+            <p class="album-meta">道を選ぶときの候補アイコン。戦闘・強敵・ボスは赤、迷子・物乞いは紫、休憩は青、探索・修行は緑、お店・鍛冶屋・祝福は黄。同じ名前は並べない</p>
             <div class="ref-grid">
-              ${sheetFig("path-search.jpg?v=14", "探索", "", "path-other-ref")}
+              ${sheetFig("path-search.jpg?v=15", "探索", "", "path-grow-ref")}
               ${sheetFig("path-bless-v4.jpg?v=3", "祝福", "", "path-other-ref")}
-              ${sheetFig("path-fight.jpg?v=7", "戦闘", "", "path-series")}
-              ${sheetFig("path-strong.jpg?v=1", "強敵", "", "path-series")}
-              ${sheetFig("path-boss.jpg?v=4", "ボス戦", "", "path-series")}
-              ${sheetFig("path-beggar.jpg?v=6", "物乞い")}
+              ${sheetFig("path-fight.jpg?v=8", "戦闘", "", "path-series")}
+              ${sheetFig("path-strong.jpg?v=2", "強敵", "", "path-series")}
+              ${sheetFig("path-boss.jpg?v=5", "ボス戦", "", "path-series")}
+              ${sheetFig("path-beggar.jpg?v=8", "物乞い", "", "path-lost-ref")}
               ${sheetFig("path-shop.jpg?v=14", "お店", "", "path-other-ref")}
               ${sheetFig("path-rest.jpg?v=5", "休憩", "", "path-rest-ref")}
               ${sheetFig("path-lost.jpg?v=13", "迷子", "", "path-lost-ref")}
               ${sheetFig("path-job.jpg?v=8", "ジョブ")}
               ${sheetFig("path-unknown.jpg?v=9", "遭遇")}
-              ${sheetFig("path-train.jpg?v=7", "修行", "", "path-other-ref")}
+              ${sheetFig("path-train.jpg?v=8", "修行", "", "path-grow-ref")}
               ${sheetFig("path-smith.jpg?v=3", "鍛冶屋", "", "path-other-ref")}
             </div>
             <h3>道のあとのイベント（画像置き場）</h3>
@@ -24331,7 +24412,7 @@
       ["style-shakudo-silver", "戦利品 銀", "frame-silver-over-silver.png?v=23"],
       ["style-shakudo-gold", "戦利品 金", "frame-silver-over-gold.png?v=23"],
       ["style-shakudo-black", "戦利品 ボス", "frame-silver-over-black.png?v=23"],
-      ["style-boon", "祝福", "frame-gold-over-gold.png?v=6"],
+      ["style-boon", "祝福", "frame-gold-over-gold.png?v=7"],
       ["style-plum-basic", "敵 基本", "frame-plum-basic.png?v=22"],
       ["style-plum-copper", "敵 ★", "frame-plum-copper.png?v=22"],
       ["style-plum-silver", "敵 ★★", "frame-plum-silver.png?v=22"],
@@ -25701,16 +25782,16 @@
 
     const PATHS = {
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=5" },
-      straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=7" },
-      boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=4" },
-      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=14" },
-      beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=6" },
+      straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=8" },
+      boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=5" },
+      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=15" },
+      beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=8" },
       shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=14" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=13" },
       smith: { name: "鍛冶屋", text: "カードを強化できる。", image: "path-smith.jpg?v=3" },
       unknown: { name: "遭遇", text: "誰かが近づいてきた。", image: "path-unknown.jpg?v=9" },
-      train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=7" },
-      elite: { name: "強敵", text: "強敵と戦う。戦利品は必ずもらえる。", image: "path-strong.jpg?v=1" },
+      train: { name: "修行", text: "カードをランダムで獲得し、熟練も上がる。", image: "path-train.jpg?v=8" },
+      elite: { name: "強敵", text: "強敵と戦う。戦利品は必ずもらえる。", image: "path-strong.jpg?v=2" },
       bless: { name: "祝福", text: "女神が三つを差し出す。", image: "path-bless-v4.jpg?v=3" },
     };
     // 右の1枠。左は休憩、真ん中は戦闘で固定
@@ -26400,7 +26481,7 @@
       }
       const medal = !lastBoss && bossNow() && foe.medal ? gearItem(foe.medal) : null;
       // 最後のボスは★だけ。途中のボスだけ、カードと装備の報酬を出す
-      rewardStars = (foe.tier || starsForRank(foe.rank)) + (hasRelic("cat") ? 1 : 0);
+      rewardStars = (foe.tier || starsForRank(foe.rank)) + (hasRelic("cat") ? 1 : 0) + (hasBless("goldWin") ? 2 : 0);
       if (victoryStarDouble) {
         rewardStars *= 2;
         victoryStarDouble = false;
@@ -27077,7 +27158,7 @@
     }
 
     function finishEvent() {
-      if (lootChoice && lootChoice.kind === "copy") {
+      if (lootChoice && (lootChoice.kind === "copy" || lootChoice.kind === "master")) {
         lootChoice.resume = "event";
         persistSave(true);
         render();
@@ -27711,6 +27792,13 @@
       } else if (kind === "copy") {
         cards = runDeck().filter((card) => card && card.name);
         max = 1;
+      } else if (kind === "master") {
+        cards = runDeck().filter((card) => {
+          if (!card || !card.name || !masteryEligible(card) || card.copyNth == null) return false;
+          const row = masteryRow(card.name, card.copyNth);
+          return !row || !row.picked;
+        });
+        max = 1;
       } else if (kind === "shelf") {
         cards = shuffle(classCards().filter((card) => (Number(card.stars) || 1) === 3)).slice(0, 3);
         max = 1;
@@ -27721,7 +27809,7 @@
         cards = (hand || []).filter((card) => card && card.name);
         max = 1;
       } else return false;
-      if ((kind === "copy" || kind === "shelf" || kind === "mirror") && !cards.length) return false;
+      if ((kind === "copy" || kind === "shelf" || kind === "mirror" || kind === "master") && !cards.length) return false;
       lootChoice = { kind, after: after || "floor", max, picked: [], cards };
       return true;
     }
@@ -27740,8 +27828,11 @@
       const choice = lootChoice;
       if (!choice) return;
       const chosen = choice.picked.map((index) => choice.cards[index]).filter(Boolean);
-      if ((choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror") && !chosen.length) return;
-      if (choice.kind === "purge") {
+      if ((choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "master") && !chosen.length) return;
+      if (choice.kind === "master") {
+        const grown = maxOneMastery("relic", chosen[0]);
+        log(grown ? `熟練の極意。${grown.name}が熟練の回数に達した。` : "熟練の極意。熟練できるカードは無かった。");
+      } else if (choice.kind === "purge") {
         chosen.forEach((card) => removed.push(keepCard(card)));
         log(chosen.length ? `${heroName()}は浄化の聖水。${chosen.map((card) => card.name).join("、")}を廃棄した。` : `${heroName()}は浄化の聖水。廃棄しなかった。`);
       } else if (choice.kind === "chapel") {
@@ -27815,10 +27906,15 @@
       }
       const after = choice.after;
       const taste = choice.kind === "taste";
+      const resumeEvent = choice.resume === "event";
       lootChoice = null;
       persistSave(true);
       if (taste) {
         finishTasteOrWin();
+        return;
+      }
+      if (resumeEvent) {
+        finishEvent();
         return;
       }
       if (after === "victory") {
@@ -27841,19 +27937,21 @@
         tactic: "捨てる手札を1枚選ぶ",
         pact: "手札へ加える悪魔の剣を2枚まで選ぶ",
         taste: "基本ダメージ+2にする悪魔の剣を1枚選ぶ",
+        master: "熟練をマックスにするカードを1枚選ぶ",
       };
       const choice = lootChoice;
       const faces = choice.cards.map((card, index) => {
         const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
         return `<button type="button" class="reward-pick${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`;
       }).join("");
-      const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "tactic" || choice.kind === "pact" || choice.kind === "taste") && !choice.picked.length;
-      if (choice.kind === "copy") {
+      const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "tactic" || choice.kind === "pact" || choice.kind === "taste" || choice.kind === "master") && !choice.picked.length;
+      if (choice.kind === "copy" || choice.kind === "master") {
+        const isMaster = choice.kind === "master";
         const cards = choice.cards.map((card, index) => {
           const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
           return `<button type="button" class="enchant-card${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
         }).join("");
-        return `<div class="overlay deck-view enchant-pick loot-copy"><div class="panel"><h2>白紙の巻物</h2><p class="deck-lead">コピーしてデッキに加えるカードを1枚選ぶ</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
+        return `<div class="overlay deck-view enchant-pick loot-copy"><div class="panel"><h2>${isMaster ? "熟練の極意" : "白紙の巻物"}</h2><p class="deck-lead">${isMaster ? "熟練をマックスにするカードを1枚選ぶ" : "コピーしてデッキに加えるカードを1枚選ぶ"}</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
       }
       return `<div class="overlay loot-ask"><div class="panel wide"><h2>${esc(titles[choice.kind] || "選ぶ")}</h2><div class="reward-row">${faces || `<p>選べるカードは無い。</p>`}</div><div class="gear-offer-actions">${menuButton("きめる", "loot-ok", true, need)}</div></div></div>`;
     }
