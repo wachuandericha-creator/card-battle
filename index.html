@@ -6578,24 +6578,6 @@
     .card .card-fit.k-gear.r3 { --frame-img: url("frame-shakudo-over-gold.png?v=4"); }
     .card .card-fit.k-gear.rboss { --frame-img: url("frame-shakudo-over-black.png?v=4"); }
     .card .card-fit .art img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    /* 祝福の絵は正方形。切らずに全体を出し、左右の空きは同じ絵をぼかして敷く */
-    .card .card-fit.k-boon .art { overflow: hidden; }
-    .card .card-fit.k-boon .art .art-side {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 14.3%;
-      background-repeat: no-repeat;
-      background-size: 1667% 100%;
-    }
-    .card .card-fit.k-boon .art .art-side.l { left: 0; background-position: 0 0; }
-    .card .card-fit.k-boon .art .art-side.r { right: 0; background-position: 100% 0; }
-    .card .card-fit.k-boon .art img.art-whole {
-      position: relative;
-      object-fit: contain;
-      -webkit-mask-image: linear-gradient(90deg, transparent 14.1%, #000 20%, #000 80%, transparent 85.9%);
-      mask-image: linear-gradient(90deg, transparent 14.1%, #000 20%, #000 80%, transparent 85.9%);
-    }
     .card .card-fit .art {
       position: absolute;
       left: 7.4cqw;
@@ -20392,10 +20374,10 @@
     const ENCHANT_ELEMS = ["fire", "water", "light", "dark"];
 
     function enchantFace(elem) {
-      if (elem === "water") return { name: "水のエンチャント", sub: "デッキのカード1枚にDEF+2付与", image: "enchant-water.jpg?v=1" };
-      if (elem === "light") return { name: "光のエンチャント", sub: "デッキのカード1枚にコスト-1付与", image: "enchant-light.jpg?v=1" };
-      if (elem === "dark") return { name: "闇のエンチャント", sub: "デッキのカード1枚にランダムなキーワード付与", image: "enchant-dark.jpg?v=1" };
-      return { name: "火のエンチャント", sub: "デッキのカード1枚にATK+2付与", image: "enchant-fire.jpg?v=2" };
+      if (elem === "water") return { name: "水のエンチャント", sub: "デッキのカード1枚にDEF+2付与", image: "enchant-water.jpg?v=2" };
+      if (elem === "light") return { name: "光のエンチャント", sub: "デッキのカード1枚にコスト-1付与", image: "enchant-light.jpg?v=2" };
+      if (elem === "dark") return { name: "闇のエンチャント", sub: "デッキのカード1枚にランダムなキーワード付与", image: "enchant-dark.jpg?v=2" };
+      return { name: "火のエンチャント", sub: "デッキのカード1枚にATK+2付与", image: "enchant-fire.jpg?v=3" };
     }
 
     function enchantEffectNote(kind, card) {
@@ -23438,10 +23420,10 @@
     }
 
     function blessGearOpts(kind, elem) {
-      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=1", body: "最大HP+20", stars: 1 };
-      if (kind === "spd") return { slot: "spd", name: "革靴", image: "reward-spd.jpg?v=1", body: "SPD+1", stars: 3 };
-      if (kind === "play") return { slot: "play", name: "皮の手袋", image: "reward-play.jpg?v=1", body: playGloveBody(PLAY_AREA_BASE), stars: 3 };
-      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=1", body: "マナ+1", stars: 5 };
+      if (kind === "maxhp") return { slot: "hp", name: "最大HP", image: "reward-hp.jpg?v=2", body: "最大HP+20", stars: 1 };
+      if (kind === "spd") return { slot: "spd", name: "革靴", image: "reward-spd.jpg?v=2", body: "SPD+1", stars: 3 };
+      if (kind === "play") return { slot: "play", name: "皮の手袋", image: "reward-play.jpg?v=2", body: playGloveBody(PLAY_AREA_BASE), stars: 3 };
+      if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=2", body: "マナ+1", stars: 5 };
       const fresh = blessNewDef(kind);
       if (fresh) return { slot: "bless", name: fresh.name, image: "", body: fresh.body, stars: 3 };
       const face = enchantFace(elem);
@@ -24797,9 +24779,7 @@
       const foeAttack = foe && card.name === "アタック" ? "card-attack-foe.jpg?v=1" : "";
       const foeBlock = foe && card.name === "ブロック" ? "card-block-minotaur.jpg?v=2" : "";
       const artSrc = card.image || foeAttack || foeBlock || cardArtSrc(card.name);
-      const picture = !artSrc ? "" : kind === "boon"
-        ? `<span class="art-side l" style="background-image:url('${artSrc}')"></span><span class="art-side r" style="background-image:url('${artSrc}')"></span><img class="art-whole" src="${artSrc}" alt="">`
-        : `<img src="${artSrc}" alt="">`;
+      const picture = artSrc ? `<img src="${artSrc}" alt="">` : "";
       const rank = card.boss ? "rboss" : stars >= 3 ? "r3" : stars === 2 ? "r2" : stars >= 1 ? "r1" : "r0";
       const genre = `<span class="genre" aria-label="ジャンル ${genreName(kind)}">${genreName(kind)}</span>`;
       const textClass = keywords.length ? "text has-kw" : "text";
