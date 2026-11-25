@@ -211,7 +211,7 @@
       width: 100%;
       height: 100%;
       border-radius: 8px;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
       background: #1a1410;
     }
@@ -390,14 +390,14 @@
       width: auto;
       min-width: 0;
       overflow: hidden;
-      color: var(--road-line, #e4b15a);
-      font-size: 28px;
+      color: #fff;
+      font-size: 36px;
       font-weight: 900;
       line-height: 1.15;
       white-space: nowrap;
       text-align: right;
       text-overflow: ellipsis;
-      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.8);
+      text-shadow: 0 2px 0 #000, 0 0 3px #000, 0 0 8px rgba(0, 0, 0, 0.85);
     }
     .side-rail .battle-log { flex: 1 1 auto; height: auto; }
     .hud-top {
@@ -611,7 +611,7 @@
     .enemy-field {
       position: relative;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(200px, 26%) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 33%) minmax(0, 1fr);
       align-items: stretch;
       column-gap: 0;
       width: 100%;
@@ -854,6 +854,49 @@
     }
     .forecasts .status-chip svg { width: 28px; height: 28px; }
     .forecasts .status-chip b { font-size: 22px; }
+    /* プレイエリアの配置（2026-11-25）
+       ・自分と敵のカードは同じ大きさ（枚数は多いほうに合わせる）。上下の空きなく枠いっぱいに置く
+       ・処理で少し上がっても枠から出ない（上がる分を先に空けてある）
+       ・ダメージ予測はカードの外（自分は上の端、敵は下の端）に置き、カードにかぶらない
+       ・横幅に収まる大きさにして、画面の外へ出さない */
+    .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
+    .duel-mid .play-side.mine { padding: 40px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); }
+    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px) 0 40px; }
+    .duel-mid .play-cards {
+      flex: 1 1 0;
+      width: 100%;
+      min-height: 0;
+      height: auto;
+      container-type: size;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+    }
+    .duel-mid .play-card {
+      height: min(calc(100cqh - 28px), calc((100cqw - 14px - (var(--n, 1) - 1) * 6px) / var(--n, 1) * 4 / 3));
+      width: auto;
+      aspect-ratio: 3 / 4;
+      max-height: none;
+      max-width: none;
+      flex: 0 0 auto;
+      align-items: flex-end;
+    }
+    .duel-mid .play-side.foe .play-card { transform: none; }
+    .duel-mid .play-card.held .card.preview,
+    .duel-mid .play-card.on .card.preview {
+      transform: translateY(-14px) scale(1.03);
+      transform-origin: 50% 100%;
+    }
+    .duel-mid .forecasts {
+      left: 0;
+      right: 0;
+      transform: none;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .duel-mid .play-side.mine .forecasts { top: 2px; bottom: auto; }
+    .duel-mid .play-side.foe .forecasts { top: auto; bottom: 2px; }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -1439,6 +1482,7 @@
     .battle-plate .plate-split .hp-line .num { width: auto; }
     .battle-plate .plate-split .hp-line b { font-size: 22px; }
     .battle-plate .plate-split .hp-line .lbl .ico { width: 16px; height: 16px; }
+    .battle-plate .plate-split .hp-line .lbl .ico.mana-gem { width: 14px; height: 21px; vertical-align: middle; }
     .battle-plate .hp-line.stat-mana .lbl,
     .battle-plate .hp-line.stat-star .lbl { font-size: 14px; line-height: 1; }
     .battle-plate .hp-line.stat-lv .lbl,
@@ -10941,6 +10985,11 @@
       width: 100%;
       margin: 0;
       justify-content: center;
+      /* 一枚絵と選択コマ（戦士）のあいだの金線 */
+      border-top: 2px solid rgba(228, 177, 90, 0.85);
+      box-shadow: 0 -1px 0 rgba(255, 236, 190, 0.25);
+      box-sizing: border-box;
+      padding-top: 6px;
     }
     .cast-screen.character-focus .cast-token.mini {
       flex: 0 0 auto;
@@ -14473,7 +14522,7 @@
       if (!now) return null;
       const nodes = [now.nextElementSibling, now.previousElementSibling].filter((node) => {
         if (!node || !node.classList.contains("road-node") || node.classList.contains("pad")) return false;
-        return roadFloorNum(node) !== 0;
+        return true;
       });
       nodes.sort((a, b) => a.offsetTop - b.offsetTop);
       return nodes.length ? nodes[nodes.length - 1] : null;
@@ -15837,6 +15886,11 @@
 
     function manaIcon() {
       return `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="currentColor"/></svg>`;
+    }
+
+    // 手札の上のマナと同じ、上下の尖った黄色い結晶。
+    function manaGemIcon() {
+      return `<svg class="ico mana-gem" viewBox="0 0 64 96" aria-hidden="true"><polygon points="32,3 58,28 48,68 32,93 16,68 6,28" fill="#f0c14a" stroke="#6a3c0c" stroke-width="3" stroke-linejoin="round"/><polygon points="32,3 58,28 32,40 6,28" fill="#fff4c4"/><polygon points="32,40 58,28 48,68 32,78" fill="#c88820" opacity=".72"/><polygon points="32,40 6,28 16,68 32,78" fill="#ffe08a" opacity=".5"/></svg>`;
     }
 
     function bootIcon() {
@@ -21948,7 +22002,7 @@
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
       const combat = `${atkLine}${defLine}${spdLine}`;
       const stats = extra && extra.lv != null
-        ? `<div class="plate-split">${statLine("", "Lv", extra.lv, "stat-lv")}${atkLine}${statLine("", "●", extra.mana != null ? extra.mana : MANA, "stat-mana")}${defLine}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}${spdLine}</div>`
+        ? `<div class="plate-split">${statLine("", "Lv", extra.lv, "stat-lv")}${atkLine}${statLine(manaGemIcon(), "", extra.mana != null ? extra.mana : MANA, "stat-mana")}${defLine}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}${spdLine}</div>`
         : combat;
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
@@ -24596,14 +24650,21 @@
     function printedDamage(card) {
       if (!card) return 0;
       if (card.statShown) return Number(card.damage) || 0;
-      if (!card.enchantPreview && (card.name === "アタック" || card.name === "アタック+")) return CARDS.アタック.damage || 4;
+      if (!card.enchantPreview && (card.name === "アタック" || card.name === "アタック+")) {
+        const base = CARDS.アタック.damage || 4;
+        // 自分の初期デッキは、基本の極意や初心のバッジの上乗せをカードの数字に持つ。
+        return card.starter ? Math.max(base, Number(card.damage) || 0) : base;
+      }
       return Number(card.damage) || 0;
     }
 
     function printedBlock(card) {
       if (!card) return 0;
       if (card.statShown) return Number(card.block) || 0;
-      if (!card.enchantPreview && (card.name === "ブロック" || card.name === "ブロック+")) return CARDS.ブロック.block || 4;
+      if (!card.enchantPreview && (card.name === "ブロック" || card.name === "ブロック+")) {
+        const base = CARDS.ブロック.block || 4;
+        return card.starter ? Math.max(base, Number(card.block) || 0) : base;
+      }
       return Number(card.block) || 0;
     }
 
@@ -25509,7 +25570,9 @@
         ? playFace(stealArrive.card, true, true, false, null, { awaitDraw: !!stealArrive.hide, steal: true })
         : "";
       const cast = playForecastHtml();
-      return `<div class="use-board" aria-label="プレイエリア">
+      const cardCount = (html) => (String(html).match(/class="play-card[ "]/g) || []).length;
+      const sameN = Math.max(1, cardCount(mine) + (stealArrive && stealArrive.side === "mine" ? 1 : 0), cardCount(foeCards) + (stealArrive && stealArrive.side === "foe" ? 1 : 0));
+      return `<div class="use-board" aria-label="プレイエリア" style="--n:${sameN}">
         <div class="use-split">
           <div class="play-side mine use-half"><div class="play-cards">${mine}${stealArrive && stealArrive.side === "mine" ? stealFace : ""}</div>${cast.give}</div>
           <div class="play-side foe use-half"><div class="play-cards">${foeCards}${stealArrive && stealArrive.side === "foe" ? stealFace : ""}</div>${cast.take}</div>
