@@ -48,7 +48,7 @@
       height: 100%;
       display: grid;
       grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr) minmax(0, 12.5%);
-      grid-template-rows: auto minmax(0, 2.4fr) minmax(0, 1.3fr);
+      grid-template-rows: auto minmax(0, 2.05fr) minmax(0, 1.65fr);
       grid-template-areas:
         "road hud log"
         "road arena log"
@@ -408,7 +408,7 @@
       align-items: center;
       column-gap: 12px;
       min-width: 0;
-      padding: 10px 18px;
+      padding: 3px 18px;
       border-radius: 14px;
       border: 0;
       background: var(--panel-sheen), var(--panel-face);
@@ -884,6 +884,7 @@
       align-items: flex-end;
     }
     .duel-mid .play-side.foe .play-card { transform: none; }
+    .duel-mid .play-card.can-recall:hover .card.preview { transform: none; filter: none; }
     .duel-mid .play-card.held .card.preview,
     .duel-mid .play-card.on .card.preview {
       transform: translateY(-14px) scale(1.03);
@@ -9352,6 +9353,22 @@
       pointer-events: none;
     }
     .menu.event .smith-how p + p { margin-top: 8px; }
+    /* 祝福の報酬は大きく。右半分の横幅いっぱいに、余白は少しだけ（2026-11-25） */
+    .menu.event.bless { --choice-w: 252px; }
+    /* 祝福の背景：横長の女神の絵を、うすく敷く（2026-11-25） */
+    /* 全イベント共通：そのイベントの絵を、ぼかして薄く背景に敷く（2026-11-25） */
+    .menu.event[style*="--event-bg"] { position: relative; isolation: isolate; }
+    .menu.event[style*="--event-bg"]::before {
+      content: "";
+      position: absolute;
+      inset: -40px;
+      z-index: -1;
+      background:
+        linear-gradient(rgba(12, 9, 7, 0.86), rgba(12, 9, 7, 0.86)),
+        var(--event-bg) center / cover no-repeat;
+      filter: blur(14px);
+      pointer-events: none;
+    }
     .menu.event.bless .event-side .event-choice {
       gap: 16px;
     }
@@ -9467,8 +9484,8 @@
     }
     .menu.event.bless .gift-row {
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 32px;
+      flex-wrap: nowrap;
+      gap: 20px;
     }
     .menu.event.search {
       grid-template-columns: minmax(0, 1fr);
@@ -10034,12 +10051,12 @@
       height: auto;
       align-self: center;
     }
-    .menu.event.bless .gift-row { flex-wrap: wrap; justify-content: center; }
+    .menu.event.bless .gift-row { flex-wrap: nowrap; justify-content: center; }
     .menu.event.bless .gift-btn:has(.gear-effect) {
-      width: 240px;
-      min-width: 240px;
-      max-width: 240px;
-      flex: 0 0 240px;
+      width: calc(var(--choice-w) + 24px);
+      min-width: calc(var(--choice-w) + 24px);
+      max-width: calc(var(--choice-w) + 24px);
+      flex: 0 0 calc(var(--choice-w) + 24px);
       padding: 0;
       border: 0;
       background: transparent;
@@ -10049,8 +10066,8 @@
     .menu.event.bless .gift-btn .gear-effect,
     .menu.event.bless .gift-btn .gear-effect.bless-gear,
     .menu.event.bless .gift-btn .gear-effect.bless-gear .gear-effect-inner {
-      width: 240px;
-      max-width: 240px;
+      width: calc(var(--choice-w) + 24px);
+      max-width: calc(var(--choice-w) + 24px);
     }
     .menu.event.bless .gift-btn .gear-effect-rest {
       width: 100%;
@@ -12717,7 +12734,7 @@
       鍔迫り合い: { cost: 1, stars: 1, text: "手札の攻撃カード1枚を戦闘中除外する\nそのダメージ分のシールドを得る", kind: "block", sealSword: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を6回復\nパリィ+1", heal: 6, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中は\n状態異常にならない", kind: "orange", flash: true, magicParry: true },
-      クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、2枚引く", kind: "skill", quick: true, keep: true, step: true },
+      クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、ドロー2", kind: "skill", quick: true, keep: true, step: true },
       自信過剰: { cost: 2, stars: 3, text: "パリィに成功するたびATK+3", kind: "orange", flash: true, pride: true },
     };
     const DEMON = {
@@ -12770,12 +12787,12 @@
       ハードブロック: { cost: 2, text: "ブロック15", block: 15, kind: "block" },
       ビッグブロック: { cost: 3, stars: 2, text: "ブロック27", block: 27, kind: "block" },
       切り返し: { cost: 1, stars: 1, text: "5ダメージ\nブロック4", damage: 5, block: 4, kind: "attack" },
-      牽制斬り: { cost: 1, stars: 1, text: "6ダメージ\n1枚引く", damage: 6, draw: 1, quick: true, kind: "attack" },
-      見極め: { cost: 1, stars: 1, text: "ブロック4\n1枚引く", block: 4, draw: 1, quick: true, kind: "block" },
+      牽制斬り: { cost: 1, stars: 1, text: "6ダメージ\nドロー1", damage: 6, draw: 1, quick: true, kind: "attack" },
+      見極め: { cost: 1, stars: 1, text: "ブロック4\nドロー1", block: 4, draw: 1, quick: true, kind: "block" },
       身かわし: { cost: 0, stars: 1, text: "ブロック4", block: 4, keep: true, kind: "block" },
-      深呼吸: { cost: 1, stars: 1, text: "ブロック5\n次のターン、カードを1枚多く引く", block: 5, nextDraw: 1, kind: "block" },
+      深呼吸: { cost: 1, stars: 1, text: "ブロック5\n次のターン、SPD+1", block: 5, nextDraw: 1, kind: "block" },
       応急処置: { cost: 1, stars: 1, text: "自分の毒と炎上をすべて消す\nブロック6", block: 6, cleanse: true, flash: true, kind: "skill" },
-      戦術眼: { cost: 0, stars: 2, text: "手札を1枚捨て、2枚引く\n捨てる手札が無いと使えない", quick: true, tactic: true, kind: "skill" },
+      戦術眼: { cost: 0, stars: 2, text: "手札を1枚捨て、ドロー2\n捨てる手札が無いと使えない", quick: true, tactic: true, kind: "skill" },
       気合溜め: { cost: 1, stars: 2, text: "次の自分のターン、マナ+1、ATK+2", nextMana: 1, nextAtk: 2, kind: "skill" },
       精神統一: { cost: 0, stars: 2, text: "このターン、マナ+1", manaNow: 1, flash: true, kind: "skill" },
       薬草: { cost: 1, text: "体力を8回復", heal: 8, kind: "power", power: true },
@@ -12792,13 +12809,13 @@
       雷の巻物: { cost: 2, stars: 2, text: "ブロックを無視する", damage: 35, pierce: true, itemHit: true, kind: "power", power: true },
       呪いの人形: { cost: 1, stars: 2, text: "この戦闘中、相手のATK-2、DEF-2", curseDoll: true, kind: "power", power: true },
       魔力の小瓶: { cost: 0, stars: 1, text: "このターン、マナ+2", manaNow: 2, quick: true, kind: "power", power: true },
-      疾風の羽根: { cost: 0, stars: 1, text: "3枚引く", draw: 3, quick: true, kind: "power", power: true },
+      疾風の羽根: { cost: 0, stars: 1, text: "ドロー3", draw: 3, quick: true, kind: "power", power: true },
       闘神の秘薬: { cost: 1, stars: 2, text: "この戦闘中、ATK+3、DEF+3", battleAtk: 3, battleDef: 3, kind: "power", power: true },
       時の砂時計: { cost: 0, stars: 2, text: "このターン、プレイエリア上限+2、マナ+1", areaNow: 2, manaNow: 1, kind: "power", power: true },
       鏡の破片: { cost: 1, stars: 2, text: "手札の好きなカードを1枚コピーして手札に加える。この戦闘中、そのコストは0", mirror: true, kind: "power", power: true },
       錬金術の壺: { cost: 0, stars: 1, text: "この戦闘の勝利で得る★が2倍になる", starDouble: true, kind: "power", power: true },
-      変化の巻物: { cost: 1, stars: 2, text: "手札をすべて捨て、その枚数だけ引く。このターン、引いたカードのコスト-1", transmute: true, quick: true, kind: "power", power: true },
-      ダッシュ: { cost: 1, text: "3枚引く", quick: true, draw: 3, kind: "skill" },
+      変化の巻物: { cost: 1, stars: 2, text: "手札をすべて捨て、その枚数だけドロー。このターン、ドローしたカードのコスト-1", transmute: true, quick: true, kind: "power", power: true },
+      ダッシュ: { cost: 1, text: "ドロー3", quick: true, draw: 3, kind: "skill" },
     };
     // 敵のATKは板に出す。未指定のとき、雑魚は2、普通は6、強敵は9。再会では足さない。アタックの本文は5に、このATKを足した合計を書く。DEFは0で、板にも出す。
     const HIDDEN_ATK = { 雑魚: 2, 普通: 6, 強敵: 9 };
@@ -14206,8 +14223,8 @@
       { id: "godAtk", name: "戦神の加護", body: "毎戦闘、ATK+2" },
       { id: "godDef", name: "守護神の加護", body: "毎戦闘、DEF+2" },
       { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
-      { id: "galeBless", name: "疾風の祝福", body: "毎戦闘の1・2ターン目、カードを2枚多く引く" },
-      { id: "magicBless", name: "魔導の祝福", body: "毎戦闘の1ターン目、マナ+1\nカードを1枚多く引く" },
+      { id: "galeBless", name: "部族の羽飾り", image: "reward-tribal-feather.jpg?v=1", body: "毎戦闘の1・2ターン目、SPD+2" },
+      { id: "magicBless", name: "闇魔導の勾玉", body: "毎戦闘の1ターン目、マナ+1\nSPD+1" },
       { id: "rookieBless", name: "基本の極意", image: "reward-rookie-bless.jpg?v=1", body: "初期デッキのカードのダメージとブロックが+3される" },
       { id: "masterPick", name: "熟練の極意", body: "入手時、デッキの好きなカード1枚の熟練度をマックスにする" },
       { id: "mirrorBless", name: "双子の鏡", body: "入手時、デッキの好きなカードを1枚コピーしてデッキに加える" },
@@ -14801,7 +14818,7 @@
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=5" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=8" },
       { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 3, atk: 5, ignoreTrait: true, effect: "★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=8" },
-      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、カードを1枚引く", image: "gear-hunter-dagger.jpg?v=1" },
+      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、ドロー1", image: "gear-hunter-dagger.jpg?v=1" },
       { id: "rapier", name: "レイピア", slot: "sword", stars: 1, atk: 1, firstAttack: 3, effect: "★　ATK+1。毎ターン、最初に使うアタックのダメージ+3", image: "gear-rapier.jpg?v=1" },
       { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=2" },
       { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "gear-gale-sword.jpg?v=1" },
@@ -14830,7 +14847,7 @@
       { id: "cursed-bracelet", name: "呪われた腕輪", slot: "braceletAny", stars: 2, cursed: true, locked: true, effect: "★★　外せない。戦闘勝利時の最大HP上昇が無効。毎ターン開始時、ATK+1とDEF+1（その戦闘のあいだ残る）", image: "gear-cursed-bracelet.jpg?v=1" },
       { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "gear-demon-bracelet.jpg?v=1" },
       { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, pure: true, effect: "★★　プレイエリアのジャンルが揃っているとき、そのカードに書かれた数字を1.5倍（切り上げ）。クイックは関係ない", image: "gear-pure-bracelet.jpg?v=1" },
-      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはドロー+2、マナ+1", image: "gear-empty-bracelet.jpg?v=1" },
+      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはSPD+2、マナ+1", image: "gear-empty-bracelet.jpg?v=1" },
       { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　状態異常にならない", image: "gear-angel-bracelet.jpg?v=1" },
       { id: "tyrant-bracelet", name: "覇王の腕輪", slot: "braceletAny", stars: 3, twice: true, effect: "★★★　プレイエリアのカードが1枚だけのとき、その効果は2回。毒、回復、ドローも含む", image: "gear-tyrant-bracelet.jpg?v=1" },
       { id: "chain-bracelet", name: "連続の腕輪", slot: "braceletAny", stars: 3, tripleSecond: true, effect: "★★★　プレイエリアの1枠目と2枠目が同じカードなら、2枚目の効果は3倍。毒、回復、ドローも含む", image: "gear-chain-bracelet.jpg?v=1" },
@@ -14848,14 +14865,14 @@
       ["guard-charm", "守護の護符", 1, "戦闘開始時 DEF+1", "openDef"],
       ["travel-cloak", "旅人のマント", 1, "戦闘開始時、ブロック8を得る。", "openBlock"],
       ["duel-bell", "決闘の鐘", 1, "各戦闘の1ターン目、最初のアタックダメージ+5。", "bell"],
-      ["swift-boots", "俊足のブーツ", 2, "戦闘開始時、カードを2枚引く。", "openDraw"],
+      ["swift-boots", "俊足のブーツ", 2, "戦闘開始時、ドロー2。", "openDraw"],
       ["old-watch", "古びた懐中時計", 2, "各戦闘の1ターン目だけ、マナ+1。", "clock"],
       ["war-horn", "指揮官の角笛", 3, "戦闘開始時 ATK+2、DEF+2", "horn"],
       ["small-hourglass", "小さな砂時計", 1, "ターン終了時にマナが余っていた場合、ブロック6を得る。", "hourglass"],
-      ["tailwind", "追い風の羽", 2, "2ターン目開始時、カードを2枚引く。", "feather"],
+      ["tailwind", "追い風の羽", 2, "2ターン目開始時、ドロー2。", "feather"],
       ["mana-shard", "魔力の欠片", 2, "3・6・9ターン目開始時、マナ+1。", "shard"],
-      ["wisdom-pen", "知恵の羽根ペン", 2, "3・6・9ターン目開始時、カードを2枚引く。", "pen"],
-      ["tactician", "戦術家の眼鏡", 2, "ターン終了時、手札が3枚以上残っていたら次のターンのドロー+1。", "glasses"],
+      ["wisdom-pen", "知恵の羽根ペン", 2, "3・6・9ターン目開始時、ドロー2。", "pen"],
+      ["tactician", "戦術家の眼鏡", 2, "ターン終了時、手札が3枚以上残っていたら次のターンのSPD+1。", "glasses"],
       ["old-flag", "古戦場の旗", 3, "4ターン目開始時、この戦闘中ATK+3、DEF+3。", "flag"],
       ["book-all", "万物の書", 3, "毎ターン、最初に使うカードのコストが0になる。", "tome"],
       ["poison-vial", "毒塗りの小瓶", 1, "戦闘開始時、相手に毒3を付与する。", "openPoison"],
@@ -14905,7 +14922,7 @@
       "power-bracelet": "ATK+2",
       "guard-bracelet": "DEF+2",
       "reuse-bracelet": "未使用マナを次のターンに持ち越す",
-      "hunter-dagger": "ATK+1\n戦闘開始時、カードを1枚引く",
+      "hunter-dagger": "ATK+1\n戦闘開始時、ドロー1",
       "rapier": "ATK+1\n毎ターン、最初のアタックのダメージ+3",
       "vamp-sword": "ATK+3\n敵を倒したとき、HPを6回復",
       "gale-sword": "ATK+2\nアタックを3枚使うと、次のターンSPD+1",
@@ -14923,7 +14940,7 @@
       "cursed-bracelet": "外せない\n勝利時の最大HP上昇が無効\n毎ターン開始時、ATK+1 DEF+1",
       "demon-bracelet": "ターン開始時、5ダメージを受け、HPを7回復",
       "pure-bracelet": "プレイエリアのジャンルが揃っているとき\n書かれた数字は1.5倍\nクイックは関係ない",
-      "empty-bracelet": "手札0枚で終了すると、次はドロー+2 マナ+1",
+      "empty-bracelet": "手札0枚で終了すると、次はSPD+2 マナ+1",
       "angel-bracelet": "状態異常にならない",
       "tyrant-bracelet": "プレイエリアが1枚なら、その効果は2回",
       "chain-bracelet": "1枠目と2枠目が同じカードなら、2枚目は3倍",
@@ -16923,7 +16940,7 @@
         } else if (picked === "quick") {
           next.quick = true;
           next.draw = (Number(next.draw) || 0) + 1;
-          if (!/枚引く/.test(String(next.text || ""))) next.text = `${next.text ? `${next.text}\n` : ""}1枚引く`;
+          if (!/ドロー/.test(String(next.text || ""))) next.text = `${next.text ? `${next.text}\n` : ""}ドロー1`;
           next.mastered = "quick";
         } else if (picked === "keep") {
           next.keep = true;
@@ -19330,7 +19347,7 @@
       }
       if (hasRelic("glasses") && hand.filter((card) => !card.keep && !isItemCard(card)).length >= 3) {
         rememberExtraDraw(1, "戦術家の眼鏡+1");
-        log(`${heroName()}は戦術家の眼鏡。次のターン、ドロー+1。`);
+        log(`${heroName()}は戦術家の眼鏡。次のターン、SPD+1。`);
       }
       if (hasRelic("sage") && hpHalf(player)) {
         restoreHp(5);
@@ -19530,8 +19547,8 @@
       if (turn === 1 && anySword("openingDraw")) bugDrawExtra("狩人の短剣", 1);
       if (turn === 1 && hasRelic("openDraw")) bugDrawExtra("俊足のブーツ", 2);
       if (turn === 2 && hasRelic("feather")) bugDrawExtra("追い風の羽", 2);
-      if ((turn === 1 || turn === 2) && hasBless("galeBless")) bugDrawExtra("疾風の祝福", 2);
-      if (turn === 1 && hasBless("magicBless")) bugDrawExtra("魔導の祝福", 1);
+      if ((turn === 1 || turn === 2) && hasBless("galeBless")) bugDrawExtra("部族の羽飾り", 2);
+      if (turn === 1 && hasBless("magicBless")) bugDrawExtra("闇魔導の勾玉", 1);
       if (turn % 3 === 0 && turn > 0 && turn <= 9 && hasRelic("pen")) bugDrawExtra("知恵の羽根ペン", 2);
       pullFromBracelets();
       slashSeq = 0;
@@ -23279,7 +23296,7 @@
     }
 
     function showFoePlayZoom(play) {
-      const cards = [...document.querySelectorAll(".play-side.foe .play-card")];
+      const cards = [...document.querySelectorAll(".duel-mid .play-card")];
       const key = String(cards.indexOf(play));
       const old = root.querySelector(".cast-card-pop.play-zoom");
       if (old && old.dataset.playZoom === key) {
@@ -24133,7 +24150,10 @@
       const lead = `<div class="event-lead${art ? "" : " no-art"}">${artBox}<div class="event-stack"><div class="event-title">${title}</div><div class="event-side">${titleGap}<div class="event-copy">${note}</div><div class="event-choice">${choiceBody}</div></div></div></div>`;
       const choiceShell = lead;
       const roadDeck = blessMidRoad() ? `<div class="event-deck">${pileMarkup("deck", runDeck().length)}</div>` : "";
-      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "修行" ? " train" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}">${floorFlash}${choiceShell}</div>${roadDeck}`);
+      // 背景：祝福は横長の女神の絵、ほかのイベントは各自の絵
+      const bgPic = floorKind === "挑戦者に祝福を" ? "blessing-goddess-f.jpg?v=2" : eventRow ? eventRow[0] : "";
+      const bgStyle = bgPic ? ` style="--event-bg:url('${esc(bgPic)}')"` : "";
+      root.innerHTML = eventShell(`<div class="menu event${runEntrance ? " run-in" : ""}${floorKind === "物乞いに遭遇" ? " beggar" : ""}${floorKind === "鍛冶屋" ? " smith" : ""}${floorKind === "探索" ? " search" : ""}${floorKind === "修行" ? " train" : ""}${floorKind === "挑戦者に祝福を" ? " bless" : ""}${shopMode ? " shop" : ""}"${bgStyle}>${floorFlash}${choiceShell}</div>${roadDeck}`);
       runEntrance = false;
     }
 
@@ -28173,7 +28193,7 @@
     function masteryBlurb(id, card) {
       if (id === "power") return masteryPowerCaption(card) || "プラスの数字が2倍";
       if (id === "light") return "コスト-1";
-      if (id === "quick") return "クイック。1枚引く";
+      if (id === "quick") return "クイック。ドロー1";
       if (id === "keep") return "キープ";
       if (id === "opener") return "戦闘開始時、最初の手札";
       if (id === "copy") return "コピーを1枚捨て札に追加";
@@ -29013,9 +29033,45 @@
       }
     });
 
+    // プレイエリアのカードは動かさない。マウスを載せるとカードをポップで出し、クリックで拡大する。
+    function hidePlayTip() {
+      root.querySelectorAll(".cast-card-pop.play-tip").forEach((pop) => pop.remove());
+    }
+    root.addEventListener("pointerover", (event) => {
+      const el = event.target instanceof Element ? event.target : null;
+      const play = el ? el.closest(".battle-screen .duel-mid .play-card") : null;
+      if (!play || play.classList.contains("await-draw")) {
+        if (!el || !el.closest(".play-tip")) hidePlayTip();
+        return;
+      }
+      if (root.querySelector(".cast-card-pop.play-zoom")) return;
+      const face = play.querySelector(".card");
+      if (!face) return;
+      const all = [...document.querySelectorAll(".duel-mid .play-card")];
+      const key = String(all.indexOf(play));
+      let pop = root.querySelector(".cast-card-pop.play-tip");
+      if (pop && pop.dataset.playTip === key) return;
+      hidePlayTip();
+      pop = document.createElement("div");
+      pop.className = "cast-card-pop play-tip";
+      pop.dataset.playTip = key;
+      pop.style.pointerEvents = "none";
+      pop.appendChild(face.cloneNode(true));
+      root.appendChild(pop);
+      const w = pop.offsetWidth || Math.min(420, Math.round((root.clientWidth || 1200) * 0.3));
+      placeAnchored(pop, face, { prefer: "right", gap: 12, pad: 8, width: w, height: Math.round(w * 4 / 3), align: "top" });
+    });
+    root.addEventListener("pointerleave", hidePlayTip);
+    root.addEventListener("pointerout", (event) => {
+      const to = event.relatedTarget;
+      if (to instanceof Element && to.closest(".duel-mid .play-card")) return;
+      hidePlayTip();
+    });
+
     root.addEventListener("click", (event) => {
       const el = event.target instanceof Element ? event.target : event.target.parentElement;
       if (!el) return;
+      hidePlayTip();
       if (!el.closest("[data-action='hud-menu']")) {
         root.querySelectorAll(".hud-menu-pop").forEach((box) => { box.hidden = true; });
         root.querySelectorAll(".hud-menu-btn").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
@@ -29034,7 +29090,9 @@
         paintGear();
       }
       if (root.querySelector(".relic-zoom")) hideRelicZoom();
-      const foePlay = el.closest(".battle-screen .play-side.foe .play-card");
+      // 自分のカードは、手札へ戻せる（data-unplay）ときは戻す操作を優先し、それ以外は拡大する
+      const foePlay = el.closest(".battle-screen .play-side.foe .play-card")
+        || (() => { const mine = el.closest(".battle-screen .play-side.mine .play-card"); return mine && !mine.hasAttribute("data-unplay") ? mine : null; })();
       if (foePlay && !foePlay.classList.contains("await-draw")) {
         event.stopPropagation();
         showFoePlayZoom(foePlay);
