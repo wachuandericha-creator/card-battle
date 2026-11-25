@@ -48,7 +48,7 @@
       height: 100%;
       display: grid;
       grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr) minmax(0, 12.5%);
-      grid-template-rows: auto minmax(0, 2.05fr) minmax(0, 1.65fr);
+      grid-template-rows: auto minmax(0, 2.25fr) minmax(0, 1.45fr);
       grid-template-areas:
         "road hud log"
         "road arena log"
@@ -885,6 +885,10 @@
     }
     .duel-mid .play-side.foe .play-card { transform: none; }
     .duel-mid .play-card.can-recall:hover .card.preview { transform: none; filter: none; }
+    /* プレイエリアのカードは、マウスを載せても動かさない（処理中に上がる動きは held / on のまま） */
+    .duel-mid .play-card .card.preview:hover:not(.x) { transform: none; z-index: auto; }
+    .duel-mid .play-card.held .card.preview:hover:not(.x),
+    .duel-mid .play-card.on .card.preview:hover:not(.x) { transform: translateY(-14px) scale(1.03); }
     .duel-mid .play-card.held .card.preview,
     .duel-mid .play-card.on .card.preview {
       transform: translateY(-14px) scale(1.03);
@@ -2772,6 +2776,52 @@
       width: 100%;
     }
     html.phone .menu.foe-index { grid-template-columns: 1fr; }
+    .foe-tabs { grid-column: 1 / -1; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .foe-tab {
+      min-width: 88px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(228, 177, 90, 0.62);
+      background: rgba(8, 6, 4, 0.94);
+      color: #d9c39a;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    .foe-tab small { margin-left: 6px; font-size: 13px; opacity: 0.8; }
+    .foe-tab.on { background: #e4b15a; color: #1a1208; border-color: #ffe9ae; }
+    /* 同じカードは半分ずつ重ねる。1枚の幅 = 全体幅 × 2 / (枚数+1) */
+    .foe-starter-deck .cast-deck .deck-stack {
+      --gap: 8px;
+      grid-column: span var(--span);
+      justify-self: start;
+      position: relative;
+      width: calc((100% - (var(--span) - 1) * var(--gap)) / var(--span) * (1 + (var(--n) - 1) / 2));
+    }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card {
+      width: calc(200% / (var(--n) + 1)) !important;
+      display: block;
+    }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:not(:first-child) {
+      position: absolute;
+      top: 0;
+      left: calc(100% * (var(--i, 1)) / (var(--n) + 1));
+    }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(2) { --i: 1; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(3) { --i: 2; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(4) { --i: 3; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(5) { --i: 4; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(6) { --i: 5; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(7) { --i: 6; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(8) { --i: 7; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(9) { --i: 8; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(2) { z-index: 2; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(3) { z-index: 3; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(4) { z-index: 4; }
+    .foe-starter-deck .cast-deck .deck-stack > .deck-card:nth-child(n+5) { z-index: 5; }
+    .foe-starter-deck .cast-deck .deck-stack .card,
+    .foe-starter-deck .cast-deck .deck-stack .card.preview { width: 100% !important; }
     /* ダンジョン選択で敵を押したときの敵データ：外の枠は付けず、見た目は敵データリストと同じ（2026-11-25） */
     .overlay.foe-starter .panel {
       width: min(1100px, 100%);
@@ -13388,6 +13438,7 @@
     let showDeck = false;
     let pileLook = "";
     let deckOrder = "hand";
+    let foeTab = "all";
     let eventMapOpen = false;
     let eventDeckOpen = false;
     let showFoeDeck = false;
@@ -13410,6 +13461,8 @@
     let eventBattleSeen = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
+    const ENEMY_HP_MS = 600;
+    let foeHpTween = null;
     let hpHoldTimer = 0;
     let manaFireGen = 0;
     let hpStamp = 0;
@@ -16331,7 +16384,8 @@
     function drainMs() {
       const enemyGap = enemy ? Math.abs(enemy.hp - shownEnemy()) : 0;
       const playerGap = player ? Math.abs(player.hp - shownPlayer()) : 0;
-      const enemyWait = enemyGap < 0.2 ? 0 : Math.min(1700, Math.max(620, (enemyGap / 6.5) * 1000));
+      // 敵のHPが減りきる時間はダメージの大きさによらず一定。減りきってから次へ進む。
+      const enemyWait = enemyGap < 0.2 ? 0 : ENEMY_HP_MS + 150;
       const playerWait = playerGap < 0.2 ? 0 : Math.min(fxFatal ? 3200 : 2400, Math.max(fxFatal ? 1800 : 900, (playerGap / (fxFatal ? 2.2 : 4)) * 1000));
       return Math.max(enemyWait, playerWait);
     }
@@ -16394,9 +16448,14 @@
       };
       let moving = false;
       if (enemy && shown.enemy != null && Math.abs(shown.enemy - enemy.hp) >= 0.04) {
-        shown.enemy = ease(shown.enemy, enemy.hp, true);
+        // 一定時間（ENEMY_HP_MS）で目標まで。ダメージが大きいほど速く減る。
+        if (!foeHpTween || foeHpTween.target !== enemy.hp) foeHpTween = { target: enemy.hp, from: shown.enemy, t: 0 };
+        foeHpTween.t += dt * 1000;
+        const k = Math.min(1, foeHpTween.t / ENEMY_HP_MS);
+        shown.enemy = k >= 1 ? foeHpTween.target : foeHpTween.from + (foeHpTween.target - foeHpTween.from) * (1 - (1 - k) * (1 - k));
+        if (k >= 1) foeHpTween = null;
         moving = true;
-      } else if (enemy) shown.enemy = enemy.hp;
+      } else if (enemy) { shown.enemy = enemy.hp; foeHpTween = null; }
       if (player && shown.player != null && Math.abs(shown.player - player.hp) >= 0.04) {
         shown.player = ease(shown.player, player.hp, false);
         moving = true;
@@ -23399,7 +23458,7 @@
         });
       } else if (foe) {
         names.push("洞窟");
-        note = foe.name === "物乞い" ? "洞窟の初戦には出ない。古城・深淵は未定。" : "古城・深淵は未定。";
+        if (foe.name === "物乞い") note = "洞窟の初戦には出ない。";
       }
       const cols = names.map((name) => `<div class="foe-phase"><b>${esc(name)}</b></div>`).join("");
       const foot = note ? `<p class="foe-phase-note">${esc(note)}</p>` : "";
@@ -23407,7 +23466,31 @@
     }
 
     function foeStarterDeckMarkup(cards) {
-      return sortedCards(cards).map((card, i) => `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview ${faceTone(card, true)}">${cardFace(card, false, true)}</div></button>`).join("");
+      // 同じカードはまとめて半分ずつ重ねる。報酬になるカードはジャンル問わず一番左へ。
+      const groups = [];
+      const byName = new Map();
+      sortedCards(cards).forEach((card) => {
+        let group = byName.get(card.name);
+        if (!group) {
+          group = { list: [], reward: foeRewardable(card) };
+          byName.set(card.name, group);
+          groups.push(group);
+        }
+        group.list.push(card);
+      });
+      groups.sort((a, b) => Number(b.reward) - Number(a.reward));
+      let i = 0;
+      return groups.map((group) => {
+        const n = group.list.length;
+        const buttons = group.list.map((card) => {
+          const html = `<button type="button" class="deck-card" data-deck-i="${i}" data-card="${esc(card.name)}" aria-label="${esc(card.name)}"><div class="card preview ${faceTone(card, true)}">${cardFace(card, false, true)}</div></button>`;
+          i += 1;
+          return html;
+        }).join("");
+        if (n < 2) return buttons;
+        const span = Math.min(5, Math.ceil(1 + (n - 1) / 2));
+        return `<div class="deck-stack" style="--n:${n};--span:${span}">${buttons}</div>`;
+      }).join("");
     }
 
     function hidePlayZoom() {
@@ -23564,11 +23647,19 @@
       const pinned = ["スライム", "ゴブリン", "コボルド", "トロール", "ちびドラゴン", "ミノタウロス", "物乞い", "ハデス"];
       const names = ENEMIES.map((enemy) => enemy.name);
       const order = pinned.filter((name) => names.includes(name)).concat(names.filter((name) => !pinned.includes(name)));
-      const files = order.map((name) => {
-        const foe = ENEMIES.find((enemy) => enemy.name === name);
-        return foe ? foeDossierHtml(foe) : "";
+      const foes = order.map((name) => ENEMIES.find((enemy) => enemy.name === name)).filter(Boolean);
+      // ★の少ない順（同じ★の中は今までの並び）
+      const sorted = foes.map((foe, i) => ({ foe, i })).sort((a, b) => foeStarCount(a.foe) - foeStarCount(b.foe) || a.i - b.i).map((item) => item.foe);
+      const tabs = ["all", 1, 2, 3, 4];
+      if (!tabs.includes(foeTab) && !tabs.map(String).includes(String(foeTab))) foeTab = "all";
+      const shown = String(foeTab) === "all" ? sorted : sorted.filter((foe) => String(foeStarCount(foe)) === String(foeTab));
+      const tabHtml = tabs.map((t) => {
+        const label = t === "all" ? "すべて" : "★".repeat(t);
+        const count = t === "all" ? sorted.length : sorted.filter((foe) => foeStarCount(foe) === t).length;
+        return `<button type="button" class="foe-tab${String(foeTab) === String(t) ? " on" : ""}" data-action="foe-tab" data-tab="${t}">${label}<small>${count}</small></button>`;
       }).join("");
-      root.innerHTML = `<div class="menu foe-index"><h1>敵データ</h1>${files}</div>`;
+      const files = shown.map((foe) => foeDossierHtml(foe)).join("");
+      root.innerHTML = `<div class="menu foe-index"><h1>敵データ</h1><div class="foe-tabs">${tabHtml}</div>${files}</div>`;
       root.querySelectorAll(".foe-index .cast-deck").forEach((deck) => bindFoeStarterDeck(deck));
     }
 
@@ -24264,7 +24355,24 @@
     function renderFloor() {
       if (floorPhase === "paths") {
         if (player && enemy) renderBattle();
-        else root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathListHtml()}</div></div></div>`);
+        else {
+          // 祝福・イベントのあと：敵も手札もない戦闘画面を背景に、道を選ばせる
+          const keep = { player, enemy, hand, phase, outcome };
+          const maxHp = runMaxHp();
+          const hp = Math.max(1, Math.min(maxHp, Number(floorHp) || maxHp));
+          try {
+            player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, surgeMax: 0, surgeLeft: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: 0, spdMod: 0, parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false, frostCut: 0, frostClear: "" };
+            enemy = { name: "", image: "", hp: 1, maxHp: 1, block: 0, poison: 0, burn: 0, thorns: 0, def: 0, atk: 0, anger: 0, spiteOn: false, spite: 0, defCut: 0, halfSpdDone: false, spdBonus: 0, hit: false, frostCut: 0, frostClear: "" };
+            hand = [];
+            phase = "intro";
+            outcome = null;
+            renderBattle();
+          } catch (err) {
+            root.innerHTML = eventShell(`<div class="menu event"><div class="overlay paths"><div class="panel wide">${pathHeadHtml()}${pathListHtml()}</div></div></div>`);
+          } finally {
+            player = keep.player; enemy = keep.enemy; hand = keep.hand; phase = keep.phase; outcome = keep.outcome;
+          }
+        }
         runEntrance = false;
         return;
       }
@@ -24756,7 +24864,7 @@
     // 敵のカードのうち、報酬になりうるもの（rewardPool が敵の山札から拾うもの）だけ紫。
     // 奪えないカード（アタック・ブロック・チャージアタック）は、ふつうのジャンルの枠。
     function foeRewardable(card) {
-      return !!card && !basicCardName(card.name);
+      return !!card && !basicCardName(card.name) && card.name !== "ビッグアタック";
     }
 
     function faceTone(card, foe) {
@@ -26482,7 +26590,7 @@
       const seen = new Set();
       const foe = enemyNow();
       for (const card of foe.pattern) {
-        if (!card || basicCardName(card.name)) continue;
+        if (!card || !foeRewardable(card)) continue;
         const reward = playerCopy(card);
         if (basicCardName(reward.name) || seen.has(reward.name)) continue;
         seen.add(reward.name);
@@ -27206,10 +27314,13 @@
       const dy = move.dy;
       const scale = Math.max(0.16, move.scale);
       let done = false;
+      const slotEl = land === "deck" ? null : dest.closest(".gear-slot");
+      if (slotEl) slotEl.style.visibility = "hidden";
       const finish = () => {
         if (done) return;
         done = true;
         ghost.remove();
+        if (slotEl) slotEl.style.visibility = "";
         const pile = land === "deck" ? dest.closest(".pile") : (dest.closest(".gear-slot") || dest);
         if (pile && pile.isConnected) {
           pile.classList.remove("swallow");
@@ -29397,7 +29508,8 @@
           return;
         }
         if (name === "album") { clearArtZoom(); albumScrollTop = 0; screen = "album"; render(); }
-        if (name === "foes") { screen = "foes"; render(); }
+        if (name === "foes") { foeTab = "all"; screen = "foes"; render(); }
+        if (name === "foe-tab") { foeTab = action.dataset.tab || "all"; render(); return; }
         if (name === "close-art-zoom") {
           if (screen === "album" || screen === "sheet") captureAlbumScroll();
           clearArtZoom();
