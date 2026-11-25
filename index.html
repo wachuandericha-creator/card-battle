@@ -9744,9 +9744,9 @@
       grid-template-columns: minmax(0, 1fr);
     }
     .menu.event.search .event-lead { row-gap: 0; }
-    .menu.event.search .event-stack { overflow: hidden; justify-content: flex-start; }
+    .menu.event.search .event-stack { overflow: hidden; justify-content: safe center; }
     .menu.event.search .event-side {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
       min-height: 0;
       overflow: hidden;
       justify-content: flex-start;
@@ -9754,7 +9754,8 @@
       padding-top: 0;
     }
     .menu.event.search .event-choice {
-      flex: 1 1 auto;
+      flex: 0 0 auto;
+      height: auto;
       min-height: 0;
       overflow: hidden;
     }
@@ -12882,6 +12883,7 @@
       パリィ: "card-parry.jpg?v=16",
       ラッキーパリィ: "card-lucky-parry-b.jpg?v=1",
       悪魔の剣: "card-demon-sword-b6.jpg?v=1",
+      悪魔の刃: "card-demon-blade.jpg?v=1",
       鮮血の塗布: "card-blood-coat-f.jpg?v=1",
       血の味: "card-blood-taste-e.jpg?v=1",
       魔剣招来: "card-summon-swords-d-aura.jpg?v=1",
@@ -12894,6 +12896,8 @@
       捨て身の一撃: "card-shield-throw-v4.jpg?v=1",
       怒り: "card-anger-quiet.jpg?v=2",
       竜の怒り: "card-dragon-rage-idea-a.jpg?v=1",
+      死の瘴気: "card-miasma.jpg?v=1",
+      死の宣告: "card-doom.jpg?v=1",
       パリィスラッシュ: "card-parry-slash-v7.jpg?v=1",
       見切り斬り: "card-mikiri-2a-v5.jpg?v=1",
       臆病者の構え: "card-coward.jpg?v=2",
@@ -12978,13 +12982,13 @@
         stars: 1,
         atkEach: true,
       },
-      死の呪い: {
-        cost: 0,
+      呪い: {
+        cost: 1,
         text: "呪い。効果は無い",
         kind: "skill",
         foeOnly: true,
         curse: true,
-        stars: 1,
+        flash: true,
       },
     };
     const CARDS = {
@@ -13123,8 +13127,8 @@
         defHidden: 3,
         pattern: [
           { name: "ブロック" },
-          { name: "スライム粘液", cost: 1, text: "相手に毒+4を与える", poison: 4, kind: "skill", stars: 1 },
-          { name: "スライム粘液", cost: 1, text: "相手に毒+4を与える", poison: 4, kind: "skill", stars: 1 },
+          { name: "スライム粘液", cost: 1, text: "毒+4", poison: 4, kind: "skill", stars: 1 },
+          { name: "スライム粘液", cost: 1, text: "毒+4", poison: 4, kind: "skill", stars: 1 },
         ],
       },
       {
@@ -13201,7 +13205,7 @@
         trait: "死の宣告。10ターン目の敵ターン終了時、プレイヤーは即死する。",
         pattern: [
           { name: "威圧の咆哮", cost: 1, text: "相手の次のターンのSPD-2", kind: "skill", foeOnly: true, roar: 2, stars: 3 },
-          { name: "死の瘴気", cost: 1, text: "相手に毒+5、炎上+5。相手の捨て札に死の呪いを2枚混ぜる", kind: "skill", foeOnly: true, miasma: true, stars: 3 },
+          { name: "死の瘴気", cost: 1, text: "毒+5、炎上+5。呪い+2", kind: "skill", foeOnly: true, miasma: true, stars: 3 },
           { name: "アタック" },
           { name: "アタック" },
           { name: "ドラゴンパリィ", cost: 2, text: "パリィ+2\nこのターン、ほかのカードではブロックを得られない", kind: "block", parryAdd: 2, noBlock: true, stars: 3 },
@@ -13220,7 +13224,7 @@
           { name: "アタック" },
           { name: "アタック" },
           { name: "ブロック" },
-          { name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n相手に炎上+2を与える", damage: 3, burn: 2, kind: "skill", stars: 1 },
+          { name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n炎上+2", damage: 3, burn: 2, kind: "skill", stars: 1 },
         ],
       },
       {
@@ -13275,6 +13279,25 @@
           { name: "アタック" },
           { name: "ブロック" },
           { name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 },
+        ],
+      },
+      {
+        name: "羊頭のデーモン",
+        image: "enemy-ram.png?v=1",
+        tier: 2,
+        rank: "普通",
+        hp: 75,
+        atkHidden: 2,
+        defHidden: 0,
+        spd: 2,
+        cursePain: true,
+        trait: "相手の「呪い」はキープを持ち、ターン終了時に手札の呪い1枚につき5ダメージを与える。",
+        pattern: [
+          { name: "アタック" },
+          { name: "ブロック" },
+          { name: "悪夢", cost: 1, text: "相手の捨て札に呪いを2枚加える", nightmare: true, kind: "skill", flash: true, stars: 2 },
+          { name: "悪夢", cost: 1, text: "相手の捨て札に呪いを2枚加える", nightmare: true, kind: "skill", flash: true, stars: 2 },
+          { name: "悪夢", cost: 1, text: "相手の捨て札に呪いを2枚加える", nightmare: true, kind: "skill", flash: true, stars: 2 },
         ],
       },
       {
@@ -13761,6 +13784,7 @@
     let blessAuto = 0;
     let floorPhase = "show";
     let floorGift = null;
+    let searchPicks = [];
     let blessPicks = [];
     let trainPicks = [];
     let blessEnchantAt = -1;
@@ -15099,12 +15123,21 @@
       return { ...base, atkHidden: atk, defHidden: def, pattern };
     }
 
+    function beggarByFloor() {
+      const floors = Math.max(1, Number(dungeonFloors) || 30);
+      const at = floorNo();
+      if (at > (floors * 2) / 3) return { hp: 90, rank: "強敵" };
+      if (at > floors / 3) return { hp: 65, rank: "普通" };
+      return { hp: 30, rank: "雑魚" };
+    }
+
     function enemyNow() {
       if (shopkeepBattle) return shopkeepFoe();
       if (restFoe) return { ...enemyByName(restFoe), plus: 0 };
       if (beggarBattle) {
         const foe = enemyByName("物乞い");
-        return { ...foe, plus: 0 };
+        const scaled = beggarByFloor();
+        return { ...foe, hp: scaled.hp, rank: scaled.rank, plus: 0 };
       }
       const node = bindEliteNode(route[battleIndex], battleIndex);
       if (String(node).startsWith("強敵:")) {
@@ -15257,8 +15290,8 @@
       ["tactician", "戦術家の眼鏡", 2, "ターン終了時、手札が3枚以上残っていたら次のターンのSPD+1。", "glasses"],
       ["old-flag", "古戦場の旗", 3, "4ターン目開始時、この戦闘中ATK+3、DEF+3。", "flag"],
       ["book-all", "万物の書", 3, "毎ターン、最初に使うカードのコストが0になる。", "tome"],
-      ["poison-vial", "毒塗りの小瓶", 1, "戦闘開始時、相手に毒3を付与する。", "openPoison"],
-      ["flint", "火打ち石", 1, "戦闘開始時、相手に炎上3を付与する。", "openBurn"],
+      ["poison-vial", "毒塗りの小瓶", 1, "戦闘開始時、毒+3", "openPoison"],
+      ["flint", "火打ち石", 1, "戦闘開始時、炎上+3", "openBurn"],
       ["iron-ball", "重い鉄球", 2, "1ターンに1枚もアタックを使わなかった場合、次のターン最初のアタックダメージ+5。", "iron"],
       ["combo-mark", "連撃の証", 2, "1ターンにカードを4枚使用した時、相手に6ダメージを与える。", "combo"],
       ["heavy-belt", "重戦士のベルト", 2, "コスト2以上のカードを使うたび、相手に5ダメージを与える。", "belt"],
@@ -19372,7 +19405,32 @@
     }
 
     function curseCard() {
-      return { ...FOE_ONLY["死の呪い"], name: "死の呪い" };
+      // 羊頭のデーモンの特性：相手の呪いはキープを持つ（ハデスが使うときは付かない）
+      const foe = typeof enemyNow === "function" ? enemyNow() : null;
+      return { ...FOE_ONLY["呪い"], name: "呪い", keep: !!(foe && foe.cursePain) };
+    }
+
+    // 羊頭のデーモンの特性：ターン終了時、手札の呪い1枚につき5ダメージ
+    function tickCurse() {
+      const foe = typeof enemyNow === "function" ? enemyNow() : null;
+      if (!foe || !foe.cursePain || !player || !enemy) return false;
+      const n = hand.filter((card) => card && card.curse).length;
+      if (!n) return false;
+      const amount = n * 5;
+      const result = applyDamage(player, amount);
+      if (result.hpLoss > 0) {
+        player.hurtThis = true;
+        fxHurt = true;
+        noteHit("player", result.hpLoss, amount, "poison");
+        lastFoeBlow = { name: "呪い", hpLoss: result.hpLoss };
+        if (player.hp <= 0) {
+          fxFatal = true;
+          fatalHold = true;
+        }
+      }
+      if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
+      log(`${enemy.name}の特性。手札の呪い${n}枚で${amount}ダメージ。`);
+      return player.hp <= 0;
     }
 
     function enemyUseCard(card) {
@@ -19385,7 +19443,12 @@
         addPoison(player, 5);
         addBurn(player, 5);
         discard.push(curseCard(), curseCard());
-        log(`${enemy.name}は${card.name}。毒+5、炎上+5。捨て札に死の呪いが2枚。`, card, true);
+        log(`${enemy.name}は${card.name}。毒+5、炎上+5。捨て札に呪いが2枚。`, card, true);
+        return;
+      }
+      if (card.nightmare) {
+        discard.push(curseCard(), curseCard());
+        log(`${enemy.name}は${card.name}。捨て札に呪いが2枚。`, card, true);
         return;
       }
       if (card.countdown) {
@@ -19531,13 +19594,14 @@
     function legionTraitFor(who) {
       const foe = enemyByName(who);
       const wrap = (card) => (card && foe ? applyEnemyCardRarity(card, foe) : card);
-      if (who === "スライム") return wrap({ name: "スライム粘液", cost: 1, text: "相手に毒+4を与える", poison: 4, kind: "skill", stars: 1 });
+      if (who === "スライム") return wrap({ name: "スライム粘液", cost: 1, text: "毒+4", poison: 4, kind: "skill", stars: 1 });
       if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "2ダメージを3回", damage: 2, hits: 3, kind: "attack", stars: 1, atkEach: true });
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
-      if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n相手に炎上+2を与える", damage: 3, burn: 2, kind: "skill", stars: 1 });
+      if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n炎上+2", damage: 3, burn: 2, kind: "skill", stars: 1 });
       if (who === "デスドラゴン") return wrap({ name: "ドラゴンパリィ", cost: 2, text: "パリィ+2\nこのターン、ほかのカードではブロックを得られない", kind: "block", parryAdd: 2, noBlock: true, stars: 3 });
       if (who === "雪女") return wrap({ name: "吹雪", cost: 1, text: "次の相手のターン終了まで、相手のATK-4", frost: 4, kind: "skill", stars: 2 });
       if (who === "マーフォーク") return wrap({ name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 });
+      if (who === "羊頭のデーモン") return wrap({ name: "悪夢", cost: 1, text: "相手の捨て札に呪いを2枚加える", nightmare: true, kind: "skill", flash: true, stars: 2 });
       if (who === "ガーゴイル") return wrap({ name: "棘の構え", cost: 1, text: "トゲ+3", thorns: 3, kind: "orange", stars: 2 });
       if (who === "コボルド") return wrap({ name: "弱者の意地", cost: 1, text: "体力を失うたび、ATK+1", kind: "orange", flash: true, spite: true, stars: 1 });
       if (who === "河童") return wrap({ name: "きゅうりかじり", cost: 1, text: "体力を6回復", heal: 6, kind: "skill", flash: true, stars: 1 });
@@ -20034,10 +20098,11 @@
       while (resolveAt < inPlay.length && inPlay[resolveAt].keep && inPlay[resolveAt].resolved) resolveAt += 1;
       note = "";
       const poisoned = tickPoison("player");
+      const cursed = !poisoned && tickCurse();
       const usedBlock = (player.blocksPlayed || 0) > 0 || inPlay.some((card) => cardKind(card) === "block");
-      if (!poisoned && !usedBlock && anyShield("sturdy")) gainBlock(7);
+      if (!poisoned && !cursed && !usedBlock && anyShield("sturdy")) gainBlock(7);
       turnCall = "player";
-      if (poisoned) {
+      if (poisoned || cursed) {
         scheduleFinish("lose");
         return;
       }
@@ -20755,6 +20820,7 @@
         rewardStep,
         pathEventTitle,
         floorGift,
+        searchPicks,
         runBonus,
         bossPicks,
         shopStock,
@@ -21056,6 +21122,8 @@
       rewardStep = data.rewardStep || "cards";
       pathEventTitle = data.pathEventTitle || "探索";
       floorGift = data.floorGift && data.floorGift.kind ? data.floorGift : null;
+      searchPicks = Array.isArray(data.searchPicks) ? data.searchPicks.filter((pick) => pick && pick.kind) : [];
+      if (!searchPicks.length && floorGift && data.floorPhase === "search") searchPicks = [floorGift];
       bossPicks = (Array.isArray(data.bossPicks) ? data.bossPicks : []).map((pick) => (
         pick && pick.card ? { ...pick, card: repairOwned(pick.card) } : pick
       ));
@@ -21699,34 +21767,90 @@
       render();
     }
 
-    function rollExploreGift() {
-      const kind = ["gear", "loot", "item"][Math.floor(Math.random() * 3)];
-      if (kind === "item") {
-        const names = FIND_ITEM_NAMES.filter((name) => cardDef(name));
-        const name = names.length ? pickRarityCard(names, (itemName) => (cardDef(itemName) || {}).stars) : "";
-        const def = name && cardDef(name);
-        if (!def) return null;
-        return { kind: "card", card: keepCard({ name, ...def, stars: def.stars || 1 }) };
+    function wornGearNames() {
+      const names = [];
+      if (!gear) return names;
+      ["sword", "sword2", "shield", "shield2", "braceletL", "braceletR"].forEach((key) => {
+        if (gear[key] && gear[key].name) names.push(gear[key].name);
+      });
+      return names;
+    }
+
+    function emptyGearSites() {
+      const sites = [];
+      if (!gear || (!gear.sword && !gear.sword2)) sites.push("sword");
+      if (!gear || (!gear.shield && !gear.shield2)) sites.push("shield");
+      if (!gear || !gear.braceletL || !gear.braceletR) sites.push("accessory");
+      return sites;
+    }
+
+    function gearSite(item) {
+      if (!item) return "";
+      if (item.slot === "sword") return "sword";
+      if (item.slot === "shield") return "shield";
+      if (isAccessorySlot(item.slot)) return "accessory";
+      return "";
+    }
+
+    function exploreGearPool(takenIds) {
+      if (!apexBag.length) refillApex();
+      const worn = wornGearNames();
+      const sites = emptyGearSites();
+      return GEAR_ITEMS.filter((item) => {
+        if (!item || item.loot || item.relic || item.boss) return false;
+        if ((Number(item.stars) || 0) <= 0) return false;
+        if (takenIds.indexOf(item.id) >= 0) return false;
+        if (worn.indexOf(item.name) >= 0) return false;
+        const site = gearSite(item);
+        if (!site) return false;
+        if (sites.length && sites.indexOf(site) < 0) return false;
+        if ((Number(item.stars) || 0) >= 3 && apexBag.indexOf(item.id) < 0) return false;
+        return true;
+      });
+    }
+
+    function rollExploreGear(takenIds) {
+      const item = pickRarityCard(exploreGearPool(takenIds), (row) => row.stars);
+      if (!item) return null;
+      if ((Number(item.stars) || 0) >= 3) {
+        const at = apexBag.indexOf(item.id);
+        if (at >= 0) apexBag.splice(at, 1);
       }
-      if (kind === "loot") {
-        const items = LOOT_RELICS.map((row) => gearItem(row.id)).filter(Boolean);
-        if (!items.length) return { kind: "gear", gear: lootPicture(3) };
-        const bands = [];
-        items.forEach((item) => {
-          const stars = Number(item.stars) || 1;
-          if (bands.indexOf(stars) < 0) bands.push(stars);
-        });
-        const rolled = bands[Math.floor(Math.random() * bands.length)];
-        const fresh = items.filter((item) => Number(item.stars) === rolled && lootSeen.indexOf(item.id) < 0);
-        const gear = fresh.length ? { ...fresh[Math.floor(Math.random() * fresh.length)] } : lootPicture(rolled);
-        return { kind: "gear", gear };
+      return { kind: "gear", gear: { ...item } };
+    }
+
+    function rollExploreLoot(takenIds) {
+      const items = LOOT_RELICS.map((row) => gearItem(row.id)).filter((item) => item && lootSeen.indexOf(item.id) < 0 && takenIds.indexOf(item.id) < 0);
+      if (!items.length) return null;
+      const gear = pickRarityCard(items, (item) => item.stars);
+      return gear ? { kind: "gear", gear: { ...gear } } : null;
+    }
+
+    function rollExplorePicks() {
+      const picks = [];
+      const taken = [];
+      let pictured = false;
+      for (let i = 0; i < 3; i += 1) {
+        const wantLoot = Math.random() < 0.5;
+        let pick = wantLoot ? rollExploreLoot(taken) : rollExploreGear(taken);
+        if (!pick && wantLoot && !pictured) {
+          pick = { kind: "gear", gear: lootPicture(1) };
+          pictured = true;
+        }
+        if (!pick) pick = wantLoot ? rollExploreGear(taken) : rollExploreLoot(taken);
+        if (!pick && !pictured) {
+          pick = { kind: "gear", gear: lootPicture(1) };
+          pictured = true;
+        }
+        if (!pick || !pick.gear) break;
+        if (pick.gear.id && pick.gear.id !== "loot-picture") taken.push(pick.gear.id);
+        picks.push(pick);
       }
-      const item = drawGearOffers(1)[0];
-      return item ? { kind: "gear", gear: item } : null;
+      return picks;
     }
 
     function grantExplore() {
-      const gift = rollExploreGift();
+      const gift = rollExplorePicks()[0];
       if (!gift) return "";
       return takeGift(gift);
     }
@@ -22128,6 +22252,7 @@
       blessCardName = "";
       enchantPop = "";
       trainPicks = [];
+      searchPicks = [];
       beggarCut = false;
       beggarPick = -1;
       restHealPlay = false;
@@ -22174,10 +22299,11 @@
         floorPrompt = "何が欲しい？";
         armRare("shop");
       } else if (kind === "探索") {
-        floorGift = rollExploreGift();
-        floorPhase = floorGift ? "search" : "show";
+        searchPicks = rollExplorePicks();
+        floorGift = null;
+        floorPhase = searchPicks.length ? "search" : "show";
         floorNote = "松明の光が、古びた宝箱を照らしている。\nこの瞬間のために生きている。\nドーパミンに支配されるまま、宝箱を開く。";
-        floorPrompt = floorGift ? "宝箱の中から、装備か戦利品かアイテムを見つけた。" : "中は空っぽだった。";
+        floorPrompt = searchPicks.length ? "装備か戦利品を、3つから1つ選べ。" : "中は空っぽだった。";
       } else if (kind === "未知") {
         if (Math.random() < ENCOUNTER_BEGGAR) {
           floorKind = "物乞いに遭遇";
@@ -22489,19 +22615,23 @@
       finishEvent();
     }
 
-    function takeSearchGear() {
-      if (floorKind !== "探索" || floorPhase !== "search" || !floorGift) return;
-      const got = takeGift(floorGift);
+    function takeSearchGear(index) {
+      if (floorKind !== "探索" || floorPhase !== "search") return;
+      const pick = searchPicks[index == null ? 0 : index];
+      if (!pick) return;
+      const got = takeGift(pick);
       if (!got) return;
       noteSearchResult(got.replace(/。$/, ""));
       log(got);
+      searchPicks = [];
       finishEvent();
     }
 
     function skipSearchGear() {
       if (floorKind !== "探索") return;
-      const name = floorGift && ((floorGift.gear && floorGift.gear.name) || (floorGift.card && floorGift.card.name));
-      noteSearchResult(name ? `${name}を無視した` : "無視した");
+      const names = searchPicks.map((pick) => pick && pick.gear && pick.gear.name).filter(Boolean);
+      noteSearchResult(names.length ? `${names.join("、")}を無視した` : "無視した");
+      searchPicks = [];
       floorGift = null;
       finishEvent();
     }
@@ -23431,7 +23561,7 @@
             <h3>戦士</h3>
             ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(warriorReward))}
             <ul>
-              <li>探索と勝利の追加の装備は、先にレアリティを引きます。★60%、★★30%、★★★以上10%です。★★★は共通のローテーションで、1周するまで同じ品は出ません。お店は重みなしで、カード4、装備2、戦利品2、アイテム2です。</li>
+              <li>探索は装備と戦利品を3つ並べ、1つ選びます。各枠は装備50%、戦利品50%です。どちらも先にレアリティで、★60%、★★30%、★★★以上10%です。無い帯は残りで引き直します。装備は空き部位を優先し、装備中の同名は出ません。★★★は共通のローテーションで、1周するまで同じ品は出ません。お店は重みなしで、カード4、装備2、戦利品2、アイテム2です。</li>
             </ul>
             ${oddsTable(["★", "レアリティ", "1つの割合", "装備"], rarityRows(GEAR_ITEMS))}
             <h3>アイテム（先にレアリティ）</h3>
@@ -23470,7 +23600,7 @@
             <h2>そのほか</h2>
             ${oddsTable(["出来事", "出るもの"], [
               ["遭遇", `物乞い ${pct(ENCOUNTER_BEGGAR)}（途中に祝福は出ない）`],
-              ["探索", "装備、戦利品、アイテムが同じ確率。★は出ない。装備は先にレアリティ。戦利品は未入手。出尽くしたら効果の空の「戦利品」"],
+              ["探索", "装備と戦利品を3つ並べて1つ選ぶ。各枠は装備50%、戦利品50%。どちらも★60%、★★30%、★★★以上10%。アイテムと★は出ない"],
               ["修行", "カード3種から1枚。いちばん多いビルドを先に出す。もらったあと、デッキの未熟練から1枚。いまもらったカードも入る。必要回数まで上げて、出られる進化から2つ出て、1つを選ぶ"],
               ["迷子", "戦闘、強敵、探索、物乞い、お店、休憩、修行、遭遇、鍛冶屋が同じ確率。迷子自身とボスは入らない"],
               ["お店", "カード3、装備3、アイテム2（ベッドとホテル）。カードはレアリティの2倍。アイテムはレアリティと同じ。装備は3倍"],
@@ -23957,7 +24087,7 @@
         note = "お店で泥棒したときだけ。道には出ない。";
       } else if (foe) {
         names.push("洞窟");
-        if (foe.name === "物乞い") note = "洞窟の初戦には出ない。";
+        if (foe.name === "物乞い") note = "洞窟の初戦には出ない。体力は★30、★★65、★★★90。ボス階の1/3を超えると★★、2/3を超えると★★★。";
       }
       const cols = names.map((name) => `<div class="foe-phase"><b>${esc(name)}</b></div>`).join("");
       const foot = note ? `<p class="foe-phase-note">${esc(note)}</p>` : "";
@@ -24892,7 +25022,10 @@
         }).join("") || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("無視して進む", "beggar-skip")}${menuButton("渡すカードを選んで決定", "beggar-confirm", true, beggarPick < 0)}</div>`
         : "";
       const searchActions = floorKind === "探索" && floorPhase === "search"
-        ? `<div class="event-actions">${menuButton("受け取る", "search-take", true)}${menuButton("無視する", "search-skip")}</div>`
+        ? `<div class="gift-row">${searchPicks.map((pick, i) => {
+          const lv = rareLevel(giftEntity(pick));
+          return `<button type="button" class="gift-btn${rareClass(lv)}" data-action="search-pick" data-search="${i}">${giftMarkup(pick, false)}</button>`;
+        }).join("")}</div><div class="event-actions">${menuButton("無視する", "search-skip")}</div>`
         : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
@@ -24936,7 +25069,7 @@
         }).join("")}</div>`
         : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
-      const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0, floorKind === "探索") : "";
+      const gift = floorPhase === "show" ? giftMarkup(floorGift, true, giftLive, 0, floorKind === "探索") : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
       const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop"), menuButton("スキップ", "floor-next", false, false, "shop-next")) : "";
       const smith = floorKind === "鍛冶屋" ? smithPanelHtml() : "";
@@ -26844,7 +26977,7 @@
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=6" },
       straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=9" },
       boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=6" },
-      search: { name: "探索", text: "装備をランダムで獲得する。", image: "path-search.jpg?v=16" },
+      search: { name: "探索", text: "装備か戦利品を、3つから1つ選ぶ。", image: "path-search.jpg?v=16" },
       beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=9" },
       shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=15" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=14" },
@@ -27468,6 +27601,7 @@
       });
       (shopStock || []).forEach((slot) => { if (slot && slot.gear) pile.push(slot.gear); });
       if (floorGift && floorGift.gear) pile.push(floorGift.gear);
+      (searchPicks || []).forEach((pick) => { if (pick && pick.gear) pile.push(pick.gear); });
       if (victoryGear) pile.push(victoryGear);
       (bossPicks || []).forEach((pick) => { if (pick && pick.gear) pile.push(pick.gear); });
       (blessPicks || []).forEach((pick) => { if (pick && pick.gear) pile.push(pick.gear); });
@@ -30427,7 +30561,7 @@
         if (name === "beggar-pick") pickBeggar(Number(action.dataset.index));
         if (name === "beggar-confirm") confirmBeggar();
         if (name === "beggar-skip") skipBeggar();
-        if (name === "search-take") takeSearchGear();
+        if (name === "search-pick") takeSearchGear(Number(action.dataset.search));
         if (name === "search-skip") skipSearchGear();
         if (name === "iphone-play") {
           iphonePlay = !iphonePlay;
