@@ -2772,6 +2772,29 @@
       width: 100%;
     }
     html.phone .menu.foe-index { grid-template-columns: 1fr; }
+    /* ダンジョン選択で敵を押したときの敵データ：外の枠は付けず、見た目は敵データリストと同じ（2026-11-25） */
+    .overlay.foe-starter .panel {
+      width: min(1100px, 100%);
+      height: auto;
+      max-height: calc(100cqh - 12px);
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+      overflow: visible;
+      align-items: center;
+    }
+    .overlay.foe-starter .foe-file { width: 100%; max-height: calc(100cqh - 90px); overflow: auto; background: rgba(12, 9, 7, 0.94); }
+    .overlay.foe-starter .foe-starter-sheet { grid-template-columns: minmax(160px, 34%) minmax(0, 1fr); }
+    .overlay.foe-starter .foe-starter-portrait { align-items: center; }
+    .overlay.foe-starter .foe-starter-portrait img { object-position: center center; }
+    .overlay.foe-starter .foe-starter-deck .cast-deck { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .overlay.foe-starter .foe-starter-deck .cast-deck .deck-card,
+    .overlay.foe-starter .foe-starter-deck .cast-deck .deck-card:hover,
+    .overlay.foe-starter .foe-starter-deck .cast-deck .card,
+    .overlay.foe-starter .foe-starter-deck .cast-deck .card:hover,
+    .overlay.foe-starter .foe-starter-deck .cast-deck .card.preview,
+    .overlay.foe-starter .foe-starter-deck .cast-deck .card.preview:hover { width: 100%; }
     .foe-file {
       padding: 16px;
       border-radius: 18px;
@@ -6558,6 +6581,7 @@
     .card .fx .ico { width: 8cqw; height: 8cqw; flex: none; overflow: hidden; color: #1a120e; margin-right: -0.6cqw; }
     .card .fx .ico.sword { transform: rotate(28deg) scale(0.8); margin-right: -2.2cqw; }
     .card .fx .ico.heart { transform: scale(0.72); margin-right: -1.6cqw; }
+    .card .fx .ico.shield { transform: scale(0.78); margin-right: -1.6cqw; }
     .card .fx.note .stat-word.atk { color: #d62828; }
     .card .fx.note .stat-word.def { color: #1d6fd4; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
@@ -9293,9 +9317,12 @@
     .menu.event.bless .event-lead {
       gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.6cqw, 10px);
     }
+    /* 右半分の左右の余白をそろえる。絵の右端から文字まで、文字の右端から画面の端までを同じに */
+    .menu.event.bless .event-stack { margin-left: -28px; }
     .menu.event.bless .event-side {
       gap: 32px;
-      padding-right: clamp(2px, 0.5cqw, 8px);
+      padding-left: 0;
+      padding-right: 6px;
     }
     .menu.event .event-copy .event-story p {
       margin: 0;
@@ -9354,7 +9381,7 @@
     }
     .menu.event .smith-how p + p { margin-top: 8px; }
     /* 祝福の報酬は大きく。右半分の横幅いっぱいに、余白は少しだけ（2026-11-25） */
-    .menu.event.bless { --choice-w: 252px; }
+    .menu.event.bless { --choice-w: 258px; }
     /* 祝福の背景：横長の女神の絵を、うすく敷く（2026-11-25） */
     /* 全イベント共通：そのイベントの絵を、ぼかして薄く背景に敷く（2026-11-25） */
     .menu.event[style*="--event-bg"] { position: relative; isolation: isolate; }
@@ -9485,7 +9512,17 @@
     .menu.event.bless .gift-row {
       justify-content: center;
       flex-wrap: nowrap;
-      gap: 20px;
+      gap: 28px;
+    }
+    /* 祝福イベントの説明文（上の物語と、下の「報酬を一つ選べ」）を大きく（2026-11-26） */
+    .menu.event.bless .event-choice .event-story p,
+    .menu.event.bless .event-copy .event-story p {
+      font-size: 32px;
+      line-height: 1.55;
+    }
+    .menu.event.bless .event-choice .event-play p,
+    .menu.event.bless .event-copy .event-play p {
+      font-size: clamp(40px, 3cqw, 52px);
     }
     .menu.event.search {
       grid-template-columns: minmax(0, 1fr);
@@ -15170,7 +15207,7 @@
           }
           floorHp = Math.min(next, (Number(floorHp) || 0) + 10);
         }
-        if (item.relic === "purge" || item.relic === "copy" || item.relic === "shelf") beginLootChoice(item.relic, "floor");
+        if (item.relic === "purge" || item.relic === "copy" || item.relic === "shelf") beginLootChoice(item.relic, "floor", gearAsCard(item));
         if (item.relic === "master") {
           const grown = maxOneMastery("relic");
           if (grown) log(`熟練の教本。${grown.name}が熟練の回数に達した。`);
@@ -17424,7 +17461,7 @@
         return true;
       }
       if (card.mirror) {
-        if (beginLootChoice("mirror")) log(`${heroName()}は鏡の破片。コピーするカードを選ぶ。`, card);
+        if (beginLootChoice("mirror", "", card)) log(`${heroName()}は鏡の破片。コピーするカードを選ぶ。`, card);
         else log(`${heroName()}は鏡の破片。コピーできる手札が無い。`, card);
         return true;
       }
@@ -17619,8 +17656,8 @@
       });
     }
 
-    function openDemonPick(kind, cards, max) {
-      lootChoice = { kind, after: "battle", max, picked: [], cards };
+    function openDemonPick(kind, cards, max, source) {
+      lootChoice = { kind, after: "battle", max, picked: [], cards, source: source || null };
       return true;
     }
 
@@ -17678,7 +17715,7 @@
           log(`${heroName()}は${card.name}。${picked.name}を戦闘中除外した。シールド${shield}。`, card);
           return true;
         }
-        openDemonPick("seal", cards, 1);
+        openDemonPick("seal", cards, 1, card);
         return true;
       }
       if (card.callBlood) {
@@ -17695,7 +17732,7 @@
           log(`${heroName()}は血の呼び声。${picked.name}を手札へ。${picked.cheapTurn ? "このターン、コスト-1。" : ""}`, card);
           return true;
         }
-        openDemonPick("call", cards, 1);
+        openDemonPick("call", cards, 1, card);
         return true;
       }
       if (card.demonAura && !card.demonSword) {
@@ -17720,7 +17757,7 @@
           log(`${heroName()}は血の契約。悪魔の剣を${cards.length}枚、手札へ。`, card);
           return true;
         }
-        openDemonPick("pact", cards, 2);
+        openDemonPick("pact", cards, 2, card);
         return true;
       }
       if (card.bloodTaste) {
@@ -17761,7 +17798,7 @@
         return;
       }
       if (card && (card.chapel || card.name === "礼拝堂")) {
-        beginLootChoice("chapel");
+        beginLootChoice("chapel", "", card);
         log(`${heroName()}は礼拝堂。いまの手札から、4枚まで消せる。`, card);
         return;
       }
@@ -17822,7 +17859,7 @@
           log(`${heroName()}は${card.name}。捨てる手札は無い。${hand.length - before}枚引いた。`, card);
           return;
         }
-        beginLootChoice("tactic");
+        beginLootChoice("tactic", "", card);
         log(`${heroName()}は${card.name}。捨てる手札を1枚選ぶ。`, card);
         return;
       }
@@ -20908,7 +20945,7 @@
             flyBlessFrom(`[data-action="bless-pick"][data-bless="${index}"]`, land, () => {
               blessPicks = [];
               if (floorKind !== "挑戦者に祝福を") return;
-              if (beginLootChoice(choiceKind, "floor")) {
+              if (beginLootChoice(choiceKind, "floor", boonAsCard(pick.kind, pick.elem))) {
                 lootChoice.resume = "event";
                 persistSave(true);
                 render();
@@ -23539,13 +23576,8 @@
       const foe = ENEMIES.find((enemy) => enemy.name === name);
       if (!foe) return;
       closeFoeStarter();
-      const lines = foeFeatureLines(foe);
-      const feature = lines.length
-        ? `<div class="foe-starter-blurb">${lines.map((line) => `<p>${esc(line)}</p>`).join("")}</div>`
-        : `<div class="foe-starter-blurb"><p>なし</p></div>`;
-      const cards = foeStarterCards(foe);
-      const portrait = foe.image ? `<img src="${esc(foe.image)}" alt="">` : `<span class="foe-blank" aria-hidden="true"></span>`;
-      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel"><div class="foe-starter-sheet"><div class="foe-starter-portrait">${portrait}</div><div class="foe-starter-info">${foeIdHtml(foe)}<section class="foe-starter-block"><h3>特徴</h3>${feature}</section><section class="foe-starter-block"><h3>ステータス</h3>${foeStarterStats(foe)}</section><section class="foe-starter-block"><h3>出現ダンジョン</h3>${foeAppearHtml(foe)}</section></div><section class="foe-starter-block foe-starter-deck"><h3>初期デッキ</h3><div class="cast-deck" aria-label="初期デッキ">${foeStarterDeckMarkup(cards)}</div></section></div><button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
+      // 敵データリストと同じ中身（foeDossierHtml）。外の枠は付けない
+      root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel">${foeDossierHtml(foe)}<button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
       bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
     }
 
@@ -24615,7 +24647,7 @@
           icons.forEach((el) => {
             el.style.width = icon;
             el.style.height = icon;
-            const pull = el.classList.contains("sword") ? 0.28 : el.classList.contains("heart") ? 0.2 : 0.08;
+            const pull = el.classList.contains("sword") ? 0.28 : el.classList.contains("heart") || el.classList.contains("shield") ? 0.2 : 0.08;
             el.style.marginRight = `${(-8 * scale * pull).toFixed(2)}cqw`;
           });
         };
@@ -28191,7 +28223,7 @@
       return bits.join("　");
     }
 
-    function beginLootChoice(kind, after) {
+    function beginLootChoice(kind, after, source) {
       if (lootChoice) return false;
       let cards = [];
       let max = 1;
@@ -28219,7 +28251,7 @@
         max = 1;
       } else return false;
       if ((kind === "copy" || kind === "shelf" || kind === "mirror" || kind === "master") && !cards.length) return false;
-      lootChoice = { kind, after: after || "floor", max, picked: [], cards };
+      lootChoice = { kind, after: after || "floor", max, picked: [], cards, source: source || null };
       return true;
     }
 
@@ -28349,20 +28381,16 @@
         master: "熟練をマックスにするカードを1枚選ぶ",
       };
       const choice = lootChoice;
-      const faces = choice.cards.map((card, index) => {
-        const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
-        return `<button type="button" class="reward-pick${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${offerTone(card)}">${cardFace(card)}</div></button>`;
-      }).join("");
       const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "tactic" || choice.kind === "pact" || choice.kind === "taste" || choice.kind === "master") && !choice.picked.length;
-      if (choice.kind === "copy" || choice.kind === "master") {
-        const isMaster = choice.kind === "master";
-        const cards = choice.cards.map((card, index) => {
-          const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
-          return `<button type="button" class="enchant-card${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
-        }).join("");
-        return `<div class="overlay deck-view enchant-pick loot-copy"><div class="panel"><h2>${isMaster ? "熟練の極意" : "白紙の巻物"}</h2><p class="deck-lead">${isMaster ? "熟練をマックスにするカードを1枚選ぶ" : "コピーしてデッキに加えるカードを1枚選ぶ"}</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
-      }
-      return `<div class="overlay loot-ask"><div class="panel wide"><h2>${esc(titles[choice.kind] || "選ぶ")}</h2><div class="reward-row">${faces || `<p>選べるカードは無い。</p>`}</div><div class="gear-offer-actions">${menuButton("きめる", "loot-ok", true, need)}</div></div></div>`;
+      const names = { purge: "大浄化の祝福", copy: "白紙の巻物", shelf: "無限の書架", chapel: "礼拝堂", mirror: "鏡の破片", call: "血の呼び声", seal: "鍔迫り合い", tactic: "戦術眼", pact: "血の契約", taste: "味見", master: "熟練の極意" };
+      const cards = choice.cards.map((card, index) => {
+        const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
+        return `<button type="button" class="enchant-card${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
+      }).join("");
+      const src = choice.source;
+      const title = src && src.name ? src.name : (names[choice.kind] || "選ぶ");
+      const award = src ? `<div class="enchant-got">${rewardCardHtml(src)}</div>` : "";
+      return `<div class="overlay deck-view enchant-pick loot-copy"><div class="panel"><div class="enchant-body"><div class="enchant-main"><h2>${esc(title)}</h2>${award}<p class="deck-lead">${esc(titles[choice.kind] || "選ぶ")}</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div></div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
     }
 
     function masteryBlurb(id, card) {
