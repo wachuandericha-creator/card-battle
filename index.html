@@ -860,7 +860,7 @@
        ・ダメージ予測はカードの外（自分は上の端、敵は下の端）に置き、カードにかぶらない
        ・横幅に収まる大きさにして、画面の外へ出さない */
     .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
-    .duel-mid .play-side.mine { padding: 40px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); }
+    .duel-mid .play-side.mine { padding: 54px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); }
     .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px) 0 40px; }
     .duel-mid .play-cards {
       flex: 1 1 0;
@@ -895,7 +895,7 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .duel-mid .play-side.mine .forecasts { top: 2px; bottom: auto; }
+    .duel-mid .play-side.mine .forecasts { top: 4px; bottom: auto; flex-wrap: nowrap; }
     .duel-mid .play-side.foe .forecasts { top: auto; bottom: 2px; }
     .hero-shoulder {
       position: relative;
@@ -7925,8 +7925,8 @@
     }
     .route-stack {
       border: 0;
-      padding: 4px;
-      gap: 10px;
+      padding: 0;
+      gap: 16px;
       border-radius: 12px;
       background: transparent;
       box-shadow: none;
@@ -14532,7 +14532,8 @@
       const max = Math.max(0, ol.scrollHeight - ol.clientHeight);
       if (!now || !ol.clientHeight) return 0;
       // 下のマスの底を画面の底に合わせる。現在地はその一つ上、下から二番目。
-      const anchor = roadLower(now) || now;
+      // 0Fの祝福だけは、祝福のマス自身を一番下に合わせる。
+      const anchor = isBlessingFloor0() ? now : (roadLower(now) || now);
       const scale = stageScale() || 1;
       const style = getComputedStyle(ol);
       const padBottom = parseFloat(style.paddingBottom) || 0;
@@ -23483,7 +23484,7 @@
     function rewardAlbumCards() {
       return ["maxhp", "spd", "play", "mana"].map((kind) => boonAsCard(kind)).concat(
         ENCHANT_ELEMS.map((elem) => boonAsCard("enchant", elem)),
-      );
+      ).concat(BLESS_NEW.map((row) => boonAsCard(row.id)));
     }
 
     function clearArtZoom() {
