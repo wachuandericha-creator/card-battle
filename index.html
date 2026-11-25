@@ -12640,6 +12640,7 @@
       諸刃の剣: "card-double-edge-v7.jpg?v=1",
       自信過剰: "card-pride-v4.jpg?v=2",
       達人の間合い: "card-deep-focus.jpg?v=1",
+      心眼: "card-ultra-focus-v6.jpg?v=1",
       超集中: "card-ultra-focus-v6.jpg?v=1",
       シールドアタック: "card-shield-attack.jpg?v=2",
       キック: "card-kick-leg.jpg?v=2",
@@ -12723,19 +12724,19 @@
     const WARRIOR = {
       パリィ: { cost: 2, stars: 1, text: "パリィ+1", parry: true, kind: "block", note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
       ラッキーパリィ: { cost: 1, stars: 2, text: "パリィ+1", parry: true, kind: "block", flash: true, note: "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。" },
-      捨て身の一撃: { cost: 1, stars: 1, text: "13ダメージ\n次に受ける攻撃ダメージ+5", damage: 13, kind: "attack", expose: 5 },
+      捨て身の一撃: { cost: 1, stars: 1, text: "13ダメージ\n相手に集中+5", damage: 13, kind: "attack", foeFocus: 5 },
       見切り斬り: { cost: 1, stars: 1, text: "7ダメージ\n前のターンにダメージを受けていないなら追加で5ダメージ", damage: 7, kind: "attack", safeBonus: 5 },
       パリィスラッシュ: { cost: 3, stars: 2, text: "18ダメージ\nパリィ+1", damage: 18, parry: true, kind: "attack" },
       臆病者の構え: { cost: 1, stars: 2, text: "ブロック6\nパリィ中でもシールドを獲得", block: 6, kind: "orange", coward: true },
       致命の一撃: { cost: 3, stars: 3, text: "35ダメージ\nこの戦闘中、パリィに成功するたびコスト-1\n0まで下がる", damage: 35, kind: "attack", finisher: true },
       ナイフパリィ: { cost: 2, stars: 3, text: "パリィ+1\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
-      超集中: { cost: 2, stars: 3, text: "パリィ+3\nこのターン、パリィに成功するたびATK+1＆DEF+1", kind: "block", parryAdd: 3, focusTurn: true },
-      諸刃の剣: { cost: 2, stars: 2, text: "30ダメージ\n次に受けるダメージが2倍", damage: 30, kind: "attack", doubleNext: true },
+      心眼: { cost: 2, stars: 3, text: "パリィ+3\nこのターン、パリィに成功するたび集中+10", kind: "block", parryAdd: 3, focusOnParry: 10 },
+      諸刃の剣: { cost: 2, stars: 2, text: "30ダメージ\n相手に集中+30", damage: 30, kind: "attack", foeFocus: 30 },
       鍔迫り合い: { cost: 1, stars: 1, text: "手札の攻撃カード1枚を戦闘中除外する\nそのダメージ分のシールドを得る", kind: "block", sealSword: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を6回復\nパリィ+1", heal: 6, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中は\n状態異常にならない", kind: "orange", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、ドロー2", kind: "skill", quick: true, keep: true, step: true },
-      自信過剰: { cost: 2, stars: 3, text: "パリィに成功するたびATK+3", kind: "orange", flash: true, pride: true },
+      自信過剰: { cost: 2, stars: 3, text: "パリィを得るたびATK+1\nパリィに成功するたびさらにATK+2", kind: "orange", pride: true },
     };
     const DEMON = {
       悪魔の剣: { cost: 1, stars: 1, text: "6ダメージ\nこの戦闘中全ての\n悪魔の剣のダメージ+3", damage: 6, kind: "attack", demonSword: true, demonAura: 3 },
@@ -12749,6 +12750,15 @@
       呪われた鞘: { cost: 1, stars: 2, text: "悪魔の剣を使用したとき、捨て札ではなく山札の一番上に置く", kind: "orange", sheath: true },
       魔剣増殖: { cost: 2, stars: 3, text: "ターン開始時、手札に悪魔の剣を1枚生成する\nコスト0・フラッシュ", kind: "orange", proliferate: true },
       悪魔二刀流: { cost: 2, stars: 3, text: "悪魔の剣を使うたび、追加で悪魔化1\n同じ対象にそのダメージをもう1回与える", kind: "orange", dualSword: true },
+      悪魔の盾: { cost: 1, stars: 1, text: "悪魔化3\nブロック12", kind: "block", demon: 3, block: 12 },
+      悪魔的詐欺: { cost: 1, stars: 1, text: "このターン、悪魔化で失ったHPをすべて回復する", kind: "skill", refundTurn: true },
+      流れた血: { cost: 1, stars: 2, text: "悪魔化するたび、ATK+1 DEF+1", kind: "orange", bloodFlow: true },
+      悪魔の薬: { cost: 0, stars: 2, text: "悪魔化5\n3枚引く", kind: "skill", quick: true, demon: 5, draw: 3 },
+      悪魔の刃: { cost: 2, stars: 2, text: "14ダメージ\nシールド以外に与えたHPダメージ分回復", damage: 14, kind: "attack", leechFull: true },
+      悪魔の悪戯: { cost: 2, stars: 2, text: "この戦闘中に悪魔化で失ったHPをすべて回復する", kind: "skill", flash: true, refundFight: true },
+      悪魔の鎧: { cost: 2, stars: 3, text: "戦闘終了時、最大HPの半分（切り捨て）を回復", kind: "orange", demonArmor: true },
+      デーモンハンド: { cost: 3, stars: 3, text: "悪魔化10\n40ダメージ", damage: 40, kind: "attack", demon: 10 },
+      "デーモン・ブレイズ・キャノン": { cost: 3, stars: 3, text: "HPが1になるまで悪魔化\n失ったHPと同じ値の集中を得る\n最大HP-1のブロックを得る\nこのブロックはターン終了時に消えない", kind: "skill", flash: true, demonToOne: true },
     };
     const KNIGHT = {
       シールドアタック: { cost: 1, stars: 2, text: "自分のシールドの数だけダメージ", kind: "attack", press: true },
@@ -12760,7 +12770,7 @@
       臆病者の構え: "パリィ",
       致命の一撃: "パリィ",
       ナイフパリィ: "パリィ",
-      超集中: "パリィ",
+      心眼: "パリィ",
       諸刃の剣: "パリィ",
       達人の間合い: "パリィ",
       魔法のパリィ: "パリィ",
@@ -12778,6 +12788,15 @@
       呪われた鞘: "悪魔剣",
       魔剣増殖: "悪魔剣",
       悪魔二刀流: "悪魔剣",
+      悪魔の盾: "悪魔化",
+      悪魔的詐欺: "悪魔化",
+      流れた血: "悪魔化",
+      悪魔の薬: "悪魔化",
+      悪魔の刃: "悪魔化",
+      悪魔の悪戯: "悪魔化",
+      悪魔の鎧: "悪魔化",
+      デーモンハンド: "悪魔化",
+      "デーモン・ブレイズ・キャノン": "悪魔化",
     };
     const COMMON = {
       怒り: { cost: 0, stars: 1, text: "ATK+2　DEF-2", kind: "orange", rage: true, flash: true },
@@ -12795,6 +12814,7 @@
       戦術眼: { cost: 0, stars: 2, text: "手札を1枚捨て、ドロー2\n捨てる手札が無いと使えない", quick: true, tactic: true, kind: "skill" },
       気合溜め: { cost: 1, stars: 2, text: "次の自分のターン、マナ+1、ATK+2", nextMana: 1, nextAtk: 2, kind: "skill" },
       精神統一: { cost: 0, stars: 2, text: "このターン、マナ+1", manaNow: 1, flash: true, kind: "skill" },
+      "精神集中（仮）": { cost: 0, stars: 1, text: "集中+5", focus: 5, kind: "skill" },
       薬草: { cost: 1, text: "体力を8回復", heal: 8, kind: "power", power: true },
       ベッド: { cost: 2, text: "体力を18回復", heal: 18, kind: "power", power: true },
       ホテル: { cost: 3, stars: 2, text: "体力を30回復", heal: 30, kind: "power", power: true },
@@ -13918,7 +13938,7 @@
     }
 
     // 状態のアイコン札（戦闘画面の名前板に並べる）。重なるものは右に数字
-    const FOCUS_NOTE = "集中は、次の攻撃カードか防御カードの数値に、その数だけ足す。使うと消える。";
+    const FOCUS_NOTE = "集中は、次の攻撃カードの全段に、その数を足す。攻撃を1回使うと0に戻る。使うまでは加算され、ターンを跨いでも消えない。";
     function statusIconSvg(kind) {
       if (kind === "poison") {
         return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.2 4.6 6.2 8.2 6.2 12.2a6.2 6.2 0 0 1-12.4 0C5.8 10.7 8.8 7.1 12 2.5z" fill="url(#g-poison)"/><circle cx="9.6" cy="14.2" r="1.3" fill="#2b0a3a"/><circle cx="14.4" cy="14.2" r="1.3" fill="#2b0a3a"/><path d="M9.4 17.4c1.6 1.2 3.6 1.2 5.2 0" stroke="#2b0a3a" stroke-width="1.4" stroke-linecap="round" fill="none"/><defs><linearGradient id="g-poison" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b6ff"/><stop offset="1" stop-color="#8a3fd6"/></linearGradient></defs></svg>`;
@@ -13955,7 +13975,7 @@
       if (parry) parts.push(statusChip("parry", "パリィ", parry > 1 ? parry : 0, PARRY_NOTE));
       const thorns = thornCount(target);
       if (thorns) parts.push(statusChip("thorns", "トゲ", thorns > 1 ? thorns : 0, THORN_NOTE));
-      if (target === player && player.focus) parts.push(statusChip("focus", "集中", player.focus, FOCUS_NOTE));
+      if (target.focus) parts.push(statusChip("focus", "集中", target.focus, FOCUS_NOTE));
       return parts.join("");
     }
 
@@ -14224,7 +14244,7 @@
       { id: "godDef", name: "守護神の加護", body: "毎戦闘、DEF+2" },
       { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
       { id: "galeBless", name: "部族の羽飾り", image: "reward-tribal-feather.jpg?v=1", body: "毎戦闘の1・2ターン目、SPD+2" },
-      { id: "magicBless", name: "闇魔導の勾玉", body: "毎戦闘の1ターン目、マナ+1\nSPD+1" },
+      { id: "magicBless", name: "闇魔導の勾玉", image: "reward-dark-magatama.jpg?v=1", body: "毎戦闘の1ターン目、マナ+1\nSPD+1" },
       { id: "rookieBless", name: "基本の極意", image: "reward-rookie-bless.jpg?v=1", body: "初期デッキのカードのダメージとブロックが+3される" },
       { id: "masterPick", name: "熟練の極意", body: "入手時、デッキの好きなカード1枚の熟練度をマックスにする" },
       { id: "mirrorBless", name: "双子の鏡", body: "入手時、デッキの好きなカードを1枚コピーしてデッキに加える" },
@@ -14823,7 +14843,7 @@
       { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=2" },
       { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "gear-gale-sword.jpg?v=1" },
       { id: "tyrant-sword", name: "覇王の大剣", slot: "sword", stars: 3, atk: 6, oneAttack: true, attackBoost: true, effect: "★★★　ATK+6。1ターンにアタックは1枚。アタックのダメージは1.5倍（切り上げ）", image: "gear-tyrant-sword.jpg?v=1" },
-      { id: "demon-sword", name: "呪われた剣", slot: "sword", stars: 3, atk: 7, turnHpLoss: 3, effect: "★★★　ATK+7。自分のターン開始時、HPを3失う", image: "gear-full-demon-sword.jpg?v=1" },
+      { id: "demon-sword", name: "呪われた剣", slot: "sword", stars: 3, atk: 7, turnHpLoss: 3, effect: "★★★　ATK+7。自分のターン開始時、HPを3失う", image: "gear-full-demon-sword-regen.jpg?v=1" },
       { id: "buckler", name: "バックラー", slot: "shield", stars: 1, def: 1, starterGear: true, parryDiscount: true, effect: "★　DEF+1。パリィを得るカードのコスト-1", image: "gear-buckler.jpg?v=4" },
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=4" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
@@ -16190,6 +16210,7 @@
       const before = Math.max(0, Number(target.block) || 0);
       const blocked = Math.min(before, amount);
       target.block -= blocked;
+      if (target === player && target.lingerBlock && blocked > 0) target.lingerBlock = Math.max(0, target.lingerBlock - blocked);
       let hpLoss = amount - blocked;
       if (target === player && hpLoss > 0 && anyShield("aegis") && !player.aegisUsed) {
         player.aegisUsed = true;
@@ -16504,7 +16525,13 @@
       player.parryHitThis = false;
       player.parryLast = false;
       player.knifeReflect = false;
-      player.focusTurn = 0;
+      player.focusOnParry = 0;
+      player.bloodFlow = false;
+      player.demonArmor = false;
+      player.lingerBlock = 0;
+      player.demonLostTurn = 0;
+      player.demonLostFight = 0;
+      player.focus = 0;
       player.doubleNext = false;
       player.magicParry = false;
       player.pride = false;
@@ -16524,12 +16551,22 @@
       const n = Math.max(1, Number(add) || 1);
       const now = parryCount(player);
       const hadShield = Math.max(0, Number(player.block) || 0);
-      if (hadShield) player.block = 0;
+      if (hadShield) {
+        player.block = 0;
+        player.lingerBlock = 0;
+      }
       player.parry = now + n;
       fxParryPlayer = true;
       fxParryFromShield = hadShield > 0;
       let detail = player.parry > 1 ? `パリィ${player.parry}。` : "パリィを得た。次の攻撃を無効。";
       if (hadShield) detail += `所持していたシールド${hadShield}を失った。`;
+      if (player.pride) {
+        player.atkMod = (Number(player.atkMod) || 0) + n;
+        noteStatCard("atk", player.prideCard || "自信過剰");
+        syncGearStats();
+        fxBuff = true;
+        detail += `自信過剰。ATK${signed(player.atk)}。`;
+      }
       log(`${heroName()}は${card.name}。${detail}`, card);
       return true;
     }
@@ -16686,21 +16723,16 @@
         log(`ナイフパリィ。${enemy.name}に${negated}ダメージ。`);
       }
       if (player.pride) {
-        player.atkMod = (Number(player.atkMod) || 0) + 3;
+        player.atkMod = (Number(player.atkMod) || 0) + 2;
         noteStatCard("atk", player.prideCard || "自信過剰");
         syncGearStats();
         fxBuff = true;
-        log(`自信過剰。ATK${signed(player.atk)}。`);
+        log(`自信過剰。パリィ成功。ATK${signed(player.atk)}。`);
       }
-      const focusN = Math.max(0, Number(player.focusTurn) || 0);
+      const focusN = Math.max(0, Number(player.focusOnParry) || 0);
       if (focusN) {
-        player.atkMod = (Number(player.atkMod) || 0) + focusN;
-        player.defMod = (Number(player.defMod) || 0) + focusN;
-        noteStatCard("atk", "超集中");
-        noteStatCard("def", "超集中");
-        syncGearStats();
-        fxBuff = true;
-        log(`超集中。ATK${signed(player.atk)}、DEF${signed(player.def)}。`);
+        giveFocus(player, focusN);
+        log(`心眼。集中+${focusN}。いま${player.focus}。`);
       }
       if (player.shave && enemy) {
         enemy.defCut = (Number(enemy.defCut) || 0) + Number(player.shave);
@@ -17201,6 +17233,10 @@
         const gain = restoreHp(Math.ceil(result.hpLoss / 2));
         if (gain) log(`${heroName()}は吸血化。HP+${gain}。`, card);
       }
+      if (card && card.leechFull && result.hpLoss > 0) {
+        const gain = restoreHp(result.hpLoss);
+        if (gain) log(`${heroName()}は${card.name}。HP+${gain}。`, card);
+      }
       // ポイズンソード：アタックカードなら、シールドで防がれても毒
       const poisonHit = gear && gear.sword && Number(gear.sword.poisonHit) || 0;
       if (poisonHit > 0 && amount > 0 && cardKind(card) === "attack" && enemy.hp > 0) {
@@ -17443,15 +17479,72 @@
       return lost;
     }
 
+    function pactOn() {
+      return demonGauge >= 100;
+    }
+
+    function giveFocus(who, n) {
+      const add = Math.max(0, Math.floor(Number(n) || 0));
+      if (!who || !add) return 0;
+      who.focus = Math.max(0, Number(who.focus) || 0) + add;
+      return who.focus;
+    }
+
+    function pullFocus(who, card) {
+      if (!who || !usesStrike(card)) return 0;
+      const n = Math.max(0, Number(who.focus) || 0);
+      if (n) who.focus = 0;
+      return n;
+    }
+
+    function noteBloodFlow() {
+      if (!player || !player.bloodFlow) return;
+      player.atkMod = (Number(player.atkMod) || 0) + 1;
+      player.defMod = (Number(player.defMod) || 0) + 1;
+      noteStatCard("atk", "流れた血");
+      noteStatCard("def", "流れた血");
+      syncGearStats();
+      fxBuff = true;
+      log(`流れた血。ATK${signed(player.atk)}、DEF${signed(player.def)}。`);
+    }
+
     function offerDemon(n) {
       const want = Math.max(0, Math.floor(Number(n) || 0));
       if (!player || want <= 0) return 0;
       const room = Math.max(0, (Number(player.hp) || 0) - 1);
       const lost = Math.min(want, room);
+      if (pactOn()) {
+        const gain = restoreHp(lost);
+        log(gain ? `${heroName()}は契約完了。減るはずだったHP${lost}を回復した。HP+${gain}。` : `${heroName()}は契約完了。減るはずだったHP${lost}は、体力が満タンで戻らなかった。`);
+        noteBloodFlow();
+        return lost;
+      }
       if (lost) player.hp -= lost;
       demonGauge += lost;
+      player.demonLostTurn = (Number(player.demonLostTurn) || 0) + lost;
+      player.demonLostFight = (Number(player.demonLostFight) || 0) + lost;
       const stop = lost < want ? "HPは1で止めた。" : "";
       log(`${heroName()}は悪魔に体力を捧げた。HP-${lost}。${stop}悪魔化${demonGauge}。`);
+      if (demonGauge >= 100) log(`${heroName()}は悪魔との契約を完了した。`);
+      noteBloodFlow();
+      return lost;
+    }
+
+    function offerDemonUntilOne() {
+      const lost = Math.max(0, (Number(player.hp) || 0) - 1);
+      if (pactOn()) {
+        const gain = restoreHp(lost);
+        log(gain ? `${heroName()}は契約完了。1まで減るはずだったHP${lost}を回復した。HP+${gain}。` : `${heroName()}は契約完了。減るはずの体力は無かった。`);
+        noteBloodFlow();
+        return lost;
+      }
+      if (lost) player.hp = 1;
+      demonGauge += lost;
+      player.demonLostTurn = (Number(player.demonLostTurn) || 0) + lost;
+      player.demonLostFight = (Number(player.demonLostFight) || 0) + lost;
+      log(`${heroName()}はHPが1になるまで悪魔化した。HP-${lost}。悪魔化${demonGauge}。`);
+      if (demonGauge >= 100) log(`${heroName()}は悪魔との契約を完了した。`);
+      noteBloodFlow();
       return lost;
     }
 
@@ -17480,6 +17573,21 @@
       if (!add || !player) return;
       player.demonAura = auraNow() + add;
       log(`${heroName()}は${card.name}。悪魔の剣のダメージ+${add}。いま+${player.demonAura}。`, card);
+    }
+
+    function demonRareToken() {
+      const names = Object.keys(CARD_BUILD).filter((name) => {
+        const def = cardDef(name);
+        const build = CARD_BUILD[name];
+        return def && (Number(def.stars) || 0) >= 3 && (build === "悪魔剣" || build === "悪魔化");
+      });
+      if (!names.length) return null;
+      const name = names[Math.floor(Math.random() * names.length)];
+      const card = keepCard({ name, ...cardDef(name) });
+      card.fightCopy = true;
+      card.token = true;
+      card.uid = uid++;
+      return card;
     }
 
     function makeDemonToken() {
@@ -17659,6 +17767,40 @@
       }
       if (      resolveItemExtras(card)) return;
       if (resolveDemonCard(card)) return;
+      if (card.demonToOne) {
+        const lost = offerDemonUntilOne();
+        const now = giveFocus(player, lost);
+        const linger = Math.max(0, (Number(player.maxHp) || 0) - 1);
+        player.lingerBlock = (Number(player.lingerBlock) || 0) + linger;
+        gainBlock(linger, card);
+        log(`${heroName()}は${card.name}。集中+${lost}。いま${now}。消えないブロック${linger}。`, card);
+        return;
+      }
+      if (card.refundTurn) {
+        const back = Math.max(0, Number(player.demonLostTurn) || 0);
+        const gain = restoreHp(back);
+        player.demonLostTurn = 0;
+        log(gain ? `${heroName()}は${card.name}。HP+${gain}。` : `${heroName()}は${card.name}。このターン、悪魔化で失った体力は無い。`, card);
+        return;
+      }
+      if (card.refundFight) {
+        const back = Math.max(0, Number(player.demonLostFight) || 0);
+        const gain = restoreHp(back);
+        player.demonLostFight = 0;
+        log(gain ? `${heroName()}は${card.name}。HP+${gain}。` : `${heroName()}は${card.name}。この戦闘で、悪魔化で失った体力は無い。`, card);
+        return;
+      }
+      if (card.bloodFlow) {
+        player.bloodFlow = true;
+        log(`${heroName()}は流れた血。この戦闘、悪魔化するたびATK+1、DEF+1。`, card);
+        return;
+      }
+      if (card.demonArmor) {
+        player.demonArmor = true;
+        log(`${heroName()}は悪魔の鎧。戦闘終了時、最大HPの半分を回復する。`, card);
+        return;
+      }
+      if (card.demon) offerDemon(card.demon);
       syncGearStats();
       if (card.nextMana || card.nextAtk) {
         const bits = [];
@@ -17726,9 +17868,9 @@
       }
       if (card.parryAdd) {
         gainParry(card, card.parryAdd);
-        if (card.focusTurn) {
-          player.focusTurn = (Number(player.focusTurn) || 0) + 1;
-          log(`${heroName()}は${card.name}。このターン、パリィに成功するたびATK+1、DEF+1。`, card);
+        if (card.focusOnParry) {
+          player.focusOnParry = (Number(player.focusOnParry) || 0) + Number(card.focusOnParry);
+          log(`${heroName()}は${card.name}。このターン、パリィに成功するたび集中+${card.focusOnParry}。`, card);
         }
         return;
       }
@@ -17751,7 +17893,7 @@
       if (card.pride) {
         player.pride = true;
         player.prideCard = card.name;
-        log(`${heroName()}は${card.name}。この戦闘中、パリィに成功するたびATK+1。`, card);
+        log(`${heroName()}は${card.name}。この戦闘、パリィを得るたびATK+1。成功するたびさらにATK+2。`, card);
         return;
       }
       if (card.spite) {
@@ -17784,8 +17926,8 @@
         return;
       }
       if (card.focus) {
-        player.focus = (player.focus || 0) + card.focus;
-        log(`${heroName()}は${card.name}。次の攻撃カードか防御カードの数値を+${player.focus}。`, card);
+        giveFocus(player, card.focus);
+        log(`${heroName()}は${card.name}。次の攻撃の全段に集中${player.focus}。`, card);
         return;
       }
       if (card.parry && !card.damage && !card.block) {
@@ -17814,8 +17956,7 @@
       }
       if (card.redTimes) {
         const reds = inPlay.filter((item) => cardKind(item) === "attack").length;
-        const added = player.focus ? player.focus : 0;
-        if (added) player.focus = 0;
+        const added = pullFocus(player, card);
         strike(card, reds * card.redTimes + (player.atk || 0) + added);
         return;
       }
@@ -17829,17 +17970,15 @@
         return;
       }
       if (card.hits) {
-        const added = player.focus ? player.focus : 0;
-        if (added) player.focus = 0;
+        const added = pullFocus(player, card);
         const atk = player.atk || 0;
         for (let hit = 0; hit < card.hits; hit++) {
-          const rolled = rollCrit(card, card.damage + atk + (hit === 0 ? added : 0));
+          const rolled = rollCrit(card, card.damage + atk + added);
           strike(card, rolled.amount, rolled.crit);
         }
         return;
       }
-      const added = player.focus && (card.damage || card.block) ? player.focus : 0;
-      if (added) player.focus = 0;
+      const added = pullFocus(player, card);
       if (card.burnFirst && card.burn) {
         addBurn(enemy, card.burn);
         log(`${heroName()}は${card.name}。${enemy.name}は炎上+${enemy.burn}。`, card);
@@ -17852,9 +17991,9 @@
         const atk = player.atk || 0;
         const rolled = rollCrit(card, halfDoubled(card, player, card.damage + added + atk + bonus));
         strike(card, rolled.amount, rolled.crit);
-        if (card.doubleNext) {
-          player.doubleNext = scaledPrinted(2);
-          log(`${heroName()}は次に受ける攻撃が${player.doubleNext}倍。`, card);
+        if (card.foeFocus && enemy) {
+          const now = giveFocus(enemy, card.foeFocus);
+          log(`${heroName()}は${card.name}。${enemy.name}に集中+${card.foeFocus}。いま${now}。`, card);
         }
       }
       if (card.burn && !card.burnFirst) {
@@ -18850,9 +18989,10 @@
       if (card.hits && card.damage) {
         const times = Math.max(1, Number(card.hits) || 1);
         const atk = Number(enemy.atk) || 0;
+        const added = pullFocus(enemy, card);
         for (let n = 0; n < times; n += 1) {
           if (player.hp <= 0) break;
-          const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + atk));
+          const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + atk + added));
           takeEnemyHit(rolled.amount, card, rolled.crit);
         }
         noteAttackGrow(card, "enemy");
@@ -18861,7 +19001,8 @@
       if (card.damage) {
         const kick = card.kick && player.block > 0 ? card.kick : 0;
         const full = card.fullBonus && enemy.hp >= enemy.maxHp ? card.fullBonus : 0;
-        const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0)));
+        const added = pullFocus(enemy, card);
+        const rolled = rollCrit(card, halfDoubled(card, enemy, card.damage + kick + full + (Number(enemy.atk) || 0) + added));
         takeEnemyHit(rolled.amount, card, rolled.crit);
         noteAttackGrow(card, "enemy");
         if (card.parry || card.parryAdd) gainEnemyParry(card, card.parryAdd || 1);
@@ -19306,12 +19447,13 @@
 
     function dropShield(who) {
       const had = Math.max(0, Number(who && who.block) || 0);
-      if (!had) return;
+      const linger = who === player ? Math.max(0, Number(who.lingerBlock) || 0) : 0;
+      if (!had && !linger) return;
       if (who === player && anyShield("castle")) {
-        who.block = Math.floor(had / 2);
+        who.block = Math.max(linger, Math.floor(had / 2));
         return;
       }
-      who.block = 0;
+      who.block = linger;
     }
 
     function endTurn() {
@@ -19412,7 +19554,8 @@
       player.parryHitsThis = 0;
       player.parryHitThis = false;
       player.knifeReflect = false;
-      player.focusTurn = 0;
+      player.focusOnParry = 0;
+      player.demonLostTurn = 0;
       player.bloodFeast = false;
       player.bloodTaste = false;
       if (parryCount(player) > 0) {
@@ -19539,6 +19682,15 @@
           log(`${heroName()}は魔剣増殖。手札に悪魔の剣。コスト0、フラッシュ。`);
         } else log(`${heroName()}は魔剣増殖。手札がいっぱいなので出ない。`);
       }
+      if (pactOn()) {
+        if (hand.length < HAND_CAP) {
+          const born = demonRareToken();
+          if (born) {
+            hand.push(born);
+            log(`${heroName()}は契約完了。手札に${born.name}。`);
+          }
+        } else log(`${heroName()}は契約完了。手札がいっぱいなので、悪魔カードは出ない。`);
+      }
       const bugDrawExtra = (label, n) => {
         const before = hand.length;
         draw(n);
@@ -19564,6 +19716,7 @@
 
     function finish(kind) {
       clearTimer();
+      const armor = !!(player && player.demonArmor);
       clearBattleMods();
       outcome = kind;
       phase = "end";
@@ -19582,6 +19735,10 @@
       }
       if (kind === "win") {
         closeFightStep("win");
+        if (armor && player && player.hp > 0) {
+          const gain = restoreHp(Math.floor((Number(player.maxHp) || 0) / 2));
+          if (gain) log(`${heroName()}は悪魔の鎧。HP+${gain}。`);
+        }
         if (anySword("vampHeal") && player && player.hp > 0) restoreHp(6);
         if (hasRelic("herb") && player && player.hp > 0) restoreHp(4);
         if (hasBless("springBless") && player && player.hp > 0) restoreHp(6);
@@ -24711,7 +24868,7 @@
     }
 
     function usesFocus(card) {
-      return !!(card && (card.damage || card.block || card.press || card.redTimes || card.hits || card.finisher));
+      return usesStrike(card);
     }
 
     function focusLeftFor(card, fromHand) {
@@ -25099,6 +25256,7 @@
         atk: Number(player.atk) || 0,
         def: Number(player.def) || 0,
         focus: Number(player.focus) || 0,
+        pact: pactOn(),
         parry: parryCount(player),
         expose: Math.max(0, Number(player.expose) || 0),
         doubleNext: !!player.doubleNext,
@@ -25118,6 +25276,7 @@
         def: Number(enemy.def) || 0,
         thorns: Math.max(0, Number(enemy.thorns) || 0),
         atk: Number(enemy.atk) || 0,
+        focus: Math.max(0, Number(enemy.focus) || 0),
         spiteOn: !!enemy.spiteOn,
         poison: Math.max(0, Number(enemy.poison) || 0),
         parry: parryCount(enemy),
@@ -25181,6 +25340,7 @@
         let swing = null;
         for (let n = 0; n < times; n += 1) {
           const blow = scratchEnemyBlow(card, mine, foe);
+          if (n + 1 === times && card.damage) foe.focus = 0;
           if (blow && blow.swing != null) swing = (swing || 0) + blow.swing;
           if (!blow) continue;
           if (!take) take = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0 };
@@ -25220,8 +25380,14 @@
     function scratchPayDemon(mine, want) {
       const room = Math.max(0, (Number(mine.hp) || 0) - 1);
       const lost = Math.min(Math.max(0, Math.floor(Number(want) || 0)), room);
+      if (mine.pact) {
+        const space = Math.max(0, (Number(mine.maxHp) || 0) - (Number(mine.hp) || 0));
+        mine.hp += Math.min(lost, space);
+        return lost;
+      }
       if (lost) mine.hp -= lost;
       mine.selfHp = (Number(mine.selfHp) || 0) + lost;
+      return lost;
     }
 
     function scratchFoldSelf(take, mine) {
@@ -25340,8 +25506,8 @@
         scratchGainParry(mine, 1);
         if (!card.heal && !card.burn && !card.poison && !card.draw && !card.expose && !card.thorns) return;
       }
-      if (card.demon || card.demonHalf || card.demonSword || card.twinSword) {
-        const want = card.demonHalf ? Math.floor((Number(mine.maxHp) || 0) / 2) : (Number(card.demon) || 0);
+      if (card.demonToOne || card.demon || card.demonHalf || card.demonSword || card.twinSword) {
+        const want = card.demonToOne ? Math.max(0, (Number(mine.hp) || 0) - 1) : card.demonHalf ? Math.floor((Number(mine.maxHp) || 0) / 2) : (Number(card.demon) || 0);
         if (want) scratchPayDemon(mine, want);
         if (card.demonSword) {
           const amount = Math.max(0, Number(card.damage) || 0) + (Number(mine.demonAura) || 0) + (Number(mine.atk) || 0);
@@ -25365,6 +25531,14 @@
             scratchStrike(foe, give, amount);
             scratchPoisonSword(card, foe, amount);
           }
+          return;
+        }
+        if (card.demonToOne) {
+          mine.focus = (Number(mine.focus) || 0) + want;
+          const linger = Math.max(0, (Number(mine.maxHp) || 0) - 1);
+          const before = mine.block;
+          scratchGainBlock(mine, linger, card);
+          give.shield += Math.max(0, mine.block - before);
           return;
         }
         if (card.demonAura) mine.demonAura = (Number(mine.demonAura) || 0) + (Number(card.demonAura) || 0);
@@ -25398,17 +25572,17 @@
         return;
       }
       if (card.hits) {
-        const added = mine.focus || 0;
+        const added = usesStrike(card) ? (mine.focus || 0) : 0;
         if (added) mine.focus = 0;
         const base = Number(card.damage) || 0;
         for (let hit = 0; hit < card.hits; hit++) {
-          const amount = halfDoubled(card, mine, base + mine.atk + (hit === 0 ? added : 0));
+          const amount = halfDoubled(card, mine, base + mine.atk + added);
           scratchStrike(foe, give, amount);
           scratchPoisonSword(card, foe, amount);
         }
         return;
       }
-      const added = mine.focus && (card.damage || card.block) ? mine.focus : 0;
+      const added = usesStrike(card) ? (mine.focus || 0) : 0;
       if (added) mine.focus = 0;
       if (card.damage) {
         let bonus = 0;
@@ -25418,7 +25592,7 @@
         const amount = halfDoubled(card, mine, (Number(card.damage) || 0) + added + mine.atk + bonus);
         scratchStrike(foe, give, amount);
         scratchPoisonSword(card, foe, amount);
-        if (card.doubleNext) mine.doubleNext = true;
+        if (card.foeFocus) foe.focus = (Number(foe.focus) || 0) + Number(card.foeFocus);
       }
       if (card.burn) give.status += Number(card.burn) || 0;
       if (card.expose) mine.expose = (Number(mine.expose) || 0) + card.expose;
@@ -25480,7 +25654,7 @@
     function scratchEnemyBlow(card, mine, foe) {
       if (card && card.thorns && !(card.halfOnly && !(foe.hp <= foe.maxHp / 2))) foe.thorns += Number(card.thorns) || 1;
       if (!card || card.halfOnly && !(foe.hp <= foe.maxHp / 2) || !card.damage) return null;
-      let swing = Math.max(0, (Number(card.damage) || 0) + (Number(foe.atk) || 0));
+      let swing = Math.max(0, (Number(card.damage) || 0) + (Number(foe.atk) || 0) + (Number(foe.focus) || 0));
       if (card.kick && mine.block > 0) swing += Number(card.kick) || 0;
       if (card.fullBonus && foe.hp >= foe.maxHp) swing += Number(card.fullBonus) || 0;
       swing = halfDoubled(card, foe, swing);
@@ -26058,6 +26232,7 @@
     }
 
     function cardDef(name) {
+      if (name === "超集中") name = "心眼";
       return CARDS[name] || WARRIOR[name] || KNIGHT[name] || DEMON[name] || COMMON[name] || FOE_ONLY[name] || gearCardByName(name) || null;
     }
 
