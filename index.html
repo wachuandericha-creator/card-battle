@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -861,7 +861,7 @@
        ・横幅に収まる大きさにして、画面の外へ出さない */
     .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
     .duel-mid .play-side.mine { padding: 54px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); }
-    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px) 0 40px; }
+    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px + 48px) 0 4px; }
     .duel-mid .play-cards {
       flex: 1 1 0;
       width: 100%;
@@ -896,7 +896,7 @@
       flex-wrap: wrap;
     }
     .duel-mid .play-side.mine .forecasts { top: 4px; bottom: auto; flex-wrap: nowrap; }
-    .duel-mid .play-side.foe .forecasts { top: auto; bottom: 2px; }
+    .duel-mid .play-side.foe .forecasts { top: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); bottom: auto; flex-wrap: nowrap; }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -7863,7 +7863,7 @@
     .overlay.paths .path-list button.path-boss,
     .overlay.paths .path-list button.path-elite { --path-line: #e02020; }
     .overlay.paths .path-list button.path-route {
-      width: min(28cqw, 300px);
+      width: 220px;
       aspect-ratio: auto;
       height: auto;
       max-height: none;
@@ -7911,9 +7911,10 @@
       width: 100%;
       min-height: 0;
     }
+    .rail-floors { gap: 16px; }
     .rail-floors > span {
-      flex: 0 0 128px;
-      height: 128px;
+      flex: 0 0 168px;
+      height: 168px;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -7985,7 +7986,7 @@
       width: 100%;
       height: 100%;
       border-radius: 8px;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
       background: #1a1410;
     }
@@ -9882,6 +9883,10 @@
       writing-mode: vertical-rl;
       color: var(--gold);
     }
+
+    /* 祝福・戦利品が装備欄へ飛ぶとき、受け口のふくらみで一瞬スクロールバーが出ないよう隠す（スクロール自体はできる） */
+    .gear-board, .menu.bless, .menu.event { scrollbar-width: none; }
+    .gear-board::-webkit-scrollbar, .menu.bless::-webkit-scrollbar, .menu.event::-webkit-scrollbar { display: none; }
     .event-gear .plate-gear { width: auto; min-width: 0; }
     .event-gear .plate-gear .gear-board {
       display: flex;
@@ -13299,9 +13304,9 @@
     let fxLabHeroId = "warrior";
     let fxLabTick = 0;
     const FX_HEROES = [
-      { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", imgW: 864, imgH: 1152, face: 135, faceX: 462, inkLeft: 63, head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
+      { id: "warrior", name: "戦士", battle: "girl-battle-v42.png?v=1", battleRatio: "3 / 4", imgW: 864, imgH: 1152, face: 135, faceX: 462, bodyX: 415, inkLeft: 63, head: ["52.7%", "6.8%"], body: ["48.3%", "35.3%"], shield: ["75.2%", "42.4%"] },
       { id: "half", name: "半悪魔", battle: "girl-demon-half-battle.png?v=2", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 156, faceX: 740, inkLeft: 80, head: ["68%", "22%"], body: ["52%", "52%"], shield: ["48%", "50%"] },
-      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=6", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 103, faceX: 505, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
+      { id: "full", name: "完全悪魔", battle: "girl-demon-full-battle.png?v=6", battleRatio: "4 / 3", imgW: 1152, imgH: 864, face: 103, faceX: 505, bodyX: 484, inkLeft: 22, head: ["40%", "16%"], body: ["42%", "46%"], shield: ["38%", "42%"] },
     ];
     let askLeave = false;
     let showDeck = false;
@@ -28587,8 +28592,12 @@
       // 顔の大きさだけでなく、顔の左右の位置も戦士に揃える（絵が左へはみ出さない範囲）
       const refFaceX = warriorW * (462 / 864);
       const heroFaceX = heroW * ((Number(who.faceX) || 462) / heroImgW);
-      const faceShift = Math.max(refFaceX - heroFaceX, -heroW * ((Number(who.inkLeft) || 0) / heroImgW));
-      hero.style.marginLeft = who.id === "warrior" ? "0px" : `${Math.round(faceShift)}px`;
+      // 味方レーンは右寄せ。絵がレーンより広くても、左端ではなく基準点（顔か体）を戦士に合わせて動かす
+      const faceShift = (heroW - warriorW) + refFaceX - heroFaceX;
+      hero.style.marginLeft = "0px";
+      // 全員そろえて、もう少し右へ（2026-11-25）
+      const nudge = laneW * 0.08;
+      hero.style.left = `${Math.round((who.id === "warrior" ? 0 : faceShift) + nudge)}px`;
       main.style.setProperty("--foe-w", `${foeW}px`);
       main.style.marginLeft = "0px";
       const field = ally.parentElement;
