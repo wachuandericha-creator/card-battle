@@ -862,7 +862,7 @@
        ・横幅に収まる大きさにして、画面の外へ出さない */
     .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
     /* ダメージ予測は、自分も敵もVSのすぐそば（自分はVSの上、敵はVSの下）。VSとのあいだに少しだけ余白 */
-    .duel-mid .play-side.mine { padding: 22px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px); }
+    .duel-mid .play-side.mine { padding: 4px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px); }
     .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px) 0 4px; }
     .duel-mid .play-cards {
       flex: 1 1 0;
@@ -875,7 +875,7 @@
       gap: 6px;
     }
     .duel-mid .play-card {
-      height: min(calc(100cqh - 28px), calc((100cqw - 14px - (var(--n, 1) - 1) * 6px) / var(--n, 1) * 4 / 3));
+      height: min(calc((100cqh - 18px) / 1.03), calc((100cqw - 14px - (var(--n, 1) - 1) * 6px) / var(--n, 1) * 4 / 3));
       width: auto;
       aspect-ratio: 3 / 4;
       max-height: none;
@@ -1769,6 +1769,20 @@
       pointer-events: none;
       filter: drop-shadow(0 14px 14px rgba(0, 0, 0, 0.5));
     }
+    .doom-clock {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      z-index: 6;
+      transform: translateX(-50%);
+      padding: 2px 10px;
+      border: 1px solid #c45;
+      background: #1a0008;
+      color: #ffd0dc;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
     .foe-body {
       position: relative;
       flex: 1 1 0;
@@ -2478,7 +2492,7 @@
     .shop-slot .card.preview { width: 100%; height: auto; }
     .shop-slot b { font-size: 16px; }
     .shop-slot small { font-size: 12px; line-height: 1.4; font-weight: 700; }
-    .shop-slot span { margin-top: auto; color: var(--gold); font-weight: 800; font-size: 18px; }
+    .shop-slot > span { margin-top: auto; color: var(--gold); font-weight: 800; font-size: 18px; }
     .shop-slot .shop-buy { padding: 6px 18px; font-size: 15px; border-radius: 999px; border: 1px solid #e4b15a; background: linear-gradient(#f3d58c, #c9922f); color: #2b1a08; font-weight: 800; cursor: pointer; }
     .shop-slot .shop-buy:hover:not(:disabled) { filter: brightness(1.08); }
     .shop-slot .shop-buy:disabled { background: rgba(60, 48, 36, 0.8); color: rgba(255, 246, 228, 0.45); border-color: rgba(228, 177, 90, 0.3); cursor: not-allowed; }
@@ -9361,14 +9375,153 @@
     .menu.event .event-art.rest-heal .event-picture {
       animation: heal-glow 1.55s ease-out both;
     }
+    .menu.event .event-art { position: relative; }
+    .menu.event .event-actions.rest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
+    .menu.event .event-actions.rest-actions button { width: 100%; }
     .menu.event .event-art.rest-heal .hero-hit.heal {
+      position: absolute;
+      inset: 0;
       z-index: 2;
+      pointer-events: none;
     }
     .menu.event.bless .event-lead {
       gap: clamp(10px, 1.4cqw, 22px) clamp(4px, 0.6cqw, 10px);
     }
     /* 右半分の左右の余白をそろえる。絵の右端から文字まで、文字の右端から画面の端までを同じに */
     .menu.event.bless .event-stack { margin-left: -28px; }
+    /* お店：左上に絵（横長）、右上に説明、下半分に商品（2026-11-26） */
+    .menu.event.shop .event-lead {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-areas: none;
+      gap: 6px 22px;
+      align-content: start;
+    }
+    /* 説明文は祝福と同じ構成：物語の文（白）と、ゲームの問いかけ（黄・大きく） */
+    .menu.event.shop .event-lead .event-copy .event-story p {
+      font-size: 28px;
+      line-height: 1.55;
+    }
+    .menu.event.shop .event-lead .event-copy .event-play p {
+      font-size: clamp(40px, 3cqw, 52px);
+      color: #ffe08a;
+    }
+    .menu.event.shop .event-stack,
+    .menu.event.shop .event-side { display: contents; }
+    .menu.event.shop .event-lead .event-art {
+      grid-area: auto;
+      grid-column: 1;
+      grid-row: 1 / 3;
+      width: calc((100% - 22px) * 0.88);
+      height: auto;
+      aspect-ratio: 16 / 9;
+      align-self: start;
+      justify-self: start;
+      margin: 30px 0 0 22px;
+    }
+    .menu.event.shop .event-lead .event-title { grid-area: auto; grid-column: 2; grid-row: 1; align-self: end; }
+    .menu.event.shop .event-lead .event-title-gap { display: none; }
+    .menu.event.shop .event-lead .event-copy { grid-area: auto; grid-column: 2; grid-row: 2; align-self: start; }
+    .menu.event.shop .event-lead .event-choice {
+      grid-area: auto;
+      grid-column: 1 / -1;
+      grid-row: 3;
+      align-self: stretch;
+      padding: 0 8px 0 22px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* 商品は5列×2段。右に「所持・合計・購入する・進む」の列 */
+    .menu.event.shop .event-lead .shop-main {
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 20px;
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .menu.event.shop .event-lead .shop-row {
+      grid-template-columns: repeat(5, 306px);
+      width: auto;
+      flex: 0 0 auto;
+      align-content: space-evenly;
+      grid-auto-rows: max-content;
+      gap: 0 12px;
+    }
+    .menu.event.shop .event-lead .shop-slot {
+      width: 306px;
+      min-width: 0;
+      max-width: none;
+      padding: 6px 6px 8px;
+      gap: 4px;
+    }
+    .menu.event.shop .event-lead .shop-slot.picked {
+      border-color: #fff6e4;
+      background: rgba(120, 84, 24, 0.55);
+      box-shadow: 0 0 0 2px #ffe08a, 0 0 22px rgba(255, 224, 138, 0.85);
+    }
+    .menu.event.shop .event-lead .shop-slot { position: relative; }
+    .menu.event.shop .event-lead .shop-slot > span {
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: #fff;
+      background: none;
+      padding: 0;
+    }
+    .menu.event.shop .event-lead .shop-slot.poor { opacity: 0.45; }
+    .menu.event.shop .event-lead .shop-bar {
+      flex: 0 0 214px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding-top: 0;
+      padding-bottom: 13px;
+    }
+    .menu.event.shop .event-lead .shop-bar p { margin: 0; text-align: center; }
+    .menu.event.shop .event-lead .shop-total.over { color: #ff8a7a; }
+    .menu.event.shop .event-lead .shop-slot > span.p-min { color: #fff; }
+    .menu.event.shop .event-lead .shop-slot > span.p-low { color: #b8f08a; }
+    .menu.event.shop .event-lead .shop-slot > span.p-mid { color: #ffe14a; }
+    .menu.event.shop .event-lead .shop-slot > span.p-high { color: #ff6a5a; }
+    .menu.event.shop .event-lead .shop-bar .shop-have, .menu.event.shop .event-lead .shop-bar .shop-total { font-size: 38px; font-weight: 900; line-height: 1.4; }
+    .menu.event.shop .event-lead .shop-bar .shop-have { color: #fff; }
+    .menu.event.shop .event-lead .shop-bar { position: relative; }
+    .menu.event.shop .event-lead .shop-bar .shop-confirm { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); margin: 0; width: auto; }
+    .menu.event.shop .event-lead .shop-bar .shop-have { position: absolute; left: 0; right: 0; top: calc(25% - 70px); }
+    .menu.event.shop .event-lead .shop-bar .shop-total { position: absolute; left: 0; right: 0; top: calc(25% + 12px); }
+    .menu.event.shop .event-lead .shop-bar .shop-next { position: absolute; left: 0; right: 0; top: 66%; transform: translateY(-50%); margin: 0; width: auto; }
+    .menu.event.shop .event-lead .shop-bar .shop-steal { position: absolute; left: 0; right: 0; bottom: 13px; margin: 0; width: auto; }
+    .menu.event.shop .event-lead .shop-bar .shop-steal { font-size: 22px; background: #3a2a46; color: #e9d7ff; border: 1px solid #b08ae0; }
+    .menu.event.shop .event-lead .shop-bar .shop-steal:disabled { opacity: 0.4; }
+    .menu.event.shop .event-lead .shop-total {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.4;
+      color: #ffe08a;
+    }
+    .menu.event.shop .event-lead .shop-bar button {
+      width: 100%;
+      min-height: 0;
+      padding: 12px 10px;
+      font-size: 26px;
+      font-weight: 900;
+    }
+    .menu.event.shop .event-lead .shop-bar .shop-next {
+      padding: 10px 10px;
+      font-size: 22px;
+      opacity: 0.85;
+    }
+    .menu.event.shop .event-lead .shop-slot .card.preview {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+      height: auto;
+      min-height: 0;
+    }
     .menu.event.bless .event-side {
       gap: 32px;
       padding-left: 0;
@@ -9387,6 +9540,19 @@
     }
     .menu.event .event-hp { position: static; width: min(100%, 420px); margin-top: 16px; }
     .menu.event .event-hp .meters { width: 100%; margin: 0; }
+    .menu.event .event-hp .meter.hp .hp-gain { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, rgba(120, 255, 150, 0.85) 0 6px, rgba(60, 200, 100, 0.85) 6px 12px); box-shadow: 0 0 10px rgba(120, 255, 150, 0.8); pointer-events: none; z-index: 1; }
+    .menu.event .event-hp .meter.hp .hp-before { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; background: #fff; box-shadow: 0 0 6px #fff; pointer-events: none; z-index: 2; }
+    .menu.event .event-hp .meter.hp .hp-now { z-index: 3; }
+    .menu.event .event-hp.two { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+    .menu.event .event-hp .hp-row { display: flex; align-items: center; gap: 14px; }
+    .menu.event .event-hp .hp-row .meters { flex: 1 1 auto; }
+    .menu.event .event-hp .hp-label { font-style: normal; font-weight: 900; font-size: 26px; color: #d9c9b0; flex: 0 0 4.2em; }
+    .menu.event .event-hp .hp-label.after { color: #8dffa8; }
+    .menu.event .event-hp .hp-plus { font-size: 30px; font-weight: 900; color: #8dffa8; flex: 0 0 auto; }
+    .menu.event .event-hp .hp-compare { display: flex; align-items: baseline; justify-content: center; gap: 14px; margin-top: 10px; font-size: 26px; font-weight: 900; color: #fff; }
+    .menu.event .event-hp .hp-compare .was { color: #d9c9b0; }
+    .menu.event .event-hp .hp-compare .now { color: #8dffa8; }
+    .menu.event .event-hp .hp-compare em { font-style: normal; color: #8dffa8; }
     .menu.event .event-hp .meter.hp {
       position: relative;
       height: 42px;
@@ -9595,9 +9761,19 @@
     .menu.event.search .event-title-gap {
       flex: 0 0 auto;
       width: 100%;
-      margin-bottom: -32px;
+      margin-bottom: 0;
     }
     .menu.event.search .event-copy:not(:empty) { padding-top: 0; }
+    /* 探索の文章は祝福と同じ大きさ（2026-11-26） */
+    .menu.event.search .event-choice .event-story p,
+    .menu.event.search .event-copy .event-story p {
+      font-size: 32px;
+      line-height: 1.55;
+    }
+    .menu.event.search .event-choice .event-play p,
+    .menu.event.search .event-copy .event-play p {
+      font-size: clamp(40px, 3cqw, 52px);
+    }
     .menu.event.search .event-gear {
       margin: 0;
       align-self: stretch;
@@ -12802,6 +12978,14 @@
         stars: 1,
         atkEach: true,
       },
+      死の呪い: {
+        cost: 0,
+        text: "呪い。効果は無い",
+        kind: "skill",
+        foeOnly: true,
+        curse: true,
+        stars: 1,
+      },
     };
     const CARDS = {
       アタック: { cost: 1, text: "5ダメージ", damage: 5 },
@@ -12996,7 +13180,6 @@
         atkHidden: 4,
         trait: "体力が最大の半分以下になったとき、SPD+1する。",
         halfSpd: true,
-        loot: { low: "minotaur-medal", high: "minotaur-bracelet" },
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
@@ -13010,17 +13193,19 @@
         tier: 3,
         rank: "強敵",
         stature: "huge",
-        hp: 175,
-        atkHidden: 0,
+        hp: 160,
+        atkHidden: 3,
+        defHidden: 1,
         spd: 2,
-        attackGrow: 2,
-        trait: "攻撃するたび、この戦闘中ATK+2。",
+        deathSentence: true,
+        trait: "死の宣告。10ターン目の敵ターン終了時、プレイヤーは即死する。",
         pattern: [
+          { name: "威圧の咆哮", cost: 1, text: "相手の次のターンのSPD-2", kind: "skill", foeOnly: true, roar: 2, stars: 3 },
+          { name: "死の瘴気", cost: 1, text: "相手に毒+5、炎上+5。相手の捨て札に死の呪いを2枚混ぜる", kind: "skill", foeOnly: true, miasma: true, stars: 3 },
           { name: "アタック" },
-          { name: "ブロック" },
-          { name: "竜の怒り", cost: 0, text: "ATK+6　DEF-2", kind: "orange", rage: true, rageAtk: 6, rageDef: 2, flash: true, stars: 3 },
-          { name: "竜の怒り", cost: 0, text: "ATK+6　DEF-2", kind: "orange", rage: true, rageAtk: 6, rageDef: 2, flash: true, stars: 3 },
-          { name: "死撃", cost: 2, text: "12ダメージ\nこの戦闘中、ATK+2", damage: 12, atkGrow: 2, kind: "attack", stars: 3 },
+          { name: "アタック" },
+          { name: "ドラゴンパリィ", cost: 2, text: "パリィ+2\nこのターン、ほかのカードではブロックを得られない", kind: "block", parryAdd: 2, noBlock: true, stars: 3 },
+          { name: "死の宣告", cost: 2, text: "カウントダウン3\n敵に100ダメージ（貫通）", kind: "skill", countdown: 3, pierce: 100, flash: true, stars: 3 },
         ],
       },
       {
@@ -13119,6 +13304,24 @@
         trait: "プレイヤーから無心したカードを使う。",
         pattern: [
           { name: "泥棒" },
+        ],
+      },
+      {
+        name: "骸骨店主",
+        image: "enemy-shopkeep.png?v=1",
+        tier: 3,
+        rank: "強敵",
+        stature: "same",
+        hp: 130,
+        atkHidden: 3,
+        defHidden: 1,
+        spd: 2,
+        eventOnly: true,
+        trait: "残った商品をすべて携えて襲ってきた！！　君が悪い！！",
+        pattern: [
+          { name: "アタック" },
+          { name: "アタック" },
+          { name: "ブロック" },
         ],
       },
       {
@@ -13551,6 +13754,10 @@
     let floorPrompt = "";
     let restHeal = false;
     let restHealPlay = false;
+    let restCount = 0;
+    let restFoe = "";
+    let restBefore = null;
+    let restAfter = null;
     let blessAuto = 0;
     let floorPhase = "show";
     let floorGift = null;
@@ -13587,6 +13794,7 @@
     let runEnchantWords = {};
     let cardAlters = [];
     let demonGauge = 0;
+    let heartSpent = false;
     let swordPlus = {};
     let smithUsed = false;
     let lootSeen = [];
@@ -13613,7 +13821,20 @@
     let rareArmed = "";
     let bossPicks = [];
     let shopStock = [];
+    let shopPicks = [];
+    let shopStealTried = false;
+    let shopStealFail = false;
     let seenApexGear = [];
+    let foeBags = { 1: [], 2: [], 3: [] };
+    let foeBagPrev = { 1: [], 2: [], 3: [] };
+    let apexBag = [];
+    let apexPrev = [];
+    let apexCycle = 0;
+    let shopBanned = false;
+    let shopBought = false;
+    let shopStolen = false;
+    let shopkeepBattle = false;
+    let shopkeepPrize = [];
     let gearOffer = null; // 武器を付け替える確認 { item, keep, source, shopIndex, price }
     let gearDualOffer = null;
     let itemChoice = null;
@@ -14131,9 +14352,39 @@
     }
 
     function rollEliteName() {
-      const names = eliteNames().filter((name) => isEliteStar(name));
-      if (!names.length) return "";
-      return names[Math.floor(Math.random() * names.length)];
+      return takeFoe(3);
+    }
+
+    function sameOrder(a, b) {
+      if (!a || !b || a.length !== b.length) return false;
+      return a.every((name, i) => name === b[i]);
+    }
+
+    function foePool(star) {
+      if (Number(star) === 3) return eliteNames().filter((name) => isEliteStar(name));
+      return roadStarNames(Number(star) || 1);
+    }
+
+    function refillFoeBag(star) {
+      const pool = foePool(star);
+      const prev = foeBagPrev[star] || [];
+      let next = pool.slice();
+      for (let n = 0; n < 40; n += 1) {
+        next = shuffle(pool);
+        if (pool.length <= 1 || !prev.length) break;
+        if (sameOrder(next, prev)) continue;
+        if (prev[prev.length - 1] === next[0]) continue;
+        break;
+      }
+      foeBags[star] = next;
+      foeBagPrev[star] = next.slice();
+    }
+
+    function takeFoe(star) {
+      const key = Number(star) || 1;
+      if (!foeBags[key] || !foeBags[key].length) refillFoeBag(key);
+      const name = (foeBags[key] || []).shift();
+      return name || "";
     }
 
     // 名前の無い「強敵:」は、空欄のままだとボス（ハデス）に落ちる。★3だけを書く。
@@ -14154,16 +14405,15 @@
     }
 
     function roadStarNames(star) {
-      return ENEMIES.filter((foe) => foe.name !== "ハデス" && foe.name !== "物乞い" && enemyStar(foe) === star).map((foe) => foe.name);
+      return ENEMIES.filter((foe) => foe.name !== "ハデス" && foe.name !== "物乞い" && !foe.eventOnly && enemyStar(foe) === star).map((foe) => foe.name);
     }
 
     function rollRank() {
       const percent = star2Percent(floorForNextCombat());
       let star = Math.random() * 100 < percent ? 2 : 1;
-      let names = roadStarNames(star);
-      if (!names.length) names = roadStarNames(star === 2 ? 1 : 2);
-      if (!names.length) return "スライム";
-      return names[Math.floor(Math.random() * names.length)];
+      let name = takeFoe(star);
+      if (!name) name = takeFoe(star === 2 ? 1 : 2);
+      return name || "スライム";
     }
 
     function floorForNextCombat() {
@@ -14187,6 +14437,7 @@
       const cap = tierCap == null ? 99 : Number(tierCap) || 1;
       return ENEMIES.filter((foe) => {
         if (foe.name === "ハデス") return false;
+        if (foe.eventOnly) return false;
         if (foe.name === "物乞い" && !withBeggar) return false;
         if (enemyStar(foe) > cap) return false;
         const homes = foe.home == null || foe.home === "" ? null : (Array.isArray(foe.home) ? foe.home : [foe.home]);
@@ -14322,7 +14573,6 @@
     const EXTRA_ITEM_NAMES = ["ベッド", "ホテル", "鉄壁の霊薬", "解毒のハーブ", "万能薬", "煙玉", "不死鳥の羽根", "火炎瓶", "猛毒の瓶", "雷の巻物", "呪いの人形", "魔力の小瓶", "疾風の羽根", "闘神の秘薬", "時の砂時計", "鏡の破片", "錬金術の壺", "変化の巻物", "礼拝堂"];
     const FIND_ITEM_NAMES = EXTRA_ITEM_NAMES;
     const BLESS_KINDS = [
-      { id: "maxhp", stars: 1 },
       { id: "gear", stars: 3 },
       { id: "enchant", stars: 3 },
       { id: "spd", stars: 3 },
@@ -14331,7 +14581,7 @@
     // 入口の祝福だけに足す新しい14種。すべて★3、絵なし。選ぶと runBonus.fx に積む（途中の祝福には出ない）
     const BLESS_NEW = [
       { id: "godAtk", name: "戦神の加護", body: "毎戦闘、ATK+2" },
-      { id: "godDef", name: "守護神の加護", body: "毎戦闘、DEF+2" },
+      { id: "godDef", name: "守護神の加護", body: "毎戦闘、敵の攻撃から受けるダメージ-2（最低0。毒と悪魔化の自傷は対象外）" },
       { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
       { id: "galeBless", name: "部族の羽飾り", image: "reward-tribal-feather.jpg?v=1", body: "毎戦闘の1・2ターン目、SPD+2" },
       { id: "magicBless", name: "闇魔導の勾玉", image: "reward-dark-magatama.jpg?v=1", body: "毎戦闘の1ターン目、マナ+1\nSPD+1" },
@@ -14385,7 +14635,8 @@
     function routeTypePool(floor) {
       const pool = ["straight", "search", "beggar", "camp", "train", "lost", "unknown"];
       if (!shopLockedFloor(floor)) {
-        pool.push("shop", "smith");
+        if (!shopBanned) pool.push("shop");
+        pool.push("smith");
         if (eliteNames().length) pool.push("elite");
       }
       return pool;
@@ -14516,6 +14767,8 @@
     // イベント戦闘。階層は進まない。階のアニメも「2Ｆ」も出さない。
     // 物乞いは、物乞いイベント（遭遇で物乞いになったときも含む）に付随する。
     function eventBattleKind() {
+      if (shopkeepBattle) return "骸骨店主";
+      if (restFoe) return restFoe;
       if (beggarBattle) return "物乞い";
       return "";
     }
@@ -14830,7 +15083,25 @@
       }));
     }
 
+    function shopkeepFoe() {
+      const base = enemyByName("骸骨店主");
+      const slots = Array.isArray(shopkeepPrize) ? shopkeepPrize : [];
+      const pattern = (base.pattern || []).map((card) => ({ ...card }));
+      let atk = Number(base.atkHidden) || 0;
+      let def = Number(base.defHidden) || 0;
+      slots.forEach((slot) => {
+        if (slot && slot.kind === "card" && slot.card && slot.card.name) pattern.push({ ...slot.card });
+        const item = slot && slot.gear;
+        if (!item || item.loot || item.relic) return;
+        atk += Number(item.atk) || 0;
+        def += Number(item.def) || 0;
+      });
+      return { ...base, atkHidden: atk, defHidden: def, pattern };
+    }
+
     function enemyNow() {
+      if (shopkeepBattle) return shopkeepFoe();
+      if (restFoe) return { ...enemyByName(restFoe), plus: 0 };
       if (beggarBattle) {
         const foe = enemyByName("物乞い");
         return { ...foe, plus: 0 };
@@ -14966,8 +15237,9 @@
     ];
     // 強敵の固有ドロップ。ランダムな装備には入れない。レアリティは敵の★と同じと+1。ミノタウロスはメダルも腕輪も★★★。分類は戦利品。
     const BOSS_GEAR = [
-      { id: "minotaur-medal", name: "ミノタウロスのメダル", slot: "medal", boss: true, stars: 3, effect: "ボス　体力が半分以下の時、ATK+2。", image: "gear-medal.jpg?v=6", halfAtk: 2 },
-      { id: "minotaur-bracelet", name: "ミノタウロスの腕輪", slot: "braceletAny", boss: true, stars: 3, effect: "ボス　ターン開始時に体力が半分以下ならマナ+1。", image: "gear-bracelet.jpg?v=6", halfMana: 1 },
+      { id: "minotaur-horn", name: "ミノタウロスの折れた角", slot: "relic", loot: true, boss: true, stars: 3, relic: "brokenHorn", effect: "自分のHPが50%以下の時、SPD+1", image: "gear-medal.jpg?v=6" },
+      { id: "death-scale", name: "死竜の逆鱗", slot: "relic", loot: true, boss: true, stars: 3, relic: "deathScale", effect: "カウントダウンを持つカードの初期カウントを-1する（最低1）", image: "loot-death-scale.jpg" },
+      { id: "hades-heart", name: "冥王の心臓", slot: "relic", loot: true, boss: true, stars: 4, relic: "hadesHeart", effect: "この攻略中1度だけ、HPが0になると最大HPの50%（切り捨て、最低1）で復活する。復活した戦闘中、ATK+3・DEF+3", image: "loot-hades-heart.jpg" },
     ];
     // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵は loot-{id}.jpg。
     const LOOT_RELICS = [
@@ -15057,8 +15329,9 @@
       "dual-bracelet": "剣2枠か盾2枠\nこの腕輪は外せない",
       "solo-ring": "腕輪がこれだけのとき、マナ+1",
       "whetstone": "戦闘開始時\nATK+1",
-      "minotaur-medal": "体力が半分以下の時、ATK+2",
-      "minotaur-bracelet": "ターン開始時に体力が半分以下ならマナ+1",
+      "minotaur-horn": "自分のHPが50%以下の時、SPD+1",
+      "death-scale": "カウントダウンの初期値を-1（最低1）",
+      "hades-heart": "攻略中1度、HP0で最大HPの半分で復活。その戦闘ATK+3 DEF+3",
     };
     function lootItem(item) {
       return !!(item && (item.loot || item.slot === "relic" || item.slot === "medal"));
@@ -16117,7 +16390,9 @@
     // 切れ目につき怒りは1枚。処理後は山札にも捨て札にも戻さない。戻した山札から、残りの枠だけ引く。
     function buildFoePlan() {
       foePlan = [];
-      const need = Math.max(1, foeSpd());
+      const held = (enemy && enemy.holds ? enemy.holds.length : 0);
+      const need = Math.max(0, foeSpd() - held);
+      if (!need) return;
       let guard = 0;
       let anger = 0;
       while (foePlan.length < need && guard < need + 2) {
@@ -16211,7 +16486,7 @@
     }
 
     function usesDragonRage(name) {
-      return name === "ちびドラゴン" || name === "デスドラゴン";
+      return name === "ちびドラゴン";
     }
 
     function foeAngerCard() {
@@ -16316,7 +16591,7 @@
         gainBlock(10);
         log(`${heroName()}は血塗られた包帯。ブロック10。`);
       }
-      if (target === player && target.hp <= 0) tryPhoenixRevive();
+      if (target === player && target.hp <= 0) tryCheatDeath();
       if (hpLoss > 0) {
         noteSpite(target);
         noteEnemyHalfSpd(target, hpBefore);
@@ -16708,6 +16983,11 @@
       gain = halfBraced(card, player, gain);
       gain = anyShield("blockBoost") ? Math.ceil(gain * 1.5) : Math.floor(gain);
       if (!gain) return false;
+      if (player && player.blockLock) {
+        const name = card && card.name ? `${card.name}。` : "";
+        log(`${heroName()}は${name}このターンは、ほかのカードでブロックを得られない。`, card);
+        return false;
+      }
       if (parryCount(player) > 0 && !player.guardThrough) {
         const name = card && card.name ? `${card.name}。` : "";
         log(`${heroName()}は${name}パリィ中はシールドを得られない。`, card);
@@ -16851,6 +17131,7 @@
         player.doubleNext = false;
         amount = Math.ceil(amount * mul);
       }
+      if (hasBless("godDef")) amount = Math.max(0, amount - 2);
       const stacks = parryCount(player);
       if (stacks > 0) {
         player.parry = stacks - 1;
@@ -16891,7 +17172,7 @@
         }
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
-      log(hurtSentence(enemy.name, name, raw + extra, 0, result, crit), card, true);
+      log(hurtSentence(enemy.name, name, amount + extra, 0, result, crit), card, true);
       if (hasRelic("spike") && !player.smoke && enemy && enemy.hp > 0 && !outcome) {
         const back = applyDamage(enemy, 3, true);
         if (back.hpLoss || back.blocked) {
@@ -16954,6 +17235,50 @@
       fatalHold = false;
       log(`${heroName()}は不死鳥の羽根。HP${player.hp}で復活した。羽根は消えた。`, card);
       return true;
+    }
+
+    function tryHeartRevive() {
+      if (!player || player.hp > 0 || heartSpent || !hasRelic("hadesHeart")) return false;
+      heartSpent = true;
+      const back = Math.max(1, Math.floor((Number(player.maxHp) || 0) * 0.5));
+      player.hp = Math.max(1, back);
+      player.atkMod = (Number(player.atkMod) || 0) + 3;
+      player.defMod = (Number(player.defMod) || 0) + 3;
+      syncGearStats();
+      fxFatal = false;
+      fatalHold = false;
+      log(`${heroName()}は冥王の心臓。HP${player.hp}で復活した。この戦闘、ATK+3、DEF+3。`);
+      return true;
+    }
+
+    function tryCheatDeath() {
+      return tryPhoenixRevive() || tryHeartRevive();
+    }
+
+    function countdownStart(card) {
+      let n = Math.max(1, Number(card && card.countdown) || 1);
+      if (hasRelic("deathScale")) n = Math.max(1, n - 1);
+      return n;
+    }
+
+    function paintCountdown(card) {
+      if (!card) return;
+      if (!card.countdownBase) card.countdownBase = card.text || "";
+      card.text = String(card.countdownBase).replace(/カウントダウン\s*\d+/u, `カウントダウン${Math.max(0, Number(card.countLeft) || 0)}`);
+    }
+
+    function pierceDamage(target, amount, card, fromEnemy) {
+      if (!target) return 0;
+      const saved = Math.max(0, Number(target.block) || 0);
+      target.block = 0;
+      const before = target.hp;
+      applyDamage(target, Math.max(0, Number(amount) || 0));
+      target.block = saved;
+      const dealt = Math.max(0, before - target.hp);
+      const actor = fromEnemy ? enemy.name : heroName();
+      const who = target === player ? heroName() : (enemy && enemy.name) || "相手";
+      log(`${actor}は${card && card.name ? card.name : "貫通"}。${who}に${dealt}ダメージ（貫通）。`, card, !!fromEnemy);
+      return dealt;
     }
 
     function restoreHp(amount) {
@@ -17156,9 +17481,19 @@
       return true;
     }
 
+    function doomClockHtml() {
+      const foe = typeof enemyNow === "function" ? enemyNow() : null;
+      if (!foe || !foe.deathSentence) return "";
+      const n = Math.max(0, Number(turn) || 0);
+      const left = n <= 0 ? 10 : Math.max(0, 11 - n);
+      return `<b class="doom-clock">死の宣告 残${left}</b>`;
+    }
+
     function playerSpd() {
-      const base = DRAW_PER_TURN + Math.max(0, Number(player && player.spdMod) || 0);
-      const cut = player && !hasStatLock() ? Math.max(0, Number(player.frostSpd) || 0) : 0;
+      let base = DRAW_PER_TURN + Math.max(0, Number(player && player.spdMod) || 0);
+      if (player && hasRelic("brokenHorn") && player.hp * 2 <= player.maxHp) base += 1;
+      let cut = player && !hasStatLock() ? Math.max(0, Number(player.frostSpd) || 0) : 0;
+      cut += player ? Math.max(0, Number(player.roarCut) || 0) : 0;
       if (!cut) return base;
       return Math.max(1, base - cut);
     }
@@ -17851,6 +18186,24 @@
 
     function resolveCard(card) {
       card = scaledResolvedCard(card);
+      if (card && card.curse) {
+        log(`${heroName()}は${card.name}。効果は無い。`, card);
+        return;
+      }
+      if (card && card.countdown) {
+        if (card.countLeft == null) card.countLeft = countdownStart(card);
+        if (card.countLeft > 0) {
+          card.countLeft -= 1;
+          paintCountdown(card);
+          log(`${heroName()}は${card.name}。カウントダウン${card.countLeft}。`, card);
+          if (card.countLeft > 0) return;
+        }
+      }
+      if (card && card.noBlock) player.blockLock = true;
+      if (card && card.pierce && !(card.countLeft > 0)) {
+        pierceDamage(enemy, card.pierce, card, false);
+        return;
+      }
       if (card && cardKind(card) === "orange") fxBuff = true;
       if (card && card.stealTop && !card.stealBusy) {
         stealArmed = { card, caster: "player" };
@@ -18941,15 +19294,21 @@
 
     function scrapPlay() {
       capturePlayClearFlights();
+      const stay = [];
       while (inPlay.length) {
         const card = inPlay.shift();
+        if (card && card.countdown && card.countLeft > 0) {
+          stay.push(card);
+          continue;
+        }
         const pile = afterUsePile(card);
         if (pile === "exile" || pile === "burst") placeUsedCard(card);
         else if (player && player.sheath && card.name === "悪魔の剣") {
           deck.unshift(card);
           log(`${heroName()}は呪われた鞘。悪魔の剣を山札の一番上へ。`);
-        } else discard.push(card);
+        }         else discard.push(card);
       }
+      inPlay = stay;
       resolveAt = 0;
     }
 
@@ -19012,7 +19371,39 @@
       return true;
     }
 
+    function curseCard() {
+      return { ...FOE_ONLY["死の呪い"], name: "死の呪い" };
+    }
+
     function enemyUseCard(card) {
+      if (card.roar) {
+        player.roarQueued = (Number(player.roarQueued) || 0) + Math.max(0, Number(card.roar) || 0);
+        log(`${enemy.name}は${card.name}。次のターン、SPD-${card.roar}。`, card, true);
+        return;
+      }
+      if (card.miasma) {
+        addPoison(player, 5);
+        addBurn(player, 5);
+        discard.push(curseCard(), curseCard());
+        log(`${enemy.name}は${card.name}。毒+5、炎上+5。捨て札に死の呪いが2枚。`, card, true);
+        return;
+      }
+      if (card.countdown) {
+        if (card.countLeft == null) card.countLeft = countdownStart(card);
+        if (card.countLeft > 0) {
+          card.countLeft -= 1;
+          paintCountdown(card);
+          if (card.countLeft > 0) {
+            enemy.holds = enemy.holds || [];
+            enemy.holds.push(card);
+            log(`${enemy.name}は${card.name}。カウントダウン${card.countLeft}。`, card, true);
+            return;
+          }
+        }
+        pierceDamage(player, card.pierce || 0, card, true);
+        return;
+      }
+      if (card.noBlock) enemy.blockLock = true;
       if (card.halfOnly && !hpHalf(enemy)) {
         log(`${enemy.name}は${card.name}。体力が半分より上なので、使えない。`, card, true);
         return;
@@ -19103,7 +19494,9 @@
         noteAttackGrow(card, "enemy");
         if (card.parry || card.parryAdd) gainEnemyParry(card, card.parryAdd || 1);
       } else if (card.block) {
-        if (parryCount(enemy) > 0) {
+        if (enemy.blockLock) {
+          log(`${enemy.name}は${card.name}。このターンは、ほかのカードでブロックを得られない。`, card, true);
+        } else if (parryCount(enemy) > 0) {
           log(`${enemy.name}は${card.name}。パリィ中はシールドを得られない。`, card, true);
         } else {
           const base = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
@@ -19142,7 +19535,7 @@
       if (who === "ゴブリン") return wrap({ name: "トリプルアタック", cost: 2, text: "2ダメージを3回", damage: 2, hits: 3, kind: "attack", stars: 1, atkEach: true });
       if (who === "物乞い") return wrap({ ...FOE_ONLY["泥棒"], name: "泥棒" });
       if (who === "ちびドラゴン") return wrap({ name: "ファイアパラダイス", cost: 1, text: "3ダメージ\n相手に炎上+2を与える", damage: 3, burn: 2, kind: "skill", stars: 1 });
-      if (who === "デスドラゴン") return wrap({ name: "死撃", cost: 2, text: "12ダメージ\nこの戦闘中、ATK+2", damage: 12, atkGrow: 2, kind: "attack", stars: 3 });
+      if (who === "デスドラゴン") return wrap({ name: "ドラゴンパリィ", cost: 2, text: "パリィ+2\nこのターン、ほかのカードではブロックを得られない", kind: "block", parryAdd: 2, noBlock: true, stars: 3 });
       if (who === "雪女") return wrap({ name: "吹雪", cost: 1, text: "次の相手のターン終了まで、相手のATK-4", frost: 4, kind: "skill", stars: 2 });
       if (who === "マーフォーク") return wrap({ name: "惑わしの歌", cost: 1, text: "次の相手のターン、プレイエリアの1枚目を無効にする", song: true, kind: "skill", flash: true, stars: 2 });
       if (who === "ガーゴイル") return wrap({ name: "棘の構え", cost: 1, text: "トゲ+3", thorns: 3, kind: "orange", stars: 2 });
@@ -19271,10 +19664,39 @@
       });
     }
 
+    function tickEnemyHolds() {
+      const holds = (enemy && enemy.holds) || [];
+      const next = [];
+      for (const card of holds) {
+        if (card.countLeft == null) card.countLeft = countdownStart(card);
+        if (card.countLeft > 0) card.countLeft -= 1;
+        paintCountdown(card);
+        if (card.countLeft > 0) {
+          next.push(card);
+          log(`${enemy.name}の${card.name}。カウントダウン${card.countLeft}。`, card, true);
+        } else {
+          pierceDamage(player, card.pierce || 0, card, true);
+        }
+      }
+      if (enemy) enemy.holds = next;
+    }
+
     function leaveFoeCard() {
       settleStealArrive();
       timer = null;
       if (outcome) return;
+      const foe = enemyNow();
+      if (foe && foe.deathSentence && turn >= 10 && player && player.hp > 0) {
+        player.hp = 0;
+        log(`${enemy.name}の死の宣告。10ターンが尽きた。`);
+        if (!tryCheatDeath()) {
+          fxFatal = true;
+          fatalHold = true;
+          scheduleFinish("lose");
+          return;
+        }
+      }
+      if (enemy) enemy.blockLock = false;
       captureFoeLeave();
       foePlan = [];
       intentShown = false;
@@ -19444,18 +19866,29 @@
         }
       } else {
         const foeIndex = index - enemyIndex;
-        if (foeIndex >= foePlan.length) {
-          leaveFoeCard();
-          return;
-        }
         if (foeIndex === 0) {
           clearFrost(player, "player");
+          if (player) {
+            player.blockLock = false;
+            player.roarCut = 0;
+          }
+          if (enemy) enemy.blockLock = false;
+          tickEnemyHolds();
+          if (player && player.hp <= 0 && !tryCheatDeath()) {
+            scrapPlay();
+            scheduleFinish("lose");
+            return;
+          }
           logTurn("enemy");
           dropShield(enemy);
           if (parryCount(enemy) > 0) {
             enemy.parry = 0;
             log(`${enemy.name}のパリィが消えた。`);
           }
+        }
+        if (foeIndex >= foePlan.length) {
+          leaveFoeCard();
+          return;
         }
         const step = foePlan[foeIndex];
         if (player.hp > 0 && step && takeSong(enemy)) {
@@ -19476,7 +19909,7 @@
               const armed = stealArmed;
               stealArmed = null;
               beginStealTop(armed.card, "enemy", () => {
-                if (!isFlashCard(live) && !live.foeRage) foeDiscard.push({ ...live });
+                if (!isFlashCard(live) && !live.foeRage && !(live.countLeft > 0)) foeDiscard.push({ ...live });
                 if (enemy && enemy.hp <= 0) {
                   scrapPlay();
                   scheduleFinish("win");
@@ -19502,7 +19935,7 @@
               });
               return;
             }
-            if (!isFlashCard(live) && !live.foeRage) foeDiscard.push({ ...live });
+            if (!isFlashCard(live) && !live.foeRage && !(live.countLeft > 0)) foeDiscard.push({ ...live });
           }
         }
         if (enemy && enemy.hp <= 0) {
@@ -19615,13 +20048,16 @@
     }
 
     function startPlayerTurn() {
-      if (player.hp <= 0 && !tryPhoenixRevive()) {
+      if (player.hp <= 0 && !tryCheatDeath()) {
         fxFatal = true;
         fatalHold = true;
         scheduleFinish("lose");
         return;
       }
       turn += 1;
+      player.roarCut = Math.max(0, Number(player.roarQueued) || 0);
+      player.roarQueued = 0;
+      if (player.roarCut) log(`${heroName()}は威圧されている。このターン、SPD-${player.roarCut}。`);
       clearFrost(enemy, "enemy");
       clearSong(enemy);
       player.smoke = false;
@@ -19679,7 +20115,7 @@
         const lost = beforeHp - player.hp;
         if (lost) demonGauge += lost;
         log(`${heroName()}は呪われた剣。ターン開始でHP-${lost}。${lost ? `悪魔化+${lost}。` : ""}`);
-        if (player.hp <= 0 && !tryPhoenixRevive()) {
+        if (player.hp <= 0 && !tryCheatDeath()) {
           scheduleFinish("lose");
           return;
         }
@@ -19701,7 +20137,7 @@
         const restBuff = hasBless("restBless") && Number(runBonus.fx.restBuff) > 0 ? 2 : 0;
         if (restBuff) runBonus.fx.restBuff = 0;
         let atk = (hasRelic("openAtk") ? 1 : 0) + (hasRelic("horn") ? 2 : 0) + (hasBless("godAtk") ? 2 : 0) + restBuff;
-        let def = (hasRelic("openDef") ? 1 : 0) + (hasRelic("horn") ? 2 : 0) + (hasBless("godDef") ? 2 : 0) + restBuff;
+        let def = (hasRelic("openDef") ? 1 : 0) + (hasRelic("horn") ? 2 : 0) + restBuff;
         if (atk) player.atkMod = (Number(player.atkMod) || 0) + atk;
         if (def) player.defMod = (Number(player.defMod) || 0) + def;
         if (atk || def) log(`${heroName()}は戦利品と祝福。この戦闘、ATK+${atk}、DEF+${def}。`);
@@ -19841,6 +20277,16 @@
         if (hasRelic("fang") && player && player.hp > 0 && enemy && (enemy.rank === "強敵" || enemy.boss)) restoreHp(20);
         const slain = enemyKey(enemy && enemy.name);
         if (slain && runSlain.indexOf(slain) < 0) runSlain.push(slain);
+        if (shopkeepBattle) {
+          grantShopkeepPrize();
+          shopkeepBattle = false;
+          outcome = null;
+          floorNote = "店主を倒した。残りの商品は全部もらった。この攻略では、もうお店は出ない。";
+          floorPrompt = "";
+          persistSave(true);
+          finishEvent();
+          return;
+        }
         prepareReward();
         persistSave(true);
         if (cleared) return;
@@ -19852,7 +20298,7 @@
 
     function scheduleFinish(kind) {
       settleStealArrive();
-      if (kind === "lose" && tryPhoenixRevive()) {
+      if (kind === "lose" && tryCheatDeath()) {
         if (phase === "end") phase = "player";
         render();
         return;
@@ -20289,6 +20735,7 @@
         runEnchantWords,
         cardAlters,
         demonGauge,
+        heartSpent,
         swordPlus,
         smithUsed,
         lootSeen,
@@ -20312,6 +20759,18 @@
         bossPicks,
         shopStock,
         seenApexGear,
+        foeBags,
+        foeBagPrev,
+        apexBag,
+        apexPrev,
+        apexCycle,
+        shopBanned,
+        shopBought,
+        shopStolen,
+        shopkeepBattle,
+        shopkeepPrize,
+        restCount,
+        restFoe,
         gearOffer,
         place: placeSnapshot(),
       };
@@ -20554,6 +21013,7 @@
       runEnchantWords = data.runEnchantWords && typeof data.runEnchantWords === "object" ? { ...data.runEnchantWords } : {};
       cardAlters = Array.isArray(data.cardAlters) ? data.cardAlters : [];
       demonGauge = Math.max(0, Number(data.demonGauge) || 0);
+      heartSpent = !!data.heartSpent;
       swordPlus = data.swordPlus && typeof data.swordPlus === "object" ? data.swordPlus : {};
       smithUsed = !!data.smithUsed;
       lootSeen = Array.isArray(data.lootSeen) ? data.lootSeen.map((id) => String(id)) : [];
@@ -20603,6 +21063,18 @@
         slot && slot.card ? { ...slot, card: repairOwned(slot.card) } : slot
       ));
       seenApexGear = Array.isArray(data.seenApexGear) ? data.seenApexGear.map((id) => String(id)) : [];
+      foeBags = data.foeBags && typeof data.foeBags === "object" ? { 1: data.foeBags[1] || data.foeBags["1"] || [], 2: data.foeBags[2] || data.foeBags["2"] || [], 3: data.foeBags[3] || data.foeBags["3"] || [] } : { 1: [], 2: [], 3: [] };
+      foeBagPrev = data.foeBagPrev && typeof data.foeBagPrev === "object" ? { 1: data.foeBagPrev[1] || data.foeBagPrev["1"] || [], 2: data.foeBagPrev[2] || data.foeBagPrev["2"] || [], 3: data.foeBagPrev[3] || data.foeBagPrev["3"] || [] } : { 1: [], 2: [], 3: [] };
+      apexBag = Array.isArray(data.apexBag) ? data.apexBag.map(String) : [];
+      apexPrev = Array.isArray(data.apexPrev) ? data.apexPrev.map(String) : [];
+      apexCycle = Math.max(0, Number(data.apexCycle) || 0);
+      shopBanned = !!data.shopBanned;
+      shopBought = !!data.shopBought;
+      shopStolen = !!data.shopStolen;
+      shopkeepBattle = !!data.shopkeepBattle;
+      restCount = Number(data.restCount) || 0;
+      restFoe = String(data.restFoe || "");
+      shopkeepPrize = Array.isArray(data.shopkeepPrize) ? data.shopkeepPrize : [];
       gearOffer = data.gearOffer && data.gearOffer.item ? data.gearOffer : null;
       restorePlace(data.place);
       seedSeenApex();
@@ -20628,12 +21100,12 @@
       runEnded = null;
       const maxHp = runMaxHp();
       const hp = keepHp == null ? maxHp : Math.min(maxHp, keepHp);
-      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, surgeMax: 0, surgeLeft: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false };
+      player = { hp, maxHp, block: 0, energy: 0, maxEnergy: 0, baseMax: 0, baseEnergy: 0, tempEnergy: 0, pendingCarry: 0, surgeMax: 0, surgeLeft: 0, atk: 0, def: 0, focus: 0, parry: 0, poison: 0, burn: 0, thorns: 0, hit: false, atkMod: 0, defMod: 0, expose: 0, guardThrough: false, hurtThis: false, hurtLast: false, extraDraw: 0, manaMod: Number(runBonus.mana) || 0, spdMod: runSpdBonus(), parryHist: [], parryHitsThis: 0, parryHitsLast: 0, parryCuts: 0, parryHitThis: false, parryLast: false, knifeReflect: false, doubleNext: false, magicParry: false, pride: false, focusTurn: 0, spite: false, shave: 0, masterOnce: false, roarCut: 0, roarQueued: 0, blockLock: false };
       battleExile = [];
       syncGearStats();
       const foe = enemyNow();
       const foeHp = foeBattleHp(foe);
-      enemy = { name: beggarBattle ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: Math.max(0, Number(foe.openingBlock) || 0), poison: 0, burn: 0, thorns: Math.max(0, Number(foe.openingThorns) || 0), def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, halfSpdDone: false, spdBonus: 0, hit: false, frostCut: 0, frostClear: "" };
+      enemy = { name: (beggarBattle || shopkeepBattle || restFoe) ? foe.name : foeLabel(), image: foe.image, hp: foeHp, maxHp: foeHp, block: Math.max(0, Number(foe.openingBlock) || 0), poison: 0, burn: 0, thorns: Math.max(0, Number(foe.openingThorns) || 0), def: hiddenDef(foe), atk: hiddenAtk(foe), anger: 0, spiteOn: false, spite: 0, defCut: 0, halfSpdDone: false, spdBonus: 0, hit: false, frostCut: 0, frostClear: "", holds: [], blockLock: false };
       player.frostCut = 0;
       player.frostClear = "";
       player.frostSpd = Math.max(0, Number(foe.spdCut) || 0);
@@ -20691,6 +21163,7 @@
 
     function appearLine() {
       if (beggarBattle) return "物乞いが襲ってきた";
+      if (restFoe) return `${restFoe}が襲ってきた`;
       if (bossNow()) return "ボスが現れた!!!";
       const rank = (enemyNow() && enemyNow().rank) || "普通";
       if (rank === "強敵") return "強敵が現れた!!";
@@ -20713,11 +21186,12 @@
     }
 
     function rollBlessGear() {
-      const pool = gearOfferPool().filter((item) => (Number(item.stars) || 0) >= 2);
-      const list = pool.length ? pool : gearOfferPool();
-      if (!list.length) return null;
-      const item = list[Math.floor(Math.random() * list.length)];
-      noteApexGear(item);
+      const low = GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) === 2);
+      const apex = peekApex();
+      const pool = low.concat(apex ? [apex] : []);
+      if (!pool.length) return null;
+      const item = pool[Math.floor(Math.random() * pool.length)];
+      if ((Number(item.stars) || 0) >= 3) return takeNextApex();
       return { ...item };
     }
     function rollBlessLoot() {
@@ -21657,6 +22131,10 @@
       beggarCut = false;
       beggarPick = -1;
       restHealPlay = false;
+      restBefore = null;
+      restAfter = null;
+      restCount = 0;
+      restFoe = "";
       if (kind === "祝福") {
         floorKind = "挑戦者に祝福を";
         floorPhase = "bless";
@@ -21680,12 +22158,20 @@
         shown.player = before;
         restHeal = healed > 0;
         restHealPlay = restHeal;
+        restBefore = before;
+        restAfter = after;
+        restCount = 1;
         floorNote = `焚火の傍で、${heroName()}は眠りに落ちる\nモンスターが徘徊するダンジョン内で熟睡。\nどこでも寝られるのは羨むべき才能である。`;
         floorPrompt = healed ? "体力が回復した！！" : "すでに体力は満タンだ。";
       } else if (kind === "お店") {
         shopStock = rollShopStock();
-        floorNote = "";
-        floorPrompt = "★で買い物。カード3つ、装備3つ、アイテム2つ。カードの値段はレアリティの2倍。アイテムはレアリティと同じ。装備は3倍。";
+        shopPicks = [];
+        shopBought = false;
+        shopStolen = false;
+        shopStealTried = false;
+        shopStealFail = false;
+        floorNote = "薄暗い地下の奥に、ひっそりと店が開いていた。\nこんなダンジョンで商売？どう見ても赤字だ。\n品ぞろえは立派。客が来ない理由は、察してくれ。";
+        floorPrompt = "何が欲しい？";
         armRare("shop");
       } else if (kind === "探索") {
         floorGift = rollExploreGift();
@@ -22070,6 +22556,7 @@
       runEnchantWords = {};
       cardAlters = [];
       demonGauge = 0;
+      heartSpent = false;
       swordPlus = {};
       smithUsed = false;
       lootSeen = [];
@@ -22087,6 +22574,16 @@
       runEntrance = true;
       gear = starterGear();
       seenApexGear = [];
+      foeBags = { 1: [], 2: [], 3: [] };
+      foeBagPrev = { 1: [], 2: [], 3: [] };
+      apexBag = [];
+      apexPrev = [];
+      apexCycle = 0;
+      shopBanned = false;
+      shopBought = false;
+      shopStolen = false;
+      shopkeepBattle = false;
+      shopkeepPrize = [];
       gearOpen = null;
       gearOffer = null;
       stolen = [];
@@ -22163,7 +22660,7 @@
         finish("win");
         return;
       }
-      if (!outcome && player && player.hp <= 0 && !tryPhoenixRevive()) {
+      if (!outcome && player && player.hp <= 0 && !tryCheatDeath()) {
         finish("lose");
         return;
       }
@@ -22923,7 +23420,7 @@
               <li>出すかどうかは運です。雑魚は30%。強敵以上は必ずです。汎用の戦利品41種から、この攻略でまだ出ていないものを出します。その星が出尽くしたら、効果の空の「戦利品」です。</li>
               <li>出るときは品を1つ。レアリティだけ引きます。低レア70%、高レア30%です。低レアは敵の★、高レアは+1で、★★★までです。</li>
               <li>当たった星の、この攻略でまだ出ていない戦利品から出します。その星が出尽くしたら、効果の空の「戦利品」を出します。絵はまだありません。</li>
-              <li>ミノタウロスのメダルと腕輪は、どちらも★★★です。同じ星なので、70%と30%は同じ池から出ます。</li>
+              <li>ミノタウロスは《ミノタウロスの折れた角》、デスドラゴンは《死竜の逆鱗》。未所持なら30%。所持済みなら汎用。中間のハデスは《冥王の心臓》が確定。所持済みなら汎用。</li>
             </ul>
             <h3>報酬カード（枠ごと）</h3>
             <ul>
@@ -22934,7 +23431,7 @@
             <h3>戦士</h3>
             ${oddsTable(["★", "レアリティ", "1枚の割合", "カード"], rarityRows(warriorReward))}
             <ul>
-              <li>装備は、腕輪を含む装備一覧から、カードと同じく先にレアリティを引きます。★60%、★★30%、★★★以上10%です。当たった帯から均等です。その帯が無いときは、残りの比率で引き直します。★3以上の装備は、その攻略で一度並んだら、その装備はもう出ません。</li>
+              <li>探索と勝利の追加の装備は、先にレアリティを引きます。★60%、★★30%、★★★以上10%です。★★★は共通のローテーションで、1周するまで同じ品は出ません。お店は重みなしで、カード4、装備2、戦利品2、アイテム2です。</li>
             </ul>
             ${oddsTable(["★", "レアリティ", "1つの割合", "装備"], rarityRows(GEAR_ITEMS))}
             <h3>アイテム（先にレアリティ）</h3>
@@ -23456,6 +23953,8 @@
         DUNGEON_LIST.forEach((dungeon) => {
           if (bossStops(dungeon.name, dungeon.floors).length) names.push(dungeon.name);
         });
+      } else if (foe && foe.eventOnly) {
+        note = "お店で泥棒したときだけ。道には出ない。";
       } else if (foe) {
         names.push("洞窟");
         if (foe.name === "物乞い") note = "洞窟の初戦には出ない。";
@@ -24376,8 +24875,14 @@
         runEntrance = false;
         return;
       }
-      const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" && floorKind !== "物乞いに遭遇" && floorKind !== "探索" && floorKind !== "鍛冶屋"
-        ? menuButton("進む", "floor-next", true)
+      const next = floorPhase === "show" && floorKind !== "挑戦者に祝福を" && floorKind !== "物乞いに遭遇" && floorKind !== "探索" && floorKind !== "鍛冶屋" && floorKind !== "お店"
+        ? (floorKind === "休憩"
+          ? (restFoe
+            ? `<div class="event-actions rest-actions">${menuButton("戦う", "rest-fight", true)}</div>`
+            : restCount === 1
+              ? `<div class="event-actions rest-actions">${menuButton("まだ寝る", "rest-again")}${menuButton("進む", "floor-next", true)}</div>`
+              : menuButton("進む", "floor-next", true))
+          : menuButton("進む", "floor-next", true))
         : "";
       const beggar = floorKind === "物乞いに遭遇"
         ? `<div class="deck-cards beggar-cards">${runDeck().map((card, i) => {
@@ -24395,7 +24900,7 @@
         "休憩": ["event-rest.jpg?v=11", "焚き火は部屋の真ん中。剣の隣に盾。壁の陰にミノタウロスの影"],
         "物乞いに遭遇": ["event-beggar.jpg?v=2", "物乞いにカードを差し出す戦士"],
         "修行": ["event-train.jpg?v=8", "カメラは上を過ぎ、顔は少しやわらかい"],
-        "お店": ["shop-merchant.jpg?v=8", "ジト目の戦士が店主に値段交渉をしている"],
+        "お店": ["shop-merchant-wide.jpg?v=1", "ジト目の戦士が店主に値段交渉をしている"],
         "鍛冶屋": ["event-smith.jpg?v=1", "カードを叩き、戦士は両手を口に当ててドン引き"],
       };
       const eventRow = eventPictures[floorKind];
@@ -24433,7 +24938,7 @@
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
       const gift = floorPhase === "show" || floorPhase === "search" ? giftMarkup(floorGift, true, giftLive, 0, floorKind === "探索") : "";
       const rareFlash = rareScreen(blessLevels.concat(giftLv ? [giftLv] : []));
-      const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop")) : "";
+      const shop = floorKind === "お店" && floorPhase === "show" ? shopMarkup(shopStock, "", takeRare("shop"), menuButton("スキップ", "floor-next", false, false, "shop-next")) : "";
       const smith = floorKind === "鍛冶屋" ? smithPanelHtml() : "";
       const floorFlash = eventFloorCall ? eventFloorFlashHtml() : "";
       eventFloorCall = false;
@@ -24864,7 +25369,7 @@
     // 敵のカードのうち、報酬になりうるもの（rewardPool が敵の山札から拾うもの）だけ紫。
     // 奪えないカード（アタック・ブロック・チャージアタック）は、ふつうのジャンルの枠。
     function foeRewardable(card) {
-      return !!card && !basicCardName(card.name) && card.name !== "ビッグアタック";
+      return !!card && !card.foeOnly && !basicCardName(card.name) && card.name !== "ビッグアタック";
     }
 
     function faceTone(card, foe) {
@@ -25807,6 +26312,7 @@
         selfRaw += Math.max(0, doubled - base);
         swing = doubled;
       }
+      if (hasBless("godDef")) swing = Math.max(0, swing - 2);
       const extra = incomingAttack(card) ? Math.max(0, Number(mine.expose) || 0) : 0;
       if (!swing && !extra) return null;
       if (mine.parry > 0) {
@@ -25823,7 +26329,7 @@
         mine.expose = 0;
         selfRaw += extra;
       }
-      const dealt = base + selfRaw;
+      const dealt = swing + extra;
       if (!dealt) return null;
       const before = mine.hp;
       const hit = scratchApply(mine, dealt);
@@ -25892,13 +26398,20 @@
       return chips.length ? `<div class="forecasts">${chips.join("")}</div>` : "";
     }
 
+    // 処理フェイズ中も、ターン終了を押した時点の予測を出したままにする（途中で計算し直さない）
+    let heldForecast = null;
     function playForecastHtml() {
-      if (phase !== "player" || outcome || !player || !enemy) return { give: "", take: "" };
+      if (phase === "resolve" && heldForecast && !outcome) return heldForecast;
+      if (phase !== "player" || outcome || !player || !enemy) {
+        if (phase !== "resolve") heldForecast = null;
+        return { give: "", take: "" };
+      }
       const cast = forecastTurn();
-      return {
+      heldForecast = {
         give: forecastChips(cast.give, false, { skipPoison: true, eaten: cast.take }),
         take: forecastChips(cast.take, true, { skipPoison: true, eaten: cast.give }),
       };
+      return heldForecast;
     }
 
     function useZoneMarkup() {
@@ -25912,6 +26425,7 @@
         return playFace(card, on, true, false, i, { held, chain: i < mineBind });
       }).join("");
       const foeActive = active - inPlay.length;
+      const holdCards = phase === "intro" || !(enemy && enemy.holds) ? "" : enemy.holds.map((card) => playFace(card, false, true, true, null, {})).join("");
       const foeCards = phase === "intro" ? "" : foePlan.map((step, i) => {
         if (step.gone && step.anger) return "";
         const face = planCardFace(i);
@@ -25923,11 +26437,11 @@
         : "";
       const cast = playForecastHtml();
       const cardCount = (html) => (String(html).match(/class="play-card[ "]/g) || []).length;
-      const sameN = Math.max(1, cardCount(mine) + (stealArrive && stealArrive.side === "mine" ? 1 : 0), cardCount(foeCards) + (stealArrive && stealArrive.side === "foe" ? 1 : 0));
+      const sameN = Math.max(1, cardCount(mine) + (stealArrive && stealArrive.side === "mine" ? 1 : 0), cardCount(holdCards) + cardCount(foeCards) + (stealArrive && stealArrive.side === "foe" ? 1 : 0));
       return `<div class="use-board" aria-label="プレイエリア" style="--n:${sameN}">
         <div class="use-split">
           <div class="play-side mine use-half"><div class="play-cards">${mine}${stealArrive && stealArrive.side === "mine" ? stealFace : ""}</div>${cast.give}</div>
-          <div class="play-side foe use-half"><div class="play-cards">${foeCards}${stealArrive && stealArrive.side === "foe" ? stealFace : ""}</div>${cast.take}</div>
+          <div class="play-side foe use-half"><div class="play-cards">${holdCards}${foeCards}${stealArrive && stealArrive.side === "foe" ? stealFace : ""}</div>${cast.take}</div>
         </div>
         ${vsMarkup()}
       </div>`;
@@ -26861,13 +27375,90 @@
     }
 
     function gearOfferPool() {
-      return GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) < 3 || seenApexGear.indexOf(item.id) < 0);
+      return GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) > 0 && (Number(item.stars) || 0) < 3);
+    }
+
+    function apexIds() {
+      return GEAR_ITEMS.filter((item) => (Number(item.stars) || 0) >= 3 && !item.boss).map((item) => item.id);
+    }
+
+    function wornApexIds() {
+      const ids = [];
+      if (!gear) return ids;
+      ["sword", "sword2", "shield", "shield2", "braceletL", "braceletR"].forEach((key) => {
+        const item = gear[key];
+        if (item && (Number(item.stars) || 0) >= 3 && !item.boss) ids.push(item.id);
+      });
+      return ids;
+    }
+
+    function refillApex() {
+      const pool = apexIds();
+      const prev = apexPrev || [];
+      let next = pool.slice();
+      for (let n = 0; n < 40; n += 1) {
+        next = shuffle(pool);
+        if (pool.length <= 1 || !prev.length) break;
+        if (sameOrder(next, prev)) continue;
+        if (prev[prev.length - 1] === next[0]) continue;
+        break;
+      }
+      apexBag = next;
+      apexPrev = next.slice();
+      apexCycle += 1;
+    }
+
+    function skipWornApexFront() {
+      if (apexCycle < 2) return;
+      const worn = wornApexIds();
+      let guard = apexBag.length;
+      while (guard-- > 0 && apexBag.length && worn.indexOf(apexBag[0]) >= 0) apexBag.push(apexBag.shift());
+    }
+
+    function peekApex() {
+      if (!apexBag.length) refillApex();
+      skipWornApexFront();
+      if (!apexBag.length) return null;
+      return GEAR_ITEMS.find((item) => item.id === apexBag[0]) || null;
+    }
+
+    function takeNextApex() {
+      const item = peekApex();
+      if (!item || !apexBag.length) return null;
+      apexBag.shift();
+      return { ...item };
     }
 
     function drawGearOffers(n) {
-      const picks = takeRarityCards(gearOfferPool(), Math.max(0, n));
-      picks.forEach(noteApexGear);
-      return picks.map((item) => ({ ...item }));
+      const picks = [];
+      const count = Math.max(0, n);
+      for (let i = 0; i < count; i += 1) {
+        const apex = peekApex();
+        const pool = gearOfferPool().concat(apex ? [apex] : []);
+        const item = pickRarityCard(pool, (row) => row.stars);
+        if (!item) break;
+        if ((Number(item.stars) || 0) >= 3) {
+          const next = takeNextApex();
+          if (next) picks.push(next);
+        } else picks.push({ ...item });
+      }
+      return picks;
+    }
+
+    function drawShopGear(n) {
+      const picks = [];
+      const count = Math.max(0, n);
+      for (let i = 0; i < count; i += 1) {
+        const apex = peekApex();
+        const pool = gearOfferPool().concat(apex ? [apex] : []).filter((item) => !picks.some((row) => row.id === item.id));
+        if (!pool.length) break;
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        if ((Number(item.stars) || 0) >= 3) {
+          const next = takeNextApex();
+          if (next) picks.push(next);
+        } else picks.push({ ...item });
+      }
+      return picks;
     }
 
     function seedSeenApex() {
@@ -26883,25 +27474,103 @@
       pile.forEach(noteApexGear);
     }
 
+    function takeEven(list, n) {
+      return shuffle(list).slice(0, Math.max(0, n));
+    }
+
     function rollShopStock() {
-      const cards = takeRarityCards(classCards(), 3).map((card) => ({ kind: "card", card }));
-      const items = drawGearOffers(3).map((item) => ({ kind: "gear", gear: item }));
-      const goods = takeRarityCards(EXTRA_ITEM_NAMES.filter((name) => cardDef(name)), 2, (itemName) => (cardDef(itemName) || {}).stars).map((name) => {
+      const cards = takeEven(classCards(), 4).map((card) => ({ kind: "card", card }));
+      const gearSlots = drawShopGear(2).map((item) => ({ kind: "gear", gear: item }));
+      const unseen = LOOT_RELICS.map((row) => gearItem(row.id)).filter((item) => item && lootSeen.indexOf(item.id) < 0);
+      const lootSlots = takeEven(unseen, 2).map((item) => ({ kind: "gear", gear: { ...item } }));
+      const goods = takeEven(EXTRA_ITEM_NAMES.filter((name) => cardDef(name)), 2).map((name) => {
         const def = cardDef(name);
         return { kind: "card", card: keepCard({ name, ...def, stars: def.stars || 1 }) };
       });
-      return cards.concat(items, goods).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
+      return cards.concat(gearSlots, lootSlots, goods).map((slot) => ({ ...slot, price: shopPrice(slot), sold: false }));
     }
 
-    function buyShop(index) {
+    function shopPickTotal() {
+      return shopPicks.reduce((sum, i) => sum + (shopPrice((shopStock || [])[i]) || 0), 0);
+    }
+
+    // 商品を押すと「選ぶ」。買うのは「購入する」を押したとき。足りない★の商品は選べない
+    function toggleShopPick(index) {
+      if (shopStolen) return;
       const slot = (shopStock || [])[index];
       if (!slot || slot.sold) return;
+      const at = shopPicks.indexOf(index);
+      if (at >= 0) {
+        shopPicks.splice(at, 1);
+        render();
+        return;
+      }
       const price = shopPrice(slot);
-      const usedCoupon = price === 0 && hasRelic("coupon");
+      if (price == null) return;
+      if (shopPickTotal() + price > (Number(meta.stars) || 0)) return;
+      shopPicks.push(index);
+      render();
+    }
+
+    function buySelected() {
+      if (shopStolen) return;
+      if (shopPickTotal() > (Number(meta.stars) || 0)) return;
+      const list = shopPicks.slice().sort((a, b) => a - b);
+      shopPicks = [];
+      if (!list.length) return;
+      for (const index of list) {
+        if (gearDualOffer) break;
+        buyShop(index);
+      }
+      render();
+    }
+
+    // 泥棒する: 選んだ商品をタダで持ち出す。成功は半々。失敗するとHPを失い、もう盗めない
+    function stealSelected() {
+      if (shopBought || shopStolen || shopBanned) return;
+      if (shopPicks.length !== 1) return;
+      const index = shopPicks[0];
+      const slot = (shopStock || [])[index];
+      if (!slot || slot.sold) return;
+      shopPicks = [];
+      shopStolen = true;
+      buyShop(index, true);
+      shopkeepPrize = (shopStock || []).filter((row) => row && !row.sold).map((row) => ({ ...row }));
+      shopkeepBattle = true;
+      const hp = player ? player.hp : floorHp;
+      startBattle(hp);
+    }
+
+    function grantShopkeepPrize() {
+      (shopkeepPrize || []).forEach((slot) => {
+        if (!slot) return;
+        if (slot.kind === "card" && slot.card) {
+          stolen.push(keepCard(slot.card));
+          log(`${heroName()}は${slot.card.name}を受け取った。`);
+          return;
+        }
+        if (slot.gear) {
+          if (!gear) gear = emptyGear();
+          const placed = giveGear(slot.gear);
+          if (isRelic(slot.gear)) noteLootSeen(slot.gear.id);
+          log(placed ? `${heroName()}は${slot.gear.name}を受け取った。` : `${slot.gear.name}は入らなかった。`);
+        }
+      });
+      shopkeepPrize = [];
+      shopStock = [];
+      shopBanned = true;
+    }
+
+    function buyShop(index, free) {
+      const slot = (shopStock || [])[index];
+      if (!slot || slot.sold) return;
+      const price = free ? 0 : shopPrice(slot);
+      const usedCoupon = !free && price === 0 && hasRelic("coupon");
       if (price == null) return;
       const have = Number(meta.stars) || 0;
       if (have < price) return;
       meta.stars = have - price;
+      if (!free) shopBought = true;
       if (usedCoupon) spendCoupon();
       persistMeta();
       if (slot.kind === "card") {
@@ -26991,7 +27660,31 @@
       return items;
     }
 
+    function genericLootOf(star) {
+      const band = Math.max(1, Math.min(3, Number(star) || 1));
+      const fresh = LOOT_RELICS.map((row) => gearItem(row.id)).filter((item) => item && Number(item.stars) === band && lootSeen.indexOf(item.id) < 0);
+      if (!fresh.length) return lootPicture(band);
+      return { ...fresh[Math.floor(Math.random() * fresh.length)] };
+    }
+
+    function uniqueLootId(foe) {
+      if (!foe) return "";
+      if (foe.name === "ミノタウロス") return "minotaur-horn";
+      if (foe.name === "デスドラゴン") return "death-scale";
+      if (foe.name === "ハデス") return "hades-heart";
+      return "";
+    }
+
     function rollFoeLoot(foe) {
+      const id = uniqueLootId(foe);
+      if (id && foe.name === "ハデス" && finalBossNow()) return null;
+      if (id && (foe.rank === "強敵" || foe.name === "ハデス")) {
+        const item = gearItem(id);
+        const owned = !!(item && heldRelics().some((row) => row && row.id === item.id));
+        const sure = foe.name === "ハデス";
+        if (item && !owned && (sure || Math.random() < 0.3)) return { ...item };
+        return genericLootOf(Math.min(3, enemyStar(foe)));
+      }
       const items = foeLootItems(foe);
       if (!items.length) return null;
       if (Math.random() >= lootDropRate(foe.rank)) return null;
@@ -27252,19 +27945,22 @@
       render();
     }
 
-    function shopMarkup(stock, heading, hot) {
+    function shopMarkup(stock, heading, hot, nextHtml) {
       const have = Number(meta.stars) || 0;
       const levels = [];
+      const pickTotal = shopPickTotal();
       const slots = (stock || []).map((slot, index) => {
         const price = shopPrice(slot);
         const tag = price == null ? "値段は未定" : `★${price}`;
+        const tier = price == null ? "" : price >= 7 ? "p-high" : price >= 5 ? "p-mid" : price >= 3 ? "p-low" : "p-min";
         const entity = slot.kind === "card" ? slot.card : slot.gear;
         const lv = hot ? rareLevel(entity) : 0;
         if (lv) levels.push(lv);
         let action = "";
         if (slot.sold) action = `<span class="shop-sold">売り切れ</span>`;
-        const sold = slot.sold ? " sold" : "";
-        const poor = !slot.sold && price != null && have < price ? " poor" : "";
+        const picked = shopPicks.indexOf(index) >= 0;
+        const sold = slot.sold ? " sold" : (picked ? " picked" : "");
+        const poor = "";
         const limited = slot.limited ? " limited" : "";
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const buy = !slot.sold && price != null;
@@ -27274,15 +27970,19 @@
         const close = buy ? "</button>" : "</div>";
         const fx = "";
         if (slot.kind === "card" && slot.card) {
-          return `${open}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span>${esc(tag)}</span>${action}${close}`;
+          return `${open}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span class="${tier}">${esc(tag)}</span>${action}${close}`;
         }
         if (slot.kind === "gear" && slot.gear) {
-          return `${open}${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span>${esc(tag)}</span>${action}${close}`;
+          return `${open}${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span class="${tier}">${esc(tag)}</span>${action}${close}`;
         }
         return "";
       }).join("");
-      const head = heading ? `<h2>${esc(heading)}</h2><p>所持 ★${have}</p><p>カード3つ、装備3つ、アイテム2つ。カードはレアリティの2倍。アイテムはレアリティと同じ。装備は3倍。</p>` : `<p class="shop-have">所持 ★${have}</p>`;
-      return `${head}<div class="shop-row">${slots}</div>`;
+      const head = heading ? `<h2>${esc(heading)}</h2><p>カード4、装備2、戦利品2、アイテム2。値段はカードがレアの2倍、アイテムがレアと同じ、装備と戦利品がレアの3倍。</p>` : "";
+      const count = shopPicks.filter((i) => (shopStock || [])[i] && !(shopStock || [])[i].sold).length;
+      const canBuy = !shopStolen && count && pickTotal <= have;
+      const canSteal = !shopBought && !shopStolen && shopPicks.length === 1;
+      const bar = `<div class="shop-bar"><p class="shop-have">所持 ★${have}</p><p class="shop-total${pickTotal > have ? " over" : ""}">合計 ★${pickTotal}</p><button type="button" class="primary shop-confirm" data-action="shop-confirm" ${canBuy ? "" : "disabled"}>購入する</button>${nextHtml || ""}<button type="button" class="shop-steal" data-action="shop-steal" ${canSteal ? "" : "disabled"}>泥棒する</button></div>`;
+      return `${head}<div class="shop-main"><div class="shop-row">${slots}</div>${bar}</div>`;
     }
 
     function flyRewardHome(made, land, relicId) {
@@ -27708,6 +28408,49 @@
       blackFade(() => render());
     }
 
+    // 休憩：まだ寝る。もう一度回復する。そのあと、敵に襲われることがある
+    const REST_AGAIN_AMBUSH = 0.33;
+
+    function restAgain() {
+      if (floorKind !== "休憩" || restCount !== 1 || restFoe) return;
+      restCount = 2;
+      const max = runMaxHp();
+      const before = Math.min(max, player ? player.hp : floorHp);
+      const gain = hasRelic("glamp") || hasBless("restBless") ? Math.max(0, max - before) : Math.round(max * 0.2);
+      const after = Math.min(max, before + gain);
+      const healed = after - before;
+      floorHp = after;
+      if (player) {
+        player.maxHp = max;
+        player.hp = after;
+      }
+      shown.player = before;
+      restHeal = healed > 0;
+      restHealPlay = restHeal;
+      restBefore = before;
+      restAfter = after;
+      // ★か★★の敵だけ。強敵(★★★)とボスは出ない
+      const star = Math.random() < 0.5 ? 1 : 2;
+      let names = ENEMIES.filter((item) => item.name !== "物乞い" && foeStarCount(item) === star).map((item) => item.name);
+      if (!names.length) names = ENEMIES.filter((item) => item.name !== "物乞い" && foeStarCount(item) <= 2).map((item) => item.name);
+      if (names.length && Math.random() < REST_AGAIN_AMBUSH) {
+        restFoe = names[Math.floor(Math.random() * names.length)];
+        floorNote = `${heroName()}はもう一度まぶたを閉じた。\nふと目を覚ますと、${restFoe}が顔をのぞきこんでいた。\nここはダンジョンのど真ん中である。`;
+        floorPrompt = healed ? "体力は回復した。だが敵襲だ！" : "敵襲だ！";
+      } else {
+        floorNote = `${heroName()}はもう一度まぶたを閉じた。\n焚火はまだ温かい。何も起こらなかった。\n幸運だが、二度目は無いと思ったほうがいい。`;
+        floorPrompt = healed ? "体力が回復した！！" : "すでに体力は満タンだ。";
+      }
+      persistSave(true);
+      render();
+    }
+
+    function restFight() {
+      if (floorKind !== "休憩" || !restFoe) return;
+      eventBattleSeen = true;
+      startBattle(player ? player.hp : floorHp);
+    }
+
     function finishEvent() {
       if (lootChoice && (lootChoice.kind === "copy" || lootChoice.kind === "master")) {
         lootChoice.resume = "event";
@@ -27724,6 +28467,8 @@
 
     function advance(step) {
       beggarBattle = false;
+      restFoe = "";
+      restCount = 0;
       const hp = screen === "floor" ? floorHp : (player ? player.hp : floorHp);
       const next = battleIndex + step;
       outcome = null;
@@ -28203,7 +28948,17 @@
       const cap = Math.max(1, max);
       const now = Math.max(0, Math.min(cap, shown.player == null ? floorHp : shown.player));
       const width = (now / cap) * 100;
-      return `<div class="event-hp"><div class="meters"><div class="meter hp" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(now)}/${Math.round(cap)}"><span data-bar="player" style="width:${width}%"></span><b class="hp-now"><span data-hp="player">${Math.round(now)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div></div></div>`;
+      const gained = restBefore != null && restAfter != null && restAfter > restBefore;
+      const bar = (hp, live, cls) => {
+        const w = (Math.max(0, Math.min(cap, hp)) / cap) * 100;
+        const attr = live ? ` data-bar="player"` : "";
+        const txt = live ? ` data-hp="player"` : "";
+        return `<div class="meter hp ${cls || ""}" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span${attr} style="width:${w}%"></span><b class="hp-now"><span${txt}>${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>`;
+      };
+      if (gained) {
+        return `<div class="event-hp two"><div class="hp-row"><em class="hp-label">回復前</em><div class="meters">${bar(restBefore, false, "was")}</div><b class="hp-plus" style="visibility:hidden">+${Math.round(restAfter - restBefore)}</b></div><div class="hp-row"><em class="hp-label after">回復後</em><div class="meters">${bar(now, true, "after")}</div><b class="hp-plus">+${Math.round(restAfter - restBefore)}</b></div></div>`;
+      }
+      return `<div class="event-hp"><div class="meters">${bar(now, true, "")}</div></div>`;
     }
 
     function eventNoteHtml() {
@@ -28784,6 +29539,7 @@
             <div class="duel-side foe">
               <div class="enemy-main${floorCall || encounter ? " staged" : ""}${fatalNow ? " fatal" : ""}" data-size="${foeSize()}" style="${foeInkVars()}"${floorCall || encounter ? "" : ` data-action="foe-deck" aria-label="${esc(enemy.name)}のデータを見る"`}>
               <div class="foe-body">
+              ${doomClockHtml()}
               <div class="sprite${slashNow ? " slash" : ""}${(foeKind === "poison" || poisonEnemyNow) ? " poison" : ""}${shieldEnemyNow ? " ward" : ""}${parryEnemyNow || parryEnemyHoldNow ? " spark-gold" : ""}${parryEnemyHoldNow ? " parry-hold" : ""}${foeBuffNow ? " anger" : ""}${foeHealNow ? " healed" : ""}" aria-hidden="true" style="--hits:${Math.max(1, slashesNow.length)}">
                 ${enemy.image ? `<img src="${esc(enemy.image)}" alt="">${slashNow ? foeHitWash(enemy.image) : ""}` : `<span class="foe-blank" aria-hidden="true"></span>`}
                 ${slashNow ? cutsHtml : ""}
@@ -29567,6 +30323,8 @@
           if (chosen && dungeonOpen(chosen.floors)) departRun(chosen.floors, chosen.name);
         }
         if (name === "floor-next") finishEvent();
+        if (name === "rest-again") restAgain();
+        if (name === "rest-fight") restFight();
         if (name === "smith-leave") finishEvent();
         if (name === "smith-back-mat") {
           floorPhase = "smith-base";
@@ -29786,7 +30544,9 @@
           else takePath(action.dataset.path || "");
         }
         if (name === "reward-go") applyPath("straight");
-        if (name === "shop-buy") buyShop(Number(action.dataset.slot));
+        if (name === "shop-buy") toggleShopPick(Number(action.dataset.slot));
+        if (name === "shop-confirm") buySelected();
+        if (name === "shop-steal") stealSelected();
         if (name === "gear-offer-yes") acceptGearOffer();
         if (name === "gear-offer-no") declineGearOffer();
         if (name === "dual-sword") chooseDual("sword");
