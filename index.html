@@ -688,29 +688,30 @@
       opacity: 0.55;
     }
     .vs-mark:not(:disabled):hover { filter: brightness(1.08); }
-    .vs-mark.spent {
-      filter:
-        drop-shadow(0 0 3px #fff6d4)
-        drop-shadow(0 0 8px #f0c36a)
-        drop-shadow(0 0 16px rgba(228, 177, 90, 0.95));
+    /* 光るときは文字そのものに手を加えない（フォントも縁取りも同じ）。うしろに光だけを敷く */
+    .vs-mark.spent::before {
+      content: "VS";
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: inherit;
+      z-index: -1;
+      color: #ffe7a4;
+      -webkit-text-stroke: 0;
+      text-shadow:
+        0 0 10px #fff,
+        0 0 24px #ffd36a,
+        0 0 44px #ffb020,
+        0 0 70px #ff9a00;
+      pointer-events: none;
       animation: vs-gold 1.15s ease-in-out infinite;
     }
     @keyframes vs-gold {
-      0%, 100% {
-        filter:
-          drop-shadow(0 0 2px #fff6d4)
-          drop-shadow(0 0 6px #e4b15a)
-          drop-shadow(0 0 12px rgba(228, 177, 90, 0.7));
-      }
-      50% {
-        filter:
-          drop-shadow(0 0 4px #fffdf4)
-          drop-shadow(0 0 12px #ffe7a4)
-          drop-shadow(0 0 22px rgba(255, 214, 120, 0.95));
-      }
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .vs-mark.spent { animation: none; }
+      .vs-mark.spent::before { animation: none; opacity: 0.85; }
     }
     .use-split {
       min-width: 0;
@@ -860,8 +861,9 @@
        ・ダメージ予測はカードの外（自分は上の端、敵は下の端）に置き、カードにかぶらない
        ・横幅に収まる大きさにして、画面の外へ出さない */
     .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
-    .duel-mid .play-side.mine { padding: 54px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); }
-    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px + 48px) 0 4px; }
+    /* ダメージ予測は、自分も敵もVSのすぐそば（自分はVSの上、敵はVSの下）。VSとのあいだに少しだけ余白 */
+    .duel-mid .play-side.mine { padding: 22px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px); }
+    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px) 0 4px; }
     .duel-mid .play-cards {
       flex: 1 1 0;
       width: 100%;
@@ -895,8 +897,8 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .duel-mid .play-side.mine .forecasts { top: 4px; bottom: auto; flex-wrap: nowrap; }
-    .duel-mid .play-side.foe .forecasts { top: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 2px); bottom: auto; flex-wrap: nowrap; }
+    .duel-mid .play-side.mine .forecasts { top: auto; bottom: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px); flex-wrap: nowrap; }
+    .duel-mid .play-side.foe .forecasts { top: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px); bottom: auto; flex-wrap: nowrap; }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -7029,7 +7031,7 @@
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
     }
     .road-node.path-inbound > img,
@@ -10820,24 +10822,22 @@
       flex-direction: column;
       align-items: stretch;
       gap: 12px;
-      padding: 12px 0;
-      overflow: hidden;
-      border-radius: 22px;
-      border: 2px solid rgba(228, 177, 90, 0.85);
-      box-shadow:
-        0 0 0 1px #15100d,
-        0 14px 28px rgba(0, 0, 0, 0.45),
-        inset 0 1px 0 rgba(255, 236, 190, 0.2);
-      background:
-        radial-gradient(120% 40% at 50% 0%, rgba(228, 177, 90, 0.12), transparent 55%),
-        #120e0c;
+      padding: 0;
+      overflow: visible;
+      border: 0;
+      box-shadow: none;
+      background: none;
     }
+    /* 一枚絵と選択コマは別の枠。それぞれ角を丸く、金の枠で囲む（2026-11-25） */
     .cast-screen.character-focus .cast-stage {
       position: relative;
       flex: 1 1 auto;
       min-height: 0;
-      border-radius: 16px;
+      border-radius: 22px;
       overflow: hidden;
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      box-shadow: 0 0 0 1px #15100d, 0 14px 28px rgba(0, 0, 0, 0.45);
+      background: #120e0c;
     }
     .cast-screen.character-focus .cast-hero-slot {
       position: absolute;
@@ -10990,11 +10990,13 @@
       width: 100%;
       margin: 0;
       justify-content: center;
-      /* 一枚絵と選択コマ（戦士）のあいだの金線 */
-      border-top: 2px solid rgba(228, 177, 90, 0.85);
-      box-shadow: 0 -1px 0 rgba(255, 236, 190, 0.25);
+      /* 選択コマ（戦士）は一枚絵とは別の丸い枠 */
+      border: 2px solid rgba(228, 177, 90, 0.85);
+      border-radius: 22px;
+      box-shadow: 0 0 0 1px #15100d, 0 14px 28px rgba(0, 0, 0, 0.45);
+      background: radial-gradient(120% 80% at 50% 0%, rgba(228, 177, 90, 0.12), transparent 60%), #120e0c;
       box-sizing: border-box;
-      padding-top: 6px;
+      padding: 6px 12px;
     }
     .cast-screen.character-focus .cast-token.mini {
       flex: 0 0 auto;
@@ -14206,7 +14208,7 @@
       { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
       { id: "galeBless", name: "疾風の祝福", body: "毎戦闘の1・2ターン目、カードを2枚多く引く" },
       { id: "magicBless", name: "魔導の祝福", body: "毎戦闘の1ターン目、マナ+1\nカードを1枚多く引く" },
-      { id: "rookieBless", name: "基本の極意", body: "初期デッキのカードのダメージとブロックが+3される" },
+      { id: "rookieBless", name: "基本の極意", image: "reward-rookie-bless.jpg?v=1", body: "初期デッキのカードのダメージとブロックが+3される" },
       { id: "masterPick", name: "熟練の極意", body: "入手時、デッキの好きなカード1枚の熟練度をマックスにする" },
       { id: "mirrorBless", name: "双子の鏡", body: "入手時、デッキの好きなカードを1枚コピーしてデッキに加える" },
       { id: "purgeBless", name: "大浄化の祝福", body: "入手時、デッキのカードを2枚まで廃棄できる" },
@@ -22007,9 +22009,13 @@
       const defLine = extra && extra.def != null ? statLine(shieldIcon(), "DEF", extra.def, "stat-def") : "";
       const spdLine = extra && extra.spd != null ? statLine(bootIcon(), "SPD", extra.spd, "stat-spd") : "";
       const combat = `${atkLine}${defLine}${spdLine}`;
+      const blankLine = `<div class="hp-line blank" aria-hidden="true"><span class="lbl">&nbsp;</span><span class="num"><b>&nbsp;</b></span></div>`;
       const stats = extra && extra.lv != null
         ? `<div class="plate-split">${statLine("", "Lv", extra.lv, "stat-lv")}${atkLine}${statLine(manaGemIcon(), "", extra.mana != null ? extra.mana : MANA, "stat-mana")}${defLine}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}${spdLine}</div>`
-        : combat;
+        : (who === "enemy" && extra && extra.atk != null
+          // 敵も味方と同じ2列の板。ATK・DEF・SPDは味方と同じ右の列、左の列は敵に無い項目なので空き
+          ? `<div class="plate-split">${blankLine}${atkLine}${blankLine}${defLine}${blankLine}${spdLine}</div>`
+          : combat);
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
         <h2><span class="who">${esc(name)}</span>${badges}${stars}${tag ? `<span class="tag">${esc(tag)}</span>` : ""}</h2>
@@ -23592,7 +23598,7 @@
       if (kind === "play") return { slot: "play", name: "皮の手袋", image: "reward-play.jpg?v=2", body: playGloveBody(PLAY_AREA_BASE), stars: 3 };
       if (kind === "mana") return { slot: "mana", name: "マナ", image: "reward-mana.jpg?v=2", body: "マナ+1", stars: 5 };
       const fresh = blessNewDef(kind);
-      if (fresh) return { slot: "bless", name: fresh.name, image: "", body: fresh.body, stars: 3 };
+      if (fresh) return { slot: "bless", name: fresh.name, image: fresh.image || "", body: fresh.body, stars: 3 };
       const face = enchantFace(elem);
       return { slot: "enchant", name: face.name, image: face.image, body: face.sub, stars: 3, plain: true };
     }
@@ -24538,8 +24544,14 @@
       return "skill";
     }
 
+    // 敵のカードのうち、報酬になりうるもの（rewardPool が敵の山札から拾うもの）だけ紫。
+    // 奪えないカード（アタック・ブロック・チャージアタック）は、ふつうのジャンルの枠。
+    function foeRewardable(card) {
+      return !!card && !basicCardName(card.name);
+    }
+
     function faceTone(card, foe) {
-      if (foe) return "foe";
+      if (foe && foeRewardable(card)) return "foe";
       return cardKind(card);
     }
 
