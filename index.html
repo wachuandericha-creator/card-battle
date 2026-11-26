@@ -2472,6 +2472,27 @@
       --lit-far-hot-r: 54px;
       --lit-far-hot-s: 12px;
     }
+    /* 祝福の報酬：光の太さ・枠の太さは動かさず、色と明るさだけ脈打たせる（ふちが小刻みに震えて見えるのを防ぐ。2026-11-26） */
+    @keyframes bless-lit {
+      0%, 100% {
+        box-shadow:
+          inset 0 0 0 2px var(--lit-line),
+          0 0 var(--lit-near-hot-r, 18px) var(--lit-near-s, 2px) var(--lit-near),
+          0 0 var(--lit-far-hot-r, 36px) var(--lit-far-s, 4px) var(--lit-far),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
+      50% {
+        box-shadow:
+          inset 0 0 0 2px var(--lit-hot),
+          0 0 var(--lit-near-hot-r, 18px) var(--lit-near-s, 2px) var(--lit-near-hot),
+          0 0 var(--lit-far-hot-r, 36px) var(--lit-far-s, 4px) var(--lit-far-hot),
+          0 22px 36px rgba(0, 0, 0, 0.55);
+      }
+    }
+    .menu.event.bless .gift-btn[class*="rare-"] .card.preview { animation-name: rare-pop, bless-lit; animation-duration: 0.62s, 1.6s; }
+    .menu.event.bless .gift-btn.rare-3 .card.preview,
+    .menu.event.bless .gift-btn.rare-4 .card.preview,
+    .menu.event.bless .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, bless-lit; animation-duration: 0.82s, 1.6s; }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
       18% { transform: scale(1.1); filter: brightness(1.9) drop-shadow(0 0 22px #fff) drop-shadow(0 0 46px var(--rare)); }
@@ -5249,8 +5270,9 @@
       z-index: 8;
       border-radius: 0 0 16px 16px;
       background:
-        linear-gradient(180deg, transparent 0%, rgba(12, 9, 7, 0.12) 40%, rgba(18, 12, 9, 0.55) 100%);
-      box-shadow: none;
+        linear-gradient(180deg, rgba(10, 8, 7, 0.35) 0%, rgba(10, 8, 7, 0.12) 40%, rgba(10, 8, 7, 0.45) 100%),
+        url("bg-hand.jpg?v=1") center / 100% 100% no-repeat;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
     }
     .pile-pair {
       display: flex;
@@ -7376,13 +7398,18 @@
     .overlay.victory {
       background: rgba(8, 6, 5, 0.4);
     }
-    /* 報酬の板は戦闘の絵の中央。下の山札には被せない */
+    /* 報酬の板は大きく、3枚は横一列。左のステータスと下の山札には被せない */
     .overlay.victory:not(.finale) {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 16px;
       pointer-events: none;
+    }
+    html.stage-fit .overlay.victory:not(.finale) {
+      top: 84px;
+      bottom: 14px;
+      padding: 16px;
     }
     .overlay.victory:not(.finale) .panel,
     .overlay.victory:not(.finale) .panel * {
@@ -9600,16 +9627,19 @@
     .menu.event.bless { --choice-w: 258px; }
     /* 祝福の背景：横長の女神の絵を、うすく敷く（2026-11-25） */
     /* 全イベント共通：そのイベントの絵を、ぼかして薄く背景に敷く（2026-11-25） */
-    .menu.event[style*="--event-bg"] { position: relative; isolation: isolate; }
-    .menu.event[style*="--event-bg"]::before {
+    /* 背景は画面いっぱい（マップ・上の帯・ログのうしろまで）に敷く。絵は切らずに全体が見える（2026-11-26） */
+    .battle-screen.event-host[style*="--event-bg"] { position: relative; isolation: isolate; }
+    .battle-screen.event-host[style*="--event-bg"]::before {
       content: "";
       position: absolute;
       inset: -40px;
       z-index: -1;
       background:
         linear-gradient(rgba(12, 9, 7, 0.86), rgba(12, 9, 7, 0.86)),
-        var(--event-bg) center / cover no-repeat;
+        var(--event-bg) center -20px / cover no-repeat;
       filter: blur(14px);
+      transform: translateZ(0);
+      will-change: transform;
       pointer-events: none;
     }
     .menu.event.bless .event-side .event-choice {
@@ -9722,7 +9752,7 @@
     .menu.event .event-split.both .event-play,
     .menu.event .event-split:not(.both):has(.event-story) + .event-where {
       border-top: 2px solid #e4c27a;
-      margin-top: 4px;
+      margin-top: 20px;
       padding-top: 6px;
     }
     .menu.event.bless .gift-row {
@@ -9810,7 +9840,62 @@
     }
     .menu.event.search .event-gear .gear-label { max-width: 100%; }
     .menu.event.search .event-choice { padding-right: 4px; padding-left: 4px; gap: 16px; }
-    .menu.event.search .gift-show { width: min(260px, 48%); max-width: 270px; align-self: center; }
+    .menu.event.search .gift-show { width: min(260px, 48%); max-width: 270px; align-self: center; margin-top: 28px; }
+    .menu.event.search .event-choice .gift-row { margin-top: 36px; }
+    /* 探索の3つの報酬は、祝福の報酬と同じ大きさ（2026-11-26） */
+    .menu.event.search { --choice-w: 258px; }
+    .menu.event.search .event-split.both .event-play,
+    .menu.event.search .event-split:not(.both):has(.event-story) + .event-where { margin-top: 20px; }
+    .menu.event.search .event-stack,
+    .menu.event.search .event-side,
+    .menu.event.search .event-choice { overflow: visible; }
+    .menu.event.search .gift-row { gap: 20px; }
+    .menu.event.search .event-choice .event-actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-self: stretch;
+      width: 100%;
+      margin-top: 64px;
+    }
+    .menu.event.search .event-choice .event-actions button { width: 200px; min-width: 0; flex: 0 0 200px; margin: 0; }
+    .menu.event.search .gift-row { flex-wrap: nowrap; justify-content: center; gap: 28px; }
+    .menu.event.search .gift-btn {
+      width: calc(var(--choice-w) + 20px);
+      min-width: calc(var(--choice-w) + 20px);
+      max-width: calc(var(--choice-w) + 20px);
+      flex: 0 0 auto;
+      padding: 10px 12px 14px;
+    }
+    .menu.event.search .gift-pick .card.preview { width: var(--choice-w); max-width: none; height: auto; }
+    /* 修行の絵と報酬の大きさは、探索に合わせる（2026-11-26） */
+    .menu.event.train { --choice-w: 258px; }
+    .menu.event.train .event-choice .event-story p,
+    .menu.event.train .event-copy .event-story p {
+      font-size: 32px;
+      line-height: 1.55;
+    }
+    .menu.event.train .event-choice .event-play p,
+    .menu.event.train .event-copy .event-play p {
+      font-size: clamp(40px, 3cqw, 52px);
+    }
+    .menu.event.train .event-stack { justify-content: safe center; }
+    .menu.event.train .event-title-gap { margin-bottom: 0; }
+    .menu.event.train .event-lead { row-gap: 0; }
+    .menu.event.train .event-lead { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .menu.event.train .event-stack,
+    .menu.event.train .event-side,
+    .menu.event.train .event-choice { overflow: visible; }
+    .menu.event.train .event-choice { padding-right: 4px; padding-left: 4px; gap: 16px; }
+    .menu.event.train .event-choice .gift-row { margin-top: 36px; flex-wrap: nowrap; justify-content: center; gap: 28px; }
+    .menu.event.train .gift-btn {
+      width: calc(var(--choice-w) + 20px);
+      min-width: calc(var(--choice-w) + 20px);
+      max-width: calc(var(--choice-w) + 20px);
+      flex: 0 0 auto;
+      padding: 10px 12px 14px;
+    }
+    .menu.event.train .gift-pick .card.preview { width: var(--choice-w); max-width: none; height: auto; }
     .menu.event.search .gift-show:has(.sheet-pop) {
       width: max-content;
       max-width: none;
@@ -12846,7 +12931,47 @@
     #stage-float .depart,
     #stage-float .depart *,
     #stage-float .foe-deck-pop,
-    #stage-float .foe-deck-pop * { pointer-events: auto; }
+    #stage-float .foe-deck-pop *,
+    #stage-float .scene-fade { pointer-events: auto; }
+    /* iPhoneのSafariは、回転した親の中の position:fixed を画面へ戻してしまう。遊ぶときは全部 absolute */
+    html.stage-fit.iphone-play #game .nav-title,
+    html.stage-fit.iphone-play #game .nav-full,
+    html.stage-fit.iphone-play #game .cast-card-pop,
+    html.stage-fit.iphone-play #game .cast-actions,
+    html.stage-fit.iphone-play #game .screen-hurt,
+    html.stage-fit.iphone-play #game .log-peek,
+    html.stage-fit.iphone-play #game .relic-zoom,
+    html.stage-fit.iphone-play #game .gear-effect,
+    html.stage-fit.iphone-play #game .kw-tip,
+    html.stage-fit.iphone-play #game .fly-card,
+    html.stage-fit.iphone-play #game .overlay,
+    html.stage-fit.iphone-play #game .ending,
+    html.stage-fit.iphone-play #game .star-burst,
+    html.stage-fit.iphone-play #game .event-map,
+    html.stage-fit.iphone-play #game .event-hud,
+    html.stage-fit.iphone-play #game .event-floor-call,
+    html.stage-fit.iphone-play #game .turn-call.floor-call .fade-sandwich,
+    html.stage-fit.iphone-play #game .event-floor-call .fade-sandwich,
+    html.stage-fit.iphone-play #game .menu.event,
+    html.stage-fit.iphone-play #stage-float .fly-card,
+    html.stage-fit.iphone-play #stage-float .depart,
+    html.stage-fit.iphone-play #stage-float .screen-flash,
+    html.stage-fit.iphone-play #stage-float .bless-arrive,
+    html.stage-fit.iphone-play #stage-float .star-home-layer,
+    html.stage-fit.iphone-play #stage-float .star-burst,
+    html.stage-fit.iphone-play #stage-float .kw-tip,
+    html.stage-fit.iphone-play #stage-float .log-peek,
+    html.stage-fit.iphone-play #stage-float .path-tip,
+    html.stage-fit.iphone-play #stage-float .hand-pop,
+    html.stage-fit.iphone-play #stage-float .gear-effect,
+    html.stage-fit.iphone-play #stage-float .foe-deck-pop,
+    html.stage-fit.iphone-play #stage-float .cast-card-pop,
+    html.stage-fit.iphone-play #stage-float .relic-zoom,
+    html.stage-fit.iphone-play #stage-float .scene-fade,
+    html.stage-fit.iphone-play #stage-float .scene-fade i,
+    html.stage-fit.iphone-play #stage-float .scene-fade .scene-floor {
+      position: absolute;
+    }
     html.stage-fit #stage-float {
       position: absolute;
       width: 2560px;
@@ -12884,6 +13009,10 @@
       ラッキーパリィ: "card-lucky-parry-b.jpg?v=1",
       悪魔の剣: "card-demon-sword-b6.jpg?v=1",
       悪魔の刃: "card-demon-blade.jpg?v=1",
+      呪い: "card-curse.jpg?v=1",
+      悪夢: "card-nightmare.jpg?v=1",
+      威圧の咆哮: "card-roar.jpg?v=1",
+      惑わしの歌: "card-siren-song.jpg?v=1",
       鮮血の塗布: "card-blood-coat-f.jpg?v=1",
       血の味: "card-blood-taste-e.jpg?v=1",
       魔剣招来: "card-summon-swords-d-aura.jpg?v=1",
@@ -13501,32 +13630,33 @@
       const screen = gameViewBox();
       const place = (el, frame) => {
         const at = frame || box;
-        if (at) {
-          el.style.left = `${at.left}px`;
-          el.style.top = `${at.top}px`;
-          el.style.width = `${at.width}px`;
-          el.style.height = `${at.height}px`;
-        } else {
+        if (!at) {
           el.style.inset = "0";
+          return null;
         }
+        const stage = stageFrameFromRect(at);
+        el.style.left = `${stage.left}px`;
+        el.style.top = `${stage.top}px`;
+        el.style.width = `${stage.w}px`;
+        el.style.height = `${stage.h}px`;
+        return stage;
       };
       place(pane, box);
       veil.appendChild(pane);
       if (showFloor) {
         const mark = document.createElement("div");
         mark.className = "scene-floor";
-        place(mark, screen || box);
+        const placed = place(mark, screen || box);
         const glyph = document.createElement("b");
         glyph.innerHTML = floorGlyph(floor);
-        const sizeFrame = box || screen;
-        const size = sizeFrame
-          ? Math.max(96, Math.round(Math.min(sizeFrame.width * 0.42, sizeFrame.height * 0.42)))
+        const size = placed
+          ? Math.max(96, Math.round(Math.min(placed.w, placed.h) * 0.42))
           : 280;
         glyph.style.fontSize = `${size}px`;
         mark.appendChild(glyph);
         veil.appendChild(mark);
       }
-      document.body.appendChild(veil);
+      mountFloat(veil);
       const fadeIn = showFloor ? 160 : 280;
       const hold = showFloor ? 900 : 0;
       const fadeOut = showFloor ? 700 : 440;
@@ -13588,7 +13718,7 @@
     let enemyLoop = [];
     let foeDiscard = [];
     let foePlan = [];
-    const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受ける。重なる。";
+    const POISON_NOTE = "毒は、自分のターンが終わるとき、毒の数だけダメージを受け、そのあと毒が1減る。重なる。";
     const PARRY_NOTE = "敵から受けるダメージを1度だけ無効にする。重複可。ターン終了時に消滅。所持シールドはすべて破壊し、あるあいだはシールドを追加できない。";
     const THORN_NOTE = "ダメージを受けるたびに、相手にトゲの数だけダメージを与える。重なる。この戦闘のあいだ残る。シールドで防いでも受ける。パリィで攻撃ダメージを無効にしても、トゲは防げない。";
     const FLASH_NOTE = "プレイエリアに置いて、ターンの解決で処理する。効果のあと、使ったその1枚はデッキから外れ、戦闘が終わると戻る。同名が複数枚あれば、その枚数だけ効果は出る。";
@@ -14241,9 +14371,9 @@
     }
 
     function addBurn(target, amount) {
-      if (target === player && (hasStatusImmune() || hasStatLock() || anyBracelet("burnImmune"))) {
-        const byWard = anyBracelet("burnImmune") && !hasStatusImmune() && !hasStatLock();
-        log(`${heroName()}は${byWard ? "炎上無効の腕輪" : hasStatLock() && !hasStatusImmune() ? "大天使の盾" : statusImmuneName()}。炎上を無視した。`);
+      if (target === player && (hasStatusImmune() || anyBracelet("burnImmune"))) {
+        const byWard = anyBracelet("burnImmune") && !hasStatusImmune();
+        log(`${heroName()}は${byWard ? "炎上無効の腕輪" : statusImmuneName()}。炎上を無視した。`);
         noteStatusWard("burn");
         return false;
       }
@@ -14261,10 +14391,10 @@
     }
 
     function enemyDef() {
-      return (Number(enemy && enemy.def) || 0) - burnStacks(enemy);
+      return Number(enemy && enemy.def) || 0;
     }
 
-    const BURN_NOTE = "炎上は、受けた側のDEFを重なった数だけ下げる。この戦闘中だけ。終わると戻る。";
+      const BURN_NOTE = "炎上は、カードでブロックを得るとき、得る数から炎上の数を引く（0未満にはしない）。ブロックを得るたび、結果が0でも炎上は1減る。重なる。";
     const CRIT_NOTE = "書いた％の確率で、その1回のダメージ、または得るシールドが1.5倍になる。端数は切り上げ。％はカードごとに違う。";
 
     function burnBadge(stacks) {
@@ -15242,7 +15372,7 @@
       { id: "leather-shield", name: "皮の盾", slot: "shield", stars: 1, def: 1, effect: "★　DEF+1", image: "gear-leather-shield.jpg?v=4" },
       { id: "iron-shield", name: "鉄の盾", slot: "shield", stars: 1, def: 2, effect: "★　DEF+2", image: "gear-iron-shield.jpg?v=4" },
       { id: "battle-counter", name: "バトルカウンター", slot: "shield", stars: 3, def: 2, thornsDef: true, effect: "★★★　DEF+2。自分のDEFだけトゲを獲得。", image: "gear-battle-counter.jpg?v=8" },
-      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 3, def: 5, statLock: true, effect: "★★★　DEF+5。ステータスが減少しない。炎上はDEFを下げるので無効。毒は入る", image: "gear-eagle-shield.jpg?v=7" },
+      { id: "eagle-shield", name: "大天使の盾", slot: "shield", stars: 3, def: 5, statLock: true, effect: "★★★　DEF+5。ステータスが減少しない", image: "gear-eagle-shield.jpg?v=7" },
       { id: "sturdy-body", name: "強靭な肉体", slot: "shield", stars: 1, def: 0, sturdy: true, effect: "★　このターンに防御を使わなかったとき、自分のターン終了時にブロック7を得る", image: "gear-sturdy-body.jpg?v=1" },
       { id: "brother-shield", name: "弟印の盾", slot: "shield", stars: 2, def: 2, brother: 4, effect: "★★　DEF+2。HPダメージを受けたとき、HPを4回復", image: "gear-brother-shield.jpg?v=1" },
       { id: "castle-shield", name: "キャッスルシールド", slot: "shield", stars: 3, def: 4, castle: true, effect: "★★★　DEF+4。自分のシールドが消えるとき、残りの半分（切り捨て）を残す", image: "gear-castle-shield.jpg?v=1" },
@@ -15262,7 +15392,7 @@
       { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "gear-demon-bracelet.jpg?v=1" },
       { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, pure: true, effect: "★★　プレイエリアのジャンルが揃っているとき、そのカードに書かれた数字を1.5倍（切り上げ）。クイックは関係ない", image: "gear-pure-bracelet.jpg?v=1" },
       { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはSPD+2、マナ+1", image: "gear-empty-bracelet.jpg?v=1" },
-      { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　状態異常にならない", image: "gear-angel-bracelet.jpg?v=1" },
+      { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　毒・炎上・呪いにならない。これから増える状態異常も無視する", image: "gear-angel-bracelet.jpg?v=1" },
       { id: "tyrant-bracelet", name: "覇王の腕輪", slot: "braceletAny", stars: 3, twice: true, effect: "★★★　プレイエリアのカードが1枚だけのとき、その効果は2回。毒、回復、ドローも含む", image: "gear-tyrant-bracelet.jpg?v=1" },
       { id: "chain-bracelet", name: "連続の腕輪", slot: "braceletAny", stars: 3, tripleSecond: true, effect: "★★★　プレイエリアの1枠目と2枠目が同じカードなら、2枚目の効果は3倍。毒、回復、ドローも含む", image: "gear-chain-bracelet.jpg?v=1" },
       { id: "dual-bracelet", name: "二刀流の腕輪", slot: "braceletAny", stars: 3, dual: true, locked: true, effect: "★★★　剣2枠か盾2枠を選ぶ。選ばなかった側の装備は捨てる。この腕輪は外せない。選んだ側の付け替えは自由", image: "gear-dual-bracelet.jpg?v=1" },
@@ -15330,7 +15460,7 @@
       "leather-shield": "DEF+1",
       "iron-shield": "DEF+2",
       "battle-counter": "DEF+2\n自分のDEFだけトゲを獲得",
-      "eagle-shield": "DEF+5\nステータスが減少しない\n炎上はDEFを下げるので無効\n毒は入る",
+      "eagle-shield": "DEF+5\nステータスが減少しない",
       "lion-shield": "ATK+2\nDEF+2",
       "chain-attack": "手札に攻撃がないとき、山札から攻撃カードを引く（ターンに1度）",
       "chain-guard": "手札に防御がないとき、山札から防御カードを引く（ターンに1度）",
@@ -15356,7 +15486,7 @@
       "demon-bracelet": "ターン開始時、5ダメージを受け、HPを7回復",
       "pure-bracelet": "プレイエリアのジャンルが揃っているとき\n書かれた数字は1.5倍\nクイックは関係ない",
       "empty-bracelet": "手札0枚で終了すると、次はSPD+2 マナ+1",
-      "angel-bracelet": "状態異常にならない",
+      "angel-bracelet": "毒・炎上・呪いにならない\nこれから増える状態異常も無視する",
       "tyrant-bracelet": "プレイエリアが1枚なら、その効果は2回",
       "chain-bracelet": "1枠目と2枠目が同じカードなら、2枚目は3倍",
       "dual-bracelet": "剣2枠か盾2枠\nこの腕輪は外せない",
@@ -15850,7 +15980,7 @@
       const atkMod = Number(player.atkMod) || 0;
       const defMod = Number(player.defMod) || 0;
       const medalAtk = gear.medal && gear.medal.halfAtk && hpHalf(player) ? gear.medal.halfAtk : 0;
-      const burnCut = hasStatLock() || hasStatusImmune() ? 0 : burnStacks(player);
+      const burnCut = 0; // 炎上はDEFを下げない（ブロックを得るときに引く）
       const charge = Math.max(0, Number(player.chargeAtk) || 0);
       const frost = Math.max(0, Number(player.frostCut) || 0);
       player.atk = gearStatSum("atk") + atkMod + medalAtk + charge - frost;
@@ -16000,8 +16130,8 @@
 
     function gearSpecialText(item) {
       if (!item) return "";
-      if (item.statLock) return gearPunctLines("ステータスが減少しない。炎上はDEFを下げるので無効。毒は入る");
-      if (item.statusImmune) return gearPunctLines("状態異常にならない");
+      if (item.statLock) return gearPunctLines("ステータスが減少しない");
+      if (item.statusImmune) return gearPunctLines("毒・炎上・呪いにならない。これから増える状態異常も無視する");
       if (item.ignoreTrait) return "相手の特性を無視して\nダメージを与える。";
       if (item.thornsDef) return gearPunctLines("自分のDEFだけトゲを獲得");
       if (Number(item.poisonHit) > 0) return gearPunctLines("アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）");
@@ -17028,10 +17158,18 @@
       }
       const rolled = applyCritChance(card, gain);
       gain = rolled.amount;
+      // 炎上：カードから得るブロックから、炎上の数を引く（0未満にはしない）。結果が0でも炎上は1減る
+      let burnCut = 0;
+      if (card && burnStacks(player) > 0) {
+        burnCut = Math.min(gain, burnStacks(player));
+        gain -= burnCut;
+        player.burn = burnStacks(player) - 1;
+        syncGearStats();
+      }
       player.block += gain;
-      fxShieldPlayer = true;
+      if (gain > 0) fxShieldPlayer = true;
       const label = card && card.name ? card.name : "強靭な肉体";
-      log(`${heroName()}は${label}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card);
+      log(`${heroName()}は${label}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。${burnCut ? `炎上で${burnCut}減った。炎上+${burnStacks(player)}。` : ""}`, card);
       return true;
     }
 
@@ -17116,6 +17254,8 @@
         noteHit("enemy", result.hpLoss, stacks, "poison");
       }
       log(poisonSentence(name, stacks, 0, result));
+      // 毒はダメージのあと1減る
+      target.poison = Math.max(0, stacks - 1);
       return target.hp <= 0;
     }
 
@@ -19028,7 +19168,7 @@
       const ghost = play.cloneNode(true);
       ghost.classList.add("fly-card");
       ghost.style.visibility = "visible";
-      ghost.style.position = "fixed";
+      ghost.style.position = "absolute";
       ghost.style.zIndex = "70";
       ghost.style.left = `${to.left}px`;
       ghost.style.top = `${to.top}px`;
@@ -19076,7 +19216,7 @@
       }
       const ghost = fromEl.cloneNode(true);
       ghost.classList.add("fly-card");
-      ghost.style.position = "fixed";
+      ghost.style.position = "absolute";
       ghost.style.zIndex = "70";
       ghost.style.left = `${from.left}px`;
       ghost.style.top = `${from.top}px`;
@@ -19442,11 +19582,19 @@
       if (card.miasma) {
         addPoison(player, 5);
         addBurn(player, 5);
+        if (hasStatusImmune()) {
+          log(`${enemy.name}は${card.name}。毒・炎上・呪いは${statusImmuneName()}で無視した。`, card, true);
+          return;
+        }
         discard.push(curseCard(), curseCard());
         log(`${enemy.name}は${card.name}。毒+5、炎上+5。捨て札に呪いが2枚。`, card, true);
         return;
       }
       if (card.nightmare) {
+        if (hasStatusImmune()) {
+          log(`${enemy.name}は${card.name}。呪いは${statusImmuneName()}で無視した。`, card, true);
+          return;
+        }
         discard.push(curseCard(), curseCard());
         log(`${enemy.name}は${card.name}。捨て札に呪いが2枚。`, card, true);
         return;
@@ -19564,12 +19712,19 @@
         } else {
           const base = halfBraced(card, enemy, Math.max(0, card.block + (Number(enemy.def) || 0)));
           const rolled = applyCritChance(card, base);
-          const gain = rolled.amount;
+          let gain = rolled.amount;
+          // 炎上：得るブロックから炎上の数を引く。結果が0でも炎上は1減る
+          let burnCut = 0;
+          if (burnStacks(enemy) > 0) {
+            burnCut = Math.min(gain, burnStacks(enemy));
+            gain -= burnCut;
+            enemy.burn = burnStacks(enemy) - 1;
+          }
           if (gain) {
             enemy.block += gain;
             fxShieldEnemy = true;
           }
-          log(`${enemy.name}は${card.name}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。`, card, true);
+          log(`${enemy.name}は${card.name}${rolled.crit ? "。クリティカル" : ""}でブロック${gain}。${burnCut ? `炎上で${burnCut}減った。炎上+${burnStacks(enemy)}。` : ""}`, card, true);
         }
       } else if (card.heal) {
         const room = Math.max(0, enemy.maxHp - enemy.hp);
@@ -19661,7 +19816,7 @@
       const ghost = play.cloneNode(true);
       ghost.classList.add("fly-card");
       ghost.style.visibility = "visible";
-      ghost.style.position = "fixed";
+      ghost.style.position = "absolute";
       ghost.style.zIndex = "70";
       ghost.style.left = `${to.left}px`;
       ghost.style.top = `${to.top}px`;
@@ -22303,7 +22458,7 @@
         floorGift = null;
         floorPhase = searchPicks.length ? "search" : "show";
         floorNote = "松明の光が、古びた宝箱を照らしている。\nこの瞬間のために生きている。\nドーパミンに支配されるまま、宝箱を開く。";
-        floorPrompt = searchPicks.length ? "装備か戦利品を、3つから1つ選べ。" : "中は空っぽだった。";
+        floorPrompt = searchPicks.length ? "報酬を選べ。" : "中は空っぽだった。";
       } else if (kind === "未知") {
         if (Math.random() < ENCOUNTER_BEGGAR) {
           floorKind = "物乞いに遭遇";
@@ -22321,7 +22476,7 @@
         floorKind = "修行";
         floorPhase = "train";
         trainPicks = rollTrainPicks();
-        floorNote = "女の戦士は汗を飛ばしながら素振りを続け、新しい技が腕に残った。";
+        floorNote = "女の戦士は汗を飛ばしながら、素振りを続ける。\nダンジョンに来る前に、やっておけという話だ。\n新しい技を覚えた。同時に、筋肉痛も襲ってきた。";
         floorPrompt = trainPicks.length ? "カードを一つ選べ。" : "もらえるカードは無かった。";
         if (!trainPicks.length) floorPhase = "show";
       } else if (kind === "物乞い") {
@@ -24978,7 +25133,9 @@
     function eventShell(body) {
       const buttons = hudMenuHtml();
       const logHtml = logLinesHtml(logLines);
-      return `<div class="battle-screen event-host">${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-gear plate-gear">${gearMarkup()}</div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
+      const bgHit = /--event-bg:url\('([^']*)'\)/.exec(String(body));
+      const hostStyle = bgHit ? ` style="--event-bg:url('${bgHit[1]}')"` : "";
+      return `<div class="battle-screen event-host"${hostStyle}>${roadMapHtml()}<header class="hud-top"><div class="dungeon"><h1 class="dungeon-name">${esc(dungeonName)}</h1><div class="dungeon-progress">${floorLabel()}</div></div><div class="hud-gear plate-gear">${gearMarkup()}</div><div class="hud-actions">${buttons}</div></header><div class="event-stage">${body}</div><aside class="side-rail"><div class="battle-log"><h2>ログ</h2>${logHtml || ""}</div></aside></div>${masteryOverlay()}${lootChoiceOverlay()}${deckOverlay()}${enchantPickOverlay()}${dualPickOverlay()}${smithFuseOverlay()}`;
     }
 
     function renderFloor() {
@@ -25025,7 +25182,7 @@
         ? `<div class="gift-row">${searchPicks.map((pick, i) => {
           const lv = rareLevel(giftEntity(pick));
           return `<button type="button" class="gift-btn${rareClass(lv)}" data-action="search-pick" data-search="${i}">${giftMarkup(pick, false)}</button>`;
-        }).join("")}</div><div class="event-actions">${menuButton("無視する", "search-skip")}</div>`
+        }).join("")}</div><div class="event-actions">${menuButton("スキップ", "search-skip")}</div>`
         : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
         "挑戦者に祝福を": [heroItem().bless || "blessing-goddess-f.jpg?v=2", `荘厳な女神が、ひざまずく${heroName()}に祝福を授けている`],
@@ -25731,11 +25888,12 @@
       if (!card) return null;
       const base = foe ? (Number(card.block) || 0) : printedBlock(card);
       if (!base && !card.block && card.name !== "ブロック" && card.name !== "ブロック+") return null;
-      if (foe) return halfBraced(card, enemy, Math.max(0, base + (Number(enemy && enemy.def) || 0)));
+      if (foe) return Math.max(0, halfBraced(card, enemy, Math.max(0, base + (Number(enemy && enemy.def) || 0))) - burnStacks(enemy));
       const printed = textScale(base, fromHand);
       const gain = Math.max(0, printed + focusLeftFor(card, fromHand) + (Number(player && player.def) || 0));
       const braced = halfBraced(card, player, gain);
-      return anyShield("blockBoost") ? Math.ceil(braced * 1.5) : braced;
+      const boosted = anyShield("blockBoost") ? Math.ceil(braced * 1.5) : braced;
+      return Math.max(0, boosted - burnStacks(player));
     }
 
     // 句点・読点のあと、または意味の切れ目でのみ改行する。行頭に句読点や助詞を出さない。
@@ -25996,6 +26154,10 @@
       let gain = Math.max(0, Math.floor((Number(amount) || 0) + (Number(who.def) || 0)));
       gain = Math.floor(halfBraced(card, who, gain));
       if (!gain || (who.parry > 0 && !who.guardThrough)) return;
+      if (card && who.burn > 0) {
+        gain = Math.max(0, gain - who.burn);
+        who.burn -= 1;
+      }
       who.block += gain;
     }
 
@@ -26033,6 +26195,7 @@
         block: Math.max(0, Number(player.block) || 0),
         atk: Number(player.atk) || 0,
         def: Number(player.def) || 0,
+        burn: burnStacks(player),
         focus: Number(player.focus) || 0,
         pact: pactOn(),
         parry: parryCount(player),
@@ -26052,6 +26215,7 @@
         maxHp: enemy.maxHp,
         block: Math.max(0, Number(enemy.block) || 0),
         def: Number(enemy.def) || 0,
+        burn: burnStacks(enemy),
         thorns: Math.max(0, Number(enemy.thorns) || 0),
         atk: Number(enemy.atk) || 0,
         focus: Math.max(0, Number(enemy.focus) || 0),
@@ -26209,9 +26373,13 @@
       const poison = !card.damage && card.poison ? (Number(card.poison) || 0) : 0;
       const gainingParry = !!(card.parry || card.parryAdd || card.poise);
       const healed = card.heal ? scratchHeal(foe, card.heal) : 0;
-      const shield = !card.damage && card.block && !(foe.parry > 0) && !gainingParry
+      let shield = !card.damage && card.block && !(foe.parry > 0) && !gainingParry
         ? halfBraced(card, foe, Math.max(0, (Number(card.block) || 0) + (Number(foe.def) || 0)))
         : 0;
+      if (shield > 0 && foe.burn > 0) {
+        shield = Math.max(0, shield - foe.burn);
+        foe.burn -= 1;
+      }
       if (!thorns && !burn && !poison && !shield && !gainingParry && !healed) return bag;
       if (!bag) bag = { raw: 0, hp: 0, parry: false, show: false, shield: 0, status: 0, poison: 0, burn: 0, thorns: 0 };
       if (healed) bag.heal = (bag.heal || 0) + healed;
@@ -27839,6 +28007,9 @@
     function prepareReward() {
       if (rewardReady) return;
       rewardReady = true;
+      // 試合は終わっている。手札とプレイエリアは捨て札へ（再開した保存でも同じ）
+      if (inPlay.length) scrapPlay();
+      if (hand.some((card) => card && !card.keep && !isItemCard(card))) dumpUnusedHand();
       const foe = enemyNow();
       const lastBoss = finalBossNow();
       if (lastBoss) {
@@ -29928,7 +30099,6 @@
     }
 
     function fitHand() {
-      placeVictoryReward();
       fitFighters();
       const handEl = root.querySelector(".hand");
       if (!handEl) return;
