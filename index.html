@@ -2207,10 +2207,11 @@
     }
     .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.38s; }
     .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.55s; }
-    .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img { animation-name: rare-pop-hot; animation-duration: 0.82s; }
+    /* 金（★★★以上）：大きく出て、ゆっくり落ち着く */
+    .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img,
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
+    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-gold; animation-duration: 1.5s; animation-timing-function: cubic-bezier(0.22, 0.8, 0.3, 1); }
     .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 1.05s; }
-    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-hot; animation-duration: 1.28s; }
     /* 報酬カードは、手札で強くなるときの脈打ち。色だけレアリティ */
     .reward-pick.rare-1,
     .gift-show.rare-1,
@@ -2336,13 +2337,13 @@
     .gift-btn.rare-1 .card.preview { animation-duration: 0.38s, 1.15s; }
     .reward-pick.rare-3 .card.preview,
     .gift-show.rare-3 .card.preview,
-    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 0.82s, 1.15s; }
+    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 1.5s, 1.15s; }
     .reward-pick.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview,
     .gift-show.rare-4 .card.preview,
     .gift-show.rare-5 .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, reward-lit-gold; animation-duration: 1.05s, 1.15s; }
+    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 1.5s, 1.15s; }
     .reward-pick.rare-boss .card.preview,
     .gift-show.rare-boss .card.preview,
     .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 1.05s, 1.15s; }
@@ -2556,11 +2557,28 @@
     .menu.event.bless .gift-btn[class*="rare-"] .card.preview { animation-name: rare-pop, bless-lit; animation-duration: 0.62s, 1.6s; }
     .menu.event.bless .gift-btn.rare-3 .card.preview,
     .menu.event.bless .gift-btn.rare-4 .card.preview,
-    .menu.event.bless .gift-btn.rare-5 .card.preview { animation-name: rare-pop-hot, bless-lit; animation-duration: 0.82s, 1.6s; }
+    .menu.event.bless .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, bless-lit; animation-duration: 1.5s, 1.6s; }
+    /* 銀（★★）：小さく動く */
+    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-name: rare-pop-silver; animation-duration: 0.5s; }
+    .reward-pick.rare-2 .card.preview,
+    .gift-show.rare-2 .card.preview,
+    .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, reward-lit; animation-duration: 0.5s, 1.15s; }
+    .menu.event.bless .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, bless-lit; animation-duration: 0.5s, 1.6s; }
+    @keyframes rare-pop-silver {
+      0% { transform: scale(0.94); filter: brightness(1.6) drop-shadow(0 0 8px var(--rare)); }
+      30% { transform: scale(1.04); filter: brightness(1.3) drop-shadow(0 0 14px var(--rare)); }
+      100% { transform: none; filter: none; }
+    }
     @keyframes rare-pop {
       0% { transform: scale(0.84); filter: brightness(2.5) drop-shadow(0 0 10px var(--rare)); }
       18% { transform: scale(1.1); filter: brightness(1.9) drop-shadow(0 0 22px #fff) drop-shadow(0 0 46px var(--rare)); }
       48% { transform: scale(1.02); filter: brightness(1.35) drop-shadow(0 0 34px var(--rare)) drop-shadow(0 0 70px var(--rare)); }
+      100% { transform: none; filter: none; }
+    }
+    @keyframes rare-pop-gold {
+      0% { transform: scale(0.8); filter: brightness(2.2) drop-shadow(0 0 14px var(--rare)); }
+      22% { transform: scale(1.32); filter: brightness(1.6) drop-shadow(0 0 26px #fff) drop-shadow(0 0 70px var(--rare)); }
+      55% { transform: scale(1.12); filter: brightness(1.2) drop-shadow(0 0 30px var(--rare)); }
       100% { transform: none; filter: none; }
     }
     @keyframes rare-pop-hot {
@@ -3009,7 +3027,8 @@
       height: min(920px, calc(100cqh - 16px));
     }
     .overlay.enchant-pick:not(.smith-fuse) .panel {
-      height: auto;
+      /* 付けられないカードの数で高さが変わらないよう、どの種類も同じ高さにする（2026-11-27） */
+      height: min(1000px, calc(100cqh - 16px));
       max-height: calc(100cqh - 16px);
     }
     .enchant-pick .enchant-body {
@@ -3074,7 +3093,7 @@
       gap: 6px;
     }
     .enchant-pick:not(.smith-fuse) .enchant-compare {
-      width: 172px;
+      width: 280px;
       height: auto;
       min-height: 0;
       overflow: hidden;
@@ -3148,13 +3167,13 @@
     }
     .enchant-pick:not(.smith-fuse) .compare-face {
       flex: 0 0 auto;
-      width: 148px;
+      width: 250px;
       height: auto;
       min-height: 0;
     }
     .enchant-pick:not(.smith-fuse) .compare-well {
-      width: 148px;
-      height: calc(148px * 4 / 3);
+      width: 250px;
+      height: calc(250px * 4 / 3);
       aspect-ratio: 3 / 4;
       background: #14110e;
       border-radius: 10px;
@@ -6944,8 +6963,8 @@
       position: absolute;
       right: calc(7.4cqw + 2px);
       top: calc(11.35cqw + 1px);
-      width: calc(9.2cqw - 4px);
-      height: calc(9.2cqw - 4px);
+      width: calc(12.4cqw - 4px);
+      height: calc(12.4cqw - 4px);
       transform: translateY(-50%);
       box-sizing: border-box;
       border: 0;
@@ -6964,7 +6983,12 @@
       transform: scale(1.72);
       transform-origin: 50% 46%;
     }
-    .card .card-fit.has-gem .nameplate .name { right: 17.6cqw; }
+    /* 宝珠の大きさをそろえる：絵ごとに玉の大きさと中心がちがうので、玉の中心に合わせて拡大率を変える（2026-11-27） */
+    .card .card-fit .enchant-gem.gem-light img { object-position: 50.3% 47.1%; transform-origin: 50.3% 47.1%; transform: scale(1.72); }
+    .card .card-fit .enchant-gem.gem-fire img { object-position: 50.2% 46.9%; transform-origin: 50.2% 46.9%; transform: scale(1.75); }
+    .card .card-fit .enchant-gem.gem-water img { object-position: 49.5% 47.5%; transform-origin: 49.5% 47.5%; transform: scale(1.82); }
+    .card .card-fit .enchant-gem.gem-dark img { object-position: 49.8% 47%; transform-origin: 49.8% 47%; transform: scale(1.79); }
+    .card .card-fit.has-gem .nameplate .name { right: 21.5cqw; }
     .enchant-try {
       display: flex;
       gap: 14px;
@@ -7157,6 +7181,38 @@
       transform-origin: center center;
       backface-visibility: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+    .fly-card.vanish-light { animation: vanish-light 0.7s ease-out forwards; }
+    @keyframes vanish-light {
+      0% { filter: brightness(1); opacity: 1; transform: scale(1); }
+      35% { filter: brightness(2.6) saturate(0.4) drop-shadow(0 0 18px #fff6c8); opacity: 1; transform: scale(1.06); }
+      100% { filter: brightness(5) saturate(0) blur(8px) drop-shadow(0 0 34px #ffffff); opacity: 0; transform: translateY(-26px) scale(1.14); }
+    }
+    .fly-card.vanish-light .vanish-fx {
+      position: absolute; inset: -12%; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+      background: radial-gradient(circle, rgba(255, 255, 238, 0.95) 0%, rgba(255, 240, 170, 0.55) 38%, rgba(255, 240, 170, 0) 70%);
+      animation: vanish-light-glow 0.7s ease-out forwards;
+    }
+    @keyframes vanish-light-glow {
+      0% { opacity: 0; transform: scale(0.6); }
+      40% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.5); }
+    }
+    .fly-card.vanish-burn { animation: vanish-burn 0.95s linear forwards; }
+    @keyframes vanish-burn {
+      0% { filter: none; clip-path: inset(0 0 0 0); }
+      25% { filter: sepia(0.8) saturate(3) brightness(1.1); clip-path: inset(0 0 0 0); }
+      100% { filter: sepia(1) saturate(3) brightness(0.35) contrast(1.3); clip-path: inset(0 0 105% 0); }
+    }
+    .fly-card.vanish-burn .vanish-fx {
+      position: absolute; left: -6%; right: -6%; height: 38%; top: 62%; pointer-events: none; mix-blend-mode: screen; filter: blur(2px);
+      background: linear-gradient(to top, rgba(255, 230, 120, 0.95) 0%, rgba(255, 120, 20, 0.9) 45%, rgba(255, 70, 0, 0) 100%);
+      animation: vanish-burn-edge 0.95s linear forwards;
+    }
+    @keyframes vanish-burn-edge {
+      0% { top: 62%; }
+      25% { top: 62%; }
+      100% { top: -43%; }
     }
     .fly-card.reward-fly,
     .fly-card.phoenix-fly {
@@ -14383,6 +14439,7 @@
     let cardMastery = [];
     let masteryOffer = null;
     let lootChoice = null;
+    let advanceHeld = "";
     let masteryQueue = [];
     let openerHold = [];
     let runLevel = 1;
@@ -18348,14 +18405,11 @@
     function effectFactorFor(index) {
       let factor = 1;
       if (anyBracelet("tripleSecond") && index === 1 && inPlay[0] && inPlay[1] && inPlay[0].name === inPlay[1].name) factor *= 3;
-      if (index >= 0 && anyBracelet("pure") && playAreaOneGenre()) factor *= 1.5;
       return factor;
     }
 
-    function textScale(n, fromHand) {
-      const v = Number(n) || 0;
-      if (!v || fromHand || !anyBracelet("pure") || !playAreaOneGenre()) return v;
-      return Math.ceil(v * 1.5);
+    function textScale(n) {
+      return Number(n) || 0;
     }
 
     function grantsParry(card) {
@@ -19473,6 +19527,18 @@
         render();
         return;
       }
+      if (!masteryOffer && advanceHeld) {
+        const held = advanceHeld;
+        advanceHeld = "";
+        if (held === "event") finishEvent();
+        else offerPathsOrAdvance();
+        return;
+      }
+      // 修行：熟練が終わったら、そのまま次の階へ（「進む」を押さなくていい）
+      if (!masteryOffer && masterSource === "train" && screen === "floor" && floorKind === "修行") {
+        finishEvent();
+        return;
+      }
       if (!masteryOffer && masterSource === "relic" && rewardStep === "extra") {
         offerPathsOrAdvance();
         return;
@@ -19558,9 +19624,10 @@
       nodes.forEach((el, i) => {
         const step = shown[i];
         const card = step && step.card;
-        if (step && (step.anger || isFlashCard(card))) return;
+        if (step && step.anger) return;
+        const vanish = card && (card.burst ? "burn" : isFlashCard(card) ? "light" : "");
         const made = makeFlyGhost(el);
-        if (made) pendingFoeLeaveFly.push(made);
+        if (made) pendingFoeLeaveFly.push(vanish ? { ...made, mode: vanish } : made);
       });
     }
 
@@ -19744,6 +19811,10 @@
       leaves.forEach((item) => {
         const from = item.from;
         const ghost = item.ghost;
+        if (item.mode) {
+          vanishGhost(ghost, item.mode, doneOne);
+          return;
+        }
         const move = stageDelta(from, to);
         const dx = move.dx;
         const dy = move.dy;
@@ -19779,13 +19850,33 @@
         if (!card) return;
         const made = makeFlyGhost(el);
         if (!made) return;
-        const mode = forceMode || (afterUsePile(card) === "keep" && card.resolved ? "stay" : goesToDiscard(card) ? "discard" : "exile");
+        const mode = forceMode || (afterUsePile(card) === "keep" && card.resolved ? "stay" : goesToDiscard(card) ? "discard" : afterUsePile(card) === "burst" ? "burn" : "light");
         if (mode === "stay") {
           made.ghost.remove();
           return;
         }
         pendingPlayClearFly.push({ ...made, mode });
       });
+    }
+
+    // フラッシュは光になって消え、バーストは下から焼けて消える（ghost のコピーに動きを付ける）
+    function vanishGhost(ghost, mode, done) {
+      if (!ghost || !ghost.isConnected) {
+        if (done) done();
+        return;
+      }
+      const fx = document.createElement("i");
+      fx.className = "vanish-fx";
+      ghost.appendChild(fx);
+      ghost.classList.add(mode === "burn" ? "vanish-burn" : "vanish-light");
+      let ended = false;
+      const end = () => {
+        if (ended) return;
+        ended = true;
+        ghost.remove();
+        if (done) done();
+      };
+      setTimeout(end, (mode === "burn" ? 950 : 700) + 60);
     }
 
     function launchPendingPlayClearFly() {
@@ -19853,6 +19944,13 @@
         });
         ghost.addEventListener("transitionend", finish, { once: true });
         setTimeout(finish, 640 + delay);
+      });
+
+      flights.filter((item) => item.mode === "light" || item.mode === "burn").forEach((item, i) => {
+        const delay = i * 90;
+        const dur = item.mode === "burn" ? 950 : 700;
+        maxWait = Math.max(maxWait, dur + delay + 80);
+        setTimeout(() => vanishGhost(item.ghost, item.mode), delay);
       });
 
       return maxWait;
@@ -20462,11 +20560,15 @@
         scheduleFinish("win");
         return;
       }
-      const flyWait = pendingPlayClearFly.length
+      const vanishLeft = pendingPlayClearFly.filter((item) => item.mode === "burn" || item.mode === "light");
+      const vanishWait = vanishLeft.length ? (vanishLeft.some((item) => item.mode === "burn") ? 1040 : 760) + (vanishLeft.length - 1) * 90 : 0;
+      const flyWait = Math.max(vanishWait, pendingPlayClearFly.length
         ? 560 + (pendingPlayClearFly.length - 1) * 70
-        : 0;
+        : 0);
       const handFlyWait = dumped ? 560 + (dumped - 1) * 70 : 0;
-      const foeFlyWait = pendingFoeLeaveFly.length ? 560 : 0;
+      const foeFlyWait = pendingFoeLeaveFly.length
+        ? (pendingFoeLeaveFly.some((item) => item.mode === "burn") ? 1040 : pendingFoeLeaveFly.some((item) => item.mode) ? 760 : 560)
+        : 0;
       const poisonWait = (fxPoisonApply.player || fxPoisonApply.enemy) ? 1500 : 0;
       render();
       const wait = Math.max(flyWait, handFlyWait, foeFlyWait, poisonWait);
@@ -22033,7 +22135,11 @@
 
     function canTakeEnchant(card, elem) {
       if (!card || !card.name || isItemCard(card)) return false;
+      // 効果が働かないカードには付けられない（×で見せる）
       if (elem === "fire") return (Number(card.damage) || 0) > 0;
+      if (elem === "water") return (Number(card.block) || 0) > 0;
+      if (elem === "light") return (Number(card.cost) || 0) >= 1;
+      if (elem === "dark") return darkKeywordChoices(card).length > 0;
       return true;
     }
 
@@ -26621,7 +26727,7 @@
       const textClass = keywords.length ? "text has-kw" : "text";
       const enchantKind = !foe && ["fire", "water", "light", "dark"].includes(card.enchant || runEnchants[card.name]) ? (card.enchant || runEnchants[card.name]) : "";
       const enchant = enchantKind ? enchantFace(enchantKind) : null;
-      const gem = enchant ? `<span class="enchant-gem" aria-label="${esc(enchant.name)}"><img src="${enchant.image}" alt=""></span>` : "";
+      const gem = enchant ? `<span class="enchant-gem gem-${enchantKind}" aria-label="${esc(enchant.name)}"><img src="${enchant.image}" alt=""></span>` : "";
       const enchantHint = enchant ? `<span class="hint enchant-note" data-word="${esc(enchant.name)}">${esc(enchant.name)}<i>${esc(enchantEffectNote(enchantKind, card))}</i></span>` : "";
       return `<div class="card-fit ${rank} k-${kind}${card.goldFrame ? " gold-frame" : ""}${gem ? " has-gem" : ""}"><div class="nameplate">${costOrbs(foe ? card.cost : payableCost(card))}${gem}<div class="name">${esc(card.name)}</div></div><div class="art" aria-hidden="true">${picture}${genre}</div><div class="${textClass}">${effects}</div>${enchantHint}<div class="rarity" aria-label="レアリティ ${stars}">${"★".repeat(stars)}</div><i class="frame" aria-hidden="true"></i></div>`;
     }
@@ -26781,13 +26887,18 @@
       const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
       const queue = inPlay || [];
       let songLeft = Math.max(0, Number(player && player.songMute) || 0);
-      for (const card of queue) {
+      for (let i = 0; i < queue.length; i++) {
+        const card = queue[i];
         if (card.keep && card.resolved) continue;
         if (songLeft > 0) {
           songLeft -= 1;
           continue;
         }
-        scratchPlayerCard(card, mine, foe, queue, give);
+        const prevFactor = player.effectFactor;
+        player.effectFactor = effectFactorFor(i);
+        const scaled = scaledResolvedCard(card);
+        player.effectFactor = prevFactor;
+        scratchPlayerCard(scaled, mine, foe, queue, give);
         if (foe.hp <= 0) break;
       }
       const breakShield = foeHadBlock && foe.block <= 0;
@@ -28819,7 +28930,7 @@
         const picked = shopPicks.indexOf(index) >= 0;
         const sold = slot.sold ? " sold" : (picked ? " picked" : "");
         const poor = "";
-        const limited = slot.limited ? " limited" : "";
+        const limited = (slot.limited ? " limited" : "") + rareClass(lv);
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const buy = !slot.sold && price != null;
         const open = buy
@@ -29235,6 +29346,19 @@
         render();
         return;
       }
+      // 入手時に選ぶ・起きる道具は、先に処理してから次へ進む
+      if (lootChoice) {
+        lootChoice.after = "victory";
+        persistSave(true);
+        render();
+        return;
+      }
+      if (masteryOffer) {
+        advanceHeld = "victory";
+        persistSave(true);
+        render();
+        return;
+      }
       if (pastLastBoss()) {
         finishClear();
         return;
@@ -29310,8 +29434,14 @@
     }
 
     function finishEvent() {
-      if (lootChoice && (lootChoice.kind === "copy" || lootChoice.kind === "master")) {
+      if (lootChoice) {
         lootChoice.resume = "event";
+        persistSave(true);
+        render();
+        return;
+      }
+      if (masteryOffer) {
+        advanceHeld = "event";
         persistSave(true);
         render();
         return;
