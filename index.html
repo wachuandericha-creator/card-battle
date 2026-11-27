@@ -133,21 +133,48 @@
       grid-area: road;
       min-width: 0;
       min-height: 0;
-      height: 100%;
+      height: auto;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      margin: 0;
-      padding: 8px 12px 10px;
-      border-radius: 16px;
-      border: 6px solid #e4b15a;
-      background: rgba(14, 11, 9, 0.98);
-      box-shadow:
-        0 0 0 2px #5c3a12,
-        inset 0 0 0 2px rgba(255, 241, 196, 0.35),
-        0 10px 22px rgba(0, 0, 0, 0.55);
+      container-type: inline-size;
+      margin: 14px 0 14px 2px;
+      padding: 0 12px 0;
+      border-radius: 6px;
+      border: 0;
+      /* ログと同じ巻物。羊皮紙は地図で、道はその上に並ぶ */
+      background: url("map-scroll-paper.jpg?v=1") center / calc(100% - 10px) 100% no-repeat;
+      background-position: calc(50% - 2px) 50%;
+      box-shadow: none;
       color: var(--cream);
       font-family: var(--log-serif);
+    }
+    .road-map::before,
+    .road-map::after {
+      content: "";
+      display: block;
+      position: relative;
+      z-index: 2;
+      flex: 0 0 auto;
+      width: auto;
+      margin-left: -10px;
+      margin-right: -14px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+    .road-map::before {
+      aspect-ratio: 968 / 132;
+      margin-bottom: 8px;
+      background-image: url("log-scroll-top.jpg?v=1");
+      filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
+    }
+    .road-map::after {
+      aspect-ratio: 968 / 134;
+      background-image: url("log-scroll-bottom.jpg?v=1");
+      filter:
+        drop-shadow(0 -4px 5px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
     }
     .road-map h2 {
       flex: 0 0 auto;
@@ -168,6 +195,7 @@
       color: #fff3c4;
       text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.45);
     }
+    .road-map > h2 { display: none; }
     .road-map ol {
       list-style: none;
       margin: 0;
@@ -213,12 +241,12 @@
       border-radius: 8px;
       object-fit: cover;
       object-position: center;
-      background: #1a1410;
+      background: transparent;
     }
     .road-node > i {
       display: grid;
       place-items: center;
-      border: 1px solid rgba(228, 177, 90, 0.35);
+      border: 0;
       font-family: inherit;
       font-size: 54px;
       font-weight: 900;
@@ -283,7 +311,7 @@
       z-index: 6;
       left: 14px;
       right: 14px;
-      bottom: 12px;
+      bottom: calc(8px + 100cqi * 134 / 968);
       margin: 0;
       padding: 7px 8px 8px;
       border: 0;
@@ -2117,13 +2145,7 @@
       width: min(420px, 24cqw);
       max-width: none;
     }
-    .overlay.victory .reward-pick.reward-foe .card.preview,
-    .overlay.victory .reward-pick.reward-foe:hover .card.preview {
-      box-shadow:
-        0 0 0 2px #d7b4ff,
-        0 0 22px 8px rgba(150, 70, 220, 0.78),
-        0 22px 36px rgba(0, 0, 0, 0.55);
-    }
+    /* 敵カードの枠グローはレアリティの --lit に任せる（紫の固定影は出さない） */
     .reward-extra { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin: 0 0 8px; }
     .reward-extra .reward-pick { cursor: pointer; }
     .overlay.victory .reward-extra .reward-pick.gear-pick { width: auto; max-width: none; }
@@ -5551,6 +5573,8 @@
       margin: 0 -22px;
       background-size: 100% 100%;
       background-repeat: no-repeat;
+      /* 元絵の四隅の暗い茶色だけ隠す。軸の先までは削らない */
+      border-radius: 10px;
     }
     /* 巻き軸は大きく。下の軸は、ログが短くても巻物の一番下に固定（2026-11-27） */
     .battle-log { display: flex; flex-direction: column; }
@@ -9378,7 +9402,7 @@
     .menu.event.train { --choice-w: 300px; }
     .menu.event.train .event-lead { grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr); }
     .menu.event.train .gift-row { flex-wrap: nowrap; }
-    .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; }
+    .menu.event .road-map { grid-area: map; height: 100%; min-height: 0; align-self: stretch; margin: 0; }
     .menu.event.shop .event-choice {
       justify-content: stretch;
       align-items: stretch;
@@ -9479,6 +9503,7 @@
     .event-map .road-map {
       height: 100%;
       width: 100%;
+      margin: 0;
       grid-area: auto;
     }
     .event-hud .small-btn.on {
@@ -9508,8 +9533,8 @@
       grid-area: auto;
       height: 100%;
       width: 100%;
+      margin: 0;
       box-shadow: none;
-      background: transparent;
     }
     .event-drawers .deck-drawer { padding: 10px 12px 14px; }
     .event-drawers .deck-drawer h2 {
@@ -11054,12 +11079,36 @@
       pointer-events: none;
       transition: opacity 0.26s ease;
     }
-    /* 階層が進むとき：黒ではなく、ダンジョン（洞窟など）の画像のうえに階数だけ */
+    /* 階層が進むとき：ダンジョン選択と同じ洞窟の絵をズームして、そのうえに階数 */
     .scene-fade.scene-fade-floor i {
-      background:
-        linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)),
-        var(--scene-dungeon, #000) center / cover no-repeat;
+      background: #070605;
+      overflow: hidden;
       transition-duration: 0.14s;
+    }
+    .scene-fade.scene-fade-floor .scene-floor-zoom {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.02);
+      filter: brightness(0.55);
+      opacity: 0;
+    }
+    .scene-fade.scene-fade-floor.in .scene-floor-zoom {
+      opacity: 1;
+      animation: scene-floor-zoom 1.9s ease forwards;
+    }
+    .scene-fade.scene-fade-floor.out .scene-floor-zoom {
+      animation: none;
+      opacity: 0;
+      transition: opacity 0.55s ease;
+    }
+    @keyframes scene-floor-zoom {
+      0% { transform: scale(1.02); filter: brightness(0.55); }
+      18% { transform: scale(1.08); filter: brightness(1); }
+      72% { transform: scale(1.18); filter: brightness(1); }
+      100% { transform: scale(1.24); filter: brightness(0.2); }
     }
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
@@ -11074,9 +11123,14 @@
       opacity: 0;
       transition: opacity 0.14s ease;
     }
-    .scene-fade.in .scene-floor { opacity: 1; }
-    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.16s; }
+    .scene-fade.in .scene-floor { opacity: 1; animation: scene-floor-num 1.9s ease both; }
+    .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.16s; animation: none; }
     .scene-fade.scene-fade-floor.out .scene-floor { transition-duration: 0.7s; }
+    @keyframes scene-floor-num {
+      0%, 12% { opacity: 0; }
+      28%, 68% { opacity: 1; }
+      100% { opacity: 0; }
+    }
     .scene-cross { animation: scene-cross 0.7s ease both; }
     @keyframes scene-cross {
       from { opacity: 0; }
@@ -13521,6 +13575,17 @@
     .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview {
       animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
     }
+    /* 敵のカード報酬：出方はボスと同じ。脈打つグローの色だけレアリティどおり（2026-11-28） */
+    .reward-pick.reward-foe.rare-1 .card.preview,
+    .reward-pick.reward-foe.rare-2 .card.preview,
+    .reward-pick.reward-foe.rare-boss .card.preview {
+      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+    }
+    .reward-pick.reward-foe.rare-3 .card.preview,
+    .reward-pick.reward-foe.rare-4 .card.preview,
+    .reward-pick.reward-foe.rare-5 .card.preview {
+      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
+    }
     @keyframes rare-flip {
       0% { transform: perspective(700px) rotateY(-100deg) scale(0.82); filter: brightness(3); opacity: 0; }
       55% { transform: perspective(700px) rotateY(10deg) scale(1.1); filter: brightness(1.7); opacity: 1; }
@@ -14374,8 +14439,15 @@
       };
       place(pane, box);
       if (showFloor) {
-        const bg = (opt && opt.bg) || battleArt(dungeonName) || "";
-        if (bg) pane.style.setProperty("--scene-dungeon", `url("${bg}")`);
+        // ダンジョン選択と同じ「洞窟」などの絵をズーム。道や戦闘背景は使わない
+        const bg = (opt && opt.bg) || dungeonArt(dungeonName) || "";
+        if (bg) {
+          const art = document.createElement("img");
+          art.className = "scene-floor-zoom";
+          art.alt = "";
+          art.src = bg;
+          pane.appendChild(art);
+        }
       }
       veil.appendChild(pane);
       if (showFloor) {
@@ -14392,8 +14464,8 @@
         veil.appendChild(mark);
       }
       mountFloat(veil);
-      const fadeIn = showFloor ? 160 : 280;
-      const hold = showFloor ? 900 : 0;
+      const fadeIn = showFloor ? 120 : 280;
+      const hold = showFloor ? 1500 : 0;
       const fadeOut = showFloor ? 700 : 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
@@ -15709,7 +15781,7 @@
         render();
       }, {
         floor: announce ? floorNo() : null,
-        bg: battleArt(dungeonName),
+        bg: dungeonArt(dungeonName),
         after: () => {
           floorOnFade = false;
           if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
@@ -22723,6 +22795,9 @@
         if (runEnchants[card.name] || !canTakeEnchant(card, elem)) blocked.push(card);
         else cards.push(card);
       }
+      // カードリストと同じ並び（ジャンル→コスト→レア→名前）
+      cards.sort(compareCardListOrder);
+      blocked.sort(compareCardListOrder);
       const pickedCard = cards.find((card) => card.name === pickedName) || null;
       const choice = (card) => {
         const picked = pickedName === card.name ? " picked" : "";
@@ -22994,7 +23069,7 @@
         eventFloorCall = false;
         render();
         if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
-      }, { floor: announce ? floorNo() : null, bg: battleArt(dungeonName) });
+      }, { floor: announce ? floorNo() : null, bg: dungeonArt(dungeonName) });
     }
 
     function emptyRunSheet() {
@@ -24956,9 +25031,9 @@
       return item ? item.art : DUNGEON_LIST[0].art;
     }
 
-    /* 戦闘のうしろ：洞窟は骸骨のいる石の廊下を、カード絵柄に直したもの */
+    /* 戦闘のうしろ：洞窟は採用済み dungeon-bg（カード絵柄・目線・途中に牢） */
     function battleArt(name) {
-      return name === "洞窟" ? "dungeon-bg-card.jpg?v=1" : dungeonArt(name);
+      return name === "洞窟" ? "dungeon-bg.jpg?v=2" : dungeonArt(name);
     }
 
     function renderDungeonGate() {
@@ -26096,11 +26171,18 @@
           : menuButton("進む", "floor-next", true))
         : "";
       const beggar = floorKind === "物乞いに遭遇"
-        ? `<div class="deck-cards beggar-cards">${runDeck().map((card, i) => {
-          const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
-          const picked = i === beggarPick ? " picked" : "";
-          return `<button type="button" class="beggar-card${picked}" data-action="beggar-pick" data-index="${i}">${face}</button>`;
-        }).join("") || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("無視して進む", "beggar-skip")}${menuButton("渡すカードを選んで決定", "beggar-confirm", true, beggarPick < 0)}</div>`
+        ? (() => {
+          const deck = runDeck();
+          // 表示順はカードリストと同じ。data-index は runDeck の位置のまま
+          const order = deck.map((_, i) => i).sort((a, b) => compareCardListOrder(deck[a], deck[b]));
+          const faces = order.map((i) => {
+            const card = deck[i];
+            const face = `<div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div>`;
+            const picked = i === beggarPick ? " picked" : "";
+            return `<button type="button" class="beggar-card${picked}" data-action="beggar-pick" data-index="${i}">${face}</button>`;
+          }).join("");
+          return `<div class="deck-cards beggar-cards">${faces || `<p>外せるカードは無い。</p>`}</div><div class="event-actions">${menuButton("無視して進む", "beggar-skip")}${menuButton("渡すカードを選んで決定", "beggar-confirm", true, beggarPick < 0)}</div>`;
+        })()
         : "";
       const searchActions = floorKind === "探索" && floorPhase === "search"
         ? `<div class="gift-row">${searchPicks.map((pick, i) => {
