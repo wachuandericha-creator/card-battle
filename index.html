@@ -862,8 +862,8 @@
        ・横幅に収まる大きさにして、画面の外へ出さない */
     .duel-mid .play-side { display: flex; flex-direction: column; padding: 0; }
     /* ダメージ予測は、自分も敵もVSのすぐそば（自分はVSの上、敵はVSの下）。VSとのあいだに少しだけ余白 */
-    .duel-mid .play-side.mine { padding: 4px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px); }
-    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px + 48px) 0 4px; }
+    .duel-mid .play-side.mine { padding: 4px 0 calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 24px + 48px); }
+    .duel-mid .play-side.foe { padding: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 24px + 48px) 0 4px; }
     .duel-mid .play-cards {
       flex: 1 1 0;
       width: 100%;
@@ -902,8 +902,8 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    .duel-mid .play-side.mine .forecasts { top: auto; bottom: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px); flex-wrap: nowrap; }
-    .duel-mid .play-side.foe .forecasts { top: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 10px); bottom: auto; flex-wrap: nowrap; }
+    .duel-mid .play-side.mine .forecasts { top: auto; bottom: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 24px); flex-wrap: nowrap; }
+    .duel-mid .play-side.foe .forecasts { top: calc(clamp(56px, 7.4cqw, 104px) * 0.42 + 24px); bottom: auto; flex-wrap: nowrap; }
     .hero-shoulder {
       position: relative;
       left: auto;
@@ -10638,14 +10638,14 @@
     }
     /* イベントや戦闘のあと。黒は戦闘画面と手札だけ。マップ・ログ・上のダンジョン名は残す */
     .scene-fade {
-      position: fixed;
+      position: absolute;
       inset: 0;
       z-index: 90;
       background: transparent;
       pointer-events: auto;
     }
     .scene-fade i {
-      position: fixed;
+      position: absolute;
       background: #000;
       opacity: 0;
       pointer-events: none;
@@ -10656,7 +10656,7 @@
     .scene-fade.scene-fade-floor i { transition-duration: 0.14s; }
     .scene-fade.scene-fade-floor.out i { transition-duration: 0.7s; }
     .scene-fade .scene-floor {
-      position: fixed;
+      position: absolute;
       z-index: 2;
       display: flex;
       align-items: center;
@@ -12933,6 +12933,10 @@
     #stage-float .foe-deck-pop,
     #stage-float .foe-deck-pop *,
     #stage-float .scene-fade { pointer-events: auto; }
+    /* iPhoneは手札を厚くして、カードの文字が読める大きさにする */
+    html.stage-fit.iphone-play .battle-screen:not(.event-host) {
+      grid-template-rows: auto minmax(0, 1.15fr) minmax(0, 1.9fr);
+    }
     /* iPhoneのSafariは、回転した親の中の position:fixed を画面へ戻してしまう。遊ぶときは全部 absolute */
     html.stage-fit.iphone-play #game .nav-title,
     html.stage-fit.iphone-play #game .nav-full,
@@ -15075,9 +15079,15 @@
       // 下のマスの底を画面の底に合わせる。現在地はその一つ上、下から二番目。
       // 0Fの祝福だけは、祝福のマス自身を一番下に合わせる。
       const anchor = isBlessingFloor0() ? now : (roadLower(now) || now);
-      const scale = stageScale() || 1;
       const style = getComputedStyle(ol);
       const padBottom = parseFloat(style.paddingBottom) || 0;
+      // 回転中の画面座標は縦横が入れ替わる。スクロールは配置のまま測る。
+      if (stageRotated()) {
+        const anchorBottom = anchor.offsetTop - ol.offsetTop - ol.clientTop + anchor.offsetHeight;
+        const top = anchorBottom - (ol.clientHeight - padBottom);
+        return Math.max(0, Math.min(max, top));
+      }
+      const scale = stageScale() || 1;
       const borderBottom = parseFloat(style.borderBottomWidth) || 0;
       const viewBottom = ol.getBoundingClientRect().bottom - (borderBottom + padBottom) * scale;
       const anchorBottom = anchor.getBoundingClientRect().bottom;
@@ -15143,7 +15153,9 @@
       const btn = map && map.querySelector(".road-back");
       const now = ol.querySelector(".road-node.now");
       if (!btn || !now) return;
-      const leftView = now.getBoundingClientRect().top >= ol.getBoundingClientRect().bottom - 1;
+      const leftView = stageRotated()
+        ? (now.offsetTop - ol.offsetTop - ol.clientTop) >= ol.scrollTop + ol.clientHeight - 1
+        : now.getBoundingClientRect().top >= ol.getBoundingClientRect().bottom - 1;
       btn.hidden = !leftView;
     }
 
@@ -15391,7 +15403,7 @@
       { id: "cursed-bracelet", name: "呪われた腕輪", slot: "braceletAny", stars: 2, cursed: true, locked: true, effect: "★★　外せない。戦闘勝利時の最大HP上昇が無効。毎ターン開始時、ATK+1とDEF+1（その戦闘のあいだ残る）", image: "gear-cursed-bracelet.jpg?v=1" },
       { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "gear-demon-bracelet.jpg?v=1" },
       { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, pure: true, effect: "★★　プレイエリアのジャンルが揃っているとき、そのカードに書かれた数字を1.5倍（切り上げ）。クイックは関係ない", image: "gear-pure-bracelet.jpg?v=1" },
-      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターン終了したとき、次のターンはSPD+2、マナ+1", image: "gear-empty-bracelet.jpg?v=1" },
+      { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターンを終了すると、次のターン、マナ+1、SPD+2", image: "gear-empty-bracelet.jpg?v=1" },
       { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　毒・炎上・呪いにならない。これから増える状態異常も無視する", image: "gear-angel-bracelet.jpg?v=1" },
       { id: "tyrant-bracelet", name: "覇王の腕輪", slot: "braceletAny", stars: 3, twice: true, effect: "★★★　プレイエリアのカードが1枚だけのとき、その効果は2回。毒、回復、ドローも含む", image: "gear-tyrant-bracelet.jpg?v=1" },
       { id: "chain-bracelet", name: "連続の腕輪", slot: "braceletAny", stars: 3, tripleSecond: true, effect: "★★★　プレイエリアの1枠目と2枠目が同じカードなら、2枚目の効果は3倍。毒、回復、ドローも含む", image: "gear-chain-bracelet.jpg?v=1" },
@@ -15485,7 +15497,7 @@
       "cursed-bracelet": "外せない\n勝利時の最大HP上昇が無効\n毎ターン開始時、ATK+1 DEF+1",
       "demon-bracelet": "ターン開始時、5ダメージを受け、HPを7回復",
       "pure-bracelet": "プレイエリアのジャンルが揃っているとき\n書かれた数字は1.5倍\nクイックは関係ない",
-      "empty-bracelet": "手札0枚で終了すると、次はSPD+2 マナ+1",
+      "empty-bracelet": "手札0枚でターンを終了すると、次のターン\nマナ+1\nSPD+2",
       "angel-bracelet": "毒・炎上・呪いにならない\nこれから増える状態異常も無視する",
       "tyrant-bracelet": "プレイエリアが1枚なら、その効果は2回",
       "chain-bracelet": "1枠目と2枠目が同じカードなら、2枚目は3倍",
@@ -20220,7 +20232,7 @@
       if (anyBracelet("emptyHand") && !hand.some((card) => !card.keep && !isItemCard(card))) {
         rememberExtraDraw(2, "無心の腕輪+2");
         player.nextMana = (Number(player.nextMana) || 0) + 1;
-        log(`${heroName()}は無心の腕輪。次のターン、カード+2、マナ+1。`);
+        log(`${heroName()}は無心の腕輪。次のターン、マナ+1、SPD+2。`);
       }
       if (anySword("gale") && (player.attacksPlayed || 0) >= 3) {
         player.nextSpd = (Number(player.nextSpd) || 0) + 1;
@@ -22772,14 +22784,28 @@
 
     function takeSearchGear(index) {
       if (floorKind !== "探索" || floorPhase !== "search") return;
-      const pick = searchPicks[index == null ? 0 : index];
+      const at = index == null ? 0 : index;
+      const pick = searchPicks[at];
       if (!pick) return;
+      const flight = captureRewardCardFlight(`[data-action="search-pick"][data-search="${at}"] .card`);
+      const land = gearLandKey(pick.gear);
+      const relicId = land === "relic" ? (pick.gear && pick.gear.id) || "" : "";
       const got = takeGift(pick);
-      if (!got) return;
+      if (!got) {
+        if (flight && flight.ghost) flight.ghost.remove();
+        return;
+      }
       noteSearchResult(got.replace(/。$/, ""));
       log(got);
       searchPicks = [];
-      finishEvent();
+      const button = document.querySelector(`[data-action="search-pick"][data-search="${at}"]`);
+      if (button) button.style.visibility = "hidden";
+      refreshGearRow();
+      flyRewardHome(flight, land, relicId);
+      runAfterRewardFlight(!!(flight && flight.ghost && land), () => {
+        if (floorKind !== "探索") return;
+        finishEvent();
+      });
     }
 
     function skipSearchGear() {
@@ -25326,6 +25352,36 @@
       });
     }
 
+    function layoutPoint(el) {
+      let x = 0;
+      let y = 0;
+      let node = el;
+      while (node && node !== root) {
+        x += node.offsetLeft;
+        y += node.offsetTop;
+        node = node.offsetParent;
+      }
+      return { x, y };
+    }
+
+    function placeFloorCalls() {
+      if (!stageRotated()) return;
+      document.querySelectorAll(".turn-call.floor-call .fade-sandwich, .event-floor-call .fade-sandwich").forEach((el) => {
+        const parent = el.offsetParent;
+        if (!parent) return;
+        el.style.position = "absolute";
+        el.style.margin = "0";
+        el.style.right = "auto";
+        el.style.bottom = "auto";
+        el.style.transform = "none";
+        const origin = layoutPoint(parent);
+        const left = root.offsetWidth / 2 - origin.x - el.offsetWidth / 2;
+        const top = root.offsetHeight / 2 - origin.y - el.offsetHeight / 2;
+        el.style.left = `${Math.round(left)}px`;
+        el.style.top = `${Math.round(top)}px`;
+      });
+    }
+
     function render() {
       hideLogPeek();
       clearFoeDeckPop();
@@ -25377,6 +25433,7 @@
       bindPathHover();
       requestAnimationFrame(() => {
         placeRoad();
+        placeFloorCalls();
         fitPathArtToRoad();
         fitCardNames();
         fitCardEffects();
@@ -25539,19 +25596,22 @@
 
     // 効果欄はカードごと。余白は固定。そのカードの中では説明と数字を同じ大きさ、アイコンも同じ大きさ（文字より大きい）にする。
     function fitCardEffects() {
+      const turned = stageRotated();
+      const fontBase = turned ? 9.4 : 5.2;
+      const iconBase = turned ? 14 : 8;
       root.querySelectorAll(".card-fit .text").forEach((box) => {
         if (box.clientHeight < 8) return;
         const texts = box.querySelectorAll(".fx.note, .fx.kw, .fx b");
         const icons = box.querySelectorAll(".fx .ico");
         const apply = (scale) => {
-          const font = `${(5.2 * scale).toFixed(2)}cqw`;
+          const font = `${(fontBase * scale).toFixed(2)}cqw`;
           texts.forEach((el) => { el.style.fontSize = font; });
-          const icon = `${(8 * scale).toFixed(2)}cqw`;
+          const icon = `${(iconBase * scale).toFixed(2)}cqw`;
           icons.forEach((el) => {
             el.style.width = icon;
             el.style.height = icon;
             const pull = el.classList.contains("sword") ? 0.28 : el.classList.contains("heart") || el.classList.contains("shield") ? 0.2 : 0.08;
-            el.style.marginRight = `${(-8 * scale * pull).toFixed(2)}cqw`;
+            el.style.marginRight = `${(-iconBase * scale * pull).toFixed(2)}cqw`;
           });
         };
         const overflows = () => {
@@ -25559,6 +25619,7 @@
           const cs = getComputedStyle(box);
           const padTop = parseFloat(cs.paddingTop) || 0;
           const padBot = parseFloat(cs.paddingBottom) || 0;
+          if (turned) return false;
           const rect = box.getBoundingClientRect();
           const limitTop = rect.top + padTop - 1;
           const limitBot = rect.bottom - padBot + 1;
@@ -25568,8 +25629,8 @@
             return r.height >= 1 && (r.top < limitTop || r.bottom > limitBot);
           });
         };
-        let lo = 0.68;
-        let hi = 1.65;
+        let lo = turned ? 0.9 : 0.68;
+        let hi = turned ? 1.2 : 1.65;
         apply(lo);
         if (overflows()) return;
         for (let n = 0; n < 8; n++) {
@@ -25612,11 +25673,12 @@
     function fitCardNames() {
       root.querySelectorAll(".card .name").forEach((name) => {
         if (name.clientWidth < 8) return;
-        let size = 6.05;
+        let size = stageRotated() ? 8.4 : 6.05;
+        const nameFloor = stageRotated() ? 6.4 : 4.4;
         name.style.fontSize = size + "cqw";
         name.style.left = "23.438cqw";
         let guard = 0;
-        while (name.scrollWidth > name.clientWidth + 1 && size > 4.4 && guard < 16) {
+        while (name.scrollWidth > name.clientWidth + 1 && size > nameFloor && guard < 16) {
           size = Math.round((size - 0.25) * 100) / 100;
           name.style.fontSize = size + "cqw";
           guard += 1;
@@ -26315,7 +26377,18 @@
         else take.lethal = true;
       }
       keepShownHeal(give, mineStart, mine.hp);
-      if (take) keepShownHeal(take, foeStart, foe.hp);
+      // 敵が回復するときは、自分の与えるダメージと相殺した実際の減り方で出す（8ダメージを与え6回復なら2ダメージ）
+      if (take && Number(take.heal) > 0 && give && Number(give.hp) > 0) {
+        const net = foeStart - foe.hp;
+        if (net > 0) {
+          give.hp = Math.min(give.hp, net);
+          take.heal = 0;
+        } else {
+          give.hp = 0;
+          give.raw = Math.max(0, Number(give.poisonRaw) || 0);
+          take.heal = -net;
+        }
+      } else if (take) keepShownHeal(take, foeStart, foe.hp);
       return { give: forecastBag(give), take, breakShield, foeAtk: foe.atk, foeSwings, foeHp: Math.max(0, foe.hp), mineHp: Math.max(0, mine.hp) };
     }
 
@@ -30171,7 +30244,14 @@
       const mid = (leftCard.left + leftCard.width / 2 + rightCard.left + rightCard.width / 2) / 2;
       const target = arenaBox.left + arenaBox.width / 2;
       const current = parseFloat(handEl.style.getPropertyValue("--hand-nudge")) || 0;
-      const next = Math.round((current + target - mid) * 10) / 10;
+      let delta = target - mid;
+      if (stageRotated()) {
+        const midY = (leftCard.top + leftCard.bottom + rightCard.top + rightCard.bottom) / 4;
+        const midP = viewportToStage(mid, midY);
+        const targetP = viewportToStage(target, arenaBox.top + arenaBox.height / 2);
+        delta = targetP.x - midP.x;
+      }
+      const next = Math.round((current + delta) * 10) / 10;
       if (Math.abs(next - current) > 0.5) handEl.style.setProperty("--hand-nudge", `${next}px`);
     }
 
@@ -30491,7 +30571,7 @@
         if (name === "fullscreen") { toggleFullscreen(); return; }
         if (name === "road-home") { placeRoad("home"); return; }
         if (name === "title") goTitle();
-        if (name === "ask-title") { askLeave = true; showDeck = false; showFoeDeck = false; pileLook = ""; render(); }
+        if (name === "ask-title") { showDeck = false; showFoeDeck = false; pileLook = ""; goTitle(); return; }
         if (name === "toggle-map") { eventMapOpen = !eventMapOpen; render(); }
         if (name === "toggle-deck") { eventDeckOpen = !eventDeckOpen; render(); }
         if (name === "deck") { showFoeDeck = false; pileLook = ""; showDeck = true; deckOrder = "hand"; render(); }
