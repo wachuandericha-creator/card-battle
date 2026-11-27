@@ -6667,7 +6667,7 @@
     .card .fx .ico { width: 8cqw; height: 8cqw; flex: none; overflow: hidden; color: #1a120e; margin-right: -0.6cqw; }
     .card .fx .ico.sword { transform: rotate(28deg) scale(0.8); margin-right: -2.2cqw; }
     .card .fx .ico.heart { transform: scale(0.72); margin-right: -1.6cqw; }
-    .card .fx .ico.shield { transform: scale(0.78); margin-right: -1.6cqw; }
+    .card .fx .ico.shield { transform: scale(0.5, 0.64); margin-right: -1.6cqw; }
     .card .fx.note .stat-word.atk { color: #d62828; }
     .card .fx.note .stat-word.def { color: #1d6fd4; }
     .card .fx.attack, .card .fx.block, .card .fx.heal { color: #1a120e; }
@@ -7805,7 +7805,7 @@
       top: auto;
       font-size: 64px;
       margin: 0 2px;
-      animation-name: star-settle;
+      animation: none;
     }
     @keyframes star-settle {
       0% { opacity: 0; transform: translate(16cqw, 10cqh) scale(0.2) rotate(-28deg); }
@@ -9570,6 +9570,8 @@
     .menu.event .event-hp .meter.hp .hp-gain { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, rgba(120, 255, 150, 0.85) 0 6px, rgba(60, 200, 100, 0.85) 6px 12px); box-shadow: 0 0 10px rgba(120, 255, 150, 0.8); pointer-events: none; z-index: 1; }
     .menu.event .event-hp .meter.hp .hp-before { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; background: #fff; box-shadow: 0 0 6px #fff; pointer-events: none; z-index: 2; }
     .menu.event .event-hp .meter.hp .hp-now { z-index: 3; }
+    .menu.event .event-hp .meter.hp .hp-gain { width: var(--gw, 0%); background: #5fd47e; box-shadow: none; animation: restGainGrow 1.2s ease-out both; }
+    @keyframes restGainGrow { from { width: 0; } to { width: var(--gw, 0%); } }
     .menu.event .event-hp.two { width: 100%; display: flex; flex-direction: column; gap: 12px; }
     .menu.event .event-hp .hp-row { display: flex; align-items: center; gap: 14px; }
     .menu.event .event-hp .hp-row .meters { flex: 1 1 auto; }
@@ -10672,6 +10674,22 @@
     @keyframes scene-cross {
       from { opacity: 0; }
       to { opacity: 1; }
+    }
+    .scene-fade .scene-floor { flex-direction: row; gap: 48px; }
+    .scene-fade .scene-floor .scene-floor-side { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .scene-fade .scene-floor .scene-floor-pic {
+      height: auto;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 3px solid #e4c27a;
+      box-shadow: 0 0 24px rgba(255, 210, 90, 0.6);
+    }
+    .scene-fade .scene-floor .scene-floor-kind {
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      line-height: 1;
+      color: #fff3d0;
+      text-shadow: 0 3px 0 rgba(24, 12, 8, 0.82), 0 0 16px rgba(255, 210, 90, 0.8);
     }
     .scene-fade .scene-floor b {
       font-weight: 900;
@@ -12991,6 +13009,116 @@
     html.stage-fit.iphone-play #stage-float {
       transform: translate(-50%, -50%) rotate(90deg) scale(var(--fit, 1));
     }
+    /* レア演出（2026-11-27 作り直し）。枠の光ではなく、
+       ①カードが裏から返って現れる ②カードの面を斜めの光が走る（箔） ③金以上は虹色の箔
+       ④金以上が出ているとき、ほかの選択肢が少し暗くなる。★1は今までどおり。 */
+    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview,
+    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview,
+    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview {
+      position: relative;
+      --foil: rgba(232, 242, 255, 0.85);
+      transform-origin: 50% 50%;
+    }
+    .rare-3 .card.preview, .rare-4 .card.preview, .rare-5 .card.preview, .rare-boss .card.preview { --foil: rgba(255, 232, 150, 0.95); }
+    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview {
+      animation: rare-flip 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite, rare-glint-silver 3.4s ease-in-out 1.3s infinite;
+    }
+    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview {
+      animation: rare-flip-hot 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite, rare-glint-gold 2.8s ease-in-out 1.3s infinite;
+    }
+    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview {
+      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite, rare-glint-gold 2.8s ease-in-out 1.3s infinite;
+    }
+    @keyframes rare-flip {
+      0% { transform: perspective(700px) rotateY(-100deg) scale(0.82); filter: brightness(3); opacity: 0; }
+      55% { transform: perspective(700px) rotateY(10deg) scale(1.1); filter: brightness(1.7); opacity: 1; }
+      80% { transform: perspective(700px) rotateY(-3deg) scale(1.02); filter: brightness(1.15); }
+      100% { transform: none; filter: none; opacity: 1; }
+    }
+    @keyframes rare-flip-hot {
+      0% { transform: perspective(700px) rotateY(-180deg) scale(0.7); filter: brightness(4) saturate(0.2); opacity: 0; }
+      45% { transform: perspective(700px) rotateY(12deg) scale(1.2); filter: brightness(2.4) saturate(1.5); opacity: 1; }
+      70% { transform: perspective(700px) rotateY(-5deg) scale(1.06); filter: brightness(1.4) saturate(1.2); }
+      85% { transform: perspective(700px) rotateY(2deg) scale(1.01); filter: brightness(1.1); }
+      100% { transform: none; filter: none; opacity: 1; }
+    }
+    /* 箔：斜めの光の帯が、カードの面を走る */
+    .rare-2 .card.preview::after, .rare-3 .card.preview::after, .rare-4 .card.preview::after,
+    .rare-5 .card.preview::after, .rare-boss .card.preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 36%, var(--foil) 49%, #fff 50%, var(--foil) 51%, transparent 64%) 160% 0 / 260% 100% no-repeat;
+      mix-blend-mode: screen;
+      animation: rare-foil 2.8s ease-in-out 0.9s infinite;
+    }
+    @keyframes rare-foil {
+      0% { background-position: 160% 0; }
+      42%, 100% { background-position: -60% 0; }
+    }
+    /* 金以上：虹色の箔がゆっくり流れる */
+    .rare-3 .card.preview::before, .rare-4 .card.preview::before, .rare-5 .card.preview::before, .rare-boss .card.preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      background: linear-gradient(125deg, rgba(255, 60, 140, 0), rgba(255, 210, 60, 0.55) 22%, rgba(60, 255, 200, 0.45) 45%, rgba(120, 90, 255, 0.5) 68%, rgba(255, 60, 140, 0)) 0 0 / 320% 320%;
+      mix-blend-mode: color-dodge;
+      opacity: 0.42;
+      animation: rare-rainbow 5s linear infinite;
+    }
+    @keyframes rare-rainbow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+    /* キラッ：銀は細く白い光が1回、金は太く暖かい光が2回走り、そのたびにカード全体が一瞬明るくなる。ボスは金と同じ */
+    .rare-2 .card.preview::after {
+      background: linear-gradient(115deg, transparent 41%, rgba(214, 230, 255, 0.55) 47%, #fff 50%, rgba(214, 230, 255, 0.55) 53%, transparent 59%) 160% 0 / 260% 100% no-repeat;
+      animation: rare-foil 3.4s ease-in-out 1.3s infinite;
+    }
+    .rare-3 .card.preview::after, .rare-4 .card.preview::after, .rare-5 .card.preview::after, .rare-boss .card.preview::after {
+      background: linear-gradient(115deg, transparent 28%, rgba(255, 214, 90, 0.5) 40%, #fff6cc 50%, rgba(255, 214, 90, 0.5) 60%, transparent 72%) 160% 0 / 260% 100% no-repeat;
+      animation: rare-foil-gold 2.8s ease-in-out 1.3s infinite;
+    }
+    @keyframes rare-foil-gold {
+      0% { background-position: 160% 0; }
+      28% { background-position: -60% 0; }
+      46% { background-position: 160% 0; }
+      74%, 100% { background-position: -60% 0; }
+    }
+    @keyframes rare-glint-silver {
+      0%, 8%, 30%, 100% { filter: none; }
+      18% { filter: brightness(1.28) saturate(0.9); }
+    }
+    @keyframes rare-glint-gold {
+      0%, 6%, 24%, 34%, 56%, 100% { filter: none; }
+      14% { filter: brightness(1.38) saturate(1.3); }
+      44% { filter: brightness(1.38) saturate(1.3); }
+    }    /* 金以上が出ているあいだ、ほかの選択肢は少し暗くなる。マウスを載せると戻る */
+    :is(.reward-row, .gift-row):has(.rare-3, .rare-4, .rare-5, .rare-boss) > :not(.rare-3):not(.rare-4):not(.rare-5):not(.rare-boss) {
+      animation: rare-dim 0.6s ease 0.55s both;
+      transition: filter 0.25s;
+    }
+    :is(.reward-row, .gift-row):has(.rare-3, .rare-4, .rare-5, .rare-boss) > :not(.rare-3):not(.rare-4):not(.rare-5):not(.rare-boss):hover {
+      animation: none;
+      filter: none;
+    }
+    @keyframes rare-dim {
+      from { filter: none; }
+      to { filter: brightness(0.62) saturate(0.7); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .rare-2 .card.preview::after, .rare-3 .card.preview::after, .rare-4 .card.preview::after, .rare-5 .card.preview::after, .rare-boss .card.preview::after,
+      .rare-3 .card.preview::before, .rare-4 .card.preview::before, .rare-5 .card.preview::before, .rare-boss .card.preview::before,
+      .rare-3 .card.preview::before { animation: none; }
+    }
 </style>
 </head>
 <body>
@@ -13017,11 +13145,13 @@
       悪夢: "card-nightmare.jpg?v=1",
       威圧の咆哮: "card-roar.jpg?v=1",
       惑わしの歌: "card-siren-song.jpg?v=1",
+      ドラゴンパリィ: "card-dragon-parry.jpg?v=1",
+      見極め: "card-read.jpg?v=1",
       鮮血の塗布: "card-blood-coat-f.jpg?v=1",
       血の味: "card-blood-taste-e.jpg?v=1",
       魔剣招来: "card-summon-swords-d-aura.jpg?v=1",
       魔剣増殖: "card-demon-multiply-d-omen.jpg?v=1",
-      鍔迫り合い: "card-demon-seal-g.jpg?v=1",
+      ウェポンブロック: "card-demon-seal-g.jpg?v=1",
       血の呼び声: "card-blood-call-c.jpg?v=1",
       血の契約: "card-blood-pact-d.jpg?v=1",
       呪われた鞘: "card-cursed-sheath-sword.jpg?v=1",
@@ -13140,11 +13270,11 @@
       ナイフパリィ: { cost: 2, stars: 3, text: "パリィ+1\nこのターンのパリィ成功で、無効化したダメージを相手に与える", kind: "block", knife: true },
       心眼: { cost: 2, stars: 3, text: "パリィ+3\nこのターン、パリィに成功するたび集中+10", kind: "block", parryAdd: 3, focusOnParry: 10 },
       諸刃の剣: { cost: 2, stars: 2, text: "30ダメージ\n相手に集中+30", damage: 30, kind: "attack", foeFocus: 30 },
-      鍔迫り合い: { cost: 1, stars: 1, text: "手札の攻撃カード1枚を戦闘中除外する\nそのダメージ分のシールドを得る", kind: "block", sealSword: true },
+      ウェポンブロック: { cost: 1, stars: 1, text: "手札の攻撃カード1枚を戦闘中除外する\nそのダメージ分のシールドを得る", kind: "block", sealSword: true },
       達人の間合い: { cost: 3, stars: 2, text: "体力を6回復\nパリィ+1", heal: 6, kind: "skill", masterOnce: true, flash: true },
       魔法のパリィ: { cost: 1, stars: 1, text: "パリィ中は\n状態異常にならない", kind: "orange", flash: true, magicParry: true },
       クイックステップ: { cost: 0, stars: 2, text: "前のターンにパリィが成功していたら、ドロー2", kind: "skill", quick: true, keep: true, step: true },
-      自信過剰: { cost: 2, stars: 3, text: "パリィを得るたびATK+1\nパリィに成功するたびさらにATK+2", kind: "orange", pride: true },
+      自信過剰: { cost: 2, stars: 3, text: "パリィを得るたびATK+1\nパリィに成功するたびATK+2", kind: "orange", pride: true },
     };
     const DEMON = {
       悪魔の剣: { cost: 1, stars: 1, text: "6ダメージ\nこの戦闘中全ての\n悪魔の剣のダメージ+3", damage: 6, kind: "attack", demonSword: true, demonAura: 3 },
@@ -13389,7 +13519,7 @@
         spd: 2,
         openingBlock: 12,
         openingThorns: 2,
-        trait: "石の皮膚。戦闘開始時、シールド12とトゲ2。",
+        trait: "石の皮膚。1ターン目、シールド12とトゲ2。",
         pattern: [
           { name: "アタック" },
           { name: "ブロック" },
@@ -13658,6 +13788,26 @@
           : 280;
         glyph.style.fontSize = `${size}px`;
         mark.appendChild(glyph);
+        if (opt && (opt.pic || opt.label)) {
+          const side = document.createElement("div");
+          side.className = "scene-floor-side";
+          if (opt.pic) {
+            const img = document.createElement("img");
+            img.className = "scene-floor-pic";
+            img.alt = "";
+            img.src = opt.pic;
+            img.style.width = `${Math.round(size * 0.72)}px`;
+            side.appendChild(img);
+          }
+          if (opt.label) {
+            const sub = document.createElement("span");
+            sub.className = "scene-floor-kind";
+            sub.textContent = opt.label;
+            sub.style.fontSize = `${Math.round(size * 0.24)}px`;
+            side.appendChild(sub);
+          }
+          mark.appendChild(side);
+        }
         veil.appendChild(mark);
       }
       mountFloat(veil);
@@ -14958,6 +15108,8 @@
         render();
       }, {
         floor: announce ? floorNo() : null,
+        label: (roadFace(route[battleIndex]) || {}).label || "戦闘",
+        pic: (roadFace(route[battleIndex]) || {}).src || "",
         after: () => {
           floorOnFade = false;
           if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
@@ -15374,7 +15526,7 @@
       { id: "long-sword", name: "ロングソード", slot: "sword", stars: 1, atk: 2, effect: "★　ATK+2", image: "gear-long-sword.jpg?v=5" },
       { id: "poison-sword", name: "ポイズンソード", slot: "sword", stars: 3, atk: 1, poisonHit: 1, effect: "★★★　ATK+1。アタックカードでダメージを与えるたび毒+1（敵のシールドでも毒は入る）", image: "gear-poison-sword.jpg?v=8" },
       { id: "excalibur", name: "大天使の剣", slot: "sword", stars: 3, atk: 5, ignoreTrait: true, effect: "★★★　ATK+5。相手の特性を無視してダメージを与える", image: "gear-excalibur.jpg?v=8" },
-      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。戦闘開始時、ドロー1", image: "gear-hunter-dagger.jpg?v=1" },
+      { id: "hunter-dagger", name: "狩人の短剣", slot: "sword", stars: 1, atk: 1, openingDraw: 1, effect: "★　ATK+1。1ターン目、SPD+1", image: "gear-hunter-dagger.jpg?v=1" },
       { id: "rapier", name: "レイピア", slot: "sword", stars: 1, atk: 1, firstAttack: 3, effect: "★　ATK+1。毎ターン、最初に使うアタックのダメージ+3", image: "gear-rapier.jpg?v=1" },
       { id: "vamp-sword", name: "吸血の剣", slot: "sword", stars: 2, atk: 3, vampHeal: 6, effect: "★★　ATK+3。敵を倒したとき、HPを6回復", image: "gear-vamp-sword.jpg?v=2" },
       { id: "gale-sword", name: "疾風の剣", slot: "sword", stars: 2, atk: 2, gale: true, effect: "★★　ATK+2。1ターンにアタックを3枚使うと、次のターンSPD+1", image: "gear-gale-sword.jpg?v=1" },
@@ -15402,7 +15554,7 @@
       { id: "vital-bracelet", name: "体力の腕輪", slot: "braceletAny", stars: 2, vital: true, effect: "★★　最大HP+20%（レベルと祝福のあと。切り上げ。1本につき）", image: "gear-vital-bracelet.jpg?v=1" },
       { id: "cursed-bracelet", name: "呪われた腕輪", slot: "braceletAny", stars: 2, cursed: true, locked: true, effect: "★★　外せない。戦闘勝利時の最大HP上昇が無効。毎ターン開始時、ATK+1とDEF+1（その戦闘のあいだ残る）", image: "gear-cursed-bracelet.jpg?v=1" },
       { id: "demon-bracelet", name: "悪魔の腕輪", slot: "braceletAny", stars: 2, demonTurn: true, effect: "★★　自分のターン開始時、5ダメージを受け、HPを7回復", image: "gear-demon-bracelet.jpg?v=1" },
-      { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, pure: true, effect: "★★　プレイエリアのジャンルが揃っているとき、そのカードに書かれた数字を1.5倍（切り上げ）。クイックは関係ない", image: "gear-pure-bracelet.jpg?v=1" },
+      { id: "pure-bracelet", name: "一途の腕輪", slot: "braceletAny", stars: 2, oneGenre: true, effect: "★★　プレイエリアのカードが2枚以上あり、すべて同じジャンルなら、次のターンのマナ+1、SPD+1。クイックは数えない", image: "gear-pure-bracelet.jpg?v=1" },
       { id: "empty-bracelet", name: "無心の腕輪", slot: "braceletAny", stars: 2, emptyHand: true, effect: "★★　手札0枚でターンを終了すると、次のターン、マナ+1、SPD+2", image: "gear-empty-bracelet.jpg?v=1" },
       { id: "angel-bracelet", name: "大天使の腕輪", slot: "braceletAny", stars: 3, statusImmune: true, effect: "★★★　毒・炎上・呪いにならない。これから増える状態異常も無視する", image: "gear-angel-bracelet.jpg?v=1" },
       { id: "tyrant-bracelet", name: "覇王の腕輪", slot: "braceletAny", stars: 3, twice: true, effect: "★★★　プレイエリアのカードが1枚だけのとき、その効果は2回。毒、回復、ドローも含む", image: "gear-tyrant-bracelet.jpg?v=1" },
@@ -15418,22 +15570,22 @@
     ];
     // 汎用の戦利品。1点もの。強敵は必ず、探索からも、未入手だけ出す。所持の上限は無い。絵は loot-{id}.jpg。
     const LOOT_RELICS = [
-      ["whetstone", "戦士の砥石", 1, "戦闘開始時 ATK+1", "openAtk"],
-      ["guard-charm", "守護の護符", 1, "戦闘開始時 DEF+1", "openDef"],
-      ["travel-cloak", "旅人のマント", 1, "戦闘開始時、ブロック8を得る。", "openBlock"],
+      ["whetstone", "戦士の砥石", 1, "1ターン目 ATK+1", "openAtk"],
+      ["guard-charm", "堅そうな岩", 1, "DEF+1", "openDef"],
+      ["travel-cloak", "旅人のマント", 1, "1ターン目、ブロック8を得る。", "openBlock"],
       ["duel-bell", "決闘の鐘", 1, "各戦闘の1ターン目、最初のアタックダメージ+5。", "bell"],
-      ["swift-boots", "俊足のブーツ", 2, "戦闘開始時、ドロー2。", "openDraw"],
+      ["swift-boots", "俊足のブーツ", 2, "1ターン目、SPD+2。", "openDraw"],
       ["old-watch", "古びた懐中時計", 2, "各戦闘の1ターン目だけ、マナ+1。", "clock"],
-      ["war-horn", "指揮官の角笛", 3, "戦闘開始時 ATK+2、DEF+2", "horn"],
-      ["small-hourglass", "小さな砂時計", 1, "ターン終了時にマナが余っていた場合、ブロック6を得る。", "hourglass"],
-      ["tailwind", "追い風の羽", 2, "2ターン目開始時、ドロー2。", "feather"],
+      ["war-horn", "指揮官の角笛", 3, "1ターン目 ATK+2、DEF+2", "horn"],
+      ["small-hourglass", "小さな砂時計", 1, "ターン終了時、未使用のマナがあるとブロック6を得る。", "hourglass"],
+      ["tailwind", "追い風の羽", 2, "2ターン目、SPD+2。", "feather"],
       ["mana-shard", "魔力の欠片", 2, "3・6・9ターン目開始時、マナ+1。", "shard"],
-      ["wisdom-pen", "知恵の羽根ペン", 2, "3・6・9ターン目開始時、ドロー2。", "pen"],
+      ["wisdom-pen", "知恵の羽根ペン", 2, "3・6・9ターン目、SPD+2。", "pen"],
       ["tactician", "戦術家の眼鏡", 2, "ターン終了時、手札が3枚以上残っていたら次のターンのSPD+1。", "glasses"],
       ["old-flag", "古戦場の旗", 3, "4ターン目開始時、この戦闘中ATK+3、DEF+3。", "flag"],
       ["book-all", "万物の書", 3, "毎ターン、最初に使うカードのコストが0になる。", "tome"],
-      ["poison-vial", "毒塗りの小瓶", 1, "戦闘開始時、毒+3", "openPoison"],
-      ["flint", "火打ち石", 1, "戦闘開始時、炎上+3", "openBurn"],
+      ["poison-vial", "毒塗りの小瓶", 1, "1ターン目、毒+3", "openPoison"],
+      ["flint", "火打ち石", 1, "1ターン目、炎上+3", "openBurn"],
       ["iron-ball", "重い鉄球", 2, "1ターンに1枚もアタックを使わなかった場合、次のターン最初のアタックダメージ+5。", "iron"],
       ["combo-mark", "連撃の証", 2, "1ターンにカードを4枚使用した時、相手に6ダメージを与える。", "combo"],
       ["heavy-belt", "重戦士のベルト", 2, "コスト2以上のカードを使うたび、相手に5ダメージを与える。", "belt"],
@@ -15442,14 +15594,14 @@
       ["siege-hammer", "破城の槌", 3, "ブロックを持っている敵に与えるダメージ+4。", "hammer"],
       ["heal-herb", "癒やしの薬草", 1, "戦闘終了時、自分のHPを4回復する。", "herb"],
       ["life-seed", "生命の種", 1, "入手時、最大HP+10。現在HPも10回復。", "seed"],
-      ["spike-armor", "スパイクアーマー", 1, "自分が攻撃を受けた時、相手に3ダメージを返す。煙玉で0にした攻撃では返さない。", "spike"],
+      ["spike-armor", "スパイクアーマー", 1, "トゲ+3", "spike"],
       ["blood-bandage", "血塗られた包帯", 1, "各戦闘中、初めてHPダメージを受けた時、ブロック10を得る。", "bandage"],
       ["vamp-fang", "吸血の牙", 2, "強敵またはボスを倒した時、自分のHPを20回復する。", "fang"],
       ["train-weight", "鍛錬の重り", 2, "戦闘勝利時の最大HP上昇量がさらに+1される。", "weight"],
       ["last-stand", "背水の護符", 2, "自分のHPが50%以下の間、与えるダメージ+3。", "last"],
       ["sage-stone", "賢者の石", 3, "ターン終了時、自分のHPが50%以下ならHPを5回復する。", "sage"],
       ["gold-cat", "黄金の招き猫", 1, "戦闘勝利時の獲得★+1。", "cat"],
-      ["vip-card", "VIP会員証", 2, "お店の価格がすべて半額になる。端数切り捨て。最低★1。", "vip"],
+      ["vip-card", "VIP会員証", 2, "お店の商品をすべて半額で購入できる。", "vip"],
       ["glamp-card", "グランピング会員証", 2, "休憩マスでHPが全回復する。", "glamp"],
       ["gift-ticket", "商品券", 2, "お店で1度だけ、好きな商品を無料で購入できる。使用後消滅。", "coupon"],
       ["gravure", "グラビア雑誌", 3, "鍛冶屋の費用がすべて無料になる。", "gravure"],
@@ -15479,7 +15631,7 @@
       "power-bracelet": "ATK+2",
       "guard-bracelet": "DEF+2",
       "reuse-bracelet": "未使用マナを次のターンに持ち越す",
-      "hunter-dagger": "ATK+1\n戦闘開始時、ドロー1",
+      "hunter-dagger": "ATK+1\n1ターン目、SPD+1",
       "rapier": "ATK+1\n毎ターン、最初のアタックのダメージ+3",
       "vamp-sword": "ATK+3\n敵を倒したとき、HPを6回復",
       "gale-sword": "ATK+2\nアタックを3枚使うと、次のターンSPD+1",
@@ -15496,14 +15648,14 @@
       "vital-bracelet": "最大HP+20%",
       "cursed-bracelet": "外せない\n勝利時の最大HP上昇が無効\n毎ターン開始時、ATK+1 DEF+1",
       "demon-bracelet": "ターン開始時、5ダメージを受け、HPを7回復",
-      "pure-bracelet": "プレイエリアのジャンルが揃っているとき\n書かれた数字は1.5倍\nクイックは関係ない",
+      "pure-bracelet": "プレイエリアが2枚以上あり\nすべて同じジャンルなら、次のターン\nマナ+1\nSPD+1\nクイックは数えない",
       "empty-bracelet": "手札0枚でターンを終了すると、次のターン\nマナ+1\nSPD+2",
       "angel-bracelet": "毒・炎上・呪いにならない\nこれから増える状態異常も無視する",
       "tyrant-bracelet": "プレイエリアが1枚なら、その効果は2回",
       "chain-bracelet": "1枠目と2枠目が同じカードなら、2枚目は3倍",
       "dual-bracelet": "剣2枠か盾2枠\nこの腕輪は外せない",
       "solo-ring": "腕輪がこれだけのとき、マナ+1",
-      "whetstone": "戦闘開始時\nATK+1",
+      "whetstone": "1ターン目\nATK+1",
       "minotaur-horn": "自分のHPが50%以下の時、SPD+1",
       "death-scale": "カウントダウンの初期値を-1（最低1）",
       "hades-heart": "攻略中1度、HP0で最大HPの半分で復活。その戦闘ATK+3 DEF+3",
@@ -16151,7 +16303,7 @@
       if (item.halfAtk) return gearPunctLines("体力が半分以下の時、ATK+2。");
       if (item.halfMana) return gearPunctLines("ターン開始時に体力が半分以下ならマナ+1。");
       let text = String(item.effect || "");
-      text = text.replace(/★+/g, "").replace(/ボス/g, "");
+      text = text.replace(/★+(?![+＋\d])/g, "").replace(/ボス/g, "");
       if (Number(item.atk) > 0) text = text.replace(/ATK\s*[+＋]\s*\d+/g, "");
       if (Number(item.def) > 0) text = text.replace(/DEF\s*[+＋]\s*\d+/g, "");
       text = text.replace(/アクセサリー枠/g, "").replace(/アクセサリー/g, "");
@@ -17358,14 +17510,6 @@
       }
       if (result.blocked > 0 && !(result.hpLoss > 0)) fxGuard = "hold";
       log(hurtSentence(enemy.name, name, amount + extra, 0, result, crit), card, true);
-      if (hasRelic("spike") && !player.smoke && enemy && enemy.hp > 0 && !outcome) {
-        const back = applyDamage(enemy, 3, true);
-        if (back.hpLoss || back.blocked) {
-          slashFoe();
-          noteHit("enemy", back.hpLoss, 3);
-        }
-        log(`${heroName()}はスパイクアーマー。${enemy.name}に3ダメージ。`);
-      }
     }
 
     function pullPhoenix() {
@@ -20234,6 +20378,11 @@
         player.nextMana = (Number(player.nextMana) || 0) + 1;
         log(`${heroName()}は無心の腕輪。次のターン、マナ+1、SPD+2。`);
       }
+      if (anyBracelet("oneGenre") && inPlay.filter((card) => card && !playsImmediately(card)).length >= 2 && playAreaOneGenre()) {
+        rememberExtraDraw(1, "一途の腕輪+1");
+        player.nextMana = (Number(player.nextMana) || 0) + 1;
+        log(`${heroName()}は一途の腕輪。プレイエリアが同じジャンルで${inPlay.filter((card) => card && !playsImmediately(card)).length}枚。次のターン、マナ+1、SPD+1。`);
+      }
       if (anySword("gale") && (player.attacksPlayed || 0) >= 3) {
         player.nextSpd = (Number(player.nextSpd) || 0) + 1;
         log(`${heroName()}は疾風の剣。次のターン、SPD+1。`);
@@ -20245,7 +20394,7 @@
       }
       if (hasRelic("hourglass") && (Number(player.energy) || 0) > 0) {
         gainBlock(6);
-        log(`${heroName()}は小さな砂時計。マナが余ったので、ブロック6。`);
+        log(`${heroName()}は小さな砂時計。未使用のマナがあったので、ブロック6。`);
       }
       if (hasRelic("glasses") && hand.filter((card) => !card.keep && !isItemCard(card)).length >= 3) {
         rememberExtraDraw(1, "戦術家の眼鏡+1");
@@ -20377,6 +20526,10 @@
         if (hasBless("ironBless")) gainBlock(8, null, { noDef: true });
         if (hasRelic("openPoison") && enemy) addPoison(enemy, 3);
         if (hasRelic("openBurn") && enemy) addBurn(enemy, 3);
+        if (hasRelic("spike")) {
+          gainThorns(player, 3);
+          log(`${heroName()}はスパイクアーマー。トゲ+3。`);
+        }
       }
       if (turn === 2 && hasBless("ironBless")) gainBlock(8, null, { noDef: true });
       if (turn === 4 && hasRelic("flag")) {
@@ -21437,7 +21590,7 @@
     function rollBlessCard() {
       const offers = Object.keys(COMMON).map((name) => ({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }))
         .concat(classCards())
-        .filter((card) => (Number(card.stars) || 1) >= 2);
+        .filter((card) => (Number(card.stars) || 1) >= 2 && !isItemCard(card));
       const pick = offers[Math.floor(Math.random() * offers.length)] || { name: "ツインアタック", ...COMMON["ツインアタック"], stars: 3 };
       return keepCard(pick);
     }
@@ -22102,7 +22255,7 @@
         eventFloorCall = false;
         render();
         if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
-      }, { floor: announce ? floorNo() : null });
+      }, { floor: announce ? floorNo() : null, label: floorKind === "挑戦者に祝福を" ? "祝福" : floorKind === "物乞いに遭遇" ? "物乞い" : floorKind, pic: (roadFace(route[battleIndex]) || {}).src || "" });
     }
 
     function emptyRunSheet() {
@@ -23670,13 +23823,13 @@
         .concat(Object.keys(WARRIOR).filter((name) => !starterNames.has(name)))
         .filter((name) => {
           const def = COMMON[name] || WARRIOR[name] || {};
-          return (Number(def.stars) || 1) >= 2;
+          return (Number(def.stars) || 1) >= 2 && !isItemCard(def);
         });
       const rewardCards = (names, book) => names.map((name) => {
         const def = book[name] || {};
         return { name, stars: Number(def.stars) || 1 };
       });
-      const commonReward = rewardCards(Object.keys(COMMON), COMMON);
+      const commonReward = rewardCards(Object.keys(COMMON).filter((name) => !isItemCard(COMMON[name])), COMMON);
       const warriorReward = rewardCards(
         Object.keys(WARRIOR).filter((name) => !starterNames.has(name)),
         WARRIOR,
@@ -23720,7 +23873,7 @@
             <h2>勝利</h2>
             <ul>
               <li>★と、カード3枚をもらいます。</li>
-              <li>カードは共通と戦士から出します。敵のカードは${pct(ENEMY_CARD_RATE)}で、3枚のうち1枠になります。外れたときは、その枠も共通と戦士から補います。</li>
+              <li>カードは共通と戦士から出します。アイテムは入れません。アイテムは追加と、お店の2枠だけです。敵のカードは${pct(ENEMY_CARD_RATE)}で、3枚のうち1枠になります。外れたときは、その枠も共通と戦士から補います。</li>
               <li>枠の中では、先にレアリティを引きます。★60%、★★30%、★★★以上10%です。そのあと、当たった★のカードから均等に1枚です。その★が無いときは、残りの比率で引き直します。</li>
               <li>それに加えて、下の追加を1つだけ振ります。装備・アイテム・エンチャントは同時に出ません。</li>
             </ul>
@@ -27290,9 +27443,9 @@
       if (name === "アタック+" || name === "ブロック+") name = name.slice(0, -1);
       if (name === "乱打" || name === "ゴブリンアタック" || name === "ゴブリンの乱打") name = "トリプルアタック";
       if (name === "応急手当") name = "薬草";
-      if (name === "魔剣封印") name = "鍔迫り合い";
+      if (name === "魔剣封印" || name === "鍔迫り合い") name = "ウェポンブロック";
       const known = cardDef(name);
-      if (known && (name === "悪魔の剣" || name === "致命の一撃" || name === "鍔迫り合い")) {
+      if (known && (name === "悪魔の剣" || name === "致命の一撃" || name === "ウェポンブロック")) {
         const keep = {};
         for (const key of ["source", "copyNth", "enchant", "mastered", "fused", "boss", "image", "swordPlus", "token", "fightCopy", "starter"]) {
           if (card[key] != null && card[key] !== "") keep[key] = card[key];
@@ -27453,7 +27606,7 @@
       if (name === "アタック+" || name === "ブロック+") name = name.slice(0, -1);
       if (name === "乱打" || name === "ゴブリンアタック" || name === "ゴブリンの乱打") name = "トリプルアタック";
       if (name === "応急手当") name = "薬草";
-      if (name === "魔剣封印") name = "鍔迫り合い";
+      if (name === "魔剣封印" || name === "鍔迫り合い") name = "ウェポンブロック";
       if (name === "アタック" || name === "ブロック") {
         return { ...keepCard({ name, ...CARDS[name], stars: 1 }), source: "敵" };
       }
@@ -27472,7 +27625,7 @@
 
     function rewardPool() {
       const list = Object.keys(COMMON)
-        .filter((name) => !basicCardName(name))
+        .filter((name) => !basicCardName(name) && !isItemCard(COMMON[name]))
         .map((name) => ({ ...keepCard({ name, ...COMMON[name], stars: COMMON[name].stars || 1 }), source: "共通" }));
       list.push(...classCards().filter((card) => !basicCardName(card.name)));
       const seen = new Set();
@@ -27487,7 +27640,7 @@
       if (usesDragonRage(foe.name) && !seen.has("竜の怒り")) {
         list.push(playerCopy(dragonRageCard()));
       }
-      return list.filter((card) => !basicCardName(card.name));
+      return list.filter((card) => !basicCardName(card.name) && !isItemCard(card));
     }
 
     function drawDistinct(n) {
@@ -28105,8 +28258,8 @@
         victoryStarDouble = false;
       }
       starBurst = rewardStars;
-      pendingStars = rewardStars;
-      starsHomeSent = false;
+      pendingStars = 0; // 星が飛ぶ演出は無し。もらった数はすぐステータスへ入る（2026-11-27）
+      starsHomeSent = true;
       if (starHomeTimer) { clearTimeout(starHomeTimer); starHomeTimer = 0; }
       meta.stars = (Number(meta.stars) || 0) + rewardStars;
       persistMeta();
@@ -29334,7 +29487,12 @@
         return `<div class="meter hp ${cls || ""}" style="--cap:${cap}; --max:${cap}" aria-label="HP ${Math.round(hp)}/${Math.round(cap)}"><span${attr} style="width:${w}%"></span><b class="hp-now"><span${txt}>${Math.round(hp)}/${Math.round(cap)}</span></b><i class="hp-ticks"></i></div>`;
       };
       if (gained) {
-        return `<div class="event-hp two"><div class="hp-row"><em class="hp-label">回復前</em><div class="meters">${bar(restBefore, false, "was")}</div><b class="hp-plus" style="visibility:hidden">+${Math.round(restAfter - restBefore)}</b></div><div class="hp-row"><em class="hp-label after">回復後</em><div class="meters">${bar(now, true, "after")}</div><b class="hp-plus">+${Math.round(restAfter - restBefore)}</b></div></div>`;
+        // 1本のバー：回復前の位置に白い線、そこから回復ぶんを緑のしま模様で見せる
+        const bw = (Math.max(0, Math.min(cap, restBefore)) / cap) * 100;
+        const gw = (Math.max(0, Math.min(cap, restAfter) - Math.min(cap, restBefore)) / cap) * 100;
+        const mark = `<i class="hp-gain" style="left:${bw}%; --gw:${gw}%"></i><i class="hp-before" style="left:${bw}%"></i>`;
+        const one = bar(now, true, "after").replace('<i class="hp-ticks"></i>', `${mark}<i class="hp-ticks"></i>`);
+        return `<div class="event-hp two"><div class="hp-row"><div class="meters">${one}</div><b class="hp-plus">+${Math.round(restAfter - restBefore)}</b></div></div>`;
       }
       return `<div class="event-hp"><div class="meters">${bar(now, true, "")}</div></div>`;
     }
@@ -29579,8 +29737,8 @@
         const picked = pullCardFrom([hand], card) || card;
         battleExile.push(picked);
         const shield = printedStrike(picked);
-        gainBlock(shield, { name: "鍔迫り合い" });
-        log(`${heroName()}は鍔迫り合い。${picked.name}を戦闘中除外した。シールド${shield}。`);
+        gainBlock(shield, { name: "ウェポンブロック" });
+        log(`${heroName()}はウェポンブロック。${picked.name}を戦闘中除外した。シールド${shield}。`);
       } else if (choice.kind === "pact") {
         if (!chosen.length) return;
         takeDemonSwords(chosen, false);
@@ -29626,7 +29784,7 @@
       };
       const choice = lootChoice;
       const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "tactic" || choice.kind === "pact" || choice.kind === "taste" || choice.kind === "master") && !choice.picked.length;
-      const names = { purge: "大浄化の祝福", copy: "白紙の巻物", shelf: "無限の書架", chapel: "礼拝堂", mirror: "鏡の破片", call: "血の呼び声", seal: "鍔迫り合い", tactic: "戦術眼", pact: "血の契約", taste: "味見", master: "熟練の極意" };
+      const names = { purge: "大浄化の祝福", copy: "白紙の巻物", shelf: "無限の書架", chapel: "礼拝堂", mirror: "鏡の破片", call: "血の呼び声", seal: "ウェポンブロック", tactic: "戦術眼", pact: "血の契約", taste: "味見", master: "熟練の極意" };
       const cards = choice.cards.map((card, index) => {
         const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
         return `<button type="button" class="enchant-card${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
@@ -29889,7 +30047,7 @@
             </div>
             <div class="hud-gear plate-gear">${gearMarkup()}</div>
             <div class="hud-actions">
-              ${hudMenuHtml({ titleAction: "ask-title", titleDisabled: !(phase === "player" || rewardStep === "paths") })}
+              ${hudMenuHtml({ titleAction: "ask-title", titleDisabled: !(phase === "player" || outcome === "win" || rewardStep === "paths") })}
               <button type="button" class="small-btn phone-only" data-action="phone-log">ログ</button>
             </div>
           </header>
