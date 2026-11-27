@@ -57,10 +57,10 @@
       row-gap: 0;
       column-gap: 22px;
       overflow: hidden;
+      /* 手札机の一枚絵を、プレイ画面全体の背景に（2026-11-28） */
       background:
-        radial-gradient(ellipse at 50% 8%, rgba(70, 48, 22, 0.22), transparent 52%),
-        radial-gradient(ellipse at 50% 100%, rgba(8, 6, 5, 0.95), #050403 72%),
-        #0a0908;
+        linear-gradient(180deg, rgba(8, 6, 5, 0.28) 0%, rgba(8, 6, 5, 0.12) 42%, rgba(8, 6, 5, 0.35) 100%),
+        url("bg-play.jpg?v=7") center / cover no-repeat;
     }
     .battle-screen.no-log {
       grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr);
@@ -83,16 +83,70 @@
       border-radius: 10px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
-      border: 8px solid #e4c27a;
+      /* 四辺とも外側が同じ明るさ、内側の下限も同じ黒 */
+      --frame: 18px;
+      --frame-hi: #6a6a6a;
+      --frame-lo: #101010;
+      border: var(--frame) solid transparent;
       background:
-        linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%),
-        var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat;
+        linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%) padding-box,
+        var(--dungeon-art, url("dungeon-bg.jpg")) center 38% / cover no-repeat padding-box,
+        linear-gradient(var(--frame-hi), var(--frame-lo)) top / 100% var(--frame) no-repeat border-box,
+        linear-gradient(var(--frame-lo), var(--frame-hi)) bottom / 100% var(--frame) no-repeat border-box,
+        linear-gradient(to right, var(--frame-hi), var(--frame-lo)) left / var(--frame) 100% no-repeat border-box,
+        linear-gradient(to left, var(--frame-hi), var(--frame-lo)) right / var(--frame) 100% no-repeat border-box;
       box-shadow:
-        0 0 0 2px #5c3a12,
-        inset 0 0 0 2px #fff1c4,
-        0 14px 28px rgba(0, 0, 0, 0.55);
+        0 0 0 1px var(--frame-hi),
+        0 0 0 3px #0a0a0a,
+        0 16px 24px rgba(0, 0, 0, 0.55);
       isolation: isolate;
       margin-top: 14px;
+    }
+    /* 戦闘：ダンジョン背景を上の階層・装備まで一体にする。配置は同じ（2026-11-28） */
+    .battle-screen:not(.event-host) .battle-bands {
+      grid-area: unset;
+      grid-column: 2;
+      grid-row: 1 / 3;
+      grid-template-rows: subgrid;
+      margin-top: 0;
+      /* 枠は戦闘のマスだけ。上の洞窟・デッキ確認にはかけない */
+      border: 0;
+      box-shadow: none;
+      background:
+        linear-gradient(180deg, rgba(10, 8, 7, 0.22) 0%, rgba(10, 8, 7, 0.16) 28%, rgba(10, 8, 7, 0.18) 52%, rgba(10, 8, 7, 0.62) 100%),
+        var(--dungeon-art, url("dungeon-bg.jpg")) center 30% / cover no-repeat;
+    }
+    .battle-screen.no-log:not(.event-host) .battle-bands { grid-column: 2; }
+    .battle-screen:not(.event-host) .battle-bands > .stage {
+      grid-row: 2;
+      grid-column: 1;
+      border-radius: 10px;
+      border: var(--frame) solid var(--frame-lo);
+      box-shadow:
+        0 0 0 2px var(--frame-hi),
+        0 0 0 3px #050505,
+        inset 0 0 0 2px var(--frame-hi),
+        inset 0 0 0 5px #000;
+    }
+    .battle-screen:not(.event-host) .hud-top {
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      border-image: none;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.52);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 6px 16px rgba(0, 0, 0, 0.4);
+      padding: 14px 22px 14px;
+      /* 左右は金枠の内側いっぱい。下はステータス板とすき間を空ける */
+      margin: 6px 4px 14px;
+    }
+    .battle-screen:not(.event-host) .hero-stack,
+    .battle-screen:not(.event-host) .foe-stack {
+      top: 14px;
+    }
+    .battle-screen:not(.event-host) .hud-top .dungeon-name {
+      text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.9);
+    }
+    .battle-screen:not(.event-host) .hud-top .dungeon-progress {
+      text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.85);
     }
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
     .stage { grid-area: 1 / 1; min-width: 0; overflow: visible; position: relative; z-index: 3; }
@@ -137,44 +191,15 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      container-type: inline-size;
-      margin: 14px 0 14px 2px;
-      padding: 0 12px 0;
-      border-radius: 6px;
+      margin: -10px 0 -4px 2px;
+      padding: 18px 36px 32px;
+      border-radius: 0;
       border: 0;
-      /* ログと同じ巻物。羊皮紙は地図で、道はその上に並ぶ */
-      background: url("map-scroll-paper.jpg?v=1") center / calc(100% - 10px) 100% no-repeat;
-      background-position: calc(50% - 2px) 50%;
+      /* 宝の地図の下地は外す。プレイ背景（机）を透かす（2026-11-28） */
+      background: transparent;
       box-shadow: none;
       color: var(--cream);
       font-family: var(--log-serif);
-    }
-    .road-map::before,
-    .road-map::after {
-      content: "";
-      display: block;
-      position: relative;
-      z-index: 2;
-      flex: 0 0 auto;
-      width: auto;
-      margin-left: -10px;
-      margin-right: -14px;
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      pointer-events: none;
-    }
-    .road-map::before {
-      aspect-ratio: 968 / 132;
-      margin-bottom: 8px;
-      background-image: url("log-scroll-top.jpg?v=1");
-      filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
-    }
-    .road-map::after {
-      aspect-ratio: 968 / 134;
-      background-image: url("log-scroll-bottom.jpg?v=1");
-      filter:
-        drop-shadow(0 -4px 5px rgba(0, 0, 0, 0.3))
-        drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
     }
     .road-map h2 {
       flex: 0 0 auto;
@@ -242,6 +267,12 @@
       object-fit: cover;
       object-position: center;
       background: transparent;
+      /* 道のマス：今までの金枠（2026-11-28） */
+      box-shadow:
+        0 0 0 2px #5c3a12,
+        inset 0 0 0 2px #fff1c4,
+        0 0 0 5px #e4c27a,
+        0 8px 16px rgba(0, 0, 0, 0.45);
     }
     .road-node > i {
       display: grid;
@@ -266,7 +297,6 @@
     .road-node.tone-lost {
       padding: 0;
       background: transparent;
-      box-shadow: none;
     }
     .road-node.now {
       z-index: 2;
@@ -280,7 +310,6 @@
     .road-node.now > img,
     .road-node.now > i {
       border-radius: 8px;
-      box-shadow: none;
     }
     .road-node.now::after {
       content: "";
@@ -308,10 +337,10 @@
     }
     .road-back {
       position: absolute;
-      z-index: 6;
+      z-index: 8;
       left: 14px;
       right: 14px;
-      bottom: calc(8px + 100cqi * 134 / 968);
+      bottom: 12px;
       margin: 0;
       padding: 7px 8px 8px;
       border: 0;
@@ -454,17 +483,14 @@
       align-items: center;
       column-gap: 12px;
       min-width: 0;
-      padding: 0 8px;
+      padding: 0 12px;
       border-radius: 0;
-      /* 行の大きさに合わせて作った金のタイトル札。両端の飾りは歪めず、縁の模様は繰り返し、中央だけ伸ばす */
-      border-style: solid;
-      border-color: transparent;
-      border-width: 30px 34px;
-      border-image: url("header-plate-leather.jpg?v=1") 56 64 fill / 30px 34px stretch;
+      /* いちばん最初のタイトル札に戻す（2026-11-28） */
+      border: 10px solid transparent;
+      border-image: url("header-plate.jpg?v=1") 60 fill / 10px stretch;
       background: none;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
     }
-    .hud-top .dungeon-name { text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.8); }
     .dungeon {
       display: flex;
       align-items: baseline;
@@ -592,7 +618,7 @@
       background: rgba(16, 12, 10, 0.96);
       box-shadow: 0 14px 28px rgba(0, 0, 0, 0.5);
     }
-    .hud-menu-pop[hidden] { display: none; }
+    .hud-menu-pop[hidden] { display: none; animation: none; }
     .hud-menu-pop .small-btn {
       height: auto;
       min-height: 48px;
@@ -1900,6 +1926,7 @@
     .enemy-main[data-size="small"] { --foe-scale: 0.5; max-width: min(56%, 260px); --cut-x: 50%; --cut-y: 62%; --pop-y: 46%; }
     .enemy-main[data-size="same"] { --foe-scale: 0.9; max-width: min(78%, 360px); --cut-x: 50%; --cut-y: 50%; --pop-y: 34%; }
     .enemy-main[data-size="huge"] { --foe-scale: 1; max-width: min(100%, 640px); --cut-x: 50%; --cut-y: 34%; --pop-y: 18%; }
+    .enemy-main[data-size="tall"] { --foe-scale: 0.85; max-width: min(92%, 560px); --cut-x: 50%; --cut-y: 38%; --pop-y: 22%; }
     /* 自分は一定。敵の見える高さだけ、腰・同じ・枠いっぱい。足元は下端でそろえる。 */
     html.stage-fit .duel-side.ally,
     html.stage-fit .duel-side.foe,
@@ -1935,7 +1962,9 @@
       --pop-y: calc(var(--ink-mid, 0.5) * 100%);
     }
     html.stage-fit .enemy-main[data-size="huge"],
-    .fx-lab-preview .enemy-main[data-size="huge"] { max-width: none; }
+    html.stage-fit .enemy-main[data-size="tall"],
+    .fx-lab-preview .enemy-main[data-size="huge"],
+    .fx-lab-preview .enemy-main[data-size="tall"] { max-width: none; }
     html.stage-fit .foe-body,
     .fx-lab-preview .foe-body {
       flex: 0 0 auto;
@@ -2232,15 +2261,15 @@
     .rare-show .gift-img,
     .rare-show .shop-gear,
     .rare-show > img {
-      animation: rare-pop 0.62s cubic-bezier(0.16, 0.84, 0.28, 1) var(--d, 0s) both;
+      animation: rare-pop 0.38s cubic-bezier(0.16, 0.84, 0.28, 1) var(--d, 0s) both;
     }
-    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.38s; }
-    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.55s; }
-    /* 金（★★★以上）：大きく出て、ゆっくり落ち着く */
+    .rare-1 .card, .rare-1 .gift-img, .rare-1 .shop-gear, .rare-1 > img { animation-duration: 0.26s; }
+    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-duration: 0.34s; }
+    /* 金（★★★以上）：大きく出て、すぐ落ち着く */
     .rare-3 .card, .rare-3 .gift-img, .rare-3 .shop-gear, .rare-3 > img,
     .rare-4 .card, .rare-4 .gift-img, .rare-4 .shop-gear, .rare-4 > img,
-    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-gold; animation-duration: 1.5s; animation-timing-function: cubic-bezier(0.22, 0.8, 0.3, 1); }
-    .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 1.05s; }
+    .rare-5 .card, .rare-5 .gift-img, .rare-5 .shop-gear, .rare-5 > img { animation-name: rare-pop-gold; animation-duration: 0.72s; animation-timing-function: cubic-bezier(0.22, 0.8, 0.3, 1); }
+    .rare-boss .card, .rare-boss .gift-img, .rare-boss .shop-gear, .rare-boss > img { animation-name: rare-pop-hot; animation-duration: 0.58s; }
     /* 報酬カードは、手札で強くなるときの脈打ち。色だけレアリティ */
     .reward-pick.rare-1,
     .gift-show.rare-1,
@@ -2358,24 +2387,24 @@
     .gift-btn.rare-5 .card.preview,
     .gift-btn.rare-boss .card.preview {
       animation:
-        rare-pop 0.62s cubic-bezier(0.16, 0.84, 0.28, 1) both,
+        rare-pop 0.38s cubic-bezier(0.16, 0.84, 0.28, 1) both,
         reward-lit 1.15s ease-in-out infinite;
     }
     .reward-pick.rare-1 .card.preview,
     .gift-show.rare-1 .card.preview,
-    .gift-btn.rare-1 .card.preview { animation-duration: 0.38s, 1.15s; }
+    .gift-btn.rare-1 .card.preview { animation-duration: 0.26s, 1.15s; }
     .reward-pick.rare-3 .card.preview,
     .gift-show.rare-3 .card.preview,
-    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 1.5s, 1.15s; }
+    .gift-btn.rare-3 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 0.72s, 1.15s; }
     .reward-pick.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview,
     .gift-show.rare-4 .card.preview,
     .gift-show.rare-5 .card.preview,
     .gift-btn.rare-4 .card.preview,
-    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 1.5s, 1.15s; }
+    .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, reward-lit-gold; animation-duration: 0.72s, 1.15s; }
     .reward-pick.rare-boss .card.preview,
     .gift-show.rare-boss .card.preview,
-    .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 1.05s, 1.15s; }
+    .gift-btn.rare-boss .card.preview { animation-name: rare-pop-hot, reward-lit; animation-duration: 0.58s, 1.15s; }
     @keyframes reward-lit {
       0%, 100% {
         box-shadow:
@@ -2583,16 +2612,16 @@
           0 22px 36px rgba(0, 0, 0, 0.55);
       }
     }
-    .menu.event.bless .gift-btn[class*="rare-"] .card.preview { animation-name: rare-pop, bless-lit; animation-duration: 0.62s, 1.6s; }
+    .menu.event.bless .gift-btn[class*="rare-"] .card.preview { animation-name: rare-pop, bless-lit; animation-duration: 0.38s, 1.6s; }
     .menu.event.bless .gift-btn.rare-3 .card.preview,
     .menu.event.bless .gift-btn.rare-4 .card.preview,
-    .menu.event.bless .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, bless-lit; animation-duration: 1.5s, 1.6s; }
+    .menu.event.bless .gift-btn.rare-5 .card.preview { animation-name: rare-pop-gold, bless-lit; animation-duration: 0.72s, 1.6s; }
     /* 銀（★★）：小さく動く */
-    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-name: rare-pop-silver; animation-duration: 0.5s; }
+    .rare-2 .card, .rare-2 .gift-img, .rare-2 .shop-gear, .rare-2 > img { animation-name: rare-pop-silver; animation-duration: 0.32s; }
     .reward-pick.rare-2 .card.preview,
     .gift-show.rare-2 .card.preview,
-    .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, reward-lit; animation-duration: 0.5s, 1.15s; }
-    .menu.event.bless .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, bless-lit; animation-duration: 0.5s, 1.6s; }
+    .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, reward-lit; animation-duration: 0.32s, 1.15s; }
+    .menu.event.bless .gift-btn.rare-2 .card.preview { animation-name: rare-pop-silver, bless-lit; animation-duration: 0.32s, 1.6s; }
     @keyframes rare-pop-silver {
       0% { transform: scale(0.94); filter: brightness(1.6) drop-shadow(0 0 8px var(--rare)); }
       4.17% { transform: scale(0.9553); filter: brightness(1.556) drop-shadow(0 0 9px var(--rare)); }
@@ -5440,10 +5469,9 @@
       position: relative;
       z-index: 8;
       border-radius: 0 0 16px 16px;
-      background:
-        linear-gradient(180deg, rgba(10, 8, 7, 0.35) 0%, rgba(10, 8, 7, 0.12) 40%, rgba(10, 8, 7, 0.45) 100%),
-        url("bg-hand.jpg?v=1") center / 100% 100% no-repeat;
-      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+      /* 全体背景（bg-play）を透かして一枚に見せる */
+      background: transparent;
+      box-shadow: none;
     }
     .pile-pair {
       display: flex;
@@ -5556,54 +5584,22 @@
       overflow-wrap: anywhere;
       margin: 14px 2px 14px 0;
       padding: 0 22px 0;
-      border-radius: 6px;
-      border: 0;
-      /* 羊皮紙の巻物：ログの大きさに合わせて伸び、上下に巻き軸が付く */
-      background: url("log-scroll-paper.jpg?v=1") center / 100% 100% no-repeat;
+      border-radius: 0;
+      border-style: solid;
+      border-color: transparent;
+      border-width: 36px 31px 29px 35px;
+      /* 巻物は一枚。上下の軸と左右の金具は固定し、真ん中の紙だけがログの大きさに伸びる */
+      border-image: url("log-scroll-whole.png?v=1") 170 147 136 166 fill / 36px 31px 29px 35px stretch;
+      background: none;
       box-shadow: none;
       font-family: var(--log-serif);
     }
     .battle-log::before,
-    .battle-log::after {
-      content: "";
-      display: block;
-      position: sticky;
-      z-index: 2;
-      width: auto;
-      margin: 0 -22px;
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      /* 元絵の四隅の暗い茶色だけ隠す。軸の先までは削らない */
-      border-radius: 10px;
-    }
-    /* 巻き軸は大きく。下の軸は、ログが短くても巻物の一番下に固定（2026-11-27） */
+    .battle-log::after { content: none; }
     .battle-log { display: flex; flex-direction: column; }
     .battle-log > * { flex: 0 0 auto; }
-    /* 影は上から落ちる向きで自然に。上下はそれぞれの専用画像をそのまま使う（反転しない） */
-    .battle-log::before {
-      top: 0;
-      flex: 0 0 auto;
-      aspect-ratio: 968 / 132;
-      margin-bottom: 8px;
-      background-image: url("log-scroll-top.jpg?v=1");
-      filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
-    }
-    .battle-log::after {
-      bottom: 0;
-      flex: 0 0 auto;
-      aspect-ratio: 968 / 134;
-      margin-top: auto;
-      background-image: url("log-scroll-bottom.jpg?v=1");
-      transform: none;
-      /* 上向き＝紙に落ちる影、下向き＝背景に落ちる影（光は上から） */
-      filter:
-        drop-shadow(0 -4px 5px rgba(0, 0, 0, 0.3))
-        drop-shadow(0 5px 6px rgba(0, 0, 0, 0.38));
-    }
-    /* 羊皮紙は巻き軸より一回り狭く、中心に置く（軸からはみ出さない） */
-    .battle-log { padding: 0 34px 0; background-size: calc(100% - 16px) 100%; background-position: calc(50% + 3px) 50%; scrollbar-width: none; scrollbar-gutter: auto; }
+    .battle-log { padding: 8px 6px 8px; scrollbar-width: none; scrollbar-gutter: auto; }
     .battle-log::-webkit-scrollbar { display: none; width: 0; height: 0; }
-    .battle-log::before, .battle-log::after { margin-left: -30px; margin-right: -38px; }
     .battle-log h2 {
       margin: 0 0 12px;
       padding: 4px 8px 8px;
@@ -6526,6 +6522,7 @@
       30% { opacity: 0.5; }
       100% { opacity: 0; background-position: 100% 100%; }
     }    @media (prefers-reduced-motion: reduce) {
+      .overlay.pop-enter, .overlay.pop-enter > .panel, .hud-menu-pop.pop-enter { animation: none; }
       .hand .card.deal, .fly-card, .end.ready, .fly-star, .victory-flash, .win-pose, .win-foe, .win-rays, .win-spark, .win-banner, .win-rain i, .fatal-call, .play-card.arriving .card.preview, .play-side.foe .play-card.on .card.preview, .rare-burst, .rare-screen, .rare-show .card, .rare-show .gift-img, .rare-show .shop-gear, .rare-show > img, .reward-row.rare-jackpot, .gift-row.rare-jackpot, .shop-row.rare-jackpot, .gear-compare.rare-jackpot, .reward-altar .reward-rays, .reward-altar .reward-pick, .mastery-rays, .mastery-stage .card.preview, .mastery-choice, .mana-read.on, .mana-read b { animation: none; transition: none; }
       .reward-pick[class*="rare-"] .card.preview,
       .gift-show[class*="rare-"] .card.preview,
@@ -7368,6 +7365,33 @@
       background: rgba(8, 6, 5, 0.4);
       display: grid;
       place-items: center;
+    }
+    /* 各種ポップ：急に出さず、うすく→はっきり／少し下から出る（2026-11-28） */
+    .overlay.pop-enter {
+      animation: pop-veil 0.3s ease both;
+    }
+    .overlay.pop-enter > .panel {
+      animation: pop-panel 0.36s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+    }
+    .overlay.pop-settled,
+    .overlay.pop-settled > .panel {
+      animation: none;
+    }
+    @keyframes pop-veil {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pop-panel {
+      from { opacity: 0; transform: translateY(22px) scale(0.94); }
+      to { opacity: 1; transform: none; }
+    }
+    .hud-menu-pop.pop-enter {
+      transform-origin: top right;
+      animation: pop-menu 0.22s cubic-bezier(0.16, 0.84, 0.32, 1) both;
+    }
+    @keyframes pop-menu {
+      from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+      to { opacity: 1; transform: none; }
     }
     .overlay.paths {
       top: 84px;
@@ -13342,7 +13366,7 @@
     html.phone .hero-stack { top: 4px; width: min(168px, 46%); transform: none; }
     html.phone .event-gear .plate-gear .gear-frame { width: 100%; max-width: none; height: auto; }
     html.phone .event-gear .plate-gear .gear-slot { width: 100%; flex-basis: auto; max-width: none; }
-    html.phone .battle-bands { border-radius: 12px; border-width: 5px; }
+    html.phone .battle-bands { border-radius: 12px; --frame: 12px; }
     html.phone .foe-stack { width: min(168px, 46%); }
     html.phone .foe-plate[data-rank="雑魚"],
     html.phone .foe-plate[data-rank="普通"],
@@ -13554,50 +13578,37 @@
     /* レア演出（2026-11-27 作り直し）。枠の光ではなく、
        ①カードが裏から返って現れる ②カードの面を斜めの光が走る（箔） ③金以上は虹色の箔
        ④金以上が出ているとき、ほかの選択肢が少し暗くなる。★1は今までどおり。 */
-    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview,
-    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview,
-    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview,
-    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview,
-    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview {
+    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview, .shop-slot.rare-2 .card.preview,
+    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview, .shop-slot.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview, .shop-slot.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview, .shop-slot.rare-5 .card.preview,
+    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview, .shop-slot.rare-boss .card.preview {
       position: relative;
       --foil: rgba(232, 242, 255, 0.85);
       transform-origin: 50% 50%;
     }
     .rare-3 .card.preview, .rare-4 .card.preview, .rare-5 .card.preview, .rare-boss .card.preview { --foil: rgba(255, 232, 150, 0.95); }
-    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview {
-      animation: rare-flip 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+    .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview, .shop-slot.rare-2 .card.preview {
+      animation: rare-flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
     }
-    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview,
-    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview,
-    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview {
-      animation: rare-flip-hot 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
+    .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview, .shop-slot.rare-3 .card.preview,
+    .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview, .shop-slot.rare-4 .card.preview,
+    .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview, .shop-slot.rare-5 .card.preview {
+      animation: rare-flip-hot 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
     }
-    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview {
-      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+    .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview, .shop-slot.rare-boss .card.preview {
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
     }
     /* 敵のカード報酬：出方はボスと同じ。脈打つグローの色だけレアリティどおり（2026-11-28） */
     .reward-pick.reward-foe.rare-1 .card.preview,
     .reward-pick.reward-foe.rare-2 .card.preview,
     .reward-pick.reward-foe.rare-boss .card.preview {
-      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
     }
     .reward-pick.reward-foe.rare-3 .card.preview,
     .reward-pick.reward-foe.rare-4 .card.preview,
     .reward-pick.reward-foe.rare-5 .card.preview {
-      animation: rare-flip-hot 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
-    }
-    @keyframes rare-flip {
-      0% { transform: perspective(700px) rotateY(-100deg) scale(0.82); filter: brightness(3); opacity: 0; }
-      55% { transform: perspective(700px) rotateY(10deg) scale(1.1); filter: brightness(1.7); opacity: 1; }
-      80% { transform: perspective(700px) rotateY(-3deg) scale(1.02); filter: brightness(1.15); }
-      100% { transform: none; filter: none; opacity: 1; }
-    }
-    @keyframes rare-flip-hot {
-      0% { transform: perspective(700px) rotateY(-180deg) scale(0.7); filter: brightness(4) saturate(0.2); opacity: 0; }
-      45% { transform: perspective(700px) rotateY(12deg) scale(1.2); filter: brightness(2.4) saturate(1.5); opacity: 1; }
-      70% { transform: perspective(700px) rotateY(-5deg) scale(1.06); filter: brightness(1.4) saturate(1.2); }
-      85% { transform: perspective(700px) rotateY(2deg) scale(1.01); filter: brightness(1.1); }
-      100% { transform: none; filter: none; opacity: 1; }
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
     }
     /* 箔：斜めの光の帯が、カードの面を走る */
     .rare-2 .card.preview::after, .rare-3 .card.preview::after, .rare-4 .card.preview::after,
@@ -13609,7 +13620,7 @@
       pointer-events: none;
       background: linear-gradient(115deg, transparent 36%, var(--foil) 49%, #fff 50%, var(--foil) 51%, transparent 64%) 160% 0 / 260% 100% no-repeat;
       mix-blend-mode: screen;
-      animation: rare-foil 2.8s ease-in-out 0.9s infinite;
+      animation: rare-foil 2.8s ease-in-out 0.55s infinite;
     }
     @keyframes rare-foil {
       0% { background-position: 160% 0; }
@@ -13618,15 +13629,15 @@
     /* 光の帯：銀は細く白い光が1回、金は太く暖かい光が2回走る。ボスは金と同じ */
     .rare-2 .card.preview::after {
       background: linear-gradient(115deg, transparent 41%, rgba(214, 230, 255, 0.55) 47%, #fff 50%, rgba(214, 230, 255, 0.55) 53%, transparent 59%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 1.3s infinite;
+      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
     }
     .rare-3 .card.preview::after, .rare-4 .card.preview::after, .rare-5 .card.preview::after {
       background: linear-gradient(115deg, transparent 28%, rgba(255, 214, 90, 0.5) 40%, #fff6cc 50%, rgba(255, 214, 90, 0.5) 60%, transparent 72%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 1.3s infinite;
+      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
     }
     .rare-boss .card.preview::after {
       background: linear-gradient(115deg, transparent 12%, rgba(255, 214, 90, 0.5) 30%, #fff6cc 50%, rgba(255, 214, 90, 0.5) 70%, transparent 88%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 1.3s infinite;
+      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
     }
     /* 虹色の箔：金以上が出たときだけ。すぐ消える */
     .rare-3 .card.preview::before, .rare-4 .card.preview::before, .rare-5 .card.preview::before, .rare-boss .card.preview::before {
@@ -13654,112 +13665,41 @@
     .reward-pick.reward-foe.rare-4 .card.preview::before,
     .reward-pick.reward-foe.rare-5 .card.preview::before,
     .reward-pick.reward-foe.rare-boss .card.preview::before { animation-name: rare-rainbow-soft; }
-    /* 出方：裏返らず、はねて大きくなって戻る（2026-11-27）。銀は小さく、金とボスは大きく。名前は昔のまま */
+    /* 出方：裏側から飛び上がり、表が見えて着地（2026-11-28） */
+    .rare-show .card.preview {
+      transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
+    }
+    .rare-face-back {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      border-radius: inherit;
+      background: url("card-back.jpg?v=3") center / cover no-repeat;
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      pointer-events: none;
+    }
+    .reward-foe .rare-face-back {
+      background-image: url("card-back-foe.jpg?v=1");
+    }
+    .rare-show .card.preview > .card-fit {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
     @keyframes rare-flip {
-      0% { transform: translateY(18px) scale(0.86); filter: brightness(2); opacity: 0; }
-      2.78% { transform: translateY(15.5px) scale(0.8775); filter: brightness(1.952); opacity: 0.231; }
-      5.56% { transform: translateY(12.79px) scale(0.8963); filter: brightness(1.903); opacity: 0.463; }
-      8.33% { transform: translateY(9.94px) scale(0.916); filter: brightness(1.854); opacity: 0.694; }
-      11.11% { transform: translateY(7.01px) scale(0.9363); filter: brightness(1.804); opacity: 0.926; }
-      13.89% { transform: translateY(4.08px) scale(0.9566); filter: brightness(1.755); opacity: 1; }
-      16.67% { transform: translateY(1.19px) scale(0.9766); filter: brightness(1.705); opacity: 1; }
-      19.44% { transform: translateY(-1.58px) scale(0.9959); filter: brightness(1.656); opacity: 1; }
-      22.22% { transform: translateY(-4.18px) scale(1.0139); filter: brightness(1.608); opacity: 1; }
-      25% { transform: translateY(-6.53px) scale(1.0304); filter: brightness(1.56); opacity: 1; }
-      27.78% { transform: translateY(-8.57px) scale(1.0449); filter: brightness(1.514); opacity: 1; }
-      30.56% { transform: translateY(-10.25px) scale(1.0569); filter: brightness(1.469); opacity: 1; }
-      33.33% { transform: translateY(-11.49px) scale(1.066); filter: brightness(1.425); opacity: 1; }
-      36.11% { transform: translateY(-12.18px) scale(1.0716); filter: brightness(1.383); opacity: 1; }
-      38.89% { transform: translateY(-11.82px) scale(1.0703); filter: brightness(1.342); opacity: 1; }
-      41.67% { transform: translateY(-10.53px) scale(1.063); filter: brightness(1.302); opacity: 1; }
-      44.44% { transform: translateY(-8.55px) scale(1.0512); filter: brightness(1.263); opacity: 1; }
-      47.22% { transform: translateY(-6.16px) scale(1.0366); filter: brightness(1.226); opacity: 1; }
-      50% { transform: translateY(-3.6px) scale(1.0209); filter: brightness(1.192); opacity: 1; }
-      52.78% { transform: translateY(-1.13px) scale(1.0056); filter: brightness(1.161); opacity: 1; }
-      55.56% { transform: translateY(0.98px) scale(0.9925); filter: brightness(1.134); opacity: 1; }
-      58.33% { transform: translateY(2.49px) scale(0.9831); filter: brightness(1.111); opacity: 1; }
-      61.11% { transform: translateY(3.15px) scale(0.9791); filter: brightness(1.093); opacity: 1; }
-      63.89% { transform: translateY(2.96px) scale(0.9801); filter: brightness(1.079); opacity: 1; }
-      66.67% { transform: translateY(2.15px) scale(0.9847); filter: brightness(1.066); opacity: 1; }
-      69.44% { transform: translateY(0.95px) scale(0.9917); filter: brightness(1.056); opacity: 1; }
-      72.22% { transform: translateY(-0.4px) scale(0.9995); filter: brightness(1.048); opacity: 1; }
-      75% { transform: translateY(-1.66px) scale(1.007); filter: brightness(1.041); opacity: 1; }
-      77.78% { transform: translateY(-2.62px) scale(1.0127); filter: brightness(1.036); opacity: 1; }
-      80.56% { transform: translateY(-3.03px) scale(1.0152); filter: brightness(1.031); opacity: 1; }
-      83.33% { transform: translateY(-3.02px) scale(1.0154); filter: brightness(1.027); opacity: 1; }
-      86.11% { transform: translateY(-2.75px) scale(1.0141); filter: brightness(1.023); opacity: 1; }
-      88.89% { transform: translateY(-2.28px) scale(1.0118); filter: brightness(1.02); opacity: 1; }
-      91.67% { transform: translateY(-1.71px) scale(1.0088); filter: brightness(1.016); opacity: 1; }
-      94.44% { transform: translateY(-1.08px) scale(1.0056); filter: brightness(1.011); opacity: 1; }
-      97.22% { transform: translateY(-0.49px) scale(1.0025); filter: brightness(1.006); opacity: 1; }
-      100% { transform: translateY(0px) scale(1); filter: brightness(1); opacity: 1; }
+      0% { transform: perspective(900px) translateY(28px) scale(0.82) rotateY(180deg); filter: brightness(1.35); opacity: 1; }
+      42% { transform: perspective(900px) translateY(-24px) scale(1.08) rotateY(50deg); filter: brightness(1.75); opacity: 1; }
+      68% { transform: perspective(900px) translateY(8px) scale(1.03) rotateY(-10deg); filter: brightness(1.2); }
+      100% { transform: perspective(900px) translateY(0) scale(1) rotateY(0deg); filter: none; opacity: 1; }
     }
     @keyframes rare-flip-hot {
-      0% { transform: perspective(800px) translateY(40px) rotateY(-540deg) scale(0.65); filter: brightness(4); opacity: 0; }
-      1.56% { transform: perspective(800px) translateY(36.95px) rotateY(-517.68deg) scale(0.6768); filter: brightness(3.93); opacity: 0.087; }
-      3.13% { transform: perspective(800px) translateY(33.76px) rotateY(-494.82deg) scale(0.7049); filter: brightness(3.859); opacity: 0.174; }
-      4.69% { transform: perspective(800px) translateY(30.44px) rotateY(-471.51deg) scale(0.734); filter: brightness(3.789); opacity: 0.26; }
-      6.25% { transform: perspective(800px) translateY(27.01px) rotateY(-447.8deg) scale(0.7641); filter: brightness(3.719); opacity: 0.347; }
-      7.81% { transform: perspective(800px) translateY(23.5px) rotateY(-423.77deg) scale(0.7949); filter: brightness(3.648); opacity: 0.434; }
-      9.38% { transform: perspective(800px) translateY(19.92px) rotateY(-399.49deg) scale(0.8262); filter: brightness(3.578); opacity: 0.521; }
-      10.94% { transform: perspective(800px) translateY(16.29px) rotateY(-375.04deg) scale(0.858); filter: brightness(3.507); opacity: 0.608; }
-      12.5% { transform: perspective(800px) translateY(12.63px) rotateY(-350.47deg) scale(0.89); filter: brightness(3.437); opacity: 0.694; }
-      14.06% { transform: perspective(800px) translateY(8.96px) rotateY(-325.87deg) scale(0.9221); filter: brightness(3.367); opacity: 0.781; }
-      15.63% { transform: perspective(800px) translateY(5.3px) rotateY(-301.3deg) scale(0.9541); filter: brightness(3.296); opacity: 0.868; }
-      17.19% { transform: perspective(800px) translateY(1.66px) rotateY(-276.83deg) scale(0.9859); filter: brightness(3.226); opacity: 0.955; }
-      18.75% { transform: perspective(800px) translateY(-1.92px) rotateY(-252.54deg) scale(1.0173); filter: brightness(3.155); opacity: 1; }
-      20.31% { transform: perspective(800px) translateY(-5.44px) rotateY(-228.49deg) scale(1.0481); filter: brightness(3.085); opacity: 1; }
-      21.88% { transform: perspective(800px) translateY(-8.87px) rotateY(-204.76deg) scale(1.0782); filter: brightness(3.015); opacity: 1; }
-      23.44% { transform: perspective(800px) translateY(-12.2px) rotateY(-181.41deg) scale(1.1074); filter: brightness(2.944); opacity: 1; }
-      25% { transform: perspective(800px) translateY(-15.4px) rotateY(-158.53deg) scale(1.1356); filter: brightness(2.874); opacity: 1; }
-      26.56% { transform: perspective(800px) translateY(-18.46px) rotateY(-136.17deg) scale(1.1625); filter: brightness(2.804); opacity: 1; }
-      28.13% { transform: perspective(800px) translateY(-21.35px) rotateY(-114.41deg) scale(1.1881); filter: brightness(2.733); opacity: 1; }
-      29.69% { transform: perspective(800px) translateY(-24.07px) rotateY(-93.32deg) scale(1.2121); filter: brightness(2.663); opacity: 1; }
-      31.25% { transform: perspective(800px) translateY(-26.58px) rotateY(-72.97deg) scale(1.2343); filter: brightness(2.593); opacity: 1; }
-      32.81% { transform: perspective(800px) translateY(-28.86px) rotateY(-53.43deg) scale(1.2548); filter: brightness(2.523); opacity: 1; }
-      34.38% { transform: perspective(800px) translateY(-30.91px) rotateY(-34.77deg) scale(1.2732); filter: brightness(2.452); opacity: 1; }
-      35.94% { transform: perspective(800px) translateY(-32.7px) rotateY(-17.07deg) scale(1.2894); filter: brightness(2.382); opacity: 1; }
-      37.5% { transform: perspective(800px) translateY(-34.21px) rotateY(-0.38deg) scale(1.3032); filter: brightness(2.312); opacity: 1; }
-      39.06% { transform: perspective(800px) translateY(-35.42px) rotateY(15.2deg) scale(1.3145); filter: brightness(2.242); opacity: 1; }
-      40.63% { transform: perspective(800px) translateY(-36.18px) rotateY(29.23deg) scale(1.322); filter: brightness(2.172); opacity: 1; }
-      42.19% { transform: perspective(800px) translateY(-35.3px) rotateY(38.25deg) scale(1.3159); filter: brightness(2.099); opacity: 1; }
-      43.75% { transform: perspective(800px) translateY(-32.8px) rotateY(42.18deg) scale(1.2962); filter: brightness(2.024); opacity: 1; }
-      45.31% { transform: perspective(800px) translateY(-29px) rotateY(41.89deg) scale(1.2657); filter: brightness(1.948); opacity: 1; }
-      46.88% { transform: perspective(800px) translateY(-24.24px) rotateY(38.23deg) scale(1.2271); filter: brightness(1.871); opacity: 1; }
-      48.44% { transform: perspective(800px) translateY(-18.86px) rotateY(32.08deg) scale(1.1832); filter: brightness(1.796); opacity: 1; }
-      50% { transform: perspective(800px) translateY(-13.18px) rotateY(24.3deg) scale(1.1367); filter: brightness(1.721); opacity: 1; }
-      51.56% { transform: perspective(800px) translateY(-7.55px) rotateY(15.75deg) scale(1.0903); filter: brightness(1.65); opacity: 1; }
-      53.13% { transform: perspective(800px) translateY(-2.29px) rotateY(7.29deg) scale(1.0468); filter: brightness(1.581); opacity: 1; }
-      54.69% { transform: perspective(800px) translateY(2.25px) rotateY(-0.21deg) scale(1.009); filter: brightness(1.517); opacity: 1; }
-      56.25% { transform: perspective(800px) translateY(5.74px) rotateY(-5.88deg) scale(0.9796); filter: brightness(1.458); opacity: 1; }
-      57.81% { transform: perspective(800px) translateY(7.86px) rotateY(-8.86deg) scale(0.9613); filter: brightness(1.406); opacity: 1; }
-      59.38% { transform: perspective(800px) translateY(8.41px) rotateY(-9.43deg) scale(0.9554); filter: brightness(1.36); opacity: 1; }
-      60.94% { transform: perspective(800px) translateY(7.7px) rotateY(-9.12deg) scale(0.9593); filter: brightness(1.322); opacity: 1; }
-      62.5% { transform: perspective(800px) translateY(5.97px) rotateY(-8.1deg) scale(0.971); filter: brightness(1.289); opacity: 1; }
-      64.06% { transform: perspective(800px) translateY(3.5px) rotateY(-6.57deg) scale(0.9885); filter: brightness(1.261); opacity: 1; }
-      65.63% { transform: perspective(800px) translateY(0.56px) rotateY(-4.69deg) scale(1.0097); filter: brightness(1.237); opacity: 1; }
-      67.19% { transform: perspective(800px) translateY(-2.59px) rotateY(-2.64deg) scale(1.0324); filter: brightness(1.217); opacity: 1; }
-      68.75% { transform: perspective(800px) translateY(-5.66px) rotateY(-0.59deg) scale(1.0548); filter: brightness(1.2); opacity: 1; }
-      70.31% { transform: perspective(800px) translateY(-8.4px) rotateY(1.28deg) scale(1.0747); filter: brightness(1.184); opacity: 1; }
-      71.88% { transform: perspective(800px) translateY(-10.54px) rotateY(2.8deg) scale(1.0901); filter: brightness(1.17); opacity: 1; }
-      73.44% { transform: perspective(800px) translateY(-11.81px) rotateY(3.8deg) scale(1.0988); filter: brightness(1.155); opacity: 1; }
-      75% { transform: perspective(800px) translateY(-12px) rotateY(4.17deg) scale(1.0995); filter: brightness(1.141); opacity: 1; }
-      76.56% { transform: perspective(800px) translateY(-11.28px) rotateY(4.07deg) scale(1.0935); filter: brightness(1.127); opacity: 1; }
-      78.13% { transform: perspective(800px) translateY(-9.88px) rotateY(3.63deg) scale(1.0823); filter: brightness(1.115); opacity: 1; }
-      79.69% { transform: perspective(800px) translateY(-7.98px) rotateY(2.94deg) scale(1.0676); filter: brightness(1.104); opacity: 1; }
-      81.25% { transform: perspective(800px) translateY(-5.8px) rotateY(2.09deg) scale(1.0507); filter: brightness(1.094); opacity: 1; }
-      82.81% { transform: perspective(800px) translateY(-3.53px) rotateY(1.19deg) scale(1.0332); filter: brightness(1.085); opacity: 1; }
-      84.38% { transform: perspective(800px) translateY(-1.39px) rotateY(0.32deg) scale(1.0167); filter: brightness(1.076); opacity: 1; }
-      85.94% { transform: perspective(800px) translateY(0.43px) rotateY(-0.41deg) scale(1.0025); filter: brightness(1.068); opacity: 1; }
-      87.5% { transform: perspective(800px) translateY(1.73px) rotateY(-0.91deg) scale(0.9922); filter: brightness(1.06); opacity: 1; }
-      89.06% { transform: perspective(800px) translateY(2.38px) rotateY(-1.12deg) scale(0.9868); filter: brightness(1.053); opacity: 1; }
-      90.63% { transform: perspective(800px) translateY(2.57px) rotateY(-1.16deg) scale(0.9847); filter: brightness(1.046); opacity: 1; }
-      92.19% { transform: perspective(800px) translateY(2.42px) rotateY(-1.07deg) scale(0.9852); filter: brightness(1.039); opacity: 1; }
-      93.75% { transform: perspective(800px) translateY(2.02px) rotateY(-0.89deg) scale(0.9875); filter: brightness(1.032); opacity: 1; }
-      95.31% { transform: perspective(800px) translateY(1.48px) rotateY(-0.66deg) scale(0.9909); filter: brightness(1.024); opacity: 1; }
-      96.88% { transform: perspective(800px) translateY(0.9px) rotateY(-0.4deg) scale(0.9946); filter: brightness(1.017); opacity: 1; }
-      98.44% { transform: perspective(800px) translateY(0.37px) rotateY(-0.17deg) scale(0.9979); filter: brightness(1.009); opacity: 1; }
-      100% { transform: perspective(800px) translateY(0px) rotateY(0deg) scale(1); filter: brightness(1); opacity: 1; }
+      0% { transform: perspective(900px) translateY(36px) scale(0.72) rotateY(180deg); filter: brightness(1.55); opacity: 1; }
+      38% { transform: perspective(900px) translateY(-34px) scale(1.16) rotateY(42deg); filter: brightness(2.15); opacity: 1; }
+      62% { transform: perspective(900px) translateY(10px) scale(1.05) rotateY(-12deg); filter: brightness(1.35); }
+      82% { transform: perspective(900px) translateY(-4px) scale(1.02) rotateY(4deg); filter: brightness(1.1); }
+      100% { transform: perspective(900px) translateY(0) scale(1) rotateY(0deg); filter: none; opacity: 1; }
     }
     /* 細かいコマで滑らかに（2026-11-27）：コマの間は直線でつなぐ。光の脈打ち（2つ目）はそのまま */
     .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview,
@@ -13813,7 +13753,7 @@
       血の味: "card-blood-taste-e.jpg?v=1",
       魔剣招来: "card-summon-swords-d-aura.jpg?v=1",
       魔剣増殖: "card-demon-multiply-d-omen.jpg?v=1",
-      ウェポンブロック: "card-demon-seal-g.jpg?v=1",
+      ウェポンブロック: "card-demon-seal-g.jpg?v=2",
       血の呼び声: "card-blood-call-c.jpg?v=1",
       血の契約: "card-blood-pact-d.jpg?v=1",
       呪われた鞘: "card-cursed-sheath-sword.jpg?v=1",
@@ -14209,6 +14149,7 @@
       {
         name: "羊頭のデーモン",
         image: "enemy-ram.png?v=1",
+        stature: "tall",
         tier: 2,
         rank: "普通",
         hp: 75,
@@ -14439,8 +14380,8 @@
       };
       place(pane, box);
       if (showFloor) {
-        // ダンジョン選択と同じ「洞窟」などの絵をズーム。道や戦闘背景は使わない
-        const bg = (opt && opt.bg) || dungeonArt(dungeonName) || "";
+        // 階層進行は必ず洞窟の絵（dungeon-cave）。戦闘背景の石の廊下（dungeon-bg）は使わない
+        const bg = (opt && opt.bg) || "dungeon-cave.jpg?v=2";
         if (bg) {
           const art = document.createElement("img");
           art.className = "scene-floor-zoom";
@@ -14817,7 +14758,7 @@
     const HAND_CAP = 10;
     const DRAW_PER_TURN = 5; /* SPD＝毎ターン引く枚数の基本 */
     const DUNGEON_LIST = [
-      { name: "洞窟", label: "30", floors: 30, rank: "★", art: "dungeon-cave.jpg?v=1" },
+      { name: "洞窟", label: "30", floors: 30, rank: "★", art: "dungeon-cave.jpg?v=2" },
       { name: "古城", label: "50", floors: 50, rank: "★★", art: "dungeon-50.jpg?v=1" },
       { name: "深淵", label: "100", floors: 100, rank: "★★★", art: "dungeon-100.jpg?v=1" },
     ];
@@ -14885,12 +14826,12 @@
     }
 
     function trimLog() {
-      while (logLines.length > 48) logLines.pop();
+      while (logLines.length > 48) logLines.shift();
     }
 
     function logTurn(kind) {
       const text = kind === "player" ? `-${heroName()}のターン-` : "-敵のターン-";
-      logLines.unshift({ kind, text, turn: Math.max(1, turn) });
+      logLines.push({ kind, text, turn: Math.max(1, turn) });
       trimLog();
       bugMark("turn", text);
     }
@@ -14939,13 +14880,8 @@
       const snap = cardSnapshot(card);
       if (snap) line.card = snap;
       if (foe && snap) line.foe = true;
-      const marker = logLines.findIndex((item) => item && item.kind);
-      if (marker === -1) logLines.unshift(line);
-      else {
-        let at = marker + 1;
-        while (at < logLines.length && !(logLines[at] && logLines[at].kind)) at += 1;
-        logLines.splice(at, 0, line);
-      }
+      // 上から下へ、起きた順に足していく（1ターン目、2ターン目…と下へ伸びる）
+      logLines.push(line);
       trimLog();
       bugMark(bugKindOf(msg), msg);
     }
@@ -15781,7 +15717,7 @@
         render();
       }, {
         floor: announce ? floorNo() : null,
-        bg: dungeonArt(dungeonName),
+        bg: "dungeon-cave.jpg?v=2",
         after: () => {
           floorOnFade = false;
           if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
@@ -16192,7 +16128,7 @@
     // 絵の大きさは強さではなくキャラ。small は腰、same は自分と同じ、huge は画面いっぱい。
     function foeStature(foe) {
       const key = foe && foe.stature;
-      if (key === "small" || key === "same" || key === "huge") return key;
+      if (key === "small" || key === "same" || key === "tall" || key === "huge") return key;
       return "same";
     }
 
@@ -16435,9 +16371,9 @@
       };
     }
 
-    function rewardCardHtml(card) {
+    function rewardCardHtml(card, rareLv) {
       if (!card) return "";
-      return `<div class="card preview ${cardKind(card)}">${cardFace(card)}</div>`;
+      return `<div class="card preview ${cardKind(card)}">${rareBackHtml(rareLv)}${cardFace(card)}</div>`;
     }
 
     function gearRarityText(item) {
@@ -16757,6 +16693,41 @@
     function paintGearOffer() {
       if (!gearOffer) return;
       root.insertAdjacentHTML("beforeend", gearOfferMarkup());
+    }
+
+    // ポップの出現アニメ。同じ種類の再描画では繰り返さない
+    let popLive = Object.create(null);
+    function popKindOf(el) {
+      if (el.classList.contains("victory")) return `victory:${rewardStep || "cards"}`;
+      if (el.classList.contains("mastery-ask")) return "mastery";
+      if (el.classList.contains("leave-ask")) return "leave";
+      if (el.classList.contains("bug-ask")) return "bug";
+      if (el.classList.contains("gear-offer")) return "gear-offer";
+      if (el.classList.contains("paths")) return "paths";
+      if (el.classList.contains("smith-fuse")) return "smith-fuse";
+      if (el.classList.contains("loot-copy")) return `loot:${(lootChoice && lootChoice.kind) || "x"}`;
+      if (el.classList.contains("enchant-pick")) return `enchant:${enchantPop || "x"}`;
+      if (el.classList.contains("foe-starter")) return "foe-starter";
+      if (el.classList.contains("foe-deck-view")) return "foe-deck";
+      if (el.classList.contains("pile-look")) return `pile:${pileLook || "x"}`;
+      if (el.classList.contains("my-deck")) return "my-deck";
+      if (el.classList.contains("deck-view")) return "deck-view";
+      const bits = [...el.classList].filter((c) => c !== "overlay" && c !== "pop-enter" && c !== "pop-settled");
+      return bits.join(".") || "overlay";
+    }
+    function paintPops() {
+      const found = Object.create(null);
+      root.querySelectorAll(".overlay").forEach((el) => {
+        const kind = popKindOf(el);
+        found[kind] = true;
+        el.classList.remove("pop-enter", "pop-settled");
+        if (popLive[kind]) el.classList.add("pop-settled");
+        else {
+          el.classList.add("pop-enter");
+          popLive[kind] = true;
+        }
+      });
+      Object.keys(popLive).forEach((k) => { if (!found[k]) delete popLive[k]; });
     }
 
     function acceptGearOffer() {
@@ -21540,6 +21511,50 @@
       };
     }
 
+    // 古いセーブはターンが新しい順に並んでいた。上から古い順に直す
+    function logFromSave(lines, order) {
+      const list = Array.isArray(lines) ? lines.slice() : [];
+      if (order === 2) return list;
+      const groups = [];
+      list.forEach((line) => {
+        if (!groups.length || (line && line.kind)) groups.push([line]);
+        else groups[groups.length - 1].push(line);
+      });
+      return groups.reverse().flat();
+    }
+
+    // ログは下へ足していく。足されたら一番下までスクロールし、足されていない描き直しでは位置を保つ
+    const logScroll = { top: 0, sig: "" };
+    function logSignature() {
+      const last = logLines[logLines.length - 1];
+      return `${logLines.length}|${last ? last.text : ""}`;
+    }
+    function logBox() {
+      return root.querySelector(".battle-log:not(.fx-foe-log)");
+    }
+    document.addEventListener("scroll", (event) => {
+      const el = event.target;
+      if (el && el.classList && el.classList.contains("battle-log") && !el.classList.contains("fx-foe-log")) logScroll.top = el.scrollTop;
+    }, true);
+    new MutationObserver(() => {
+      const box = logBox();
+      if (!box) return;
+      const sig = logSignature();
+      if (sig !== logScroll.sig) {
+        const had = logScroll.sig !== "" && logScroll.top > 0;
+        logScroll.sig = sig;
+        if (had) {
+          box.scrollTop = logScroll.top;
+          box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+        } else {
+          box.scrollTop = box.scrollHeight;
+        }
+        logScroll.top = box.scrollTop;
+      } else {
+        box.scrollTop = logScroll.top;
+      }
+    }).observe(root, { childList: true });
+
     function logLinesHtml(lines) {
       let logTurnShown = 0;
       return (lines || []).map((line, index) => {
@@ -21878,6 +21893,7 @@
         banner,
         outcome,
         logLines,
+        logOrder: 2,
         deck,
         hand,
         discard,
@@ -22040,7 +22056,7 @@
       note = data.note || "";
       banner = data.banner || "";
       outcome = data.outcome || null;
-      logLines = data.logLines || [];
+      logLines = logFromSave(data.logLines || [], data.logOrder);
       const dropFocus = (list) => (list || []).filter((card) => card && card.name !== "集中");
       deck = repairOwnedList(dropFocus(data.deck || []));
       hand = repairOwnedList(dropFocus(data.hand || []));
@@ -22992,19 +23008,21 @@
     function giftMarkup(gift, big, hot, index, asSheet) {
       if (!gift) return "";
       const cls = big ? "gift-show" : "gift-pick";
-      const lv = hot ? rareLevel(giftEntity(gift)) : 0;
+      const entityLv = rareLevel(giftEntity(gift));
+      const lv = hot ? entityLv : 0;
       const fx = rareFx(lv);
       const style = rareStyle(lv, index || 0);
       if (gift.kind === "card" && gift.card) {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}<div class="card preview ${cardKind(gift.card)}">${cardFace(gift.card)}</div></div>`;
+        // 外側の gift-btn にレア演出が付くときも、裏面から飛び出す用の裏を入れる
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rarePreview(gift.card, false, entityLv)}</div>`;
       }
       if (gift.kind === "enchant" || gift.kind === "spd" || gift.kind === "maxhp" || gift.kind === "mana") {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(boonAsCard(gift.kind, gift.elem))}</div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(boonAsCard(gift.kind, gift.elem), entityLv)}</div>`;
       }
       const item = gift.kind === "gear" ? gift.gear : gift.item;
       if (!item) return "";
       if (gift.kind === "gear") {
-        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(gearAsCard(item))}</div>`;
+        return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rewardCardHtml(gearAsCard(item), entityLv)}</div>`;
       }
       const picture = item.image ? `<img class="gift-img" src="${esc(item.image)}" alt="">` : "";
       const detail = `<b>${esc(item.name)}</b><small>${esc(item.effect || "")}</small>`;
@@ -23068,8 +23086,14 @@
         screen = "floor";
         eventFloorCall = false;
         render();
-        if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
-      }, { floor: announce ? floorNo() : null, bg: dungeonArt(dungeonName) });
+      }, {
+        floor: announce ? floorNo() : null,
+        bg: "dungeon-cave.jpg?v=2",
+        // 途中の祝福：階層の数字／洞窟ズームが終わってから光る（階層より先に出さない）
+        after: () => {
+          if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
+        },
+      });
     }
 
     function emptyRunSheet() {
@@ -25416,6 +25440,7 @@
       hideCastCardPop();
       const pop = root.querySelector(".foe-starter");
       if (pop) pop.remove();
+      delete popLive["foe-starter"];
     }
 
     function foeDossierHtml(foe) {
@@ -25452,6 +25477,7 @@
       // 敵データリストと同じ中身（foeDossierHtml）。外の枠は付けない
       root.insertAdjacentHTML("beforeend", `<div class="overlay deck-view foe-starter"><div class="panel">${foeDossierHtml(foe)}<button type="button" data-action="close-foe-starter">閉じる</button></div></div>`);
       bindFoeStarterDeck(root.querySelector(".foe-starter .cast-deck"));
+      paintPops();
     }
 
     function dungeonEnemyFaces(dungeon) {
@@ -25760,7 +25786,7 @@
             </div>
             <h3>ダンジョン</h3>
             <div class="ref-grid">
-              ${sheetFig("dungeon-cave.jpg?v=1", "洞窟 ★", "land-ref")}
+              ${sheetFig("dungeon-cave.jpg?v=2", "洞窟 ★", "land-ref")}
               ${sheetFig("dungeon-50.jpg?v=1", "古城 ★★", "land-ref")}
               ${sheetFig("dungeon-100.jpg?v=1", "深淵 ★★★", "land-ref")}
               ${sheetFig("chain-one.png?v=3", "錆びた鎖（錠前1）", "cut-ref")}
@@ -26414,6 +26440,7 @@
       }
       bindShopHover();
       bindPathHover();
+      paintPops();
       requestAnimationFrame(() => {
         placeRoad();
         placeFloorCalls();
@@ -27293,7 +27320,7 @@
           return { give: null, take: taken, breakShield: false, foeHp: foe.hp, mineHp: mine.hp };
         }
       }
-      const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0 };
+      const give = { raw: 0, hp: 0, show: false, shield: 0, status: 0, focus: 0 };
       const queue = inPlay || [];
       let songLeft = Math.max(0, Number(player && player.songMute) || 0);
       for (let i = 0; i < queue.length; i++) {
@@ -27307,7 +27334,7 @@
         player.effectFactor = effectFactorFor(i);
         const scaled = scaledResolvedCard(card);
         player.effectFactor = prevFactor;
-        const seen = { raw: give.raw, heal: Number(give.heal) || 0, shield: give.shield, status: give.status, self: Number(mine.selfHp) || 0 };
+        const seen = { raw: give.raw, heal: Number(give.heal) || 0, shield: give.shield, status: give.status, self: Number(mine.selfHp) || 0, focus: Number(give.focus) || 0 };
         scratchPlayerCard(scaled, mine, foe, queue, give);
         // 予測の並びは、カードを使う順（最初に出た種類が左）
         give.order = give.order || [];
@@ -27316,7 +27343,7 @@
         mark("self", (Number(mine.selfHp) || 0) > seen.self);
         mark("heal", (Number(give.heal) || 0) > seen.heal);
         mark("shield", give.shield > seen.shield);
-        mark("status", give.status > seen.status);
+        mark("status", give.status > seen.status || (Number(give.focus) || 0) > seen.focus);
         if (foe.hp <= 0) break;
       }
       const breakShield = foeHadBlock && foe.block <= 0;
@@ -27440,7 +27467,7 @@
 
     function forecastBag(bag) {
       if (!bag) return null;
-      if (bag.show || bag.shield > 0 || bag.status > 0 || bag.lethal || bag.heal > 0) return bag;
+      if (bag.show || bag.shield > 0 || bag.status > 0 || bag.lethal || bag.heal > 0 || bag.focus > 0) return bag;
       return null;
     }
 
@@ -27533,6 +27560,7 @@
       if (card.step) return;
       if (card.focus) {
         mine.focus += card.focus;
+        give.focus = (Number(give.focus) || 0) + (Number(card.focus) || 0);
         return;
       }
       if (card.parry && !card.damage && !card.block) {
@@ -27741,6 +27769,7 @@
       if (bag.poison > 0) chips.push(statusChip("poison", "毒", bag.poison, POISON_NOTE));
       if (bag.burn > 0) chips.push(statusChip("burn", "炎上", bag.burn, BURN_NOTE));
       if (bag.thorns > 0) chips.push(statusChip("thorns", "トゲ", bag.thorns, THORN_NOTE));
+      if (bag.focus > 0) chips.push(statusChip("focus", "集中", bag.focus, FOCUS_NOTE));
       return chips;
     }
 
@@ -27777,8 +27806,11 @@
         if (bag.heal > 0) keyed.push(["heal", forecastChip("heal", bag.heal)]);
         if (bag.shield > 0) keyed.push(["shield", forecastChip("shield", bag.shield)]);
         const icons = foe ? forecastStatusIcons(bag) : [];
-        if (icons.length) keyed.push(["status", icons.join("")]);
-        else if (bag.status > 0) keyed.push(["status", forecastChip("status", bag.status)]);
+        let statusHtml = icons.join("");
+        if (!icons.length && bag.status > 0) statusHtml = forecastChip("status", bag.status);
+        // 自分が集中を得る予測も、毒や炎上と同じアイコンで出す
+        if (!foe && bag.focus > 0) statusHtml += statusChip("focus", "集中", bag.focus, FOCUS_NOTE);
+        if (statusHtml) keyed.push(["status", statusHtml]);
         // 使うカードの順に左から。順の記録が無い種類は、いつもの並びのまま後ろ
         const order = Array.isArray(bag.order) ? bag.order : [];
         const rank = (kind) => { const at = order.indexOf(kind); return at < 0 ? order.length : at; };
@@ -29372,10 +29404,10 @@
         const close = buy ? "</button>" : "</div>";
         const fx = "";
         if (slot.kind === "card" && slot.card) {
-          return `${open}${ribbon}<div class="card preview ${cardKind(slot.card)}">${cardFace(slot.card)}</div><span class="${tier}">${esc(tag)}</span>${action}${close}`;
+          return `${open}${ribbon}${rarePreview(slot.card, false, lv)}<span class="${tier}">${esc(tag)}</span>${action}${close}`;
         }
         if (slot.kind === "gear" && slot.gear) {
-          return `${open}${ribbon}${rewardCardHtml(gearAsCard(slot.gear))}<span class="${tier}">${esc(tag)}</span>${action}${close}`;
+          return `${open}${ribbon}${rewardCardHtml(gearAsCard(slot.gear), lv)}<span class="${tier}">${esc(tag)}</span>${action}${close}`;
         }
         return "";
       }).join("");
@@ -30421,6 +30453,15 @@
       return Math.min(5, n);
     }
 
+    function rareBackHtml(level) {
+      return level ? '<i class="rare-face-back" aria-hidden="true"></i>' : "";
+    }
+
+    function rarePreview(card, foe, level) {
+      const lv = level == null ? rareLevel(card) : level;
+      return `<div class="card preview ${faceTone(card, foe)}">${rareBackHtml(lv)}${cardFace(card, false, foe)}</div>`;
+    }
+
     function rareClass(level) {
       if (!level) return "";
       return level === "boss" ? " rare-show rare-boss" : ` rare-show rare-${level}`;
@@ -30492,7 +30533,7 @@
         const foe = rewardAsFoe(card);
         const foeClass = foe ? " reward-foe" : "";
         const tone = faceTone(card, foe);
-        return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="${action}" data-reward="${i}"><div class="card preview ${tone}">${cardFace(card, false, foe)}</div>${rareCaption(card)}</button>`;
+        return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="${action}" data-reward="${i}">${rarePreview(card, foe, lv)}${rareCaption(card)}</button>`;
       }).join("");
     }
 
@@ -30792,7 +30833,7 @@
             const foe = rewardAsFoe(pick.card);
             const foeClass = foe ? " reward-foe" : "";
             const tone = faceTone(pick.card, foe);
-            return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="reward-boss" data-reward="${i}"><div class="card preview ${tone}">${cardFace(pick.card, false, foe)}</div>${rareCaption(pick.card)}</button>`;
+            return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="reward-boss" data-reward="${i}">${rarePreview(pick.card, foe, lv)}${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
           return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
@@ -31148,13 +31189,14 @@
       let foeVis = heroShown;
       if (stature === "small") foeVis = heroShown * smallFoeRatio(foeSrc);
       if (stature === "huge") foeVis = Math.max(heroShown, laneH - footGap);
+      if (stature === "tall") foeVis = Math.max(heroShown, (laneH - footGap) * 0.85);
       const wideDragon = foeSrc.includes("enemy-death-dragon");
       if (wideDragon) foeVis = Math.max(foeVis, laneH - footGap);
       let foeW = foeVis * imgW / inkH;
       const fieldW = (ally.parentElement && ally.parentElement.clientWidth) || foeLaneW;
       const foeCap = wideDragon
         ? fieldW * 0.96
-        : stature === "huge" ? Math.max(foeLaneW * 1.45, laneW) : foeLaneW;
+        : (stature === "huge" || stature === "tall") ? Math.max(foeLaneW * 1.45, laneW) : foeLaneW;
       if (foeW > foeCap) foeW = foeCap;
       hero.style.setProperty("--foot-gap", `${footGap}px`);
       main.style.setProperty("--foot-gap", `${footGap}px`);
@@ -31652,9 +31694,19 @@
           const pop = menu && menu.querySelector(".hud-menu-pop");
           if (!pop) return;
           const willOpen = pop.hidden;
-          root.querySelectorAll(".hud-menu-pop").forEach((box) => { box.hidden = true; });
+          root.querySelectorAll(".hud-menu-pop").forEach((box) => {
+            box.hidden = true;
+            box.classList.remove("pop-enter");
+          });
           root.querySelectorAll(".hud-menu-btn").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
-          pop.hidden = !willOpen;
+          if (willOpen) {
+            pop.classList.remove("pop-enter");
+            pop.hidden = false;
+            void pop.offsetWidth;
+            pop.classList.add("pop-enter");
+          } else {
+            pop.hidden = true;
+          }
           action.setAttribute("aria-expanded", willOpen ? "true" : "false");
           return;
         }
