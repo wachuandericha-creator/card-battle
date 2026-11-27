@@ -231,9 +231,11 @@
     .road-node.tone-fight { --road-line: #e02020; }
     .road-node.tone-rest { --road-line: #1a6fe8; }
     .road-node.tone-other { --road-line: #e4b15a; }
+    .road-node.tone-lost { --road-line: #9a4ad4; }
     .road-node.tone-fight,
     .road-node.tone-rest,
-    .road-node.tone-other {
+    .road-node.tone-other,
+    .road-node.tone-lost {
       padding: 0;
       background: transparent;
       box-shadow: none;
@@ -424,11 +426,13 @@
       align-items: center;
       column-gap: 12px;
       min-width: 0;
-      padding: 3px 18px;
-      border-radius: 14px;
-      border: 0;
-      background: var(--panel-sheen), var(--panel-face);
-      box-shadow: var(--panel-frame);
+      padding: 0 12px;
+      border-radius: 0;
+      /* 絵画のタイトル札：角の飾りとネジは縮めず、中央の木目だけ横に伸ばす */
+      border: 10px solid transparent;
+      border-image: url("header-plate.jpg?v=1") 60 fill / 10px stretch;
+      background: none;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
     }
     .dungeon {
       display: flex;
@@ -5466,56 +5470,70 @@
       overflow-y: auto;
       scrollbar-gutter: stable;
       overflow-wrap: anywhere;
-      margin: 0 2px 0 0;
-      padding: 16px 12px;
-      border-radius: 16px;
+      margin: 14px 2px 14px 0;
+      padding: 0 22px 0;
+      border-radius: 6px;
       border: 0;
-      background: var(--panel-sheen), var(--panel-face);
-      box-shadow: var(--panel-frame);
+      /* 羊皮紙の巻物：ログの大きさに合わせて伸び、上下に巻き軸が付く */
+      background: url("log-scroll-paper.jpg?v=1") center / 100% 100% no-repeat;
+      box-shadow: none;
       font-family: var(--log-serif);
     }
+    .battle-log::before,
+    .battle-log::after {
+      content: "";
+      display: block;
+      position: sticky;
+      z-index: 2;
+      width: auto;
+      margin: 0 -22px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.45));
+    }
+    .battle-log::before { top: 0; aspect-ratio: 968 / 132; margin-bottom: 8px; background-image: url("log-scroll-top.jpg?v=1"); }
+    .battle-log::after { bottom: 0; aspect-ratio: 968 / 134; margin-top: 8px; background-image: url("log-scroll-bottom.jpg?v=1"); }
     .battle-log h2 {
-      margin: 0 0 14px;
-      padding: 8px 8px 12px;
-      border: 1px solid rgba(255, 214, 120, 0.75);
-      border-radius: 12px;
-      background:
-        radial-gradient(120% 90% at 50% 0%, rgba(255, 226, 150, 0.28), transparent 62%),
-        linear-gradient(180deg, rgba(146, 96, 28, 0.55), rgba(48, 28, 10, 0.4));
-      box-shadow: inset 0 1px 0 rgba(255, 244, 210, 0.45), 0 6px 14px rgba(0, 0, 0, 0.28);
+      margin: 0 0 12px;
+      padding: 4px 8px 8px;
+      border: 0;
+      border-bottom: 2px double rgba(110, 66, 20, 0.7);
+      background: none;
+      box-shadow: none;
       font-size: 24px;
       font-weight: 900;
       letter-spacing: 0.42em;
       text-indent: 0.42em;
       text-align: center;
-      color: #fff3c4;
-      text-shadow: 0 1px 0 #5a3810, 0 0 12px rgba(255, 206, 90, 0.45);
+      color: #4a2a0c;
+      text-shadow: 0 1px 0 rgba(255, 244, 210, 0.6);
     }
     .battle-log h2::after { content: none; }
+    .battle-log:not(.fx-foe-log) > h2 { display: none; }
     .battle-log p {
       margin: 0 0 8px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       line-height: 1.45;
       letter-spacing: 0.02em;
       text-align: left;
-      color: #f3e6c8;
-      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
+      color: #2e1c08;
+      text-shadow: none;
     }
-    .battle-log p.turn-player { color: #d7e8ff; }
-    .battle-log p.turn-enemy { color: #ffd0c4; }
-    .battle-log .who-me { color: #8ec8ff; }
-    .battle-log .who-foe { color: #ff8d7a; }
+    .battle-log p.turn-player { color: #1d3d6e; }
+    .battle-log p.turn-enemy { color: #7a2412; }
+    .battle-log .who-me { color: #1f5aa0; }
+    .battle-log .who-foe { color: #a8301c; }
     .battle-log p.turn-head {
       margin: 10px 0 6px;
       padding-top: 8px;
-      border-top: 1px solid rgba(212, 168, 74, 0.35);
+      border-top: 1px solid rgba(110, 66, 20, 0.45);
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.06em;
       white-space: nowrap;
       text-align: left;
-      color: var(--gold);
+      color: #6a3c0c;
       text-shadow: none;
     }
     .battle-log h2 + p.turn-head { border-top: 0; padding-top: 0; }
@@ -7470,18 +7488,29 @@
       color: #ffe08a;
       text-shadow: none;
     }
+    .mastery-lead {
+      margin: -6px 0 14px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #f4e8cc;
+    }
+    .mastery-option { flex: 1 1 260px; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .mastery-option .mastery-choice { width: 100%; max-width: none; flex: 0 0 auto; }
+    .mastery-after .card.preview { width: 220px; height: auto; }
     .mastery-stage {
       position: relative;
       display: grid;
       place-items: center;
       width: 100%;
-      min-height: 400px;
+      min-height: 0;
       margin: 0 0 18px;
     }
     .mastery-stage .card.preview {
       position: relative;
       z-index: 1;
-      width: min(280px, 70cqw);
+      width: min(220px, 70cqw);
       height: auto;
       box-shadow:
         inset 0 0 0 2px #ffe6a4,
@@ -7937,6 +7966,8 @@
     .record-more { margin: 8px 0 0; font-size: 14px; line-height: 1.45; color: #fff6e4; }
     .records-screen .pass-box { margin: 0 auto 12px; }
     .bug-head { margin: 22px 0 8px; font-size: 22px; text-align: center; color: #ffe7a8; }
+    .bug-drop { margin: 0 0 4px; }
+    .bug-drop button { width: 100%; }
     .bug-line { display: block; margin: 0 0 4px; }
     .bug-line b { display: inline-block; min-width: 5em; color: #e4b15a; }
     .bug-draw b { color: #8fd0ff; }
@@ -9624,8 +9655,9 @@
       animation: heal-glow 1.55s ease-out both;
     }
     .menu.event .event-art { position: relative; }
-    .menu.event .event-actions.rest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
-    .menu.event .event-actions.rest-actions button { width: 100%; }
+    /* ボタンの幅は文字に合わせる。二つは長いほうの文字幅にそろえる */
+    .menu.event .event-actions.rest-actions { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 14px; width: max-content; max-width: 100%; margin-left: auto; margin-right: auto; }
+    .menu.event .event-actions.rest-actions button { width: auto; min-width: 0; padding-left: 40px; padding-right: 40px; white-space: nowrap; }
     .menu.event .event-art.rest-heal .hero-hit.heal {
       position: absolute;
       inset: 0;
@@ -9803,7 +9835,7 @@
       font-size: clamp(28px, 2.2cqw, 36px);
       line-height: 1.45;
     }
-    .menu.event .event-hp { position: static; width: min(100%, 420px); margin-top: 16px; }
+    .menu.event .event-hp { position: static; width: min(100%, 420px); margin-top: 0; }
     .menu.event .event-hp .meters { width: 100%; margin: 0; }
     .menu.event .event-hp .meter.hp .hp-gain { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, rgba(120, 255, 150, 0.85) 0 6px, rgba(60, 200, 100, 0.85) 6px 12px); box-shadow: 0 0 10px rgba(120, 255, 150, 0.8); pointer-events: none; z-index: 1; }
     .menu.event .event-hp .meter.hp .hp-before { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; background: #fff; box-shadow: 0 0 6px #fff; pointer-events: none; z-index: 2; }
@@ -10124,8 +10156,8 @@
     .menu.event .event-title-gap,
     .menu.event.search .event-title-gap,
     .menu.event.train .event-title-gap { margin-bottom: 0; }
-    .menu.event .event-lead .event-copy:not(:empty),
-    .menu.event.search .event-lead .event-copy:not(:empty) { margin-top: 58px; }
+    .menu.event .event-lead .event-copy:not(:empty) { margin-top: 58px; }
+    .menu.event.search .event-lead .event-copy:not(:empty) { margin-top: 80px; }
     .menu.event.shop .event-lead .event-copy:not(:empty) { margin-top: 62px; }
     .menu.event.search .event-stack,
     .menu.event.shop .event-stack { gap: 0; }
@@ -10140,6 +10172,25 @@
     .menu.event:is(.shop, .beggar, .smith, .bless, .search, .train) .event-choice .event-play p,
     .menu.event .event-lead .event-copy .event-play p {
       font-size: clamp(40px, 3cqw, 52px);
+    }
+    /* 修行の報酬：下から一枚ずつせり上がる。光る間隔は長め（2026-11-27） */
+    @keyframes train-rise {
+      0% { opacity: 0; transform: translateY(70px) scale(0.82); filter: brightness(2.2); }
+      55% { opacity: 1; transform: translateY(-12px) scale(1.07); filter: brightness(1.4) drop-shadow(0 0 22px var(--rare, #ffe6a4)); }
+      80% { transform: translateY(3px) scale(1); filter: brightness(1.1); }
+      100% { opacity: 1; transform: none; filter: none; }
+    }
+    .menu.event.train .gift-btn { --tdelay: 0.7s; }
+    .menu.event.train .gift-btn:nth-child(2) { --tdelay: 0.95s; }
+    .menu.event.train .gift-btn:nth-child(3) { --tdelay: 1.2s; }
+    .menu.event.train .gift-btn[class*="rare-"] .card.preview {
+      animation: train-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--tdelay) both, reward-lit 3s ease-in-out infinite;
+    }
+    .menu.event.train .gift-btn.rare-3 .card.preview,
+    .menu.event.train .gift-btn.rare-4 .card.preview,
+    .menu.event.train .gift-btn.rare-5 .card.preview,
+    .menu.event.train .gift-btn.rare-boss .card.preview {
+      animation: train-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--tdelay) both, reward-lit-gold 3s ease-in-out infinite;
     }
     .menu.event.train .event-stack { justify-content: safe center; }
     .menu.event.train .event-title-gap { margin-bottom: 0; }
@@ -10569,7 +10620,7 @@
       margin: 0;
     }
     .menu.bless h1,
-    .menu.event.bless .event-title > h1 {
+    .menu.event .event-title > h1 {
       font-size: clamp(52px, calc(5cqw + 10px), 82px);
       letter-spacing: 0.22em;
       filter: drop-shadow(0 4px 0 #6a4a16) drop-shadow(0 0 28px rgba(255, 210, 120, 0.65));
@@ -13437,6 +13488,19 @@
       .rare-3 .card.preview::before, .rare-4 .card.preview::before, .rare-5 .card.preview::before, .rare-boss .card.preview::before,
       .rare-3 .card.preview::before { animation: none; }
     }
+    /* 敵の戦闘報酬：グロー・シャイン・ホロは、ふつうのカードと同じくレアリティどおり（銅はグローのみ、銀はシャイン、金以上はホロ）。ただしホロだけ透明（うっすら） */
+    .reward-pick.reward-foe.rare-3 .card.preview::before,
+    .reward-pick.reward-foe.rare-4 .card.preview::before,
+    .reward-pick.reward-foe.rare-5 .card.preview::before,
+    .reward-pick.reward-foe.rare-boss .card.preview::before { animation-name: rare-rainbow-soft; }
+    @keyframes rare-rainbow-soft {
+      0% { opacity: 0; background-position: 0% 0%; }
+      30% { opacity: 0.2; }
+      100% { opacity: 0; background-position: 100% 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reward-pick.reward-foe .card.preview::before { animation: none; }
+    }
 </style>
 </head>
 <body>
@@ -14293,12 +14357,12 @@
     let eventBattleSeen = false;
     let shown = { enemy: null, player: null };
     let hpFrame = 0;
-    const ENEMY_HP_MS = 600;
-    // 敵のHPが減る時間は、ダメージの大きさで変える。最大HPの4割以上で最長1000ms。長すぎないよう上限あり（2026-11-27）
+    const ENEMY_HP_MS = 700;
+    // 敵のHPが減る時間は、ダメージの大きさで変える。最大HPの4割以上で最長1400ms（2026-11-27）
     function enemyHpMs(gap) {
       const max = Math.max(1, Number(enemy && enemy.maxHp) || 1);
       const ratio = Math.min(1, Math.max(0, Math.abs(Number(gap) || 0) / max) / 0.4);
-      return Math.round(480 + 520 * ratio);
+      return Math.round(ENEMY_HP_MS + ENEMY_HP_MS * ratio);
     }
     let foeHpTween = null;
     let hpHoldTimer = 0;
@@ -14425,6 +14489,7 @@
     let routeOffers = [];
     let routeOfferFloors = [];
     let pendingRoute = [];
+    let lostVeil = {};
     let pathFlightKey = "";
     let pathFloorBan = [];
     let fixedRestAt = [];
@@ -14649,6 +14714,13 @@
 
     function writeBugs(rows) {
       try { localStorage.setItem(BUG_KEY, JSON.stringify((rows || []).slice(-24))); } catch (error) { /* 保存できないときは、この画面のあいだだけ残す */ }
+    }
+
+    function deleteBugReport(id) {
+      const key = String(id || "");
+      if (!key) return;
+      writeBugs(readBugs().filter((row) => row && String(row.id) !== key));
+      bugOpen = -1;
     }
 
     function bugSnapshot() {
@@ -15327,6 +15399,7 @@
       routeOffers = [];
       routeOfferFloors = [];
       pendingRoute = [];
+      lostVeil = {};
       routeSets = 0;
       pathBag = null;
       if (name === "洞窟") {
@@ -15439,7 +15512,8 @@
         render();
       }, {
         floor: announce ? floorNo() : null,
-        pic: (roadFace(route[battleIndex]) || {}).src || "",
+        pic: floorAnnouncePic(),
+        label: floorAnnounceLabel(),
         after: () => {
           floorOnFade = false;
           if (token !== floorAnnounceToken || phase !== "intro" || outcome) return;
@@ -15462,8 +15536,9 @@
     function roadFace(node) {
       const name = String(node || "");
       if (name === "出来事:祝福") return { src: "path-bless-v4.jpg?v=4", label: "祝福" };
-      if (name === "出来事:探索") return { src: "path-search.jpg?v=17", label: "探索" };
+      if (name === "出来事:探索") return { src: "path-search.jpg?v=18", label: "探索" };
       if (name === "出来事:未知") return { src: "path-unknown.jpg?v=10", label: "遭遇" };
+      if (name === "出来事:迷子") return { src: "path-lost.jpg?v=14", label: "迷子", tone: "lost" };
       if (name === "出来事:キャンプ") return { src: "path-rest.jpg?v=6", label: "休憩" };
       if (name === "出来事:お店") return { src: "path-shop.jpg?v=15", label: "お店" };
       if (name === "出来事:物乞い") return { src: "path-beggar.jpg?v=9", label: "物乞い" };
@@ -15477,9 +15552,45 @@
 
     function roadTone(node) {
       const name = String(node || "");
+      if (name === "出来事:迷子") return "lost";
       if (name === "出来事:キャンプ") return "rest";
       if (name.startsWith("出来事:")) return "other";
       return "fight";
+    }
+
+    function lostVeilAt(index) {
+      return lostVeil[String(index)] || null;
+    }
+
+    function markLost(index) {
+      if (index == null || index < 0) return;
+      lostVeil[String(index)] = { open: false };
+    }
+
+    function revealLostBehind(index) {
+      Object.keys(lostVeil).forEach((key) => {
+        const at = Number(key);
+        if (at < index && lostVeil[key] && !lostVeil[key].open) lostVeil[key].open = true;
+      });
+    }
+
+    function mapFace(node, index) {
+      const veil = lostVeilAt(index);
+      if (veil && !veil.open) return { src: "path-lost.jpg?v=14", label: "迷子", tone: "lost" };
+      const face = roadFace(node);
+      if (veil && veil.open) return { ...face, label: "迷子" };
+      return face;
+    }
+
+    function floorAnnouncePic() {
+      const veil = lostVeilAt(battleIndex);
+      if (veil && !veil.open) return "path-lost.jpg?v=14";
+      return (roadFace(route[battleIndex]) || {}).src || "";
+    }
+
+    function floorAnnounceLabel() {
+      const veil = lostVeilAt(battleIndex);
+      return veil && !veil.open ? "迷子" : "";
     }
 
     function roadFixed(node, index) {
@@ -15509,14 +15620,14 @@
         const state = i < battleIndex ? "done" : i === battleIndex ? "now" : "ahead";
         const chosenAhead = !!node && i > battleIndex && !roadFixed(node, i);
         const show = !!node && (i <= battleIndex || chosenAhead || roadPlacedAhead(i) || node === DUNGEON.boss);
-        const face = show ? roadFace(node) : { label: "" };
+        const face = show ? mapFace(node, i) : { label: "" };
         const num = floorAt[i] != null ? floorAt[i] : (blessing ? i : i + 1);
         const floor = `${num}F`;
         const icon = face.src
           ? `<img src="${face.src}" alt="">`
           : `<i aria-hidden="true"></i>`;
         const capFloor = `<span class="road-floor">${floor}</span>`;
-        const tone = show ? roadTone(node) : "";
+        const tone = show ? (face.tone || roadTone(node)) : "";
         const name = show && face.label ? `<span class="road-name">${esc(face.label)}</span>` : "";
         const here = state === "now"
           ? `<span class="road-here-mark" aria-label="現在地"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.7 2 6 4.8 6 8.2c0 4.5 6 13.8 6 13.8s6-9.3 6-13.8C18 4.8 15.3 2 12 2zm0 5.4a2.7 2.7 0 1 1 0 5.4 2.7 2.7 0 0 1 0-5.4z" fill="currentColor"/></svg><b>現在地</b></span>`
@@ -17384,7 +17495,7 @@
       };
       let moving = false;
       if (enemy && shown.enemy != null && Math.abs(shown.enemy - enemy.hp) >= 0.04) {
-        // 一定時間（ENEMY_HP_MS）で目標まで。ダメージが大きいほど速く減る。
+        // enemyHpMs の時間で目標まで。ダメージが大きいほど速く減る。
         if (!foeHpTween || foeHpTween.target !== enemy.hp) foeHpTween = { target: enemy.hp, from: shown.enemy, t: 0, ms: enemyHpMs(shown.enemy - enemy.hp) };
         foeHpTween.t += dt * 1000;
         const k = Math.min(1, foeHpTween.t / foeHpTween.ms);
@@ -18325,7 +18436,7 @@
       log(damageSentence(heroName(), card.name, dealt, result, crit), card);
       if (card && card.leech && result.hpLoss > 0) {
         const gain = restoreHp(Math.ceil(result.hpLoss / 2));
-        if (gain) log(`${heroName()}は吸血化。HP+${gain}。`, card);
+        if (gain) log(`${heroName()}は吸血。HP+${gain}。`, card);
       }
       if (card && card.leechFull && result.hpLoss > 0) {
         const gain = restoreHp(result.hpLoss);
@@ -19475,16 +19586,16 @@
 
     function masteryName(id) {
       return {
-        light: "効率化",
-        power: "究極化",
-        quick: "迅速化",
-        keep: "常態化",
-        opener: "先制化",
-        copy: "複製化",
-        unflash: "永続化",
-        unburst: "永続化",
-        echo: "反響化",
-        leech: "吸血化",
+        light: "効率",
+        power: "究極",
+        quick: "迅速",
+        keep: "常態",
+        opener: "先制",
+        copy: "複製",
+        unflash: "永続",
+        unburst: "永続",
+        echo: "反響",
+        leech: "吸血",
       }[id] || id;
     }
 
@@ -21532,6 +21643,7 @@
         routeOffers,
         routeOfferFloors,
         pendingRoute,
+        lostVeil,
         pathFloorBan,
         fixedRestAt,
         runEnchants,
@@ -21811,6 +21923,13 @@
       routeOffers = Array.isArray(data.routeOffers) ? data.routeOffers.map((row) => (Array.isArray(row) ? row.filter((id) => PATHS[id]) : [])) : [];
       routeOfferFloors = Array.isArray(data.routeOfferFloors) ? data.routeOfferFloors.map((n) => Number(n) || 0) : [];
       pendingRoute = Array.isArray(data.pendingRoute) ? data.pendingRoute.filter((id) => PATHS[id]) : [];
+      lostVeil = {};
+      if (data.lostVeil && typeof data.lostVeil === "object") {
+        Object.keys(data.lostVeil).forEach((key) => {
+          const row = data.lostVeil[key];
+          if (row && typeof row === "object") lostVeil[String(key)] = { open: !!row.open };
+        });
+      }
       pathFloorBan = Array.isArray(data.pathFloorBan) ? data.pathFloorBan.map((name) => String(name || "")).filter(Boolean) : [];
       fixedRestAt = Array.isArray(data.fixedRestAt) ? data.fixedRestAt.map((n) => Number(n) || 0) : [];
       runEnchants = data.runEnchants && typeof data.runEnchants === "object" ? { ...data.runEnchants } : {};
@@ -22501,12 +22620,14 @@
       const grown = maxOneMastery();
       trainPicks = [];
       floorPhase = "show";
-      floorPrompt = grown
+      // 「獲得した」の表示は出さない：熟練ポップがあればそれだけ出し、終わったらそのまま次へ
+      floorGift = null;
+      floorPrompt = "";
+      log(grown
         ? `${card.name}を受け取った。デッキから${grown.name}が熟練の回数に達した。いまもらったカードも対象。`
-        : `${card.name}を受け取った。熟練できるカードは無かった。`;
-      log(floorPrompt);
+        : `${card.name}を受け取った。熟練できるカードは無かった。`);
       persistSave(true);
-      render();
+      finishEvent();
     }
 
     function wornGearNames() {
@@ -22677,7 +22798,7 @@
         eventFloorCall = false;
         render();
         if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
-      }, { floor: announce ? floorNo() : null, pic: (roadFace(route[battleIndex]) || {}).src || "" });
+      }, { floor: announce ? floorNo() : null, pic: floorAnnouncePic(), label: floorAnnounceLabel() });
     }
 
     function emptyRunSheet() {
@@ -23218,7 +23339,7 @@
 
     function smithRulesHtml() {
       const pick = floorPhase === "smith-mat" ? "素材にするカードを選んでください。" : "合成にするカードを選んでください。";
-      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、いまのマナが合成より低いカードです。光のエンチャントと効率化で下がったコストを見ます。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。一度合成のもとにしたカードは、もう合成のもとにできません。素材にはできます。</p><p>${pick}</p></div>`;
+      return `<div class="smith-rules"><p>合成は★${smithPrice(SMITH_FUSE_COST)}です。</p><p>素材にできるのは、いまのマナが合成より低いカードです。光のエンチャントと効率で下がったコストを見ます。</p><p>効果とキーワードは、すべて足します。アイテムが混ざると、使ったあとデッキから消えます。</p><p>使った素材は、デッキから消えます。一度合成のもとにしたカードは、もう合成のもとにできません。素材にはできます。</p><p>${pick}</p></div>`;
     }
 
     function smithFuseOverlay() {
@@ -25334,7 +25455,7 @@
             <h3>道（三択）</h3>
             <p class="album-meta">道を選ぶときの候補アイコン。背景は文字色の縦グラデーション。戦闘・強敵・ボスは赤、迷子・物乞い・遭遇は紫、休憩は青、探索・修行は緑、お店・鍛冶屋・祝福・ジョブは黄。同じ名前は並べない</p>
             <div class="ref-grid">
-              ${sheetFig("path-search.jpg?v=17", "探索", "", "path-grow-ref")}
+              ${sheetFig("path-search.jpg?v=18", "探索", "", "path-grow-ref")}
               ${sheetFig("path-bless-v4.jpg?v=4", "祝福", "", "path-other-ref")}
               ${sheetFig("path-fight.jpg?v=9", "戦闘", "", "path-series")}
               ${sheetFig("path-strong.jpg?v=3", "強敵", "", "path-series")}
@@ -25496,7 +25617,8 @@
         const open = bugOpen === index;
         const lines = (row.lines || []).map((line) => `<span class="bug-line bug-${esc(line.kind)}"><b>${esc(bugKindLabel(line.kind))}</b>${line.turn ? `${line.turn}T ` : ""}${esc(line.text)}</span>`).join("");
         const more = open ? `<div class="record-more">相手 ${esc(row.foe || "なし")}　${esc(row.dungeon || "")} ${Number(row.floor) || 0}F　${Number(row.turn) || 0}ターン目まで<br>装備 ${esc(row.gear || "なし")}<br>そのときのSPD ${Number(row.spd) || 0}　手札 ${esc((row.hand || []).join("、") || "なし")}　山札${Number(row.deck) || 0}　捨て札${Number(row.discard) || 0}<br>除外 ${esc((row.exile || []).join("、") || "なし")}<br>気になったこと<br>${esc(row.note || "なし")}<br>処理<br>${lines || "なし"}</div>` : "";
-        return `<button type="button" class="records-item" data-action="bug-open" data-index="${index}"><span class="record-name">${esc(row.foe || "相手なし")}</span><span class="record-line">${esc(bugWhen(row.at))}　${esc(row.dungeon || "")} ${Number(row.floor) || 0}F　${esc(row.note || "")}</span>${more}</button>`;
+        const drop = open ? `<div class="bug-drop"><button type="button" class="danger" data-action="bug-delete" data-id="${esc(row.id)}">この報告を消す</button></div>` : "";
+        return `<div class="bug-entry"><button type="button" class="records-item" data-action="bug-open" data-index="${index}"><span class="record-name">${esc(row.foe || "相手なし")}</span><span class="record-line">${esc(bugWhen(row.at))}　${esc(row.dungeon || "")} ${Number(row.floor) || 0}F　${esc(row.note || "")}</span>${more}</button>${drop}</div>`;
       }).join("");
       const body = `${gate}<div class="records-list">${shared ? `<p>みんなの記録です。</p>` : ""}${rows || `<p>まだ記録はありません。</p>`}</div><h2 class="bug-head">バグ報告</h2><div class="records-list">${bugRows || `<p>まだありません。戦闘中のバグ報告で残ります。</p>`}</div>`;
       root.innerHTML = `
@@ -26694,10 +26816,10 @@
       if (cardKind(card) === "boon" && !/エンチャント/.test(String(card.name || ""))) noteText = effectChipHtml(noteText, false);
       noteText = colorStatWords(noteText);
       if (card.during) noteText = noteText.replace(/^戦闘中(?:<br>)?/u, "");
-      if (card.replicate) keywords.push(kwLine("複製化", "コピーを1枚捨て札に追加する。"));
-      if (card.opener) keywords.push(kwLine("先制化", "戦闘開始時、最初の手札に入る。6枚以上なら最初は無作為に5枚。残りは次のターンから1枚ずつ。"));
-      if (card.leech) keywords.push(kwLine("吸血化", "シールド以外で減らしたHPの半分を回復する。端数は切り上げ。"));
-      if (card.echo) keywords.push(kwLine("反響化", "この効果は2回起こる。"));
+      if (card.replicate) keywords.push(kwLine("複製", "コピーを1枚捨て札に追加する。"));
+      if (card.opener) keywords.push(kwLine("先制", "戦闘開始時、最初の手札に入る。6枚以上なら最初は無作為に5枚。残りは次のターンから1枚ずつ。"));
+      if (card.leech) keywords.push(kwLine("吸血", "シールド以外で減らしたHPの半分を回復する。端数は切り上げ。"));
+      if (card.echo) keywords.push(kwLine("反響", "この効果は2回起こる。"));
       if (card.quick) keywords.push(kwLine("クイック", QUICK_NOTE));
       if (card.keep && !item) keywords.push(kwLine("キープ", KEEP_NOTE));
       if (cardKind(card) === "orange") keywords.push(kwLine("パワー", POWER_NOTE));
@@ -26815,6 +26937,10 @@
       give.raw += hit.raw;
       give.hp += hit.hpLoss;
       if (hit.raw > 0) give.show = true;
+      if (scratchLeechCtx && hit.hpLoss > 0) {
+        const heal = scratchLeechCtx.card.leechFull ? hit.hpLoss : Math.ceil(hit.hpLoss / 2);
+        noteHeal(give, scratchHeal(scratchLeechCtx.mine, heal));
+      }
     }
 
     function scratchPoisonFoe(foe, give, amount) {
@@ -26898,7 +27024,16 @@
         player.effectFactor = effectFactorFor(i);
         const scaled = scaledResolvedCard(card);
         player.effectFactor = prevFactor;
+        const seen = { raw: give.raw, heal: Number(give.heal) || 0, shield: give.shield, status: give.status, self: Number(mine.selfHp) || 0 };
         scratchPlayerCard(scaled, mine, foe, queue, give);
+        // 予測の並びは、カードを使う順（最初に出た種類が左）
+        give.order = give.order || [];
+        const mark = (kind, grew) => { if (grew && give.order.indexOf(kind) < 0) give.order.push(kind); };
+        mark("damage", give.raw > seen.raw);
+        mark("self", (Number(mine.selfHp) || 0) > seen.self);
+        mark("heal", (Number(give.heal) || 0) > seen.heal);
+        mark("shield", give.shield > seen.shield);
+        mark("status", give.status > seen.status);
         if (foe.hp <= 0) break;
       }
       const breakShield = foeHadBlock && foe.block <= 0;
@@ -27053,7 +27188,16 @@
       return bag;
     }
 
+    // 吸血：予測でも、実際の strike と同じく1回ごとに（減らしたHP÷2を切り上げ）回復を数える
+    let scratchLeechCtx = null;
     function scratchPlayerCard(card, mine, foe, queue, give) {
+      if (!card) return;
+      const prevLeech = scratchLeechCtx;
+      scratchLeechCtx = card.leech || card.leechFull ? { card, mine } : null;
+      try { scratchPlayerCardBody(card, mine, foe, queue, give); } finally { scratchLeechCtx = prevLeech; }
+    }
+
+    function scratchPlayerCardBody(card, mine, foe, queue, give) {
       if (!card) return;
       if (card.smoke) mine.smoke = true;
       if (card.dualSword) mine.dualSword = true;
@@ -27343,14 +27487,20 @@
         const damageHp = Math.max(0, otherHp - selfHp);
         const poisonKills = !!bag.lethal && poisonRaw > 0 && damageHp <= 0 && selfHp <= 0;
         const selfKills = !!bag.lethal && selfHp > 0 && !poisonKills && (!!bag.selfKills || damageHp <= 0);
-        if (otherRaw > 0) chips.push(forecastChip("damage", damageHp, !!bag.lethal && !poisonKills && !selfKills));
-        if (selfHp > 0) chips.push(forecastChip("self", selfHp, selfKills));
-        if (!skipPoison && poisonRaw > 0) chips.push(forecastChip("poison", poisonHp, poisonKills));
-        if (bag.heal > 0) chips.push(forecastChip("heal", bag.heal));
-        if (bag.shield > 0) chips.push(forecastChip("shield", bag.shield));
+        const keyed = [];
+        if (otherRaw > 0) keyed.push(["damage", forecastChip("damage", damageHp, !!bag.lethal && !poisonKills && !selfKills)]);
+        if (selfHp > 0) keyed.push(["self", forecastChip("self", selfHp, selfKills)]);
+        if (!skipPoison && poisonRaw > 0) keyed.push(["poison", forecastChip("poison", poisonHp, poisonKills)]);
+        if (bag.heal > 0) keyed.push(["heal", forecastChip("heal", bag.heal)]);
+        if (bag.shield > 0) keyed.push(["shield", forecastChip("shield", bag.shield)]);
         const icons = foe ? forecastStatusIcons(bag) : [];
-        if (icons.length) chips.push(icons.join(""));
-        else if (bag.status > 0) chips.push(forecastChip("status", bag.status));
+        if (icons.length) keyed.push(["status", icons.join("")]);
+        else if (bag.status > 0) keyed.push(["status", forecastChip("status", bag.status)]);
+        // 使うカードの順に左から。順の記録が無い種類は、いつもの並びのまま後ろ
+        const order = Array.isArray(bag.order) ? bag.order : [];
+        const rank = (kind) => { const at = order.indexOf(kind); return at < 0 ? order.length : at; };
+        keyed.sort((a, b) => rank(a[0]) - rank(b[0]));
+        for (const row of keyed) chips.push(row[1]);
       }
       if (eaten) {
         const chip = poisonForecastChip(eaten);
@@ -27809,7 +27959,7 @@
       camp: { name: "休憩", text: "最大HPの20%回復する。", image: "path-rest.jpg?v=6" },
       straight: { name: "戦闘", text: "このダンジョンの★か★★と戦う。", image: "path-fight.jpg?v=9" },
       boss: { name: "ボス戦", text: "ハデスと戦う。", image: "path-boss.jpg?v=6" },
-      search: { name: "探索", text: "装備か戦利品を、3つから1つ選ぶ。", image: "path-search.jpg?v=17" },
+      search: { name: "探索", text: "装備か戦利品を、3つから1つ選ぶ。", image: "path-search.jpg?v=18" },
       beggar: { name: "物乞い", text: "カードを削除できる。", image: "path-beggar.jpg?v=9" },
       shop: { name: "お店", text: "★を使ってお店で買い物", image: "path-shop.jpg?v=15" },
       lost: { name: "迷子", text: "この道がどこへつながっているかは、わからない。", image: "path-lost.jpg?v=14" },
@@ -29070,6 +29220,7 @@
       const hp = player ? player.hp : floorHp;
       outcome = null;
       beggarBattle = false;
+      revealLostBehind(next);
       battleIndex = next;
       roadSnapIndex = next;
       enterNode(hp);
@@ -29468,6 +29619,7 @@
         blackFade(() => render());
         return;
       }
+      revealLostBehind(next);
       battleIndex = next;
       roadSnapIndex = next;
       enterNode(hp);
@@ -29570,7 +29722,8 @@
         const who = rollEliteName();
         return who ? `強敵:${who}` : "強敵:";
       }
-      if (id === "unknown" || id === "lost") return "出来事:未知";
+      if (id === "lost") return "出来事:迷子";
+      if (id === "unknown") return "出来事:未知";
       return "戦闘";
     }
 
@@ -29822,6 +29975,10 @@
         id = rolled;
       }
       const flight = fromLost ? "lost" : id;
+      const fly = (place, step, extra) => {
+        if (fromLost) markLost(battleIndex + 1);
+        beginPathFlight(flight, place, step, extra);
+      };
       rememberPathOffer(rewardPaths);
       if (Array.isArray(pathBag) && !fromLost) {
         if (id === "unknown") removeBagOne("unknown");
@@ -29831,6 +29988,10 @@
         const resolvedId = resolveEncounter();
         const resolved = pathNode(resolvedId);
         const face = PATHS[resolvedId] || PATHS.beggar;
+        if (fromLost) {
+          fly(() => placeNext(resolved || dungeonEnemy()), 1);
+          return;
+        }
         beginPathFlight(flight, () => placeNext(resolved || dungeonEnemy()), 1, {
           afterLand: (done) => {
             const dest = pathLandNode();
@@ -29851,22 +30012,22 @@
         const named = bindEliteNode(seeded, null);
         if (!isEliteStar(routeFoeName(named))) return;
         const place = current === named ? null : () => placeNext(named);
-        beginPathFlight(flight, place, 1);
+        fly(place, 1);
         return;
       }
       if (id === "straight") {
         const place = pathAlreadyAtNext(id) ? null : () => placeNext(dungeonEnemy());
-        beginPathFlight(flight, place, 1);
+        fly(place, 1);
         return;
       }
       if (id === "boss") {
         const place = pathAlreadyAtNext(id) ? null : () => placeNext(DUNGEON.boss);
-        beginPathFlight(flight, place, 1);
+        fly(place, 1);
         return;
       }
       const node = pathNode(id);
       const place = pathAlreadyAtNext(id) ? null : () => placeNext(node || dungeonEnemy());
-      beginPathFlight(flight, place, 1);
+      fly(place, 1);
     }
 
     function offerTone(card) {
@@ -30268,6 +30429,30 @@
       return "";
     }
 
+    // 選んだらどうなるか：仮に熟練を選んだ状態のカードを作って見せる
+    function masteryAfterCard(offer, id) {
+      try {
+        let row = masteryRow(offer.name, offer.nth);
+        const added = !row;
+        if (!row) {
+          row = { name: offer.name, nth: offer.nth, plays: 0, picked: "" };
+          cardMastery.push(row);
+        }
+        const prev = row.picked;
+        row.picked = id;
+        let found = null;
+        try {
+          found = runDeck().find((c) => c && c.name === offer.name && c.copyNth === offer.nth) || null;
+        } finally {
+          row.picked = prev;
+          if (added) cardMastery.splice(cardMastery.indexOf(row), 1);
+        }
+        return found;
+      } catch (err) {
+        return null;
+      }
+    }
+
     function masteryOverlay() {
       if (!masteryOffer) return "";
       const offer = masteryOffer;
@@ -30280,9 +30465,11 @@
       const buttons = (offer.choices || []).map((id) => {
         const blurb = masteryBlurb(id, card);
         const tone = id === "power" ? "power" : id === "light" ? "light" : "light";
-        return `<button type="button" class="mastery-choice ${tone}" data-action="mastery-pick" data-pick="${esc(id)}"><b>${esc(masteryName(id))}</b>${blurb ? `<small>${esc(blurb)}</small>` : ""}</button>`;
+        const after = masteryAfterCard(offer, id);
+        const afterFace = after ? `<div class="mastery-after"><div class="card preview ${offerTone(after)}">${cardFace(after)}</div></div>` : "";
+        return `<div class="mastery-option">${afterFace}<button type="button" class="mastery-choice ${tone}" data-action="mastery-pick" data-pick="${esc(id)}"><b>${esc(masteryName(id))}</b>${blurb ? `<small>${esc(blurb)}</small>` : ""}</button></div>`;
       }).join("");
-      return `<div class="overlay mastery-ask"><div class="panel mastery-panel"><h2 class="mastery-title">${esc(offer.name)}をマスターした！！</h2><div class="mastery-stage">${face}</div><div class="mastery-choices">${buttons}</div></div></div>`;
+      return `<div class="overlay mastery-ask"><div class="panel mastery-panel"><h2 class="mastery-title">${esc(offer.name)}をマスターした！！</h2><p class="mastery-lead">強化を一つ選んでください</p><div class="mastery-stage">${face}</div><div class="mastery-choices">${buttons}</div></div></div>`;
     }
 
     function victoryStars() {
@@ -31513,6 +31700,11 @@
         if (name === "bug-open") {
           const index = Number(action.dataset.index);
           bugOpen = bugOpen === index ? -1 : index;
+          render();
+          return;
+        }
+        if (name === "bug-delete") {
+          deleteBugReport(action.dataset.id);
           render();
           return;
         }
