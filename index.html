@@ -426,14 +426,18 @@
       align-items: center;
       column-gap: 12px;
       min-width: 0;
-      padding: 0 12px;
+      padding: 0 8px;
       border-radius: 0;
-      /* 絵画のタイトル札：角の飾りとネジは縮めず、中央の木目だけ横に伸ばす */
-      border: 10px solid transparent;
-      border-image: url("header-plate.jpg?v=1") 60 fill / 10px stretch;
+      /* 行の大きさに合わせて作った金のタイトル札。両端の飾りは歪めず、縁の模様は繰り返し、中央だけ伸ばす */
+      border-style: solid;
+      border-color: transparent;
+      border-width: 30px 56px;
+      border-image: url("header-plate-gold.jpg?v=2") 62 110 fill / 30px 56px round stretch;
       background: none;
       box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
     }
+    .hud-top .dungeon-name { color: #2a1606; text-shadow: 0 1px 0 rgba(255, 232, 160, 0.5); }
+    .hud-top .dungeon-progress { color: #4a2a0a; text-shadow: 0 1px 0 rgba(255, 232, 160, 0.5); }
     .dungeon {
       display: flex;
       align-items: baseline;
@@ -13493,6 +13497,23 @@
     .reward-pick.reward-foe.rare-4 .card.preview::before,
     .reward-pick.reward-foe.rare-5 .card.preview::before,
     .reward-pick.reward-foe.rare-boss .card.preview::before { animation-name: rare-rainbow-soft; }
+    /* 出方：裏返らず、はねて大きくなって戻る（2026-11-27）。銀は小さく、金とボスは大きく。名前は昔のまま */
+    @keyframes rare-flip {
+      0% { transform: translateY(18px) scale(0.86); filter: brightness(2); opacity: 0; }
+      35% { transform: translateY(-12px) scale(1.07); filter: brightness(1.4); opacity: 1; }
+      60% { transform: translateY(3px) scale(0.98); filter: brightness(1.1); }
+      80% { transform: translateY(-3px) scale(1.015); filter: none; }
+      100% { transform: none; filter: none; opacity: 1; }
+    }
+    @keyframes rare-flip-hot {
+        0% { transform: perspective(800px) translateY(40px) rotateY(-540deg) scale(0.65); filter: brightness(4) saturate(0.2); opacity: 0; }
+        18% { opacity: 1; }
+        40% { transform: perspective(800px) translateY(-36px) rotateY(24deg) scale(1.32); filter: brightness(2.2) saturate(1.5); opacity: 1; }
+        58% { transform: perspective(800px) translateY(8px) rotateY(-9deg) scale(0.96); filter: brightness(1.4); }
+        74% { transform: perspective(800px) translateY(-12px) rotateY(4deg) scale(1.1); filter: brightness(1.15); }
+        88% { transform: perspective(800px) translateY(2px) rotateY(-1deg) scale(0.99); filter: none; }
+        100% { transform: none; filter: none; opacity: 1; }
+    }
     @keyframes rare-rainbow-soft {
       0% { opacity: 0; background-position: 0% 0%; }
       30% { opacity: 0.2; }
