@@ -47,23 +47,24 @@
     .battle-screen {
       height: 100%;
       display: grid;
-      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr) minmax(0, 12.5%);
+      /* ログを広げ、道も同じ幅に（2026-11-28） */
+      grid-template-columns: minmax(0, 14%) minmax(0, 1fr) minmax(0, 14%);
       grid-template-rows: auto minmax(0, 2.25fr) minmax(0, 1.45fr);
       grid-template-areas:
         "road hud log"
         "road arena log"
         "road hand log";
-      padding: 10px 10px 4px;
+      padding: 10px 6px 4px;
       row-gap: 0;
-      column-gap: 22px;
+      column-gap: 8px;
       overflow: hidden;
       /* 手札机の一枚絵を、プレイ画面全体の背景に（2026-11-28） */
       background:
         linear-gradient(180deg, rgba(8, 6, 5, 0.28) 0%, rgba(8, 6, 5, 0.12) 42%, rgba(8, 6, 5, 0.35) 100%),
-        url("bg-play.jpg?v=7") center / cover no-repeat;
+        url("bg-play.jpg?v=13") center / cover no-repeat;
     }
     .battle-screen.no-log {
-      grid-template-columns: minmax(0, 12.5%) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 14%) minmax(0, 1fr);
       grid-template-areas:
         "road hud"
         "road arena"
@@ -83,10 +84,9 @@
       border-radius: 10px;
       /* 手札が上に来ても、プレイエリアへは絶対に重ねない */
       overflow: hidden;
-      /* 四辺とも外側が同じ明るさ、内側の下限も同じ黒 */
       --frame: 18px;
-      --frame-hi: #6a6a6a;
-      --frame-lo: #101010;
+      --frame-hi: #3a3a3a;
+      --frame-lo: #0a0a0a;
       border: var(--frame) solid transparent;
       background:
         linear-gradient(180deg, rgba(10, 8, 7, 0.28) 0%, rgba(10, 8, 7, 0.18) 42%, rgba(10, 8, 7, 0.62) 100%) padding-box,
@@ -102,16 +102,26 @@
       isolation: isolate;
       margin-top: 14px;
     }
-    /* 戦闘：ダンジョン背景を上の階層・装備まで一体にする。配置は同じ（2026-11-28） */
+    /* 戦闘：洞窟〜戦闘を同じ黒額縁で一体に囲む（2026-11-28） */
     .battle-screen:not(.event-host) .battle-bands {
       grid-area: unset;
       grid-column: 2;
       grid-row: 1 / 3;
       grid-template-rows: subgrid;
       margin-top: 0;
-      /* 枠は戦闘のマスだけ。上の洞窟・デッキ確認にはかけない */
-      border: 0;
-      box-shadow: none;
+      border-radius: 4px;
+      border: 22px solid #070707;
+      box-shadow:
+        0 0 0 2px #4a4a4a,
+        0 0 0 4px #101010,
+        0 12px 22px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 2px #555,
+        inset 0 0 0 5px #121212,
+        inset 0 0 0 7px #3a3a3a,
+        inset 0 0 0 12px #050505,
+        inset 0 0 0 14px #2e2e2e,
+        inset 0 0 0 16px #000;
+      overflow: hidden;
       background:
         linear-gradient(180deg, rgba(10, 8, 7, 0.22) 0%, rgba(10, 8, 7, 0.16) 28%, rgba(10, 8, 7, 0.18) 52%, rgba(10, 8, 7, 0.62) 100%),
         var(--dungeon-art, url("dungeon-bg.jpg")) center 30% / cover no-repeat;
@@ -120,32 +130,51 @@
     .battle-screen:not(.event-host) .battle-bands > .stage {
       grid-row: 2;
       grid-column: 1;
-      border-radius: 10px;
-      border: var(--frame) solid var(--frame-lo);
-      box-shadow:
-        0 0 0 2px var(--frame-hi),
-        0 0 0 3px #050505,
-        inset 0 0 0 2px var(--frame-hi),
-        inset 0 0 0 5px #000;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
-    .battle-screen:not(.event-host) .hud-top {
+    /* 戦闘も祝福なども同じ黒帯（革の札は使わない。2026-11-28） */
+    .battle-screen .hud-top {
       border: 1px solid rgba(0, 0, 0, 0.5);
+      border-bottom: 0;
       border-image: none;
-      border-radius: 12px;
+      border-radius: 12px 12px 0 0;
       background: rgba(0, 0, 0, 0.52);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 6px 16px rgba(0, 0, 0, 0.4);
       padding: 14px 22px 14px;
-      /* 左右は金枠の内側いっぱい。下はステータス板とすき間を空ける */
-      margin: 6px 4px 14px;
+      /* 下辺は額縁と同じ段の線 */
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 6px 16px rgba(0, 0, 0, 0.4),
+        0 1px 0 #555,
+        0 3px 0 #121212,
+        0 4px 0 #3a3a3a,
+        0 6px 0 #050505,
+        0 7px 0 #2e2e2e;
+      margin: 28px 32px 4px;
+    }
+    .battle-screen .hud-top .dungeon {
+      justify-self: start;
+      align-self: center;
+      align-items: center;
+    }
+    .battle-screen .hud-top .dungeon-name,
+    .battle-screen .hud-top .dungeon-progress {
+      line-height: 1;
+      display: flex;
+      align-items: center;
     }
     .battle-screen:not(.event-host) .hero-stack,
     .battle-screen:not(.event-host) .foe-stack {
-      top: 14px;
+      /* 黒い帯との上余白をさらに狭く */
+      top: 0;
     }
-    .battle-screen:not(.event-host) .hud-top .dungeon-name {
+    .battle-screen .hud-top .dungeon-name {
       text-shadow: 0 2px 0 #000, 0 0 10px rgba(0, 0, 0, 0.9);
+      position: relative;
+      top: -3px;
     }
-    .battle-screen:not(.event-host) .hud-top .dungeon-progress {
+    .battle-screen .hud-top .dungeon-progress {
       text-shadow: 0 2px 0 #000, 0 0 8px rgba(0, 0, 0, 0.85);
     }
     /* キャラは戦闘枠いっぱいに置き、プレイエリアはその上に重ねる（足元が下に入ってよい） */
@@ -179,8 +208,10 @@
       grid-area: log;
       min-width: 0;
       min-height: 0;
+      width: 100%;
       display: flex;
       flex-direction: column;
+      align-items: stretch;
     }
     .road-map {
       position: relative;
@@ -191,8 +222,11 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      margin: -10px 0 -4px 2px;
-      padding: 18px 36px 32px;
+      margin: -10px 0 -4px 0;
+      /* 道幅＝ログ幅の基準。余白は最小（2026-11-28） */
+      padding: 14px 4px 24px;
+      width: 100%;
+      box-sizing: border-box;
       border-radius: 0;
       border: 0;
       /* 宝の地図の下地は外す。プレイ背景（机）を透かす（2026-11-28） */
@@ -224,7 +258,7 @@
     .road-map ol {
       list-style: none;
       margin: 0;
-      padding: 4px 6px 6px;
+      padding: 4px 2px 6px;
       box-sizing: border-box;
       overflow-x: hidden;
       overflow-y: auto;
@@ -232,9 +266,13 @@
       -ms-overflow-style: none;
       flex: 1 1 auto;
       min-height: 0;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      align-items: center;
+      /* 5マス＋すき間が入る大きさ（2026-11-28） */
+      gap: 8px;
+      container-type: size;
     }
     .road-map ol::-webkit-scrollbar {
       display: none;
@@ -246,7 +284,11 @@
       display: flex;
       flex-direction: column;
       box-sizing: border-box;
-      flex: 0 0 calc((100% - 64px) / 5 - 4px);
+      /* 正方形：列幅と「5F分の高さ」の小さい方（2026-11-28） */
+      flex: 0 0 auto;
+      width: min(100%, calc((100cqh - 32px) / 5));
+      aspect-ratio: 1 / 1;
+      height: auto;
       min-height: 0;
       padding: 0;
       overflow: hidden;
@@ -454,7 +496,7 @@
     .road-floor {
       flex: 0 0 auto;
       color: #ffe7a4;
-      font-size: 36px;
+      font-size: clamp(16px, 28%, 28px);
       font-weight: 900;
       line-height: 1.05;
       letter-spacing: 0.04em;
@@ -466,7 +508,7 @@
       min-width: 0;
       overflow: hidden;
       color: #fff;
-      font-size: 36px;
+      font-size: clamp(14px, 26%, 26px);
       font-weight: 900;
       line-height: 1.15;
       white-space: nowrap;
@@ -474,7 +516,12 @@
       text-overflow: ellipsis;
       text-shadow: 0 2px 0 #000, 0 0 3px #000, 0 0 8px rgba(0, 0, 0, 0.85);
     }
-    .side-rail .battle-log { flex: 1 1 auto; height: auto; }
+    .side-rail .battle-log {
+      flex: 1 1 auto;
+      height: auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
     .hud-top {
       position: relative;
       z-index: 40;
@@ -733,7 +780,7 @@
     .vs-mark {
       position: absolute;
       left: 50%;
-      top: 50%;
+      top: calc(50% + 2px);
       z-index: 8;
       transform: translate(-50%, -50%);
       margin: 0;
@@ -1075,6 +1122,27 @@
     }
     .battle-plate.hero-plate { --plate-accent: var(--gold); padding-bottom: 10px; }
     .battle-plate.foe-plate { --plate-accent: #c89848; padding-bottom: 10px; }
+    /* 戦闘中の戦士／敵ステータス板の高さを揃える（2026-11-28） */
+    .battle-screen:not(.event-host) .hero-plate,
+    .battle-screen:not(.event-host) .foe-plate {
+      min-height: 214px;
+      display: flex;
+      flex-direction: column;
+    }
+    .battle-screen:not(.event-host) .hero-plate .plate-stats,
+    .battle-screen:not(.event-host) .foe-plate .plate-stats {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .battle-screen:not(.event-host) .hero-plate .plate-split,
+    .battle-screen:not(.event-host) .foe-plate .plate-split {
+      flex: 0 0 auto;
+      min-height: 84px;
+      align-content: stretch;
+      grid-auto-rows: 1fr;
+    }
     .battle-plate .hint { pointer-events: auto; }
     .enemy-field > .foe-plate,
     .foe-stack {
@@ -1089,8 +1157,11 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
+      gap: 6px;
       width: min(300px, 42%);
+      /* 戦士ステータスと同じ拡大（2026-11-28） */
+      transform: scale(1.16);
+      transform-origin: top right;
     }
     .foe-stack > .battle-plate.foe-plate {
       position: relative;
@@ -1610,6 +1681,20 @@
       border-right: 1px solid rgba(212, 168, 74, 0.45);
     }
     .battle-plate .plate-split .hp-line:nth-last-child(-n + 2) { border-bottom: 0; padding-bottom: 0; }
+    /* 敵は戦士と同じマスを、2列3行ではなく1列3行にする（2026-11-28） */
+    .battle-plate .plate-split.plate-tri {
+      grid-template-columns: 1fr;
+    }
+    .battle-plate .plate-split.plate-tri .hp-line {
+      width: 100%;
+      border-right: 0;
+      border-bottom: 1px solid rgba(212, 168, 74, 0.45);
+      padding-bottom: 3px;
+    }
+    .battle-plate .plate-split.plate-tri .hp-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
     .battle-plate .plate-split .hp-line .lbl,
     .battle-plate .plate-split .hp-line .num { width: auto; }
     .battle-plate .plate-split .hp-line b { font-size: 22px; }
@@ -5396,15 +5481,21 @@
       min-height: 0;
     }
     .handbar .mana-dock {
+      /* 手札カード列を戦闘の中心に合わせるため、マナは重ね置き（2026-11-28） */
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      z-index: 2;
       flex: 0 0 auto;
-      align-self: flex-start;
       display: flex;
       align-items: center;
       justify-content: center;
       min-width: 0;
       height: auto;
-      margin-top: 4px;
+      margin: 0;
+      pointer-events: none;
     }
+    .handbar .mana-dock .mana-read { pointer-events: auto; }
     .mana-read {
       position: relative;
       width: auto;
@@ -5484,6 +5575,9 @@
       overflow: visible;
     }
     .pile { width: auto; height: 100%; flex: 0 0 auto; min-width: 0; max-width: none; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+    .ally-piles .pile,
+    .foe-pile,
+    .foe-discard { justify-content: flex-start; }
     button.pile {
       border: 0;
       background: transparent;
@@ -5561,7 +5655,8 @@
     }
     .pile-label { font-size: 20px; letter-spacing: 0.12em; color: var(--cream); font-weight: 800; }
     .hand {
-      flex: 1 1 0;
+      flex: 1 1 auto;
+      width: 100%;
       height: 100%;
       min-width: 0;
       display: flex;
@@ -9613,11 +9708,12 @@
       text-align: center;
     }
     .event-floor-call {
-      position: fixed;
+      position: absolute;
       inset: 0;
-      z-index: 40;
+      z-index: 5;
       display: grid;
       place-items: center;
+      overflow: hidden;
       pointer-events: none;
     }
     .event-floor-call .fade-sandwich {
@@ -10673,11 +10769,28 @@
       grid-area: stage;
       min-width: 0;
       min-height: 0;
-      margin-top: 14px;
+      margin-top: 0;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      /* 戦闘と同じ黒額縁（2026-11-28） */
+      border-radius: 4px;
+      border: 22px solid #070707;
+      box-shadow:
+        0 0 0 2px #4a4a4a,
+        0 0 0 4px #101010,
+        0 12px 22px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 2px #555,
+        inset 0 0 0 5px #121212,
+        inset 0 0 0 7px #3a3a3a,
+        inset 0 0 0 12px #050505,
+        inset 0 0 0 14px #2e2e2e,
+        inset 0 0 0 16px #000;
+    }
+    .battle-screen.event-host .hud-top {
+      /* イベントは額縁が下の段だけなので、帯の上下余白を調整 */
+      margin: 6px 32px 10px;
     }
     .event-gear {
       flex: 0 0 auto;
@@ -11088,7 +11201,8 @@
       filter: brightness(0.72);
       animation: depart-zoom 2.6s ease forwards;
     }
-    /* イベントや戦闘のあと。黒は戦闘画面と手札だけ。マップ・ログ・上のダンジョン名は残す */
+    /* イベントや戦闘のあと。黒は戦闘画面と手札だけ。マップ・ログ・上のダンジョン名は残す。
+       階層が進むときは、上のステータスにもかぶせず、マップとログも常に見える（2026-11-28） */
     .scene-fade {
       position: absolute;
       inset: 0;
@@ -11145,6 +11259,7 @@
       justify-content: center;
       pointer-events: none;
       opacity: 0;
+      overflow: hidden;
       transition: opacity 0.14s ease;
     }
     .scene-fade.in .scene-floor { opacity: 1; animation: scene-floor-num 1.9s ease both; }
@@ -13072,13 +13187,17 @@
         radial-gradient(circle at 50% 50%, rgba(255, 214, 120, 0.62), transparent 46%),
         rgba(86, 54, 12, 0.28);
     }
-    /* 階の数字だけ画面の真ん中。うしろの色は戦闘枠のまま */
+    /* 階の数字は戦闘の中央だけ。ステータス・マップ・ログにはかぶせない */
+    .turn-call.floor-call {
+      overflow: hidden;
+    }
     .turn-call.floor-call .fade-sandwich,
     .event-floor-call .fade-sandwich {
-      position: fixed;
+      position: absolute;
       left: 50%;
-      top: 50%;
+      top: 62%;
       z-index: 3;
+      max-width: 100%;
       transform: translate(-50%, -50%);
     }
     .floor-f { font-size: 0.72em; letter-spacing: 0; }
@@ -14341,6 +14460,19 @@
       return { left, top, width: right - left, height: bottom - top };
     }
 
+    // 階層の洞窟ズームは、上のステータスの下から。マップとログは枠の外なので含めない。
+    function fadeFloorBox() {
+      const box = fadePlayBox();
+      if (!box) return null;
+      const plates = [...document.querySelectorAll(".battle-screen .hero-stack, .battle-screen .foe-stack")];
+      if (!plates.length) return box;
+      const plateBottom = Math.max(...plates.map((el) => el.getBoundingClientRect().bottom));
+      const top = Math.max(box.top, plateBottom + 8);
+      const height = box.top + box.height - top;
+      if (height < 40) return box;
+      return { left: box.left, top, width: box.width, height };
+    }
+
     function gameViewBox() {
       const game = document.getElementById("game");
       if (!game) return null;
@@ -14363,8 +14495,7 @@
       veil.className = showFloor ? "scene-fade scene-fade-floor" : "scene-fade";
       veil.setAttribute("aria-hidden", "true");
       const pane = document.createElement("i");
-      const box = fadePlayBox();
-      const screen = gameViewBox();
+      const box = showFloor ? (fadeFloorBox() || fadePlayBox()) : fadePlayBox();
       const place = (el, frame) => {
         const at = frame || box;
         if (!at) {
@@ -14394,7 +14525,7 @@
       if (showFloor) {
         const mark = document.createElement("div");
         mark.className = "scene-floor";
-        const placed = place(mark, screen || box);
+        const placed = place(mark, box);
         const glyph = document.createElement("b");
         glyph.innerHTML = floorGlyph(floor);
         const size = placed
@@ -24082,8 +24213,8 @@
       const stats = extra && extra.lv != null
         ? `<div class="plate-split">${statLine("", "Lv", extra.lv, "stat-lv")}${atkLine}${statLine(manaGemIcon(), "", extra.mana != null ? extra.mana : MANA, "stat-mana")}${defLine}${statLine("", "★", extra.owned != null ? extra.owned : 0, "stat-star")}${spdLine}</div>`
         : (who === "enemy" && extra && extra.atk != null
-          // 敵も味方と同じ2列の板。ATK・DEF・SPDは味方と同じ右の列、左の列は敵に無い項目なので空き
-          ? `<div class="plate-split">${blankLine}${atkLine}${blankLine}${defLine}${blankLine}${spdLine}</div>`
+          // 敵は戦士と同じマスを1列3行（ATK・DEF・SPD）
+          ? `<div class="plate-split plate-tri">${atkLine}${defLine}${spdLine}</div>`
           : combat);
       const quiet = extra && extra.quiet ? " staged" : "";
       return `<section class="battle-plate ${cls}${mods}${quiet}"${invuln}${extra && extra.attrs ? extra.attrs : ""}>${shieldBadge}${breakHtml}${parryBadge}
@@ -24372,7 +24503,7 @@
     }
 
     function fxLabPiles(name) {
-      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(name)}の山札 6">${foePileFace(6, false)}<div class="pile-label">山札</div></div><div class="foe-discard" aria-label="捨て札 1">${foePileFace(1, true)}<div class="pile-label">捨て札</div></div></div>`;
+      return `<div class="foe-piles"><div class="foe-pile" aria-label="${esc(name)}の山札 6"><div class="pile-label">山札</div>${foePileFace(6, false)}</div><div class="foe-discard" aria-label="捨て札 1"><div class="pile-label">捨て札</div>${foePileFace(1, true)}</div></div>`;
     }
 
     function fxLabHandList() {
@@ -26707,7 +26838,8 @@
       const stack = count > 1 ? " stack" : "";
       const look = empty ? "empty" : kind === "deck" ? "back" : "back discard";
       const open = pileLook === kind;
-      return `<button type="button" class="pile${open ? " open" : ""}" data-pile="${kind}" data-action="pile-look" data-which="${kind}" aria-label="${label} ${count}枚" aria-pressed="${open ? "true" : "false"}">${overlay || ""}<div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div><div class="pile-label">${label}</div></button>`;
+      /* 文字を上、カードを下（2026-11-28） */
+      return `<button type="button" class="pile${open ? " open" : ""}" data-pile="${kind}" data-action="pile-look" data-which="${kind}" aria-label="${label} ${count}枚" aria-pressed="${open ? "true" : "false"}">${overlay || ""}<div class="pile-label">${label}</div><div class="pile-card ${look}${stack}"><span class="pile-count">${count}</span></div></button>`;
     }
 
     function cardKind(card) {
@@ -28243,7 +28375,7 @@
       const dumped = foeDiscard.length;
       const deckOpen = pileLook === "foe-deck";
       const dumpOpen = pileLook === "foe-discard";
-      return `<div class="foe-piles"><button type="button" class="foe-pile${deckOpen ? " open" : ""}" data-action="pile-look" data-which="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚" aria-pressed="${deckOpen ? "true" : "false"}">${foePileFace(left, false)}<div class="pile-label">山札</div></button><button type="button" class="foe-discard${dumpOpen ? " open" : ""}" data-action="pile-look" data-which="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚" aria-pressed="${dumpOpen ? "true" : "false"}">${foePileFace(dumped, true)}<div class="pile-label">捨て札</div></button></div>`;
+      return `<div class="foe-piles"><button type="button" class="foe-pile${deckOpen ? " open" : ""}" data-action="pile-look" data-which="foe-deck" aria-label="${esc(enemy.name)}の山札 ${left}枚" aria-pressed="${deckOpen ? "true" : "false"}"><div class="pile-label">山札</div>${foePileFace(left, false)}</button><button type="button" class="foe-discard${dumpOpen ? " open" : ""}" data-action="pile-look" data-which="foe-discard" aria-label="${esc(enemy.name)}の捨て札 ${dumped}枚" aria-pressed="${dumpOpen ? "true" : "false"}"><div class="pile-label">捨て札</div>${foePileFace(dumped, true)}</button></div>`;
     }
 
     function pileLookCards(which) {
