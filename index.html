@@ -2242,10 +2242,9 @@
     }
     .reward-altar .reward-row { position: relative; z-index: 1; }
     .reward-altar .reward-pick {
-      animation: reward-rise 0.72s cubic-bezier(0.16, 0.9, 0.24, 1) both;
+      /* 左から右へ。--d は並び順（0 / 0.1 / 0.2…） */
+      animation: reward-rise 0.72s cubic-bezier(0.16, 0.9, 0.24, 1) var(--d, 0s) both;
     }
-    .reward-altar .reward-pick:nth-child(2) { animation-delay: 0.1s; }
-    .reward-altar .reward-pick:nth-child(3) { animation-delay: 0.2s; }
     @keyframes reward-rise {
       0% { opacity: 0; transform: translateY(42px) scale(0.9); }
       100% { opacity: 1; transform: none; }
@@ -2472,8 +2471,8 @@
     .gift-btn.rare-5 .card.preview,
     .gift-btn.rare-boss .card.preview {
       animation:
-        rare-pop 0.38s cubic-bezier(0.16, 0.84, 0.28, 1) both,
-        reward-lit 1.15s ease-in-out infinite;
+        rare-pop 0.38s cubic-bezier(0.16, 0.84, 0.28, 1) var(--d, 0s) both,
+        reward-lit 1.15s ease-in-out var(--d, 0s) infinite;
     }
     .reward-pick.rare-1 .card.preview,
     .gift-show.rare-1 .card.preview,
@@ -3498,6 +3497,30 @@
       width: 148px;
       max-width: none;
       height: auto;
+    }
+    /* バンデット・ドロー／無限の書架：カード報酬と同じ大きさ＋裏側から飛び出す */
+    .loot-copy.shelf-draw .deck-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 22px;
+    }
+    .loot-copy.shelf-draw .enchant-card.shelf-card {
+      flex: 0 0 auto;
+      width: min(250px, 24cqw);
+    }
+    .loot-copy.shelf-draw .enchant-card.shelf-card .card.preview {
+      width: min(250px, 24cqw);
+      max-width: none;
+      height: auto;
+      box-shadow: 0 0 0 1px rgba(255, 236, 190, 0.72), 0 0 28px rgba(240, 195, 106, 0.42), 0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .loot-copy.shelf-draw .enchant-card.shelf-card.picked .card.preview {
+      box-shadow: 0 0 0 3px #ffe27a, 0 0 36px rgba(255, 210, 90, 0.75), 0 22px 36px rgba(0, 0, 0, 0.55);
+    }
+    .loot-copy.shelf-draw .enchant-card.shelf-card.rare-show .card.preview {
+      animation: rare-flip-hot 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit-gold 1.15s ease-in-out infinite;
     }
     .enchant-pick .enchant-blocked {
       flex: 1 1 100%;
@@ -11218,7 +11241,7 @@
       animation: depart-zoom 2.6s ease forwards;
     }
     /* イベントや戦闘のあと。黒は戦闘画面と手札だけ。マップ・ログ・上のダンジョン名は残す。
-       階層が進むときは、上のステータスにもかぶせず、マップとログも常に見える（2026-11-28） */
+       階層表示の黒は、戦闘画面と手札の両方を覆う。マップとログは覆わない（2026-11-28） */
     .scene-fade {
       position: absolute;
       inset: 0;
@@ -11233,81 +11256,99 @@
       pointer-events: none;
       transition: opacity 0.26s ease;
     }
-    /* 階層が進むとき：ダンジョン選択と同じ洞窟の絵をズームして、そのうえに階数 */
+    /* 階層表示：洞窟を中心だけぼかし円でくりぬき、端は黒。出し入れはクロスフェード */
     .scene-fade.scene-fade-floor i {
-      background: #070605;
+      background: #000;
       overflow: hidden;
       contain: paint;
       clip-path: inset(0);
-      transition-duration: 0.14s;
+      opacity: 0;
+      transition: opacity 0.45s ease;
     }
+    .scene-fade.scene-fade-floor.in i { opacity: 1; }
+    .scene-fade.scene-fade-floor.out i { opacity: 0; transition: opacity 0.7s ease; }
     .scene-fade.scene-fade-floor .scene-floor-zoom {
       position: absolute;
-      left: 12%;
-      top: 12%;
-      width: 76%;
-      height: 76%;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      transform: scale(1.02);
-      filter: brightness(0.55);
-      opacity: 0;
-    }
-    .scene-fade.scene-fade-floor.in .scene-floor-zoom {
+      object-position: center 42%;
+      transform: none;
+      filter: none;
       opacity: 1;
-      animation: scene-floor-zoom 1.9s ease forwards;
-    }
-    .scene-fade.scene-fade-floor.out .scene-floor-zoom {
       animation: none;
-      opacity: 0;
-      transition: opacity 0.55s ease;
+      /* 綺麗な円ではなく、縁を長くぼかしてくりぬく */
+      -webkit-mask-image: radial-gradient(ellipse 62% 56% at 50% 44%, #000 0%, #000 22%, rgba(0, 0, 0, 0.55) 48%, transparent 74%);
+      mask-image: radial-gradient(ellipse 62% 56% at 50% 44%, #000 0%, #000 22%, rgba(0, 0, 0, 0.55) 48%, transparent 74%);
     }
-    @keyframes scene-floor-zoom {
-      0% { transform: scale(1.02); filter: brightness(0.55); }
-      18% { transform: scale(1.08); filter: brightness(1); }
-      72% { transform: scale(1.18); filter: brightness(1); }
-      100% { transform: scale(1.24); filter: brightness(0.2); }
+    .scene-fade.scene-fade-floor.in .scene-floor-zoom,
+    .scene-fade.scene-fade-floor.out .scene-floor-zoom {
+      opacity: 1;
+      animation: none;
+      transition: none;
+    }
+    .scene-fade.scene-fade-floor .scene-floor-veil {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 64% at 48% 42%, transparent 0%, transparent 26%, rgba(0, 0, 0, 0.22) 46%, rgba(0, 0, 0, 0.7) 64%, #000 82%),
+        radial-gradient(ellipse 58% 66% at 54% 50%, transparent 0%, transparent 30%, rgba(0, 0, 0, 0.18) 52%, transparent 72%);
     }
     .scene-fade.in i { opacity: 1; }
     .scene-fade.out i { opacity: 0; transition-duration: 0.42s; }
-    .scene-fade.scene-fade-floor.out i { transition-duration: 0.7s; }
     .scene-fade .scene-floor {
       position: absolute;
       z-index: 2;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 22px;
       pointer-events: none;
       opacity: 0;
       overflow: hidden;
       transition: opacity 0.14s ease;
     }
-    .scene-fade.in .scene-floor { opacity: 1; animation: scene-floor-num 1.9s ease both; }
+    .scene-fade.in .scene-floor { opacity: 1; animation: none; }
     .scene-fade.out .scene-floor { opacity: 0; transition-duration: 0.16s; animation: none; }
-    .scene-fade.scene-fade-floor.out .scene-floor { transition-duration: 0.7s; }
-    @keyframes scene-floor-num {
-      0%, 12% { opacity: 0; }
-      28%, 68% { opacity: 1; }
-      100% { opacity: 0; }
+    .scene-fade.scene-fade-floor .scene-floor {
+      opacity: 0;
+      transition: opacity 0.45s ease;
+      animation: none;
     }
+    .scene-fade.scene-fade-floor.in .scene-floor { opacity: 1; }
+    .scene-fade.scene-fade-floor.out .scene-floor { opacity: 0; transition: opacity 0.7s ease; }
     .scene-cross { animation: scene-cross 0.7s ease both; }
     @keyframes scene-cross {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-    .scene-fade .scene-floor { flex-direction: row; gap: 48px; }
-    .scene-fade .scene-floor .scene-floor-side { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .scene-fade .scene-floor .scene-floor-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
     .scene-fade .scene-floor .scene-floor-pic {
+      display: block;
+      width: min(168px, 26cqw);
+      height: auto;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
       position: relative;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 3px solid #e4c27a;
-      box-shadow: 0 0 24px rgba(255, 210, 90, 0.6);
+      box-shadow: 0 0 24px rgba(255, 210, 90, 0.55), 0 12px 28px rgba(0, 0, 0, 0.65);
     }
-    /* 階が進むとき：道の画像にぐっと飛び込む */
     .scene-fade .scene-floor .scene-floor-kind {
       font-weight: 900;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.28em;
+      text-indent: 0.28em;
       line-height: 1;
+      font-size: clamp(22px, 2.8cqw, 36px);
       color: #fff3d0;
       text-shadow: 0 3px 0 rgba(24, 12, 8, 0.82), 0 0 16px rgba(255, 210, 90, 0.8);
     }
@@ -13727,28 +13768,28 @@
     }
     .rare-3 .card.preview, .rare-4 .card.preview, .rare-5 .card.preview, .rare-boss .card.preview { --foil: rgba(255, 232, 150, 0.95); }
     .reward-pick.rare-2 .card.preview, .gift-show.rare-2 .card.preview, .gift-btn.rare-2 .card.preview, .shop-slot.rare-2 .card.preview {
-      animation: rare-flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+      animation: rare-flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit 1.15s ease-in-out var(--d, 0s) infinite;
     }
     .reward-pick.rare-3 .card.preview, .gift-show.rare-3 .card.preview, .gift-btn.rare-3 .card.preview, .shop-slot.rare-3 .card.preview,
     .reward-pick.rare-4 .card.preview, .gift-show.rare-4 .card.preview, .gift-btn.rare-4 .card.preview, .shop-slot.rare-4 .card.preview,
     .reward-pick.rare-5 .card.preview, .gift-show.rare-5 .card.preview, .gift-btn.rare-5 .card.preview, .shop-slot.rare-5 .card.preview {
-      animation: rare-flip-hot 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
+      animation: rare-flip-hot 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit-gold 1.15s ease-in-out var(--d, 0s) infinite;
     }
     .reward-pick.rare-boss .card.preview, .gift-show.rare-boss .card.preview, .gift-btn.rare-boss .card.preview, .shop-slot.rare-boss .card.preview {
-      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit 1.15s ease-in-out var(--d, 0s) infinite;
     }
     /* 敵のカード報酬：出方はボスと同じ。脈打つグローの色だけレアリティどおり（2026-11-28） */
     .reward-pick.reward-foe.rare-1 .card.preview,
     .reward-pick.reward-foe.rare-2 .card.preview,
     .reward-pick.reward-foe.rare-boss .card.preview {
-      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit 1.15s ease-in-out infinite;
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit 1.15s ease-in-out var(--d, 0s) infinite;
     }
     .reward-pick.reward-foe.rare-3 .card.preview,
     .reward-pick.reward-foe.rare-4 .card.preview,
     .reward-pick.reward-foe.rare-5 .card.preview {
-      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both, reward-lit-gold 1.15s ease-in-out infinite;
+      animation: rare-flip-hot 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both, reward-lit-gold 1.15s ease-in-out var(--d, 0s) infinite;
     }
-    /* 箔：斜めの光の帯が、カードの面を走る */
+    /* 箔：斜めの光の帯が、カードの面を走る（左から右へ --d でずらす） */
     .rare-2 .card.preview::after, .rare-3 .card.preview::after, .rare-4 .card.preview::after,
     .rare-5 .card.preview::after, .rare-boss .card.preview::after {
       content: "";
@@ -13758,7 +13799,7 @@
       pointer-events: none;
       background: linear-gradient(115deg, transparent 36%, var(--foil) 49%, #fff 50%, var(--foil) 51%, transparent 64%) 160% 0 / 260% 100% no-repeat;
       mix-blend-mode: screen;
-      animation: rare-foil 2.8s ease-in-out 0.55s infinite;
+      animation: rare-foil 2.8s ease-in-out calc(0.55s + var(--d, 0s)) infinite;
     }
     @keyframes rare-foil {
       0% { background-position: 160% 0; }
@@ -13767,15 +13808,15 @@
     /* 光の帯：銀は細く白い光が1回、金は太く暖かい光が2回走る。ボスは金と同じ */
     .rare-2 .card.preview::after {
       background: linear-gradient(115deg, transparent 41%, rgba(214, 230, 255, 0.55) 47%, #fff 50%, rgba(214, 230, 255, 0.55) 53%, transparent 59%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
+      animation: rare-foil 3.4s ease-in-out calc(0.7s + var(--d, 0s)) infinite;
     }
     .rare-3 .card.preview::after, .rare-4 .card.preview::after, .rare-5 .card.preview::after {
       background: linear-gradient(115deg, transparent 28%, rgba(255, 214, 90, 0.5) 40%, #fff6cc 50%, rgba(255, 214, 90, 0.5) 60%, transparent 72%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
+      animation: rare-foil 3.4s ease-in-out calc(0.7s + var(--d, 0s)) infinite;
     }
     .rare-boss .card.preview::after {
       background: linear-gradient(115deg, transparent 12%, rgba(255, 214, 90, 0.5) 30%, #fff6cc 50%, rgba(255, 214, 90, 0.5) 70%, transparent 88%) 160% 0 / 260% 100% no-repeat;
-      animation: rare-foil 3.4s ease-in-out 0.7s infinite;
+      animation: rare-foil 3.4s ease-in-out calc(0.7s + var(--d, 0s)) infinite;
     }
     /* 虹色の箔：金以上が出たときだけ。すぐ消える */
     .rare-3 .card.preview::before, .rare-4 .card.preview::before, .rare-5 .card.preview::before, .rare-boss .card.preview::before {
@@ -13787,7 +13828,7 @@
       background: linear-gradient(125deg, rgba(255, 60, 140, 0), rgba(255, 210, 60, 0.55) 22%, rgba(60, 255, 200, 0.45) 45%, rgba(120, 90, 255, 0.5) 68%, rgba(255, 60, 140, 0)) 0 0 / 320% 320%;
       mix-blend-mode: color-dodge;
       opacity: 0;
-      animation: rare-rainbow 1.6s ease-out 0.25s both;
+      animation: rare-rainbow 1.6s ease-out calc(0.25s + var(--d, 0s)) both;
     }
     @keyframes rare-rainbow {
       0% { opacity: 0; background-position: 0% 0%; }
@@ -14484,26 +14525,30 @@
       return { left, top, width: right - left, height: bottom - top };
     }
 
-    // 階層の洞窟ズームは中央だけ。マップとログの列には入れない。
+    // 階層の黒は戦闘画面と手札を覆う。上の洞窟名と、マップ・ログは残す。
     function fadeFloorBox() {
-      const box = fadePlayBox();
-      if (!box) return null;
-      let left = box.left;
-      let right = box.left + box.width;
-      let top = box.top;
-      const bottom = box.top + box.height;
+      const play = document.querySelector(".battle-screen .battle-bands, .battle-screen .event-stage");
+      const hand = document.querySelector(".battle-screen .handbar");
+      const cards = document.querySelector(".battle-screen .handbar .hand");
+      const nodes = [play, hand, cards].filter(Boolean);
+      if (!nodes.length) return fadePlayBox();
+      const rects = nodes.map((el) => el.getBoundingClientRect());
+      let left = Math.min(...rects.map((r) => r.left));
+      let top = Math.min(...rects.map((r) => r.top));
+      let right = Math.max(...rects.map((r) => r.right));
+      let bottom = Math.max(...rects.map((r) => r.bottom));
+      const hud = document.querySelector(".battle-screen .hud-top");
+      if (hud) {
+        const cut = hud.getBoundingClientRect().bottom + 4;
+        if (cut > top && cut < bottom - 40) top = cut;
+      }
       const map = document.querySelector(".battle-screen .road-map");
       const log = document.querySelector(".battle-screen .side-rail");
-      if (map) left = Math.max(left, map.getBoundingClientRect().right + 10);
-      if (log) right = Math.min(right, log.getBoundingClientRect().left - 10);
-      const plates = [...document.querySelectorAll(".battle-screen .hero-stack, .battle-screen .foe-stack")];
-      if (plates.length) {
-        const plateBottom = Math.max(...plates.map((el) => el.getBoundingClientRect().bottom));
-        if (plateBottom + 8 < bottom - 40) top = Math.max(top, plateBottom + 8);
-      }
+      if (map) left = Math.max(left, map.getBoundingClientRect().right);
+      if (log) right = Math.min(right, log.getBoundingClientRect().left);
       const width = right - left;
       const height = bottom - top;
-      if (width < 40 || height < 40) return box;
+      if (width < 40 || height < 40) return fadePlayBox();
       return { left, top, width, height };
     }
 
@@ -14553,6 +14598,9 @@
           art.alt = "";
           art.src = bg;
           pane.appendChild(art);
+          const veilShade = document.createElement("span");
+          veilShade.className = "scene-floor-veil";
+          pane.appendChild(veilShade);
         }
       }
       veil.appendChild(pane);
@@ -14560,30 +14608,65 @@
         const mark = document.createElement("div");
         mark.className = "scene-floor";
         const placed = place(mark, box);
+        const road = opt && opt.road;
+        if (road && (road.src || road.label)) {
+          const side = document.createElement("div");
+          side.className = "scene-floor-side";
+          if (road.src) {
+            const pic = document.createElement("img");
+            pic.className = "scene-floor-pic";
+            pic.src = road.src;
+            pic.alt = "";
+            side.appendChild(pic);
+          }
+          if (road.label) {
+            const kind = document.createElement("span");
+            kind.className = "scene-floor-kind";
+            kind.textContent = road.label;
+            side.appendChild(kind);
+          }
+          mark.appendChild(side);
+        }
         const glyph = document.createElement("b");
         glyph.innerHTML = floorGlyph(floor);
         const size = placed
-          ? Math.max(72, Math.round(Math.min(placed.w * 0.28, placed.h * 0.42)))
-          : 180;
+          ? Math.max(64, Math.round(Math.min(placed.w * 0.24, placed.h * 0.34)))
+          : 160;
         glyph.style.fontSize = `${size}px`;
         mark.appendChild(glyph);
         veil.appendChild(mark);
       }
       mountFloat(veil);
-      const fadeIn = showFloor ? 120 : 280;
-      const hold = showFloor ? 1500 : 0;
-      const fadeOut = showFloor ? 700 : 440;
+      // 階層表示は戦闘の上にクロスフェードで出し、次の画面へクロスフェードで抜ける
+      if (showFloor) {
+        const fadeIn = 480;
+        const hold = 900;
+        const fadeOut = 700;
+        requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
+        setTimeout(() => {
+          run();
+          const arrive = [...document.querySelectorAll(".battle-screen .battle-bands, .battle-screen .event-stage, .battle-screen .handbar")];
+          setTimeout(() => {
+            arrive.forEach((el) => el.classList.add("scene-cross"));
+            veil.classList.add("out");
+            setTimeout(() => {
+              arrive.forEach((el) => el.classList.remove("scene-cross"));
+              if (veil.parentNode) veil.remove();
+              if (after) after();
+            }, fadeOut);
+          }, hold);
+        }, fadeIn);
+        return;
+      }
+      const fadeIn = 280;
+      const hold = 0;
+      const fadeOut = 440;
       requestAnimationFrame(() => requestAnimationFrame(() => veil.classList.add("in")));
       setTimeout(() => {
         run();
-        const arrive = showFloor
-          ? [...document.querySelectorAll(".battle-screen .battle-bands, .battle-screen .event-stage, .battle-screen .handbar")]
-          : [];
         setTimeout(() => {
-          arrive.forEach((el) => el.classList.add("scene-cross"));
           veil.classList.add("out");
           setTimeout(() => {
-            arrive.forEach((el) => el.classList.remove("scene-cross"));
             if (veil.parentNode) veil.remove();
             if (after) after();
           }, fadeOut);
@@ -15663,20 +15746,20 @@
     ];
     // 入口の祝福だけに足す新しい14種。すべて★3、絵なし。選ぶと runBonus.fx に積む（途中の祝福には出ない）
     const BLESS_NEW = [
-      { id: "godAtk", name: "戦神の加護", body: "毎戦闘、ATK+2" },
+      { id: "godAtk", name: "戦神の加護", body: "ATK+2" },
       { id: "godDef", name: "守護神の加護", body: "毎戦闘、敵の攻撃から受けるダメージ-2（最低0。毒と悪魔化の自傷は対象外）" },
       { id: "ironBless", name: "鉄壁の加護", body: "毎戦闘の1・2ターン目の開始時、ブロック8" },
       { id: "galeBless", name: "部族の羽飾り", image: "reward-tribal-feather.jpg?v=1", body: "毎戦闘の1・2ターン目、SPD+2" },
       { id: "magicBless", name: "闇魔導の勾玉", image: "reward-dark-magatama.jpg?v=1", body: "毎戦闘の1ターン目、マナ+1\nSPD+1" },
       { id: "rookieBless", name: "基本の極意", image: "reward-rookie-bless.jpg?v=1", body: "初期デッキのカードのダメージとブロックが+3される" },
-      { id: "masterPick", name: "熟練の極意", body: "入手時、デッキの好きなカード1枚の熟練度をマックスにする" },
+      { id: "masterPick", name: "熟練の極意", body: "初期デッキのカードを\n１枚選んでマスターする" },
       { id: "mirrorBless", name: "双子の鏡", body: "入手時、デッキの好きなカードを1枚コピーしてデッキに加える" },
       { id: "purgeBless", name: "大浄化の祝福", body: "入手時、デッキのカードを2枚まで廃棄できる" },
-      { id: "goldWin", name: "黄金の加護", body: "戦闘勝利時の獲得★+2" },
-      { id: "springBless", name: "再生の泉", body: "戦闘が終わるたび、HPを6回復" },
+      { id: "goldWin", name: "黄金の加護", body: "戦闘勝利時の獲得★+2。" },
+      { id: "springBless", name: "再生の泉", body: "戦闘終了時HP6回復" },
       { id: "trainBless", name: "鍛錬の極意", body: "戦闘に勝つたび、最大HP+2" },
       { id: "restBless", name: "極上の休息", body: "休憩でHPが全回復。次の戦闘は、ATK+2 DEF+2" },
-      { id: "secretBless", name: "秘伝の祝福", body: "入手時、レアリティ★★★のカード3択から1枚を選んで獲得する" },
+      { id: "secretBless", name: "バンデット・ドロー", body: "レアリティ★★★のカード３択から\n１枚を選んで獲得する。" },
     ];
     function blessNewDef(id) { return BLESS_NEW.find((row) => row.id === id) || null; }
     function hasBless(key) {
@@ -15870,12 +15953,13 @@
       return true;
     }
 
-    // 階層が進む黒は短く、階の数字はもう少し長く残す。明けるときは次の画面へクロスフェードし、そのあと敵が現れる。
+    // 階層が進むとき：ぼかし円の洞窟＋階数と道を静止表示。そのあと敵が現れる。
     function openBattleIntro() {
       const token = ++floorAnnounceToken;
       const eventFight = isEventBattle();
       const announce = !eventFight && announceThisFloor();
       floorOnFade = announce;
+      const node = route[battleIndex];
       blackFade(() => {
         if (token !== floorAnnounceToken) return;
         floorCall = announce;
@@ -15884,6 +15968,7 @@
         render();
       }, {
         floor: announce ? floorNo() : null,
+        road: announce && node ? roadFace(node) : null,
         bg: "dungeon-cave.jpg?v=2",
         after: () => {
           floorOnFade = false;
@@ -16672,7 +16757,9 @@
           }
           floorHp = Math.min(next, (Number(floorHp) || 0) + 10);
         }
-        if (item.relic === "purge" || item.relic === "copy" || item.relic === "shelf") beginLootChoice(item.relic, "floor", gearAsCard(item));
+        if (item.relic === "purge" || item.relic === "copy" || item.relic === "shelf") {
+          if (beginLootChoice(item.relic, "floor", gearAsCard(item)) && item.relic === "shelf") armRare("shelf");
+        }
         if (item.relic === "master") {
           const grown = maxOneMastery("relic");
           if (grown) log(`熟練の教本。${grown.name}が熟練の回数に達した。`);
@@ -22863,6 +22950,7 @@
               blessPicks = [];
               if (floorKind !== "挑戦者に祝福を") return;
               if (beginLootChoice(choiceKind, "floor", boonAsCard(pick.kind, pick.elem))) {
+                if (choiceKind === "shelf") armRare("shelf");
                 lootChoice.resume = "event";
                 persistSave(true);
                 render();
@@ -23182,7 +23270,8 @@
       const entityLv = rareLevel(giftEntity(gift));
       const lv = hot ? entityLv : 0;
       const fx = rareFx(lv);
-      const style = rareStyle(lv, index || 0);
+      // index を渡したときだけ --d（親ボタンに付けている場合は省略）
+      const style = Number.isFinite(Number(index)) ? rareStyle(lv, index) : "";
       if (gift.kind === "card" && gift.card) {
         // 外側の gift-btn にレア演出が付くときも、裏面から飛び出す用の裏を入れる
         return `<div class="${cls}${rareClass(lv)}"${style}>${fx}${rarePreview(gift.card, false, entityLv)}</div>`;
@@ -23253,14 +23342,16 @@
     function enterFloorScreen() {
       floorAnnounceToken += 1;
       const announce = announceThisFloor();
+      const node = route[battleIndex];
       blackFade(() => {
         screen = "floor";
         eventFloorCall = false;
         render();
       }, {
         floor: announce ? floorNo() : null,
+        road: announce && node ? roadFace(node) : null,
         bg: "dungeon-cave.jpg?v=2",
-        // 途中の祝福：階層の数字／洞窟ズームが終わってから光る（階層より先に出さない）
+        // 途中の祝福：階層表示が終わってから光る（階層より先に出さない）
         after: () => {
           if (floorKind === "挑戦者に祝福を" && floorPhase === "bless") playBlessArrive();
         },
@@ -26399,7 +26490,7 @@
       const searchActions = floorKind === "探索" && floorPhase === "search"
         ? `<div class="gift-row">${searchPicks.map((pick, i) => {
           const lv = rareLevel(giftEntity(pick));
-          return `<button type="button" class="gift-btn${rareClass(lv)}" data-action="search-pick" data-search="${i}">${giftMarkup(pick, false)}</button>`;
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="search-pick" data-search="${i}">${giftMarkup(pick, false)}</button>`;
         }).join("")}</div><div class="event-actions">${menuButton("スキップ", "search-skip")}</div>`
         : floorKind === "探索" ? menuButton("進む", "floor-next", true) : "";
       const eventPictures = {
@@ -26440,7 +26531,7 @@
       const train = floorKind === "修行" && floorPhase === "train"
         ? `<div class="gift-row">${trainPicks.map((card, i) => {
           const lv = rareLevel(card);
-          return `<button type="button" class="gift-btn${rareClass(lv)}" data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false)}</button>`;
+          return `<button type="button" class="gift-btn${rareClass(lv)}"${rareStyle(lv, i)} data-action="train-pick" data-train="${i}">${giftMarkup({ kind: "card", card }, false, false, i)}</button>`;
         }).join("")}</div>`
         : "";
       const giftLv = giftLive ? rareLevel(giftEntity(floorGift)) : 0;
@@ -29586,8 +29677,8 @@
         const ribbon = slot.limited ? `<i class="shop-ribbon">ショップ限定</i>` : "";
         const buy = !slot.sold && price != null;
         const open = buy
-          ? `<button type="button" class="shop-slot${sold}${poor}${limited}" data-shop="${index}" data-action="shop-buy" data-slot="${index}">`
-          : `<div class="shop-slot${sold}${limited}" data-shop="${index}">`;
+          ? `<button type="button" class="shop-slot${sold}${poor}${limited}"${rareStyle(lv, index)} data-shop="${index}" data-action="shop-buy" data-slot="${index}">`
+          : `<div class="shop-slot${sold}${limited}"${rareStyle(lv, index)} data-shop="${index}">`;
         const close = buy ? "</button>" : "</div>";
         const fx = "";
         if (slot.kind === "card" && slot.card) {
@@ -30654,9 +30745,10 @@
       return level === "boss" ? " rare-show rare-boss" : ` rare-show rare-${level}`;
     }
 
-    function rareStyle(level) {
-      if (!level) return "";
-      return "";
+    function rareStyle(level, index) {
+      // 並びの左から右へ、出現・フリップ・シャインを同じ間隔でずらす
+      const i = Math.max(0, Number(index) || 0);
+      return ` style="--d:${(i * 0.1).toFixed(1)}s"`;
     }
 
     function rareFx() {
@@ -30701,7 +30793,12 @@
 
     function victoryExtraHtml(hot) {
       const bits = [];
-      const pick = (kind, inner) => `<button type="button" class="reward-pick gear-pick" data-action="reward-extra-take" data-extra="${kind}">${inner}</button>`;
+      let pos = 0;
+      const pick = (kind, inner) => {
+        const html = `<button type="button" class="reward-pick gear-pick"${rareStyle(hot ? 1 : 0, pos)} data-action="reward-extra-take" data-extra="${kind}">${inner}</button>`;
+        pos += 1;
+        return html;
+      };
       if (victoryGear) bits.push(pick("gear", giftMarkup({ kind: "gear", gear: victoryGear }, true, hot)));
       if (victoryItem) bits.push(pick("item", giftMarkup({ kind: "card", card: victoryItem }, true, hot)));
       if (victoryEnchant && victoryEnchant.elem) bits.push(pick("enchant", giftMarkup(victoryEnchant, true, hot)));
@@ -30715,12 +30812,12 @@
 
     function rewardPickButtons(list, action) {
       const ordered = list.map((card, i) => ({ card, i })).sort((a, b) => Number(a.card.source === "敵") - Number(b.card.source === "敵"));
-      return ordered.map(({ card, i }) => {
+      return ordered.map(({ card, i }, pos) => {
         const lv = rareLevel(card);
         const foe = rewardAsFoe(card);
         const foeClass = foe ? " reward-foe" : "";
         const tone = faceTone(card, foe);
-        return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="${action}" data-reward="${i}">${rarePreview(card, foe, lv)}${rareCaption(card)}</button>`;
+        return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}"${rareStyle(lv, pos)} data-action="${action}" data-reward="${i}">${rarePreview(card, foe, lv)}${rareCaption(card)}</button>`;
       }).join("");
     }
 
@@ -30766,7 +30863,7 @@
         max = 1;
       } else if (kind === "master") {
         cards = runDeck().filter((card) => {
-          if (!card || !card.name || !masteryEligible(card) || card.copyNth == null) return false;
+          if (!card || !card.name || !card.starter || !masteryEligible(card) || card.copyNth == null) return false;
           const row = masteryRow(card.name, card.copyNth);
           return !row || !row.picked;
         });
@@ -30844,7 +30941,8 @@
         return;
       } else if (choice.kind === "shelf") {
         chosen.forEach((card) => stolen.push(keepCard(card)));
-        log(`${heroName()}は無限の書架。${chosen[0].name}を受け取った。`);
+        const who = (choice.source && choice.source.name) || "無限の書架";
+        log(`${heroName()}は${who}。${chosen[0].name}を受け取った。`);
       } else if (choice.kind === "call") {
         const card = chosen[0];
         if (!card) return;
@@ -30911,19 +31009,25 @@
         tactic: "捨てる手札を1枚選ぶ",
         pact: "手札へ加える悪魔の剣を2枚まで選ぶ",
         taste: "基本ダメージ+2にする悪魔の剣を1枚選ぶ",
-        master: "熟練をマックスにするカードを1枚選ぶ",
+        master: "初期デッキのカードを１枚選んでマスターする",
       };
       const choice = lootChoice;
       const need = (choice.kind === "copy" || choice.kind === "shelf" || choice.kind === "mirror" || choice.kind === "call" || choice.kind === "seal" || choice.kind === "tactic" || choice.kind === "pact" || choice.kind === "taste" || choice.kind === "master") && !choice.picked.length;
       const names = { purge: "大浄化の祝福", copy: "白紙の巻物", shelf: "無限の書架", chapel: "礼拝堂", mirror: "鏡の破片", call: "血の呼び声", seal: "ウェポンブロック", tactic: "戦術眼", pact: "血の契約", taste: "味見", master: "熟練の極意" };
+      const shelfDraw = choice.kind === "shelf";
+      const shelfHot = shelfDraw && takeRare("shelf");
       const cards = choice.cards.map((card, index) => {
         const on = choice.picked.indexOf(index) >= 0 ? " picked" : "";
+        if (shelfDraw) {
+          const lv = shelfHot ? 3 : 0;
+          return `<button type="button" class="enchant-card shelf-card${on}${rareClass(lv)}"${rareStyle(lv, index)} data-action="loot-pick" data-index="${index}">${rarePreview(card, false, 3)}</button>`;
+        }
         return `<button type="button" class="enchant-card${on}" data-action="loot-pick" data-index="${index}"><div class="card preview ${cardKind(card)}">${cardFace(card, false)}</div></button>`;
       }).join("");
       const src = choice.source;
       const title = src && src.name ? src.name : (names[choice.kind] || "選ぶ");
-      const award = src ? `<div class="enchant-got">${rewardCardHtml(src)}</div>` : "";
-      return `<div class="overlay deck-view enchant-pick loot-copy"><div class="panel"><div class="enchant-body"><div class="enchant-main"><h2>${esc(title)}</h2>${award}<p class="deck-lead">${esc(titles[choice.kind] || "選ぶ")}</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div></div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
+      const award = src ? `<div class="enchant-got">${rewardCardHtml(src, shelfDraw ? 3 : 0)}</div>` : "";
+      return `<div class="overlay deck-view enchant-pick loot-copy${shelfDraw ? " shelf-draw" : ""}"><div class="panel"><div class="enchant-body"><div class="enchant-main"><h2>${esc(title)}</h2>${award}<p class="deck-lead">${esc(titles[choice.kind] || "選ぶ")}</p><div class="deck-scroll"><div class="deck-cards">${cards || `<p class="deck-empty">選べるカードは無い。</p>`}</div></div></div></div><div class="enchant-actions">${menuButton("決定", "loot-ok", true, need)}</div></div></div>`;
     }
 
     function masteryBlurb(id, card) {
@@ -31014,16 +31118,16 @@
         takeRare("reward");
         const medal = gear.medal ? `${giftMarkup({ kind: "gear", gear: gear.medal }, true)}<p class="victory-count">${esc(gear.medal.name)}を手に入れた。</p>` : "";
         const ordered = bossPicks.map((pick, i) => ({ pick, i })).sort((a, b) => Number(a.pick.kind === "card" && a.pick.card && a.pick.card.source === "敵") - Number(b.pick.kind === "card" && b.pick.card && b.pick.card.source === "敵"));
-        const picks = ordered.map(({ pick, i }) => {
+        const picks = ordered.map(({ pick, i }, pos) => {
           if (pick.kind === "card" && pick.card) {
             const lv = rareLevel(pick.card);
             const foe = rewardAsFoe(pick.card);
             const foeClass = foe ? " reward-foe" : "";
             const tone = faceTone(pick.card, foe);
-            return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}" data-action="reward-boss" data-reward="${i}">${rarePreview(pick.card, foe, lv)}${rareCaption(pick.card)}</button>`;
+            return `<button type="button" class="reward-pick${foeClass}${rareClass(lv)}"${rareStyle(lv, pos)} data-action="reward-boss" data-reward="${i}">${rarePreview(pick.card, foe, lv)}${rareCaption(pick.card)}</button>`;
           }
           const item = pick.gear || {};
-          return `<button type="button" class="reward-pick gear-pick" data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
+          return `<button type="button" class="reward-pick gear-pick"${rareStyle(0, pos)} data-action="reward-boss" data-reward="${i}">${gearOfferHtml(item)}</button>`;
         }).join("");
         const burst = victoryStars();
         return `<div class="overlay victory">${burst.flash}<div class="panel wide reward-panel"><div class="reward-top"><h2 class="win-head"><span class="win-word">勝利報酬</span><span class="win-star-dock" aria-label="星${rewardStars}">${burst.stars}</span><span class="reward-lead">${esc(victoryLead())}</span></h2></div>${medal}<div class="reward-altar"><div class="reward-row">${picks}</div></div><button type="button" class="reward-skip under-cards" data-action="reward-skip">スキップ</button></div></div>`;
