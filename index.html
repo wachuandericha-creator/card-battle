@@ -10788,9 +10788,25 @@
         inset 0 0 0 14px #2e2e2e,
         inset 0 0 0 16px #000;
     }
+    /* 祝福なども、上のバーを額縁の中に入れたままにする（2026-11-28） */
+    .battle-screen.event-host .event-stage {
+      grid-area: unset;
+      grid-column: 2;
+      grid-row: 1 / 3;
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-template-columns: minmax(0, 1fr);
+      z-index: 1;
+    }
+    .battle-screen.event-host .event-stage > * {
+      grid-row: 2;
+      min-height: 0;
+      min-width: 0;
+      height: 100%;
+    }
     .battle-screen.event-host .hud-top {
-      /* イベントは額縁が下の段だけなので、帯の上下余白を調整 */
-      margin: 6px 32px 10px;
+      margin: 28px 32px 4px;
+      z-index: 40;
     }
     .event-gear {
       flex: 0 0 auto;
@@ -11221,13 +11237,16 @@
     .scene-fade.scene-fade-floor i {
       background: #070605;
       overflow: hidden;
+      contain: paint;
+      clip-path: inset(0);
       transition-duration: 0.14s;
     }
     .scene-fade.scene-fade-floor .scene-floor-zoom {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      left: 12%;
+      top: 12%;
+      width: 76%;
+      height: 76%;
       object-fit: cover;
       transform: scale(1.02);
       filter: brightness(0.55);
@@ -14452,25 +14471,40 @@
       const nodes = [play, hand].filter(Boolean);
       if (!nodes.length) return null;
       const rects = nodes.map((el) => el.getBoundingClientRect());
-      const left = Math.min(...rects.map((r) => r.left));
-      const top = Math.min(...rects.map((r) => r.top));
+      let left = Math.min(...rects.map((r) => r.left));
+      let top = Math.min(...rects.map((r) => r.top));
       const right = Math.max(...rects.map((r) => r.right));
       const bottom = Math.max(...rects.map((r) => r.bottom));
+      const hud = document.querySelector(".battle-screen .hud-top");
+      if (hud) {
+        const cut = hud.getBoundingClientRect().bottom + 6;
+        if (cut > top && cut < bottom - 40) top = cut;
+      }
       if (right - left < 8 || bottom - top < 8) return null;
       return { left, top, width: right - left, height: bottom - top };
     }
 
-    // 階層の洞窟ズームは、上のステータスの下から。マップとログは枠の外なので含めない。
+    // 階層の洞窟ズームは中央だけ。マップとログの列には入れない。
     function fadeFloorBox() {
       const box = fadePlayBox();
       if (!box) return null;
+      let left = box.left;
+      let right = box.left + box.width;
+      let top = box.top;
+      const bottom = box.top + box.height;
+      const map = document.querySelector(".battle-screen .road-map");
+      const log = document.querySelector(".battle-screen .side-rail");
+      if (map) left = Math.max(left, map.getBoundingClientRect().right + 10);
+      if (log) right = Math.min(right, log.getBoundingClientRect().left - 10);
       const plates = [...document.querySelectorAll(".battle-screen .hero-stack, .battle-screen .foe-stack")];
-      if (!plates.length) return box;
-      const plateBottom = Math.max(...plates.map((el) => el.getBoundingClientRect().bottom));
-      const top = Math.max(box.top, plateBottom + 8);
-      const height = box.top + box.height - top;
-      if (height < 40) return box;
-      return { left: box.left, top, width: box.width, height };
+      if (plates.length) {
+        const plateBottom = Math.max(...plates.map((el) => el.getBoundingClientRect().bottom));
+        if (plateBottom + 8 < bottom - 40) top = Math.max(top, plateBottom + 8);
+      }
+      const width = right - left;
+      const height = bottom - top;
+      if (width < 40 || height < 40) return box;
+      return { left, top, width, height };
     }
 
     function gameViewBox() {
@@ -14529,8 +14563,8 @@
         const glyph = document.createElement("b");
         glyph.innerHTML = floorGlyph(floor);
         const size = placed
-          ? Math.max(96, Math.round(Math.min(placed.w, placed.h) * 0.42))
-          : 280;
+          ? Math.max(72, Math.round(Math.min(placed.w * 0.28, placed.h * 0.42)))
+          : 180;
         glyph.style.fontSize = `${size}px`;
         mark.appendChild(glyph);
         veil.appendChild(mark);
@@ -14961,6 +14995,7 @@
     }
 
     function logTurn(kind) {
+      if (screen !== "battle") return;
       const text = kind === "player" ? `-${heroName()}のターン-` : "-敵のターン-";
       logLines.push({ kind, text, turn: Math.max(1, turn) });
       trimLog();
@@ -15007,6 +15042,7 @@
     }
 
     function log(msg, card, foe) {
+      if (screen !== "battle") return;
       const line = { text: msg };
       const snap = cardSnapshot(card);
       if (snap) line.card = snap;
@@ -21356,6 +21392,14 @@
         player.galeSpd = 0;
       }
       logTurn("player");
+      if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
+      if (player.frostSpd && !hasStatLock()) log(`${enemy.name}の極寒の吹雪。SPD-${player.frostSpd}。下限は1。`);
+      if (enemy && (enemy.block > 0 || enemy.thorns > 0)) {
+        const parts = [];
+        if (enemy.block > 0) parts.push(`シールド${enemy.block}`);
+        if (enemy.thorns > 0) parts.push(`トゲ${enemy.thorns}`);
+        log(`${enemy.name}の石の皮膚。${parts.join("、")}。`);
+      }
       player.hurtLast = !!player.hurtThis;
       player.hurtThis = false;
       if (turn > 1) {
@@ -22417,6 +22461,10 @@
       shopkeepPrize = Array.isArray(data.shopkeepPrize) ? data.shopkeepPrize : [];
       gearOffer = data.gearOffer && data.gearOffer.item ? data.gearOffer : null;
       restorePlace(data.place);
+      if (resumeScreen === "floor") {
+        logLines = [];
+        turn = 0;
+      }
       seedSeenApex();
       if (outcome === "win" && !rewardReady) prepareReward();
       else if (outcome === "win" && pastLastBoss() && runEnded !== "win") finishClear();
@@ -22463,14 +22511,6 @@
       saveNote = "";
       buildDeck();
       bugMark("note", `戦闘開始。相手は${enemy.name}。${floorNo()}F ${dungeonName}。表示SPDは${DRAW_PER_TURN}+革靴など${runSpdBonus()}。装備 ${gearBrief()}。山札${deck.length}枚。`);
-      if (isEventBattle()) log(`${eventBattleKind()}が襲ってきた。`);
-      if (player.frostSpd && !hasStatLock()) log(`${foe.name}の極寒の吹雪。SPD-${player.frostSpd}。下限は1。`);
-      if (enemy.block > 0 || enemy.thorns > 0) {
-        const parts = [];
-        if (enemy.block > 0) parts.push(`シールド${enemy.block}`);
-        if (enemy.thorns > 0) parts.push(`トゲ${enemy.thorns}`);
-        log(`${enemy.name}の石の皮膚。${parts.join("、")}。`);
-      }
       openBattleIntro();
     }
 
@@ -23528,6 +23568,9 @@
     }
 
     function beginFloorEvent(kind, keepHp) {
+      clearTimer();
+      logLines = [];
+      turn = 0;
       markFloorStep(sheetEventName(kind));
       floorHp = keepHp == null ? runMaxHp() : Math.min(runMaxHp(), keepHp);
       floorKind = kind;
@@ -23864,6 +23907,15 @@
     function playBlessArrive() {
       const flash = document.createElement("div");
       flash.className = "screen-flash";
+      const box = fadePlayBox();
+      if (box) {
+        const stage = stageFrameFromRect(box);
+        flash.style.inset = "auto";
+        flash.style.left = `${stage.left}px`;
+        flash.style.top = `${stage.top}px`;
+        flash.style.width = `${stage.w}px`;
+        flash.style.height = `${stage.h}px`;
+      }
       mountFloat(flash);
       setTimeout(() => { if (flash.parentNode) flash.remove(); }, 700);
     }
@@ -23970,6 +24022,9 @@
     }
 
     function beginRun(floors, name) {
+      clearTimer();
+      logLines = [];
+      turn = 0;
       defeatSnap = null;
       lastFoeBlow = null;
       fxFatal = false;
@@ -29194,7 +29249,7 @@
     }
 
     function lootDropRate(rank) {
-      if (rank === "雑魚") return 0.3;
+      if (rank === "雑魚") return 0;
       if (rank === "強敵" || rank === "ボス") return 1;
       return 0;
     }
